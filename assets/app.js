@@ -13,6 +13,7 @@
     activeSector: null,
     sortKey: "notable_score",
     sortDir: -1,
+    breakingCategory: "all",
     stockTab: "news",
     chartTab: "daily",
   };
@@ -87,7 +88,7 @@
       const b = await fetchJson("data/breaking_news.json");
       state.breaking = Array.isArray(b.items) ? b.items : [];
       $("breakingCount").textContent = String(state.breaking.length);
-      if (b.updated_at) $("breakingUpdated").textContent = `Updated ${b.updated_at.replace("T", " ").replace("Z", " UTC")} · Auto-checked every 2h Mon–Fri`;
+      if (b.updated_at) $("breakingUpdated").textContent = `Updated ${b.updated_at.replace("T", " ").replace("Z", " UTC")} · Auto-checked every hour (24/7)`;
     } catch {
       state.breaking = [];
       $("breakingCount").textContent = "0";
@@ -487,23 +488,72 @@
   }
 
   // ---- BREAKING NEWS ----
+  const CAT_LABELS = {
+    all: "All",
+    policy_geopolitics: "Policy & Geopolitics",
+    data_centers_ai: "Data Centers & AI",
+    regulatory_legal: "Regulatory & Legal",
+    earnings_guidance: "Earnings & Guidance",
+    m_and_a: "M&A",
+    contract_partnership: "Deals & Partnerships",
+    management: "Leadership",
+    capital_markets: "Capital Markets",
+    capex_expansion: "Capex & Expansion",
+    product_tech: "Product & Tech",
+    analyst: "Analyst",
+    market_move: "Market Move",
+    general: "Market",
+  };
+
   function renderBreaking() {
     const el = $("breakingList");
+    const bar = $("breakingCategoryBar");
     if (!state.breaking.length) {
+      if (bar) bar.innerHTML = "";
       el.innerHTML = `<div class="panel muted">No breaking alerts yet. Important headlines are checked every 2 hours on weekdays and posted here &amp; to Telegram.</div>`;
       return;
     }
-    el.innerHTML = state.breaking.map((item) => `
+
+    // Build category filter chips dynamically from available categories
+    const catCounts = {};
+    for (const item of state.breaking) {
+      for (const c of (item.categories && item.categories.length ? item.categories : ["general"])) {
+        catCounts[c] = (catCounts[c] || 0) + 1;
+      }
+    }
+    const cats = ["all", ...Object.keys(catCounts).sort((a, b) => catCounts[b] - catCounts[a])];
+    if (!cats.includes(state.breakingCategory)) state.breakingCategory = "all";
+    if (bar) {
+      bar.innerHTML = cats.map((c) => {
+        const label = CAT_LABELS[c] || c.replace(/_/g, " ");
+        const cnt = c === "all" ? state.breaking.length : catCounts[c];
+        return `<button class="chip ${state.breakingCategory === c ? "active" : ""}" data-bcat="${esc(c)}">${esc(label)} (${cnt})</button>`;
+      }).join("");
+      bar.querySelectorAll("button").forEach((b) => {
+        b.onclick = () => { state.breakingCategory = b.dataset.bcat; renderBreaking(); };
+      });
+    }
+
+    const filtered = state.breakingCategory === "all"
+      ? state.breaking
+      : state.breaking.filter((it) => (it.categories || ["general"]).includes(state.breakingCategory));
+
+    const tickerSet = new Set((state.summary?.tickers || []).map((t) => t.symbol));
+    el.innerHTML = filtered.map((item) => {
+      const clickable = tickerSet.has(item.symbol);
+      const badge = clickable
+        ? `<span class="ticker-pill" data-sym="${esc(item.symbol)}"><strong>${esc(item.symbol)}</strong></span>`
+        : `<span class="tag amber">${esc(item.symbol)}</span>`;
+      return `
       <div class="feed-item">
         <div class="feed-meta">
-          <span class="ticker-pill" data-sym="${esc(item.symbol)}"><strong>${esc(item.symbol)}</strong></span>
-          <span class="tag amber">Score ${fmtNum(item.importance, 0)}</span>
-          ${(item.categories || []).slice(0, 2).map((c) => `<span class="tag">${esc(c.replace(/_/g, " "))}</span>`).join("")}
-          <span>${esc(item.source || "")} · ${esc((item.published || "").replace("T", " ").slice(0, 16))}</span>
+          ${badge}
+          ${(item.categories || []).slice(0, 2).map((c) => `<span class="tag">${esc(CAT_LABELS[c] || c.replace(/_/g, " "))}</span>`).join("")}
+          <span>${esc(item.source || "")} · ${esc((item.published || "").replace("T", " ").slice(0, 16))} UTC</span>
         </div>
         <a class="feed-title" href="${esc(item.url || "#")}" target="_blank" rel="noopener">${esc(item.title)}</a>
-      </div>
-    `).join("");
+      </div>`;
+    }).join("");
     el.querySelectorAll(".ticker-pill").forEach((p) => {
       p.onclick = () => openStock(p.dataset.sym);
     });

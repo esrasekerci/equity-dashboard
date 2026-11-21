@@ -1,23 +1,146 @@
 {
-  "updated_at": "2026-11-21T11:27:41+00:00",
-  "min_importance": 65.0,
-  "max_age_hours": 3.0,
+  "updated_at": "2026-11-21T11:35:57+00:00",
+  "min_importance": 60.0,
+  "max_age_hours": 24.0,
   "items": [
     {
-      "key": "91708ccb01662cf1",
+      "key": "df72307e6fb5ffde",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "Anthropic, Nvidia, AMD, Micron, Sandisk, Bloom Energy, and More Stocks That Explain Today’s Market",
+      "url": "https://www.barrons.com/articles/stock-movers-affd1759?siteid=yhoof2&yptr=yahoo",
+      "source": "Barrons.com",
+      "source_tier": 1,
+      "published": "2026-11-20T21:53:00+00:00",
+      "importance": 69.0,
+      "categories": [
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 13.72,
+      "detected_at": "2026-11-21T11:35:57+00:00"
+    },
+    {
+      "key": "eb309c9ea0bd7e30",
+      "symbol": "FSLR",
+      "name": "First Solar",
+      "title": "First Solar Fell While Profit Rose",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/first-solar-fell-while-profit-020951528.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-21T02:09:51+00:00",
+      "importance": 77.3,
+      "categories": [
+        "earnings_guidance",
+        "policy_geopolitics",
+        "regulatory_legal"
+      ],
+      "age_hours": 9.44,
+      "detected_at": "2026-11-21T11:35:57+00:00"
+    },
+    {
+      "key": "666ad0373482ae5d",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "Generac Stock In Focus After Earnings Beat And Amazon Supply Deal",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/generac-stock-focus-earnings-beat-001937973.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-21T00:19:37+00:00",
+      "importance": 73.3,
+      "categories": [
+        "earnings_guidance",
+        "contract_partnership",
+        "data_centers_ai"
+      ],
+      "age_hours": 11.27,
+      "detected_at": "2026-11-21T11:35:57+00:00"
+    },
+    {
+      "key": "659e3b546b0063d3",
+      "symbol": "MRVL",
+      "name": "Marvell Technology",
+      "title": "Marvell's $115 Billion Lumentum Deal Creates a New Valuation Test",
+      "url": "https://finance.yahoo.com/technology/articles/marvells-115-billion-lumentum-deal-214112963.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-20T21:41:12+00:00",
+      "importance": 72.3,
+      "categories": [
+        "earnings_guidance",
+        "m_and_a",
+        "data_centers_ai"
+      ],
+      "age_hours": 13.91,
+      "detected_at": "2026-11-21T11:35:57+00:00"
+    },
+    {
+      "key": "9bbb3a5bbcb05678",
+      "symbol": "ORCL",
+      "name": "Oracle",
+      "title": "Oracle says OpenAI contract is fully funded, addresses market financing scrutiny",
+      "url": "https://finance.yahoo.com/technology/ai/articles/oracle-says-openai-contract-fully-224306974.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-20T22:43:06+00:00",
+      "importance": 64.4,
+      "categories": [
+        "contract_partnership",
+        "data_centers_ai"
+      ],
+      "age_hours": 12.88,
+      "detected_at": "2026-11-21T11:35:57+00:00"
+    },
+    {
+      "key": "62fdc9e40dfa3b62",
       "symbol": "NVDA",
       "name": "NVIDIA",
-      "title": "Nvidia’s Finance Chief Kress to Lead First Earnings Call Following Huang’s Ouster",
-      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOYWNSeEVqX0dfVEF1QnBYdks5Tk92TU9mWEdlYkZ1a285YnBfOThIeGkybjZSTG9oSkJIYUE5WFgwYlZtdzBuVUQwQzJZTm1fcEtCeFBWd242RkVIVThYaVFaSm5sV1ppZlBWdGdtUkVNRXRUZ1dCWVpBd2hzMlhISWhyNms4R1BSUzM4S282SG5NT2J3VExlWjVtb015ZUd1UEpoQVh3US1oZGotRlQ0LWJrZUItbmtiWjlEcg?oc=5",
-      "source": "WSJ",
-      "source_tier": 1,
-      "published": "2026-11-21T09:08:07+00:00",
-      "importance": 80.3,
+      "title": "Trump critiques Jensen Huang's replacement as he wades deeper into Nvidia turmoil",
+      "url": "https://finance.yahoo.com/markets/article/trump-critiques-jensen-huangs-replacement-as-he-wades-deeper-into-nvidia-turmoil-210729338.html",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-20T21:07:29+00:00",
+      "importance": 62.1,
       "categories": [
-        "earnings_guidance"
+        "policy_geopolitics",
+        "management"
       ],
-      "age_hours": 2.3,
-      "detected_at": "2026-11-21T11:27:41+00:00"
+      "age_hours": 14.47,
+      "detected_at": "2026-11-21T11:35:57+00:00"
+    },
+    {
+      "key": "e05c0678af39b781",
+      "symbol": "FED / MACRO",
+      "name": "FED / MACRO",
+      "title": "The Federal Reserve Is Expected to Raise Interest Rates Next Month. By How Much Is an Open Question.",
+      "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNdTFoLTh6OXU1N2ZjSmNYN09CTWhISTZuaVhMSXJCbklsdEFyWGpQN3B3c0NieVdVRUV6VnRDYjdIWG1vaFVOQWRRM19ZaklQMUZuUktlT2hCT3V3NnhCZDg2Y215b09aVmFFRkNyeTNmYzZYYWt1LXlnRkM3bG1ad1YxdGVNUnVhcE82RXh4TQ?oc=5",
+      "source": "Barron's",
+      "source_tier": 1,
+      "published": "2026-11-20T22:39:00+00:00",
+      "importance": 80.4,
+      "categories": [
+        "policy_geopolitics"
+      ],
+      "age_hours": 12.95,
+      "detected_at": "2026-11-21T11:35:57+00:00"
+    },
+    {
+      "key": "13ae02cb144c6f0e",
+      "symbol": "AI / DATA CENTERS",
+      "name": "AI / DATA CENTERS",
+      "title": "Live Updates: Trump Speaks on China Summit, Trade Deals and Data Centers",
+      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTFBmTEh2ZFRVUmZod25NaTdtQTlYYmpKYmd6T2pqMEhKTWJSdC1BT1hOMDMzV0k5bUw2RDYxS3EyZ1BjVmtOVWZ2UTRqSGVhVFMtSDc2bWkwQXZaSWo4SVoxNTRma25wVGJnSmVhNzhlYVF1dw?oc=5",
+      "source": "The New York Times",
+      "source_tier": 1,
+      "published": "2026-11-21T01:12:00+00:00",
+      "importance": 77.3,
+      "categories": [
+        "policy_geopolitics",
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 10.4,
+      "detected_at": "2026-11-21T11:35:57+00:00"
     }
   ]
 }
