@@ -1406,3 +1406,66 @@ body.no-scroll { overflow: hidden; }
     align-self: flex-end;
   }
 }
+
+/* Automatic Bottom Install Prompt Bar (Zero Images, Pure Typography) */
+.install-bar {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  z-index: 240;
+  max-width: 460px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-elev);
+  border: 1.5px solid var(--accent);
+  border-radius: 13px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65);
+}
+.install-bar-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.install-bar-text strong {
+  font-size: 13.5px;
+  color: var(--text);
+}
+.install-bar-text span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.install-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.install-now-btn {
+  padding: 7px 14px;
+  font-size: 12.5px;
+  border-radius: 9px;
+}
+.install-dismiss-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.install-dismiss-btn:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}

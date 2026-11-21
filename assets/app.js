@@ -2854,11 +2854,88 @@
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideTip(); });
   }
 
+  // ---- AUTOMATIC INSTALL PROMPT (Asks automatically if not running as installed app; asks again next visit if not installed) ----
+  function initAutoInstallPrompt() {
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+    if (isStandalone) return;
+
+    const ua = navigator.userAgent || "";
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isInApp = /Telegram|FBAN|FBAV|Instagram|Line|MicroMessenger/i.test(ua);
+
+    let bar = null;
+    const removeBar = () => {
+      if (bar) { bar.remove(); bar = null; }
+    };
+
+    const showInstallBar = (hasNativePrompt) => {
+      if (bar) removeBar();
+      bar = document.createElement("div");
+      bar.className = "install-bar";
+      const subText = hasNativePrompt
+        ? "Install racenter to your home screen"
+        : isInApp
+          ? "Open in Safari or Chrome to install racenter"
+          : isIOS
+            ? "Tap Share → Add to Home Screen"
+            : "Tap browser menu (⋮) → Install App";
+
+      bar.innerHTML = `
+        <div class="install-bar-text">
+          <strong>Install racenter</strong>
+          <span>${esc(subText)}</span>
+        </div>
+        <div class="install-bar-actions">
+          ${hasNativePrompt ? `<button type="button" class="btn-primary-accent install-now-btn" id="autoInstallNowBtn">Install</button>` : ""}
+          <button type="button" class="install-dismiss-btn" id="autoInstallDismissBtn" aria-label="Dismiss">✕</button>
+        </div>
+      `;
+      document.body.appendChild(bar);
+
+      bar.querySelector("#autoInstallDismissBtn").onclick = removeBar;
+      const nowBtn = bar.querySelector("#autoInstallNowBtn");
+      if (nowBtn) {
+        nowBtn.onclick = async () => {
+          if (!state.deferredInstallPrompt) return;
+          state.deferredInstallPrompt.prompt();
+          try {
+            const choice = await state.deferredInstallPrompt.userChoice;
+            if (choice && choice.outcome === "accepted") {
+              removeBar();
+            }
+          } catch {}
+          state.deferredInstallPrompt = null;
+        };
+      }
+    };
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      state.deferredInstallPrompt = e;
+      showInstallBar(true);
+    });
+
+    window.addEventListener("appinstalled", () => {
+      state.deferredInstallPrompt = null;
+      removeBar();
+    });
+
+    // If native beforeinstallprompt doesn't fire (e.g. iOS Safari or Telegram in-app browser), show the install bar automatically
+    setTimeout(() => {
+      if (!bar && !state.deferredInstallPrompt) {
+        showInstallBar(false);
+      }
+    }, 1000);
+  }
+
   // ---- BOOT ----
   async function boot() {
     initTheme();
     initTooltips();
     wireEvents();
+    initAutoInstallPrompt();
     try {
       state.index = await fetchJson("data/index.json");
       const dates = state.index.dates || [];
