@@ -677,6 +677,53 @@
       el.onclick = () => openStock(el.dataset.sym);
     });
 
+    // Earnings Calendar (Upcoming & Recently Reported across all 39 stocks)
+    const ecGrid = $("earningsCalendarGrid");
+    if (ecGrid) {
+      const allT = s.tickers || [];
+      const upcoming = allT
+        .filter((t) => t.earnings_date && t.earnings_days != null && t.earnings_days >= 0)
+        .sort((a, b) => a.earnings_days - b.earnings_days);
+      const recent = allT
+        .filter((t) => t.earnings_date && t.earnings_days != null && t.earnings_days < 0 && t.earnings_days >= -14)
+        .sort((a, b) => b.earnings_days - a.earnings_days);
+
+      const renderEarnRow = (t) => {
+        const d = t.earnings_days;
+        const badgeTxt = d === 0 ? "TODAY" : d === 1 ? "Tomorrow" : d > 1 ? `in ${d}d` : `${Math.abs(d)}d ago`;
+        const badgeCls = d >= 0 && d <= 7 ? "amber" : "";
+        return `
+          <div class="level-row" data-sym="${esc(t.symbol)}" style="cursor:pointer">
+            <div>
+              <strong>${esc(t.symbol)}</strong>
+              <span class="muted" style="margin-left:6px">${esc(t.name)}</span>
+            </div>
+            <div style="text-align:right">
+              <span class="tag ${badgeCls}">${esc(badgeTxt)}</span>
+              <span class="muted" style="margin-left:6px;font-variant-numeric:tabular-nums">${esc(t.earnings_date)}</span>
+            </div>
+          </div>`;
+      };
+
+      ecGrid.innerHTML = `
+        <div class="panel">
+          <h3>Upcoming Quarterly Earnings (${upcoming.length})</h3>
+          <div class="level-list">
+            ${upcoming.length ? upcoming.slice(0, 10).map(renderEarnRow).join("") : `<div class="muted">No upcoming earnings dates scheduled yet.</div>`}
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Recently Reported (Last 14 Days · ${recent.length})</h3>
+          <div class="level-list">
+            ${recent.length ? recent.slice(0, 10).map(renderEarnRow).join("") : `<div class="muted">No earnings reported in the last 14 days.</div>`}
+          </div>
+        </div>
+      `;
+      ecGrid.querySelectorAll(".level-row[data-sym]").forEach((row) => {
+        row.onclick = () => openStock(row.dataset.sym);
+      });
+    }
+
     // Sector Heatmap (clicking any sector opens the clean Sector Explorer modal)
     const sectors = hm.sectors || [];
     $("sectorHeatmap").innerHTML = sectors.map((sec) => {
