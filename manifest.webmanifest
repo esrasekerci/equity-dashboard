@@ -1,7 +1,7 @@
 {
-  "name": "AlphaNexus · Enthralling Market Intelligence",
+  "name": "AlphaNexus · Market Intelligence",
   "short_name": "AlphaNexus",
-  "description": "Enthralling 39-stock quantitative intelligence: interactive candlestick charts, supply-chain value network, Smart Money flow, SEC filings & live regulatory watch.",
+  "description": "Institutional 39-stock quantitative intelligence: interactive candlestick charts, supply-chain value network, Smart Money flow, SEC filings & live regulatory watch.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
