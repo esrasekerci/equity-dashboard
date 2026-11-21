@@ -1,7 +1,7 @@
 {
-  "name": "Daily Equity Research Dashboard",
-  "short_name": "Equity Research",
-  "description": "Live 39-stock technical analysis, interactive candlestick charts, Smart Money flow, SEC filings, official authorities & breaking news.",
+  "name": "AlphaNexus · Enthralling Market Intelligence",
+  "short_name": "AlphaNexus",
+  "description": "Enthralling 39-stock quantitative intelligence: interactive candlestick charts, supply-chain value network, Smart Money flow, SEC filings & live regulatory watch.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

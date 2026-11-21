@@ -6,13 +6,13 @@
   <meta name="theme-color" content="#080d17" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Equity Research" />
+  <meta name="apple-mobile-web-app-title" content="AlphaNexus" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/icon-192.png" />
   <link rel="icon" type="image/png" href="assets/icon-192.png" />
-  <meta property="og:title" content="Daily Equity Research Dashboard" />
-  <meta property="og:description" content="Live 39-stock technical analysis, interactive charts, Smart Money flow, official legal authorities, SEC filings & macro." />
-  <title>Daily Equity Research Dashboard</title>
+  <meta property="og:title" content="AlphaNexus · Enthralling Market Intelligence" />
+  <meta property="og:description" content="Live 39-stock quantitative intelligence, interactive charts, supply-chain value network, Smart Money flow, official legal authorities &amp; SEC filings." />
+  <title>AlphaNexus · Enthralling Market Intelligence</title>
   <link rel="stylesheet" href="assets/app.css" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
@@ -21,15 +21,29 @@
     <div class="topbar-inner">
       <div class="brand-row">
         <div class="brand" id="brandHome" role="button" tabindex="0">
-          <div class="brand-mark">ER</div>
-          <div>
-            <div class="brand-title">Equity Research</div>
-            <div class="brand-sub" id="marketCloseBadge">Loading market data…</div>
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 40 40" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 15 L20 7 L31 13 L31 29 L9 28 Z" stroke="rgba(125,211,252,0.45)" stroke-width="1.3" />
+              <line x1="13" y1="20" x2="13" y2="30" stroke="#3b82f6" stroke-width="1.6" stroke-linecap="round"/>
+              <rect x="10.8" y="22.5" width="4.4" height="5.5" rx="1.2" fill="#3b82f6"/>
+              <line x1="20" y1="16" x2="20" y2="28" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round"/>
+              <rect x="17.8" y="18.5" width="4.4" height="7" rx="1.2" fill="#38bdf8"/>
+              <line x1="27" y1="10" x2="27" y2="24.5" stroke="#10b981" stroke-width="1.6" stroke-linecap="round"/>
+              <rect x="24.8" y="12.2" width="4.4" height="10" rx="1.2" fill="#10b981"/>
+              <path d="M7 29 L13 25 L17.5 26.5 L22.5 19 L27.5 14.5 L33 8.5" stroke="#fde047" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="9" cy="15" r="2.1" fill="#a855f7" stroke="#fff" stroke-width="0.8"/>
+              <circle cx="20" cy="7" r="2.2" fill="#38bdf8" stroke="#fff" stroke-width="0.8"/>
+              <circle cx="33" cy="8.5" r="2.5" fill="#fde047" stroke="#fff" stroke-width="0.9"/>
+            </svg>
+          </div>
+          <div style="min-width:0">
+            <div class="brand-title">AlphaNexus <span class="brand-badge">Enthralling Quant</span></div>
+            <div class="brand-sub" id="marketCloseBadge">Loading market intelligence…</div>
           </div>
         </div>
 
         <div class="header-actions">
-          <select id="dateSelect" class="select-control" aria-label="Report date"></select>
+          <select id="dateSelect" class="select-control hidden" aria-label="Report date"></select>
           <button id="themeToggle" class="icon-btn" title="Toggle light/dark theme" aria-label="Toggle theme">☀️</button>
         </div>
       </div>
@@ -285,7 +299,7 @@
     <!-- STOCK DEEP-DIVE VIEW -->
     <section id="view-stock" class="view hidden">
       <div class="stock-topbar">
-        <button class="btn-secondary" id="backToOverview">← Back</button>
+        <button class="btn-secondary close-tab-btn" id="backToOverview">✕ Close Stock</button>
         <div class="stock-pager">
           <button class="btn-secondary" id="prevTickerBtn">← Prev</button>
           <button class="btn-secondary" id="nextTickerBtn">Next →</button>
@@ -304,15 +318,15 @@
     </div>
   </div>
 
-  <!-- Rich info modal (Sector Explorer / Mathematical Formulations / App Install) -->
+  <!-- Rich info modal (Sector Explorer / Full-Page Network) -->
   <div id="infoModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-backdrop" id="infoModalCloseBg"></div>
     <div class="modal-card" id="infoModalBody"></div>
   </div>
 
   <footer class="footer">
-    <div>Daily Equity Research · Yahoo Finance, SEC EDGAR, FRED, Federal Reserve &amp; RSS feeds.</div>
-    <div class="disclaimer">Research and rule-based scenarios only — NOT investment advice.</div>
+    <div>AlphaNexus · Enthralling Market Intelligence · Yahoo Finance, SEC EDGAR, FRED, Federal Reserve &amp; Official Regulators.</div>
+    <div class="disclaimer">Quantitative research and rule-based scenarios only — NOT investment advice.</div>
   </footer>
 
   <script src="assets/app.js"></script>

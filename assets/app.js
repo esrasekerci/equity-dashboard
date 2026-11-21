@@ -161,7 +161,12 @@
   }
 
   function setView(view) {
-    if (view !== "stock") { state.prevView = view; destroyInteractiveChart(); }
+    if (state.view && state.view !== view && state.view !== "stock") {
+      state.prevView = state.view;
+    }
+    if (view !== "stock") {
+      destroyInteractiveChart();
+    }
     state.view = view;
     for (const v of ["overview", "screener", "network", "smartmoney", "breaking", "authorities", "macro", "formulas", "stock"]) {
       $(`view-${v}`)?.classList.toggle("hidden", v !== view);
@@ -169,12 +174,35 @@
     document.querySelectorAll("#mainNav .nav-tab").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.view === view);
     });
-    if (view === "stock" && state.activeTicker) {
-      $("stockNavTab").classList.remove("hidden");
-      $("stockNavTab").textContent = state.activeTicker;
+    const stockTab = $("stockNavTab");
+    if (stockTab && state.activeTicker) {
+      stockTab.classList.remove("hidden");
+      stockTab.innerHTML = `<span>${esc(state.activeTicker)}</span><span class="tab-close-x" data-close-stock-tab="1" title="Close ${esc(state.activeTicker)} tab">✕</span>`;
+      const closeX = stockTab.querySelector("[data-close-stock-tab]");
+      if (closeX) {
+        closeX.onclick = (e) => {
+          e.stopPropagation();
+          closeStockTab();
+        };
+      }
+      if ($("backToOverview")) {
+        $("backToOverview").textContent = `✕ Close ${state.activeTicker}`;
+      }
     }
     syncUrl();
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function closeStockTab() {
+    destroyInteractiveChart();
+    state.activeTicker = null;
+    const stockTab = $("stockNavTab");
+    if (stockTab) {
+      stockTab.classList.add("hidden");
+      stockTab.innerHTML = "Stock";
+    }
+    const target = state.prevView && state.prevView !== "stock" ? state.prevView : "overview";
+    setView(target);
   }
 
   // ---- THEME ----
@@ -321,14 +349,14 @@
 
       <div class="rel-cards-grid" style="max-height:60vh;overflow-y:auto;padding-right:2px">
         ${members.map((r) => `
-          <div class="rel-conn-card">
+          <div class="rel-conn-card" data-sec-open="${esc(r.symbol)}" style="cursor:pointer">
             <div class="rcc-top">
               <div>
                 <div class="rcc-sym">
-                  <strong>${esc(r.symbol)}</strong>${r.is_core ? ' <span class="core-star">★</span>' : ""}
+                  <strong class="touch-name-link">${esc(r.symbol)} · ${esc(r.name)} ↗</strong>${r.is_core ? ' <span class="core-star">★</span>' : ""}
                   <span class="tag">${fmtCap(r.market_cap)}</span>
                 </div>
-                <div class="muted">${esc(r.name)}</div>
+                <div class="muted" style="margin-top:2px">Tap anywhere on this card to open full analysis, charts &amp; filings</div>
               </div>
               <div style="text-align:right">
                 <div style="font-weight:800;font-size:15px">$${fmtNum(r.close)}</div>
@@ -339,10 +367,6 @@
               <span>21d vs SPY: <strong class="${clsPct(r.rs_spy_21d)}">${fmtPct(r.rs_spy_21d, 1)}</strong></span>
               <span>RSI-14: <strong class="${r.rsi14 < 30 ? "neg" : r.rsi14 > 70 ? "pos" : ""}">${fmtNum(r.rsi14, 1)}</strong></span>
               <span ${notableScoreTipAttr(r)}>Score: <strong>${fmtNum(r.notable_score, 1)}</strong> <span class="tip-badge">?</span></span>
-            </div>
-            <div class="rcc-actions">
-              <button class="btn-secondary compact-hdr-btn" data-sec-open="${esc(r.symbol)}">📊 Stock Analysis →</button>
-              <button class="btn-secondary compact-hdr-btn" data-sec-net="${esc(r.symbol)}">🕸️ Supply-Chain Network ⟲</button>
             </div>
           </div>
         `).join("")}
@@ -364,17 +388,6 @@
     }
     box.querySelectorAll("[data-sec-open]").forEach((b) => {
       b.onclick = () => { closeInfoModal(); openStock(b.dataset.secOpen); };
-    });
-    box.querySelectorAll("[data-sec-net]").forEach((b) => {
-      b.onclick = () => {
-        closeInfoModal();
-        state.networkCenter = b.dataset.secNet;
-        state.networkFilter = "all";
-        state.networkHistory = [b.dataset.secNet];
-        state.networkLastEdge = null;
-        renderNetworkView();
-        setView("network");
-      };
     });
   }
 
@@ -1050,15 +1063,17 @@
         `).join("")}
       </div>` : "";
 
+    const isFull = Boolean(state.networkFullscreen);
+
     container.innerHTML = `
-      <div class="bubble-card">
+      <div class="bubble-card ${isFull ? "is-fullscreen" : ""}" id="bubbleCardRoot">
         <div class="bubble-header">
           <div>
-            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-              <strong style="font-size:16px">${esc(center.symbol)} · ${esc(center.name)} (${fmtCap(center.market_cap)})</strong>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <strong class="touch-name-link" data-open-stock="${esc(center.symbol)}" style="font-size:16.5px" title="Touch name to open ${esc(center.symbol)} analysis">${esc(center.symbol)} · ${esc(center.name)} (${fmtCap(center.market_cap)}) ↗</strong>
               <span class="tag sector-link" data-sector="${esc(center.sector)}">${esc(fmtSector(center.sector))}</span>
             </div>
-            <div class="muted" style="margin-top:2px">Tap any bubble or edge to inspect its deal size &amp; 60d correlation · Drag to pan · Pinch or use + / − to zoom</div>
+            <div class="muted" style="margin-top:3px">Touch any company name (↗) to open its stock analysis · Touch any bubble or card to inspect or center hub</div>
           </div>
           <div class="screener-controls">
             <div class="control-group">
@@ -1073,6 +1088,8 @@
                 ${filterTabs.map(([k, lbl]) => `<option value="${k}" ${filterKey === k ? "selected" : ""}>${esc(lbl)} (${counts[k] || 0})</option>`).join("")}
               </select>
             </div>
+            <button type="button" class="btn-secondary compact-hdr-btn" id="toggleFullNetBtn" title="Toggle Full-Page Network">${isFull ? "✕ Exit Full Page" : "⛶ Full Page"}</button>
+            ${!opts.embeddedInStock ? `<button type="button" class="btn-secondary compact-hdr-btn close-tab-btn" id="closeNetViewBtn" title="Close Network tab">✕ Close</button>` : ""}
           </div>
         </div>
 
@@ -1113,25 +1130,26 @@
 
         <div class="bubble-table-wrap">
           <div class="daily-strip-hdr" style="margin-bottom:8px">
-            <strong>All ${shown.length} Mapped Value-Chain Connections for ${esc(center.symbol)}</strong>
-            <button class="btn-secondary compact-hdr-btn" data-open-stock="${esc(center.symbol)}">📊 Open ${esc(center.symbol)} Stock Page →</button>
+            <strong>All ${shown.length} Mapped Value-Chain Connections for <span class="touch-name-link" data-open-stock="${esc(center.symbol)}">${esc(center.symbol)} ↗</span></strong>
+            <span class="muted">Touch any company name (↗) for stock analysis · Touch card to focus on network</span>
           </div>
           <div class="rel-cards-grid">
             ${nodesPos.map((item, idx) => {
               const rc = REL_COLORS[item.type] || REL_COLORS.peer;
+              const pRow = bySym[item.symbol] || {};
               const spread = (item.change_1d_pct ?? 0) - (center.change_1d_pct ?? 0);
               const corrStr = item.corr_60d != null ? `r = ${item.corr_60d >= 0 ? "+" : ""}${item.corr_60d.toFixed(2)}` : "—";
               const betaStr = item.beta_60d != null ? ` · β = ${item.beta_60d.toFixed(2)}x` : "";
+              const sc = pRow.scenarios || { bullish: 0, base: 0, bearish: 0 };
               return `
                 <div class="rel-conn-card" data-card-idx="${idx}">
                   <div class="rcc-top">
                     <div>
                       <div class="rcc-sym">
-                        <strong>${esc(item.symbol)}</strong>
+                        <strong class="touch-name-link" data-open-stock="${esc(item.symbol)}">${esc(item.symbol)} · ${esc(item.name)} ↗</strong>
                         <span class="tag ${rc.badge}">${esc(rc.label)}</span>
                         <span class="tag">${fmtCap(item.market_cap)}</span>
                       </div>
-                      <div class="muted">${esc(item.name)}</div>
                     </div>
                     <div style="text-align:right">
                       <div style="font-weight:800;font-size:14.5px">$${fmtNum(item.close)}</div>
@@ -1140,14 +1158,13 @@
                   </div>
                   <div class="rcc-stats">
                     <span>Scale: <strong style="color:var(--accent-2)">${esc(item.scale || rc.label)}</strong></span>
-                    <span>60d Corr: <strong>${esc(corrStr + betaStr)}</strong></span>
-                    <span>Spread: <strong>${spread >= 0 ? "+" : ""}${spread.toFixed(1)}%</strong></span>
+                    <span>60d Co-Movement: <strong>${esc(corrStr + betaStr)}</strong></span>
+                    <span>1D Spread vs ${esc(center.symbol)}: <strong class="${clsPct(spread)}">${spread >= 0 ? "+" : ""}${spread.toFixed(1)}%</strong></span>
+                    <span>RSI-14: <strong class="${pRow.rsi14 < 30 ? "neg" : pRow.rsi14 > 70 ? "pos" : ""}">${fmtNum(pRow.rsi14, 1)}</strong></span>
+                    <span>21d vs SPY: <strong class="${clsPct(pRow.rs_spy_21d)}">${fmtPct(pRow.rs_spy_21d, 1)}</strong></span>
+                    <span>20d Bias: <strong>Bull ${sc.bullish}% / Bear ${sc.bearish}%</strong></span>
                   </div>
                   <div class="rcc-note">${esc(item.note || "")}</div>
-                  <div class="rcc-actions">
-                    <button type="button" class="btn-secondary compact-hdr-btn" data-hop-idx="${idx}">🎯 Center on ${esc(item.symbol)} ⟲</button>
-                    <button type="button" class="btn-secondary compact-hdr-btn" data-open-stock="${esc(item.symbol)}">📊 ${esc(item.symbol)} Page →</button>
-                  </div>
                 </div>`;
             }).join("")}
           </div>
@@ -1157,8 +1174,43 @@
 
     wireSectorLinks(container);
     container.querySelectorAll("[data-open-stock]").forEach((btn) => {
-      btn.onclick = (e) => { e.stopPropagation(); openStock(btn.dataset.openStock); };
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        if (state.networkFullscreen) {
+          state.networkFullscreen = false;
+          document.body.classList.remove("no-scroll");
+        }
+        openStock(btn.dataset.openStock);
+      };
     });
+
+    const toggleFullBtn = container.querySelector("#toggleFullNetBtn");
+    if (toggleFullBtn) {
+      toggleFullBtn.onclick = (e) => {
+        e.stopPropagation();
+        state.networkFullscreen = !state.networkFullscreen;
+        document.body.classList.toggle("no-scroll", state.networkFullscreen);
+        if (opts.embeddedInStock && state.networkFullscreen) {
+          state.networkCenter = center.symbol;
+          state.networkFilter = filterKey;
+          setView("network");
+          renderNetworkView();
+        } else {
+          onRecenter(center.symbol, filterKey, null);
+        }
+      };
+    }
+
+    const closeNetBtn = container.querySelector("#closeNetViewBtn");
+    if (closeNetBtn) {
+      closeNetBtn.onclick = (e) => {
+        e.stopPropagation();
+        state.networkFullscreen = false;
+        document.body.classList.remove("no-scroll");
+        const target = state.prevView && state.prevView !== "network" ? state.prevView : "overview";
+        setView(target);
+      };
+    }
 
     const hubSel = container.querySelector("#bubbleHubSelect");
     if (hubSel) {
@@ -1291,16 +1343,38 @@
     }, { passive: false });
     stage.addEventListener("touchend", () => { pinchStartDist = null; }, { passive: true });
 
-    // Selected Bubble & Relationship Inspector Drawer
+    // Selected Bubble & Relationship Inspector Drawer (touch names directly to navigate — zero duplicate buttons)
     const inspector = container.querySelector("#bubbleInspectorCard");
     const inspectItem = (idx, panToNode = false) => {
       if (idx < 0 || idx >= nodesPos.length) return;
       selectedIdx = idx;
       const item = nodesPos[idx];
+      const pRow = bySym[item.symbol] || {};
       const rc = REL_COLORS[item.type] || REL_COLORS.peer;
       const spread = (item.change_1d_pct ?? 0) - (center.change_1d_pct ?? 0);
-      const corrStr = item.corr_60d != null ? `r = ${item.corr_60d >= 0 ? "+" : ""}${item.corr_60d.toFixed(2)}` : "—";
-      const betaStr = item.beta_60d != null ? `β = ${item.beta_60d.toFixed(2)}x` : "—";
+      const corrVal = item.corr_60d;
+      const betaVal = item.beta_60d;
+      const corrStr = corrVal != null ? `r = ${corrVal >= 0 ? "+" : ""}${corrVal.toFixed(2)}` : "—";
+      const betaStr = betaVal != null ? `β = ${betaVal.toFixed(2)}x` : "—";
+      const corrDesc = corrVal == null
+        ? "Insufficient overlap"
+        : Math.abs(corrVal) >= 0.55
+          ? (corrVal > 0 ? "Strong positive co-movement" : "Strong inverse co-movement")
+          : Math.abs(corrVal) >= 0.25
+            ? (corrVal > 0 ? "Moderate positive co-movement" : "Moderate inverse co-movement")
+            : "Low daily correlation (idiosyncratic)";
+      const flowDesc = item.type === "supplier"
+        ? `Upstream Supplier → ${center.symbol} (Inputs/COGS/Fab/Power flowing into ${center.symbol})`
+        : item.type === "customer"
+          ? `${center.symbol} → Downstream Customer (CapEx/Revenue flowing from ${item.symbol} to ${center.symbol})`
+          : item.type === "partner"
+            ? `Joint Infrastructure & Ecosystem Partner with ${center.symbol}`
+            : item.type === "competitor"
+              ? `Direct Market & Architecture Competitor to ${center.symbol}`
+              : `Sector & Ecosystem Connection with ${center.symbol}`;
+      const sc = pRow.scenarios || { bullish: 0, base: 0, bearish: 0 };
+      const rsiZone = pRow.rsi14 < 30 ? "Oversold (<30)" : pRow.rsi14 > 70 ? "Overbought (>70)" : "Neutral";
+      const s1r1Txt = `${pRow.s1 ? `S1 $${fmtNum(pRow.s1.price)} (${fmtPct(pRow.s1.distance_pct, 1)})` : "—"} · ${pRow.r1 ? `R1 $${fmtNum(pRow.r1.price)} (${fmtPct(pRow.r1.distance_pct, 1)})` : "—"}`;
 
       // Highlight selected bubble, edge, quick-pill, and card
       container.querySelectorAll(".orbit-bubble").forEach((el) => {
@@ -1335,43 +1409,55 @@
           <div class="inspector-head">
             <div>
               <div class="inspector-title">
-                <strong>${esc(center.symbol)} ↔ ${esc(item.symbol)} (${esc(item.name)})</strong>
+                <strong class="touch-name-link" data-open-stock="${esc(center.symbol)}" title="Touch to open ${esc(center.symbol)}">${esc(center.symbol)} ↗</strong>
+                <span class="muted">↔</span>
+                <strong class="touch-name-link" data-open-stock="${esc(item.symbol)}" title="Touch to open ${esc(item.symbol)}">${esc(item.symbol)} · ${esc(item.name)} ↗</strong>
                 <span class="tag ${rc.badge}">${esc(rc.label)}</span>
                 <span class="tag sector-link" data-sector="${esc(item.sector)}">${esc(fmtSector(item.sector))}</span>
               </div>
-            </div>
-            <div class="inspector-actions">
-              <button type="button" class="btn-primary-accent" id="insRecenterBtn">🎯 Center Network on ${esc(item.symbol)} ⟲</button>
-              <button type="button" class="btn-secondary" id="insOpenPageBtn">📊 Open ${esc(item.symbol)} Stock Page →</button>
+              <div class="muted" style="margin-top:3px">${esc(flowDesc)} · Touch either company name above to open its stock analysis, or tap ${esc(item.symbol)}'s bubble again to make it the center hub</div>
             </div>
           </div>
 
           <div class="inspector-metrics">
             <div class="ins-metric">
-              <div class="ins-k">Deal / Revenue Scale</div>
+              <div class="ins-k">Economic &amp; Contract Scale</div>
               <div class="ins-v" style="color:var(--accent-2)">${esc(item.scale || rc.label)}</div>
+              <div class="muted" style="font-size:11px;margin-top:2px">${esc(rc.label)} relationship</div>
             </div>
             <div class="ins-metric">
-              <div class="ins-k">60-Day Empirical Corr &amp; Beta</div>
+              <div class="ins-k">60-Day Return Correlation &amp; Beta</div>
               <div class="ins-v">${esc(corrStr)} · ${esc(betaStr)}</div>
+              <div class="muted" style="font-size:11px;margin-top:2px">${esc(corrDesc)}</div>
             </div>
             <div class="ins-metric">
-              <div class="ins-k">${esc(item.symbol)} Price &amp; Mkt Cap</div>
+              <div class="ins-k">${esc(item.symbol)} Price, Cap &amp; 1D Spread</div>
               <div class="ins-v">$${fmtNum(item.close)} <span class="${clsPct(item.change_1d_pct)}">(${fmtPct(item.change_1d_pct, 1)})</span> · ${fmtCap(item.market_cap)}</div>
+              <div class="muted" style="font-size:11px;margin-top:2px">1D Spread vs ${esc(center.symbol)}: <strong class="${clsPct(spread)}">${spread >= 0 ? "+" : ""}${spread.toFixed(2)}%</strong></div>
             </div>
             <div class="ins-metric">
-              <div class="ins-k">1D Spread vs ${esc(center.symbol)}</div>
-              <div class="ins-v ${clsPct(spread)}">${spread >= 0 ? "+" : ""}${spread.toFixed(2)}%</div>
+              <div class="ins-k">${esc(item.symbol)} Live Quant Profile</div>
+              <div class="ins-v">Score ${fmtNum(pRow.notable_score, 0)}/100 · RSI ${fmtNum(pRow.rsi14, 1)} (${rsiZone})</div>
+              <div class="muted" style="font-size:11px;margin-top:2px">21d vs SPY: <strong class="${clsPct(pRow.rs_spy_21d)}">${fmtPct(pRow.rs_spy_21d, 1)}</strong> · Bull ${sc.bullish}% / Base ${sc.base}% / Bear ${sc.bearish}%</div>
             </div>
           </div>
 
           <div class="inspector-note">
-            <strong>Supply-Chain &amp; Fundamental Mechanism:</strong> ${esc(item.note || "Connected in the watchlist ecosystem.")}
+            <strong>Supply-Chain &amp; Fundamental Mechanism:</strong> ${esc(item.note || "Connected in the watchlist ecosystem.")}<br/>
+            <span class="muted" style="display:inline-block;margin-top:4px"><strong>${esc(item.symbol)} Nearest Key Levels:</strong> ${esc(s1r1Txt)} · <strong>20d Volume Ratio:</strong> ${fmtNum(pRow.vol_ratio_20d, 2)}x avg</span>
           </div>
         `;
         wireSectorLinks(inspector);
-        inspector.querySelector("#insRecenterBtn").onclick = () => recenterOnItem(item);
-        inspector.querySelector("#insOpenPageBtn").onclick = () => openStock(item.symbol);
+        inspector.querySelectorAll("[data-open-stock]").forEach((el) => {
+          el.onclick = (e) => {
+            e.stopPropagation();
+            if (state.networkFullscreen) {
+              state.networkFullscreen = false;
+              document.body.classList.remove("no-scroll");
+            }
+            openStock(el.dataset.openStock);
+          };
+        });
       }
     };
 
@@ -1397,24 +1483,36 @@
     });
 
     container.querySelectorAll("#bubbleQuickSelectBar button").forEach((b) => {
-      b.onclick = () => inspectItem(Number(b.dataset.qsel), true);
+      b.onclick = () => {
+        const idx = Number(b.dataset.qsel);
+        if (idx === selectedIdx) {
+          recenterOnItem(nodesPos[idx]);
+        } else {
+          inspectItem(idx, true);
+        }
+      };
     });
     container.querySelectorAll(".rel-conn-card").forEach((card) => {
       card.onclick = (e) => {
-        if (e.target.closest("button")) return;
-        inspectItem(Number(card.dataset.cardIdx), true);
-        inspector?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      };
-    });
-    container.querySelectorAll("[data-hop-idx]").forEach((el) => {
-      el.onclick = (e) => {
-        e.stopPropagation();
-        recenterOnItem(nodesPos[Number(el.dataset.hopIdx)]);
+        if (e.target.closest("[data-open-stock]")) return;
+        const idx = Number(card.dataset.cardIdx);
+        if (idx === selectedIdx) {
+          recenterOnItem(nodesPos[idx]);
+        } else {
+          inspectItem(idx, true);
+          inspector?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
       };
     });
 
     container.querySelector(".center-bubble")?.addEventListener("click", () => {
-      if (dragMoved <= 7) openStock(center.symbol);
+      if (dragMoved <= 7) {
+        if (state.networkFullscreen) {
+          state.networkFullscreen = false;
+          document.body.classList.remove("no-scroll");
+        }
+        openStock(center.symbol);
+      }
     });
   }
 
@@ -1633,7 +1731,7 @@
     renderFeed("regFeed", s.feeds?.regulatory);
   }
 
-  // ---- DEDICATED FORMULAS & QUANTITATIVE METHODOLOGY PAGE ----
+  // ---- DEDICATED FORMULAS & QUANTITATIVE METHODOLOGY PAGE (Clean Mobile-First Step-by-Step Layout) ----
   function renderFormulasView(focusSym = null) {
     const box = $("formulasPageContainer");
     const s = state.summary;
@@ -1651,123 +1749,241 @@
       <div class="section-header screener-head">
         <div>
           <h2>How Every Score &amp; Indicator Is Calculated</h2>
-          <p class="section-sub">Step-by-step mathematical formulations using peer-reviewed quantitative finance methods, plus a live stock calculator</p>
+          <p class="section-sub">Clean step-by-step mathematical guide · Touch <strong class="touch-name-link" data-open-stock="${esc(r.symbol)}">${esc(r.symbol)} · ${esc(r.name)} ↗</strong> to open its stock analysis</p>
         </div>
         <div class="screener-controls">
           <div class="control-group">
-            <label for="formulaTickerSelect" class="muted">Live Example Stock</label>
+            <label for="formulaTickerSelect" class="muted">Live Calculator Stock</label>
             <select id="formulaTickerSelect" class="select-control compact">
-              ${tickers.map((t) => `<option value="${esc(t.symbol)}" ${t.symbol === r.symbol ? "selected" : ""}>${esc(t.symbol)} — ${esc(t.name)} (Score ${fmtNum(t.notable_score, 1)})</option>`).join("")}
+              ${tickers.map((t) => `<option value="${esc(t.symbol)}" ${t.symbol === r.symbol ? "selected" : ""}>${esc(t.symbol)} — ${esc(t.name)} (Score ${fmtNum(t.notable_score, 0)})</option>`).join("")}
             </select>
           </div>
-          <button class="btn-secondary compact-hdr-btn" id="formulaOpenStockBtn">Open ${esc(r.symbol)} Page →</button>
         </div>
       </div>
 
-      <div class="math-guide-list">
-        <div class="math-box">
-          <div class="math-title">1. Daily Notable / Catalyst Score (0–100) — Live Calculation for ${esc(r.symbol)}: <span style="color:var(--accent-2)">${fmtNum(r.notable_score, 1)} / 100</span></div>
-          <div class="math-sub" style="margin-bottom:8px">
-            <strong>What it means in plain English:</strong> Measures how unusually active a stock is today compared to its own normal behavior. Combines price move size relative to normal daily volatility (ATR), trading volume surge, chart breakouts, extreme RSI, news velocity, and SEC filings.
+      <div class="formula-cards-stack">
+        <!-- MODEL 1: NOTABLE SCORE -->
+        <div class="formula-card">
+          <div class="formula-card-hdr">
+            <div>
+              <span class="formula-badge">Model 1 · Attention &amp; Catalyst Ranking</span>
+              <h3>Daily Notable Score (0 to 100)</h3>
+            </div>
+            <div class="formula-live-pill">
+              <span class="touch-name-link" data-open-stock="${esc(r.symbol)}">${esc(r.symbol)} ↗</span>:
+              <strong>${fmtNum(r.notable_score, 1)} / 100</strong>
+            </div>
           </div>
-          <div class="math-eq">
-            S<sub>notable</sub> = 12·z<sub>ATR</sub>·I<sub>z≥1</sub> + 8·(min(RVOL<sub>20</sub>, 3) - 1)·I<sub>RVOL&gt;1.3</sub> + S<sub>pattern</sub> + 6·I<sub>RSI∉[25,75]</sub> + (0.25·I<sub>max</sub> + 1.5·min(N<sub>24h</sub>, 5))·I<sub>I≥40</sub> + 8·I<sub>SEC</sub> + 4·I<sub>Form4</sub> + 10·I<sub>Earn≤7d</sub>
+
+          <p class="formula-plain">
+            Measures how unusually active a stock is today compared to its own normal daily behavior by adding points from <strong>5 independent factors</strong>:
+          </p>
+
+          <div class="formula-summary-eq">
+            <span>Total Score</span> = <span>Price Move</span> + <span>Volume Surge</span> + <span>Chart Breakout</span> + <span>Extreme RSI</span> + <span>News &amp; Filings</span>
           </div>
-          <div class="rel-cards-grid" style="margin-top:8px">
-            <div class="ins-metric">
-              <div class="ins-k">1) ATR Volatility Z-Score (12 · z<sub>ATR</sub>)</div>
-              <div class="ins-v">z = |${fmtPct(r.change_1d_pct, 2)}| / ${bd.atr_pct ?? "—"}% = ${bd.z_atr ?? 0}σ → <strong style="color:var(--accent-2)">+${fmtNum(tm.vol_z, 1)} pts</strong></div>
+
+          <div class="formula-steps">
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">1. Price Move vs Normal Daily Range (ATR Volatility Z-Score)</div>
+                <div class="f-step-rule">Formula: <code>Points = 12 × min(3, |1D Return %| ÷ Daily ATR %)</code> (triggers when move &ge; 1.0x ATR, max 36 pts)</div>
+                <div class="f-step-calc">Live for ${esc(r.symbol)}: <code>|${fmtPct(r.change_1d_pct, 2)}| ÷ ${bd.atr_pct ?? "—"}% = ${bd.z_atr ?? 0}x normal range</code></div>
+              </div>
+              <div class="f-step-pts">+${fmtNum(tm.vol_z, 1)} pts</div>
             </div>
-            <div class="ins-metric">
-              <div class="ins-k">2) Volume Surge (8 · (RVOL<sub>20</sub> - 1))</div>
-              <div class="ins-v">RVOL<sub>20</sub> = ${fmtNum(r.vol_ratio_20d, 2)}x 20d avg → <strong style="color:var(--accent-2)">+${fmtNum(tm.rvol, 1)} pts</strong></div>
+
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">2. Unusual Trading Volume Surge (Relative Volume RVOL-20)</div>
+                <div class="f-step-rule">Formula: <code>Points = 8 × (min(3, Today Vol ÷ 20d Avg Vol) − 1)</code> (triggers when volume &gt; 1.3x avg, max 16 pts)</div>
+                <div class="f-step-calc">Live for ${esc(r.symbol)}: <code>RVOL = ${fmtNum(r.vol_ratio_20d, 2)}x 20-day average volume</code></div>
+              </div>
+              <div class="f-step-pts">+${fmtNum(tm.rvol, 1)} pts</div>
             </div>
-            <div class="ins-metric">
-              <div class="ins-k">3) Chart Pattern &amp; Extreme RSI</div>
-              <div class="ins-v">Pattern: <strong>+${fmtNum(tm.pattern, 1)} pts</strong> · RSI (${fmtNum(r.rsi14, 1)}): <strong>+${fmtNum(tm.rsi_extreme, 1)} pts</strong></div>
+
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">3. Structural Chart Breakout / Breakdown</div>
+                <div class="f-step-rule">Formula: <code>+15 pts</code> if breakout/breakdown is volume-confirmed (&ge;1.3x vol), <code>+10 pts</code> unconfirmed, <code>+5 pts</code> failed test</div>
+                <div class="f-step-calc">Live for ${esc(r.symbol)}: <code>${(r.patterns || []).length ? r.patterns.join(", ") : "No active breakout pattern today"}</code></div>
+              </div>
+              <div class="f-step-pts">+${fmtNum(tm.pattern, 1)} pts</div>
             </div>
-            <div class="ins-metric">
-              <div class="ins-k">4) News, SEC Filings &amp; Events</div>
-              <div class="ins-v">News (${bd.fresh_news_24h ?? 0} in 24h, Max Imp ${bd.top_news_imp ?? 0}): <strong>+${fmtNum(tm.news, 1)}</strong> · SEC: <strong>+${fmtNum(tm.sec, 1)}</strong> · Event: <strong>+${fmtNum((tm.insider || 0) + (tm.earnings || 0), 1)}</strong></div>
+
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">4. Extreme Momentum Tail (Wilder's RSI-14)</div>
+                <div class="f-step-rule">Formula: <code>+6 pts</code> when 14-day RSI is deeply Oversold (<code>&le; 25</code>) or heavily Overbought (<code>&ge; 75</code>)</div>
+                <div class="f-step-calc">Live for ${esc(r.symbol)}: <code>RSI-14 = ${fmtNum(r.rsi14, 1)}</code></div>
+              </div>
+              <div class="f-step-pts">+${fmtNum(tm.rsi_extreme, 1)} pts</div>
+            </div>
+
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">5. News Velocity, SEC Filings, Insider Trades &amp; Earnings Window</div>
+                <div class="f-step-rule">Formula: <code>0.25 × Top News Score + 1.5 × (24h Articles) + 8 (SEC 8-K/10-Q/10-K) + 4 (Form 4 &ge; $1M) + 10 (Earnings &le; 7d)</code></div>
+                <div class="f-step-calc">Live for ${esc(r.symbol)}: <code>News +${fmtNum(tm.news, 1)} · SEC +${fmtNum(tm.sec, 1)} · Insider/Earnings +${fmtNum((tm.insider || 0) + (tm.earnings || 0), 1)}</code></div>
+              </div>
+              <div class="f-step-pts">+${fmtNum((tm.news || 0) + (tm.sec || 0) + (tm.insider || 0) + (tm.earnings || 0), 1)} pts</div>
             </div>
           </div>
         </div>
 
-        <div class="math-box">
-          <div class="math-title">2. Multi-Factor Technical Score (S<sub>tech</sub> ∈ [-1, +1]) &amp; 20-Day Scenario Probabilities — Live for ${esc(r.symbol)}: <span style="color:var(--accent-2)">S<sub>tech</sub> = ${fmtNum(r.tech_score, 3)}</span></div>
-          <div class="math-sub" style="margin-bottom:8px">
-            <strong>What it means in plain English:</strong> Combines four standard technical dimensions into a single directional balance from <code>-1.00</code> (strongly bearish) to <code>+1.00</code> (strongly bullish), then converts that score via a logistic sigmoid curve into 20-day <strong>Bull / Base / Bear %</strong> probabilities that sum to 100%.
+        <!-- MODEL 2: TECHNICAL SCORE & 20-DAY SCENARIOS -->
+        <div class="formula-card">
+          <div class="formula-card-hdr">
+            <div>
+              <span class="formula-badge">Model 2 · Directional Trend &amp; Probability Engine</span>
+              <h3>Technical Score (-1.00 to +1.00) &amp; 20-Day Scenarios</h3>
+            </div>
+            <div class="formula-live-pill">
+              Score: <strong>${fmtNum(r.tech_score, 2)}</strong> ·
+              <span class="pos">Bull ${sc.bullish}%</span> / <span>Base ${sc.base}%</span> / <span class="neg">Bear ${sc.bearish}%</span>
+            </div>
           </div>
-          <div class="math-eq">
-            S<sub>tech</sub> = 0.30 · V<sub>MA</sub> + 0.30 · V<sub>Mom</sub> + 0.25 · V<sub>RS</sub> + 0.15 · V<sub>Pat</sub><br/>
-            P<sub>base</sub> = clip(0.45 - 0.20·|S<sub>tech</sub>| + 0.10·I<sub>range</sub>, 0.20, 0.55), &nbsp; P<sub>bull</sub> = (1 - P<sub>base</sub>) / (1 + e<sup>-3·S<sub>tech</sub></sup>), &nbsp; P<sub>bear</sub> = 1 - P<sub>base</sub> - P<sub>bull</sub>
+
+          <p class="formula-plain">
+            Combines 4 classic technical factors (each scored from <code>-1.0</code> bearish to <code>+1.0</code> bullish) into a weighted balance, then converts that score into <strong>Bull / Base / Bear %</strong> probabilities that always add up to 100%:
+          </p>
+
+          <div class="formula-summary-eq">
+            <span>Tech Score</span> = <span>30% Trend (SMA)</span> + <span>30% Momentum (RSI/MACD)</span> + <span>25% vs Market (RS)</span> + <span>15% Pattern</span>
           </div>
-          <div class="rel-cards-grid" style="margin-top:8px">
-            <div class="ins-metric">
-              <div class="ins-k">V<sub>MA</sub> — Moving Average Trend (Weight 30%)</div>
-              <div class="ins-v">Vote = ${fmtNum(jc.ma_trend?.vote, 3)} → Weighted: <strong style="color:var(--accent-2)">${fmtNum((jc.ma_trend?.vote || 0) * 0.3, 3)}</strong></div>
-              <div class="muted" style="font-size:11px;margin-top:2px">0.4·sgn(C - SMA200) + 0.3·sgn(C - SMA50) + 0.3·sgn(SMA50 - SMA200)</div>
+
+          <div class="formula-steps">
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">1. Moving-Average Trend Alignment (30% Weight)</div>
+                <div class="f-step-rule">Checks if Price &gt; SMA-200 (40%), Price &gt; SMA-50 (30%), and SMA-50 &gt; SMA-200 (30%)</div>
+                <div class="f-step-calc">Live Vote for ${esc(r.symbol)}: <code>${fmtNum(jc.ma_trend?.vote, 2)} × 0.30</code></div>
+              </div>
+              <div class="f-step-pts">${fmtNum((jc.ma_trend?.vote || 0) * 0.30, 3)}</div>
             </div>
-            <div class="ins-metric">
-              <div class="ins-k">V<sub>Mom</sub> — RSI-14 &amp; MACD Momentum (Weight 30%)</div>
-              <div class="ins-v">Vote = ${fmtNum(jc.momentum?.vote, 3)} → Weighted: <strong style="color:var(--accent-2)">${fmtNum((jc.momentum?.vote || 0) * 0.3, 3)}</strong></div>
-              <div class="muted" style="font-size:11px;margin-top:2px">(1/3)·[sgn(MACD) + sgn(MACD_Hist) + clip((RSI_14 - 50)/25, -1, 1)]</div>
+
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">2. RSI-14 &amp; MACD Momentum (30% Weight)</div>
+                <div class="f-step-rule">Averages 3 signals: MACD line sign (+1/-1), MACD histogram direction (+1/-1), and normalized RSI-14 <code>(RSI − 50) ÷ 25</code></div>
+                <div class="f-step-calc">Live Vote for ${esc(r.symbol)}: <code>${fmtNum(jc.momentum?.vote, 2)} × 0.30</code></div>
+              </div>
+              <div class="f-step-pts">${fmtNum((jc.momentum?.vote || 0) * 0.30, 3)}</div>
             </div>
-            <div class="ins-metric">
-              <div class="ins-k">V<sub>RS</sub> — Relative Strength vs SPY &amp; Sector (Weight 25%)</div>
-              <div class="ins-v">Vote = ${fmtNum(jc.relative_strength?.vote, 3)} → Weighted: <strong style="color:var(--accent-2)">${fmtNum((jc.relative_strength?.vote || 0) * 0.25, 3)}</strong></div>
-              <div class="muted" style="font-size:11px;margin-top:2px">0.5·[tanh(α_63d,SPY / 0.15) + tanh(α_63d,Sector / 0.15)]</div>
+
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">3. Relative Strength vs S&amp;P 500 &amp; Sector ETF (25% Weight)</div>
+                <div class="f-step-rule">Compares the stock's 63-day return against SPY and its Sector ETF using a smooth hyperbolic tangent curve <code>tanh(Excess Return ÷ 15%)</code></div>
+                <div class="f-step-calc">Live Vote for ${esc(r.symbol)}: <code>${fmtNum(jc.relative_strength?.vote, 2)} × 0.25</code> (21d vs SPY: ${fmtPct(r.rs_spy_21d, 1)})</div>
+              </div>
+              <div class="f-step-pts">${fmtNum((jc.relative_strength?.vote || 0) * 0.25, 3)}</div>
             </div>
-            <div class="ins-metric">
-              <div class="ins-k">V<sub>Pat</sub> — Chart Pattern &amp; Resulting Probabilities (Weight 15%)</div>
-              <div class="ins-v">Vote = ${fmtNum(jc.patterns?.vote, 3)} → <strong class="pos">Bull ${sc.bullish}%</strong> · <strong>Base ${sc.base}%</strong> · <strong class="neg">Bear ${sc.bearish}%</strong></div>
-              <div class="muted" style="font-size:11px;margin-top:2px">Volume-confirmed breakout/breakdown (±1.0) &amp; channel direction</div>
+
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">4. Chart Pattern &amp; Logistic Probability Conversion (15% Weight)</div>
+                <div class="f-step-rule"><code>Base % = 45% − 20% × |Score|</code> · Remaining probability splits between Bull and Bear via Sigmoid curve <code>1 ÷ (1 + e^(−3 × Score))</code></div>
+                <div class="f-step-calc">Live Result for ${esc(r.symbol)}: <strong class="pos">Bull ${sc.bullish}%</strong> · <strong>Base ${sc.base}%</strong> · <strong class="neg">Bear ${sc.bearish}%</strong></div>
+              </div>
+              <div class="f-step-pts">${fmtNum((jc.patterns?.vote || 0) * 0.15, 3)}</div>
             </div>
           </div>
         </div>
 
-        <div class="math-box">
-          <div class="math-title">3. Support &amp; Resistance Confluence Strength (0–100)</div>
-          <div class="math-sub" style="margin-bottom:8px">
-            <strong>What it means in plain English:</strong> Evaluates how strong a price floor (Support S1–S3) or ceiling (Resistance R1–R3) is by combining five independent pieces of evidence: number of historical price bounces, trading volume concentrated at that price, recency of the last test, daily + weekly alignment, and round-number anchors.
+        <!-- MODEL 3: SUPPORT & RESISTANCE STRENGTH -->
+        <div class="formula-card">
+          <div class="formula-card-hdr">
+            <div>
+              <span class="formula-badge">Model 3 · Key Price Floors &amp; Ceilings</span>
+              <h3>Support (S1–S3) &amp; Resistance (R1–R3) Strength (0 to 100)</h3>
+            </div>
+            <div class="formula-live-pill">
+              S1: <strong>${r.s1 ? `$${fmtNum(r.s1.price)} (${fmtNum(r.s1.strength, 0)}/100)` : "—"}</strong> ·
+              R1: <strong>${r.r1 ? `$${fmtNum(r.r1.price)} (${fmtNum(r.r1.strength, 0)}/100)` : "—"}</strong>
+            </div>
           </div>
-          <div class="math-eq">
-            Strength(L) = 100 × [ 0.35·(1 - e<sup>-N<sub>w</sub>/3</sup>) + 0.30·VAP(L ± 0.5·ATR<sub>14</sub>) + 0.20·(0.5<sup>Δt/60</sup>) + 0.10·I<sub>MTF</sub> + 0.05·C<sub>round</sub> ]
-          </div>
-          <div class="math-sub">
-            • <strong>35% Touch Count Saturation</strong>: <code>C_touch = 1 - exp(-N_w / 3)</code> (daily swing pivot = 1.0x, weekly swing pivot = 1.5x).<br/>
-            • <strong>30% Volume-at-Price (VAP) Density</strong>: Share of 180-day volume traded within <code>±0.5 · ATR_14</code> of the level relative to the highest-volume price zone.<br/>
-            • <strong>20% Exponential Time Decay</strong>: <code>C_recency = 0.5^(Δt / 60 days)</code> so recently tested levels score higher than stale ones.<br/>
-            • <strong>10% Multi-Timeframe (MTF) Confirmation</strong>: <code>1.0</code> when both Daily and Weekly fractal swing pivots cluster at the same price.<br/>
-            • <strong>5% Psychological Round Number</strong>: <code>1.0</code> at major round prices (<code>$100, $200, $500</code>), <code>0.5</code> at half-steps (<code>$50, $150</code>).<br/>
-            • <strong>Live Nearest Levels for ${esc(r.symbol)}</strong>:
-              Nearest Support <strong>${r.s1 ? `${r.s1.label} = $${fmtNum(r.s1.price)} (${fmtPct(r.s1.distance_pct, 1)}, Strength ${fmtNum(r.s1.strength, 0)}/100)` : "—"}</strong> ·
-              Nearest Resistance <strong>${r.r1 ? `${r.r1.label} = $${fmtNum(r.r1.price)} (${fmtPct(r.r1.distance_pct, 1)}, Strength ${fmtNum(r.r1.strength, 0)}/100)` : "—"}</strong>
+
+          <p class="formula-plain">
+            Measures how reliable a support floor or resistance ceiling is by scoring 5 factors out of 100 points:
+          </p>
+
+          <div class="formula-steps">
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">1. Historical Bounce Count (35 pts max)</div>
+                <div class="f-step-rule"><code>35 × (1 − e^(−Weighted Touches ÷ 3))</code> — More historical reversals at this price zone increase reliability.</div>
+              </div>
+              <div class="f-step-pts">35%</div>
+            </div>
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">2. Volume-at-Price Concentration (30 pts max)</div>
+                <div class="f-step-rule">Share of 180-day share volume traded within <code>±0.5 × ATR</code> of this price level compared to the highest-volume zone.</div>
+              </div>
+              <div class="f-step-pts">30%</div>
+            </div>
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">3. Recency of Last Test (20 pts max)</div>
+                <div class="f-step-rule"><code>20 × 0.5^(Days Since Last Touch ÷ 60)</code> — Levels tested recently carry more weight than old levels.</div>
+              </div>
+              <div class="f-step-pts">20%</div>
+            </div>
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">4. Daily + Weekly Alignment &amp; Round Numbers (15 pts max)</div>
+                <div class="f-step-rule"><code>+10 pts</code> if both Daily and Weekly swing highs/lows align; <code>+5 pts</code> at major psychological round prices ($100, $200, $500).</div>
+              </div>
+              <div class="f-step-pts">15%</div>
+            </div>
           </div>
         </div>
 
-        <div class="math-box">
-          <div class="math-title">4. Widespread Accepted Indicator &amp; Network Formulations</div>
-          <div class="rel-cards-grid" style="margin-top:8px">
-            <div class="ins-metric">
-              <div class="ins-k">Wilder's RSI-14 (J. Welles Wilder, 1978)</div>
-              <div class="ins-v"><code>RSI = 100 - 100 / (1 + EMA<sub>1/14</sub>(Gain) / EMA<sub>1/14</sub>(Loss))</code></div>
-              <div class="muted" style="font-size:11.5px;margin-top:3px">${esc(r.symbol)} Live RSI-14: <strong>${fmtNum(r.rsi14, 1)}</strong> (&lt;30 Oversold, &gt;70 Overbought)</div>
+        <!-- MODEL 4: STANDARD INDICATORS & NETWORK METRICS -->
+        <div class="formula-card">
+          <div class="formula-card-hdr">
+            <div>
+              <span class="formula-badge">Model 4 · Core Indicators &amp; Supply-Chain Metrics</span>
+              <h3>Standard Quantitative Indicators</h3>
             </div>
-            <div class="ins-metric">
-              <div class="ins-k">Wilder's ATR-14 (Average True Range)</div>
-              <div class="ins-v"><code>TR = max(H-L, |H-C<sub>t-1</sub>|, |L-C<sub>t-1</sub>|); ATR = EMA<sub>1/14</sub>(TR)</code></div>
-              <div class="muted" style="font-size:11.5px;margin-top:3px">${esc(r.symbol)} Live ATR % of Price: <strong>${bd.atr_pct ?? "—"}%</strong> daily range</div>
+          </div>
+
+          <div class="formula-steps">
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">Wilder's RSI-14 (14-Day Relative Strength Index)</div>
+                <div class="f-step-rule"><code>RSI = 100 − [ 100 ÷ (1 + Avg 14d Up Move ÷ Avg 14d Down Move) ]</code></div>
+                <div class="f-step-calc">Below 30 = Oversold · Above 70 = Overbought · Live for ${esc(r.symbol)}: <strong>${fmtNum(r.rsi14, 1)}</strong></div>
+              </div>
+              <div class="f-step-pts">${fmtNum(r.rsi14, 1)}</div>
             </div>
-            <div class="ins-metric">
-              <div class="ins-k">Institutional Up/Down Volume Ratio (20d)</div>
-              <div class="ins-v"><code>U/D<sub>20</sub> = (∑ Volume on Green Days) / (∑ Volume on Red Days)</code></div>
-              <div class="muted" style="font-size:11.5px;margin-top:3px">${esc(r.symbol)} Live 20d Up/Down Vol: <strong>${fmtNum(r.updown_vol_20d, 2)}</strong> (&gt;1.2 Accumulation, &lt;0.8 Distribution)</div>
+
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">Wilder's ATR-14 (Average Daily Volatility Range)</div>
+                <div class="f-step-rule"><code>True Range = max(High − Low, |High − Prev Close|, |Low − Prev Close|)</code> averaged over 14 days</div>
+                <div class="f-step-calc">Shows how many % the stock typically moves in a single day · Live for ${esc(r.symbol)}: <strong>${bd.atr_pct ?? "—"}%</strong></div>
+              </div>
+              <div class="f-step-pts">${bd.atr_pct ?? "—"}%</div>
             </div>
-            <div class="ins-metric">
-              <div class="ins-k">Supply-Chain 60-Day Return Correlation (r) &amp; Beta (β)</div>
-              <div class="ins-v"><code>r = Cov<sub>60d</sub>(r<sub>A</sub>, r<sub>B</sub>) / (σ<sub>A</sub>·σ<sub>B</sub>); β<sub>B|A</sub> = Cov(r<sub>B</sub>, r<sub>A</sub>) / Var(r<sub>A</sub>)</code></div>
-              <div class="muted" style="font-size:11.5px;margin-top:3px">Measures how strongly each supplier/customer co-moves with the center stock over the last 60 trading days.</div>
+
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">Institutional Up/Down Volume Ratio (20-Day Accumulation vs Distribution)</div>
+                <div class="f-step-rule"><code>Up/Down Ratio = (Total Volume on Green Days) ÷ (Total Volume on Red Days)</code> over the last 20 trading days</div>
+                <div class="f-step-calc">Above 1.20 = Institutional Accumulation · Below 0.80 = Distribution · Live for ${esc(r.symbol)}: <strong>${fmtNum(r.updown_vol_20d, 2)}</strong></div>
+              </div>
+              <div class="f-step-pts">${fmtNum(r.updown_vol_20d, 2)}</div>
+            </div>
+
+            <div class="f-step">
+              <div class="f-step-main">
+                <div class="f-step-title">Supply-Chain 60-Day Return Correlation (r) &amp; Sensitivity Beta (β)</div>
+                <div class="f-step-rule"><code>Correlation r = Cov(Stock A, Stock B) ÷ (σ_A × σ_B)</code> from -1.00 to +1.00 · <code>Beta β = Cov(B, A) ÷ Var(A)</code></div>
+                <div class="f-step-calc">Shows how closely a supplier or customer moves with the hub stock day-to-day over the past 60 trading days.</div>
+              </div>
+              <div class="f-step-pts">60d Window</div>
             </div>
           </div>
         </div>
@@ -1776,8 +1992,9 @@
 
     const sel = box.querySelector("#formulaTickerSelect");
     if (sel) sel.onchange = () => renderFormulasView(sel.value);
-    const btn = box.querySelector("#formulaOpenStockBtn");
-    if (btn) btn.onclick = () => openStock(r.symbol);
+    box.querySelectorAll("[data-open-stock]").forEach((el) => {
+      el.onclick = () => openStock(el.dataset.openStock);
+    });
   }
 
   // ---- STOCK DEEP DIVE ----
@@ -1996,7 +2213,6 @@
               <button class="chip ${ov.sma50 ? "active" : ""}" data-ov="sma50">SMA50</button>
               <button class="chip ${ov.sma200 ? "active" : ""}" data-ov="sma200">SMA200</button>
               <button class="chip ${ov.sr ? "active" : ""}" data-ov="sr">S/R</button>
-              <button class="chip ${ov.weekends ? "active" : ""}" data-ov="weekends" title="Toggle Saturday/Sunday calendar slots (US markets are closed on weekends)">Weekends</button>
             </div>
           </div>
           <div class="tv-legend" id="tvLegend"></div>
@@ -2146,7 +2362,7 @@
           }
           mountStockBubbles();
         },
-        { history: state.stockBubbleHistory, lastEdge: state.stockBubbleLastEdge }
+        { history: state.stockBubbleHistory, lastEdge: state.stockBubbleLastEdge, embeddedInStock: true }
       );
     };
     mountStockBubbles();
@@ -2202,31 +2418,10 @@
     };
 
     const ov = state.chartOverlays;
-    // Build timeline points (optionally inserting Saturday/Sunday closed-market whitespace slots when Weekends toggle is ON)
-    const timelinePoints = [];
-    for (let i = 0; i < data.length; i++) {
-      if (ov.weekends && i > 0) {
-        const [y1, m1, d1] = data[i - 1].t.split("-").map(Number);
-        let curMs = Date.UTC(y1, m1 - 1, d1) + 86400000;
-        const [y2, m2, d2] = data[i].t.split("-").map(Number);
-        const endMs = Date.UTC(y2, m2 - 1, d2);
-        while (curMs < endMs) {
-          const dt = new Date(curMs);
-          const iso = `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}-${String(dt.getUTCDate()).padStart(2, "0")}`;
-          const wd = dt.getUTCDay();
-          timelinePoints.push({
-            t: iso,
-            isClosed: true,
-            wd,
-            wdLabel: WEEKDAYS[wd],
-            reason: wd === 0 || wd === 6 ? "Weekend — US Markets Closed (NYSE / NASDAQ)" : "US Market Holiday — Exchange Closed",
-          });
-          curMs += 86400000;
-        }
-      }
-      const wd = dayOfWeek(data[i].t);
-      timelinePoints.push({ ...data[i], isClosed: false, wd, wdLabel: WEEKDAYS[wd] });
-    }
+    const timelinePoints = data.map((d) => {
+      const wd = dayOfWeek(d.t);
+      return { ...d, isClosed: false, wd, wdLabel: WEEKDAYS[wd] };
+    });
 
     const LC = window.LightweightCharts;
     const chart = LC.createChart(box, {
@@ -2446,7 +2641,7 @@
       dailyStrip.innerHTML = `
         <div class="daily-strip-hdr">
           <strong>1M Day-by-Day Series (${data.length} Trading Days · NYSE/NASDAQ Closed Sat–Sun)</strong>
-          <span class="muted">Tap any day for exact OHLCV · toggle "Weekends" above to expand Sat–Sun slots on chart</span>
+          <span class="muted">Tap any day for exact OHLCV</span>
         </div>
         <div class="daily-strip-grid">
           ${data.map((d, i) => {
@@ -2500,7 +2695,7 @@
   // ---- EVENTS ----
   function wireEvents() {
     $("brandHome").onclick = () => setView("overview");
-    $("backToOverview").onclick = () => setView(state.prevView || "overview");
+    $("backToOverview").onclick = () => closeStockTab();
     $("viewAllScreenerBtn").onclick = () => setView("screener");
 
     document.querySelectorAll("#mainNav .nav-tab").forEach((btn) => {
@@ -2601,8 +2796,14 @@
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
   }
 
-  // ---- HOVER & TOUCH TOOLTIPS FOR SCORES & TECHNICAL TERMS ----
+  // ---- HOVER & TOUCH TOOLTIPS FOR SCORES & TECHNICAL TERMS (Viewport-Safe on iOS, Android & Desktop) ----
   function initTooltips() {
+    let backdropEl = document.querySelector(".tooltip-backdrop");
+    if (!backdropEl) {
+      backdropEl = document.createElement("div");
+      backdropEl.className = "tooltip-backdrop hidden";
+      document.body.appendChild(backdropEl);
+    }
     let tipEl = document.querySelector(".floating-tooltip");
     if (!tipEl) {
       tipEl = document.createElement("div");
@@ -2610,43 +2811,91 @@
       document.body.appendChild(tipEl);
     }
 
-    const showTip = (target, clientX, clientY) => {
+    const isMobileScreen = () => window.innerWidth <= 680 || window.matchMedia("(pointer: coarse)").matches;
+
+    const hideTip = () => {
+      tipEl.classList.add("hidden");
+      tipEl.classList.remove("mobile-sheet");
+      backdropEl.classList.add("hidden");
+    };
+
+    backdropEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      hideTip();
+    });
+
+    const showTip = (target, clientX, clientY, fromClick = false) => {
       const raw = target.getAttribute("data-tip");
       if (!raw) return;
       const [title, body] = raw.includes("|") ? raw.split("|", 2) : ["Definition", raw];
-      tipEl.innerHTML = `<strong>${esc(title)}</strong><span>${esc(body)}</span>`;
+      tipEl.innerHTML = `<button type="button" class="tip-close-btn" aria-label="Close">✕</button><strong>${esc(title)}</strong><span>${esc(body)}</span>`;
+      const closeBtn = tipEl.querySelector(".tip-close-btn");
+      if (closeBtn) {
+        closeBtn.onclick = (e) => { e.stopPropagation(); hideTip(); };
+      }
+
+      if (isMobileScreen() && fromClick) {
+        tipEl.style.left = "";
+        tipEl.style.top = "";
+        tipEl.classList.add("mobile-sheet");
+        tipEl.classList.remove("hidden");
+        backdropEl.classList.remove("hidden");
+        return;
+      }
+
+      tipEl.classList.remove("mobile-sheet");
+      backdropEl.classList.add("hidden");
+      tipEl.style.left = "12px";
+      tipEl.style.top = "12px";
       tipEl.classList.remove("hidden");
+
       const rect = tipEl.getBoundingClientRect();
-      let left = Math.min(window.innerWidth - rect.width - 12, Math.max(12, clientX - rect.width / 2));
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const left = Math.max(12, Math.min(vw - rect.width - 12, clientX - rect.width / 2));
       let top = clientY - rect.height - 14;
       if (top < 12) top = clientY + 18;
+      if (top + rect.height > vh - 12) top = Math.max(12, vh - rect.height - 12);
       tipEl.style.left = `${left}px`;
       tipEl.style.top = `${top}px`;
     };
 
-    const hideTip = () => tipEl.classList.add("hidden");
-
     document.addEventListener("mouseover", (e) => {
+      if (isMobileScreen()) return;
       const el = e.target.closest("[data-tip]");
       if (el) {
         const r = el.getBoundingClientRect();
-        showTip(el, r.left + r.width / 2, r.top);
+        showTip(el, r.left + r.width / 2, r.top, false);
       }
     });
     document.addEventListener("mouseout", (e) => {
+      if (isMobileScreen()) return;
       if (e.target.closest("[data-tip]")) hideTip();
     });
     document.addEventListener("click", (e) => {
+      if (e.target.closest(".floating-tooltip")) return;
       const el = e.target.closest("[data-tip]");
-      if (el && (e.target.classList.contains("tip-badge") || !el.closest("tr, .stock-card, .notable-card"))) {
+      const isDirectTipTrigger =
+        el &&
+        (e.target.classList.contains("tip-badge") ||
+          el.classList.contains("sc-m-k") ||
+          el.classList.contains("kv") ||
+          el.classList.contains("kpi-label") ||
+          el.classList.contains("score-badge") ||
+          !el.closest("tr, .stock-card, .notable-card"));
+      if (isDirectTipTrigger) {
+        e.preventDefault();
         e.stopPropagation();
         const r = el.getBoundingClientRect();
-        showTip(el, r.left + r.width / 2, r.top);
+        showTip(el, r.left + r.width / 2, r.top, true);
       } else {
         hideTip();
       }
-    });
-    window.addEventListener("scroll", hideTip, { passive: true });
+    }, true);
+    window.addEventListener("scroll", () => {
+      if (!tipEl.classList.contains("mobile-sheet")) hideTip();
+    }, { passive: true });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideTip(); });
   }
 
   // ---- BOOT ----
