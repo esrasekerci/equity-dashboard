@@ -166,37 +166,43 @@
       <div class="section-header">
         <div>
           <h2>Smart Money &amp; Institutional Flow</h2>
+          <p class="section-sub" id="smartMoneyRegimeSub">Cross-sectional institutional volume, Form 4 insider flow &amp; short-interest positioning (n = 39)</p>
         </div>
       </div>
 
       <div id="smartMoneyCharts" class="sm-charts-grid"></div>
 
-      <div class="section-header" style="margin-top:16px">
+      <div class="section-header" style="margin-top:18px">
         <div>
-          <h2>Unusual Volume &amp; Institutional Flow (&ge; 1.35x 20d avg)</h2>
+          <h2>Unusual Volume Surges (&ge; 1.35x 20d Avg) <span class="muted" id="vfCountBadge"></span></h2>
+          <p class="section-sub">Sessions with abnormal relative volume (RVOL &ge; 1.35x). Green = Accumulation (close up); Red = Distribution (close down).</p>
         </div>
       </div>
       <div id="volumeFlowGrid" class="notable-grid"></div>
 
       <div class="two-col" style="margin-top:16px">
         <div class="panel">
-          <h3>SEC Form 4 Insider Buys (Open Market)</h3>
+          <h3>SEC Form 4 Open-Market Insider Buys (90d) <span class="muted" id="insBuyMeta"></span></h3>
+          <p class="section-sub" style="margin-bottom:10px">Discretionary open-market purchases (Code P) by executives &amp; directors — empirically higher conviction than scheduled sells.</p>
           <div id="smInsiderBuys" class="feed-list"></div>
         </div>
         <div class="panel">
-          <h3>Largest SEC Form 4 Insider Sells</h3>
+          <h3>Largest SEC Form 4 Insider Sells (90d) <span class="muted" id="insSellMeta"></span></h3>
+          <p class="section-sub" style="margin-bottom:10px">Open-market sales (Code S) ranked by USD notional value. Often includes pre-scheduled Rule 10b5-1 diversification plans.</p>
           <div id="smInsiderSells" class="feed-list"></div>
         </div>
       </div>
 
       <div class="two-col">
         <div class="panel">
-          <h3>SEC 13D / 13G Whale Stake Filings (&gt;5% Owners)</h3>
-          <div id="smWhaleFilings" class="feed-list"></div>
-        </div>
-        <div class="panel">
-          <h3>Highest Short Interest (% of Float)</h3>
+          <h3>Highest Short Interest (% of Float) <span class="muted" id="siMeta"></span></h3>
+          <p class="section-sub" style="margin-bottom:10px">Shorted shares divided by tradable float. &ge;10% indicates elevated bearish crowding; &ge;20% signals high short-squeeze convexity.</p>
           <div id="smShortInterest" class="level-list"></div>
+        </div>
+        <div class="panel" id="smWhalePanel">
+          <h3>SEC 13D / 13G Whale Stakes (&gt;5% Owners, 90d)</h3>
+          <p class="section-sub" style="margin-bottom:10px">Mandatory SEC disclosures when an activist (13D) or passive institution (13G) crosses 5% ownership.</p>
+          <div id="smWhaleFilings" class="feed-list"></div>
         </div>
       </div>
     </section>

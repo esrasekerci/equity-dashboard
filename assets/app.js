@@ -1521,56 +1521,118 @@
   // ---- SMART MONEY / WHALE FLOW ----
   function renderSmartMoney() {
     const sm = (state.summary && state.summary.smart_money) || {};
+    const allTickers = state.summary?.tickers || [];
     const vf = sm.volume_flow || [];
     const si = sm.short_interest || [];
     const insBuys = sm.insider_buys || [];
     const insSells = sm.insider_sells || [];
 
-    // 1. Binance-Style Smart Money Visual Graphs (Flow Donut, Institutional Volume Bar Chart, Short Interest Bar Chart)
+    const calcMean = (arr) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null);
+    const calcMedian = (arr) => {
+      if (!arr.length) return null;
+      const s = [...arr].sort((a, b) => a - b);
+      const mid = Math.floor(s.length / 2);
+      return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+    };
+
     const chartsEl = $("smartMoneyCharts");
     if (chartsEl) {
+      // 1. 1-Day Institutional Dollar Flow Split
       let accUsd = 0;
       let distUsd = 0;
+      let accCnt = 0;
+      let distCnt = 0;
       for (const x of vf) {
         const dv = Number(x.dollar_volume_usd || 0);
-        if (x.flow === "Accumulation") accUsd += dv;
-        else distUsd += dv;
+        if (x.flow === "Accumulation") { accUsd += dv; accCnt++; }
+        else { distUsd += dv; distCnt++; }
       }
       const totFlow = accUsd + distUsd;
-      const accPct = totFlow > 0 ? Math.round((accUsd / totFlow) * 100) : 50;
-      const distPct = 100 - accPct;
+      const netFlow = accUsd - distUsd;
+      const accPct = totFlow > 0 ? Math.round((accUsd / totFlow) * 100) : 0;
+      const distPct = totFlow > 0 ? 100 - accPct : 0;
+      const topFlowItem = [...vf].sort((a, b) => (b.dollar_volume_usd || 0) - (a.dollar_volume_usd || 0))[0];
+      const topSharePct = topFlowItem && totFlow > 0 ? ((topFlowItem.dollar_volume_usd || 0) / totFlow) * 100 : 0;
+
       const r = 38;
       const circ = 2 * Math.PI * r;
       const accDash = (accPct / 100) * circ;
-      const distDash = circ - accDash;
+      const distDash = (distPct / 100) * circ;
+      const centerPctTxt = accPct >= distPct ? `${accPct}%` : `${distPct}%`;
+      const centerLblTxt = accPct >= distPct ? "INFLOW" : "OUTFLOW";
+      const centerCol = accPct >= distPct ? "var(--green)" : "var(--red)";
 
       const insBuyUsd = insBuys.reduce((s, x) => s + Number(x.value_usd || 0), 0);
       const insSellUsd = insSells.reduce((s, x) => s + Number(x.value_usd || 0), 0);
 
-      const maxVolR = Math.max(2.0, ...vf.map((x) => Number(x.vol_ratio_20d || 0)));
+      const flowRegimeNote = totFlow === 0
+        ? "No abnormal institutional volume surges (≥1.35x 20d avg) recorded in this session."
+        : `${accPct >= 60 ? "Institutional Accumulation regime" : distPct >= 60 ? "Heavy Institutional Distribution regime" : "Mixed Two-Way Institutional Flow"}: ${distCnt} of ${vf.length} high-volume stocks closed lower (${distPct}% of surge dollar flow).${topFlowItem ? ` ${topFlowItem.symbol} alone accounts for ${topSharePct.toFixed(1)}% (${fmtCap(topFlowItem.dollar_volume_usd)}) of total unusual flow.` : ""}`;
+
+      // 2. 20-Day Cross-Sectional Up/Down Volume Regime (All 39 Watchlist Stocks)
+      const udVals = allTickers.map((t) => t.updown_vol_20d).filter((v) => v != null && Number.isFinite(Number(v))).map(Number);
+      const udAcc = udVals.filter((v) => v >= 1.2).length;
+      const udDist = udVals.filter((v) => v <= 0.8).length;
+      const udNeu = Math.max(0, udVals.length - udAcc - udDist);
+      const udTot = Math.max(1, udVals.length);
+      const udAccPct = Math.round((udAcc / udTot) * 100);
+      const udNeuPct = Math.round((udNeu / udTot) * 100);
+      const udDistPct = Math.max(0, 100 - udAccPct - udNeuPct);
+      const udMed = calcMedian(udVals);
+      const udMean = calcMean(udVals);
+      const udTakeaway = udMed == null
+        ? "Insufficient 20-day volume history."
+        : udMed >= 1.15
+          ? `Broad 20-day accumulation across the watchlist (median U/D = ${udMed.toFixed(2)} ≥ 1.15; ${udAcc}/${udVals.length} names in active accumulation).`
+          : udMed <= 0.85
+            ? `Broad 20-day institutional distribution (median U/D = ${udMed.toFixed(2)} ≤ 0.85; ${udDist}/${udVals.length} stocks seeing heavier red-day than green-day volume).`
+            : `Balanced 20-day institutional tape (median U/D = ${udMed.toFixed(2)}, mean = ${udMean.toFixed(2)}); positioning is selective rather than one-sided.`;
+
+      // 3. Institutional Volume Surge Ranking (with 1.35x threshold line & median stats)
+      const vfRatios = vf.map((x) => Number(x.vol_ratio_20d || 0)).filter((v) => v > 0);
+      const vfRets = vf.map((x) => Number(x.change_1d_pct || 0));
+      const vfMedR = calcMedian(vfRatios);
+      const vfMeanRet = calcMean(vfRets);
+      const maxVolR = Math.max(2.2, ...vfRatios);
+      const ref135Pct = (1.35 / maxVolR) * 100;
       const volBarsHtml = vf.length
-        ? vf.slice(0, 7).map((x) => {
-            const pct = Math.min(100, (Number(x.vol_ratio_20d || 0) / maxVolR) * 100);
+        ? vf.slice(0, 8).map((x) => {
+            const val = Number(x.vol_ratio_20d || 0);
+            const pct = Math.min(100, (val / maxVolR) * 100);
             const isUp = x.flow === "Accumulation";
             return `
               <div class="sm-bar-row" data-sym="${esc(x.symbol)}">
                 <span class="sm-bar-sym">${esc(x.symbol)}</span>
-                <div class="sm-bar-track"><div class="sm-bar-fill ${isUp ? "up" : "dn"}" style="width:${pct.toFixed(1)}%"></div></div>
-                <span class="sm-bar-val ${isUp ? "pos" : "neg"}">${fmtNum(x.vol_ratio_20d, 2)}x (${fmtPct(x.change_1d_pct, 1)})</span>
+                <div class="sm-bar-track">
+                  <div class="sm-bar-ref" style="left:${ref135Pct.toFixed(1)}%" title="1.35x surge threshold"></div>
+                  <div class="sm-bar-fill ${isUp ? "up" : "dn"}" style="width:${pct.toFixed(1)}%"></div>
+                </div>
+                <span class="sm-bar-val ${isUp ? "pos" : "neg"}">${fmtNum(val, 2)}x (${fmtPct(x.change_1d_pct, 1)})</span>
               </div>`;
           }).join("")
-        : `<div class="muted">No unusual volume surges (&ge; 1.35x) today.</div>`;
+        : `<div class="muted">No unusual volume surges (&ge; 1.35x) on this session.</div>`;
 
-      const maxSi = Math.max(12, ...si.map((x) => Number(x.short_pct_float || 0)));
+      // 4. Short Interest Distribution (% of Float, with 10% & 20% threshold lines)
+      const siVals = si.map((x) => Number(x.short_pct_float || 0)).filter((v) => v > 0);
+      const siMed = calcMedian(siVals);
+      const siGt10 = siVals.filter((v) => v >= 10).length;
+      const siGt20 = siVals.filter((v) => v >= 20).length;
+      const maxSi = Math.max(25, ...siVals);
+      const ref10Pct = (10 / maxSi) * 100;
+      const ref20Pct = (20 / maxSi) * 100;
       const siBarsHtml = si.length
-        ? si.slice(0, 7).map((x) => {
+        ? si.slice(0, 8).map((x) => {
             const val = Number(x.short_pct_float || 0);
             const pct = Math.min(100, (val / maxSi) * 100);
             return `
               <div class="sm-bar-row" data-sym="${esc(x.symbol)}">
                 <span class="sm-bar-sym">${esc(x.symbol)}</span>
-                <div class="sm-bar-track"><div class="sm-bar-fill ${val >= 10 ? "dn" : "warn"}" style="width:${pct.toFixed(1)}%"></div></div>
-                <span class="sm-bar-val ${val >= 10 ? "neg" : "warn"}">${fmtNum(val, 1)}% float</span>
+                <div class="sm-bar-track">
+                  <div class="sm-bar-ref" style="left:${ref10Pct.toFixed(1)}%" title="10% elevated short interest"></div>
+                  <div class="sm-bar-ref" style="left:${ref20Pct.toFixed(1)}%" title="20% extreme short crowding"></div>
+                  <div class="sm-bar-fill ${val >= 10 ? "dn" : "warn"}" style="width:${pct.toFixed(1)}%"></div>
+                </div>
+                <span class="sm-bar-val ${val >= 10 ? "neg" : "warn"}">${fmtNum(val, 1)}% (${fmtPct(x.change_1d_pct, 1)})</span>
               </div>`;
           }).join("")
         : `<div class="muted">No short interest data available.</div>`;
@@ -1578,58 +1640,94 @@
       chartsEl.innerHTML = `
         <div class="sm-chart-card">
           <div class="sm-chart-hdr">
-            <span class="sm-chart-title">Institutional Dollar Flow Split</span>
-            <span class="muted">${vf.length} active</span>
+            <span class="sm-chart-title">1. Session Institutional Dollar Flow</span>
+            <span class="muted">n = ${vf.length} / ${allTickers.length} stocks (&ge;1.35x vol)</span>
           </div>
           <div class="sm-donut-wrap">
             <svg class="sm-donut-svg" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--bg-card-2)" stroke-width="11" />
-              <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--red)" stroke-width="11"
+              ${distPct > 0 ? `<circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--red)" stroke-width="11"
                 stroke-dasharray="${distDash.toFixed(1)} ${circ.toFixed(1)}"
-                stroke-dashoffset="${(-accDash).toFixed(1)}" transform="rotate(-90 50 50)" />
-              <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--green)" stroke-width="11"
+                stroke-dashoffset="${(-accDash).toFixed(1)}" transform="rotate(-90 50 50)" />` : ""}
+              ${accPct > 0 ? `<circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--green)" stroke-width="11"
                 stroke-dasharray="${accDash.toFixed(1)} ${circ.toFixed(1)}"
-                transform="rotate(-90 50 50)" />
-              <text x="50" y="48" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="800">${accPct}%</text>
-              <text x="50" y="61" text-anchor="middle" fill="var(--muted)" font-size="8.5" font-weight="600">INFLOW</text>
+                transform="rotate(-90 50 50)" />` : ""}
+              <text x="50" y="48" text-anchor="middle" fill="${centerCol}" font-size="14" font-weight="800">${centerPctTxt}</text>
+              <text x="50" y="61" text-anchor="middle" fill="var(--muted)" font-size="8" font-weight="700">${centerLblTxt}</text>
             </svg>
             <div class="sm-donut-legend">
-              <div class="sm-dl-row">
-                <span class="pos">● Accumulation</span>
-                <strong>${fmtCap(accUsd)} (${accPct}%)</strong>
-              </div>
-              <div class="sm-dl-row">
-                <span class="neg">● Distribution</span>
-                <strong>${fmtCap(distUsd)} (${distPct}%)</strong>
-              </div>
-              <div class="sm-dl-row" style="padding-top:6px;border-top:1px solid var(--border)">
-                <span class="muted">Form 4 Buys / Sells</span>
+              <div class="sm-dl-row"><span class="pos">● Accumulation (${accCnt})</span><strong>${fmtCap(accUsd)} (${accPct}%)</strong></div>
+              <div class="sm-dl-row"><span class="neg">● Distribution (${distCnt})</span><strong>${fmtCap(distUsd)} (${distPct}%)</strong></div>
+              <div class="sm-dl-row"><span class="muted">Net Imbalance</span><strong class="${clsPct(netFlow)}">${netFlow >= 0 ? "+" : "-"}${fmtCap(Math.abs(netFlow))}</strong></div>
+              <div class="sm-dl-row" style="padding-top:5px;border-top:1px solid var(--border)">
+                <span class="muted">90d Form 4 Buys / Sells</span>
                 <strong><span class="pos">${fmtCap(insBuyUsd)}</span> / <span class="neg">${fmtCap(insSellUsd)}</span></strong>
               </div>
             </div>
           </div>
+          <div class="sm-note-box">${esc(flowRegimeNote)}</div>
         </div>
 
         <div class="sm-chart-card">
           <div class="sm-chart-hdr">
-            <span class="sm-chart-title">Institutional Volume Surge (vs 20d Avg)</span>
-            <span class="muted">Green = Buy · Red = Sell</span>
+            <span class="sm-chart-title">2. 20-Day Accumulation vs Distribution Regime</span>
+            <span class="muted">All n = ${udVals.length} stocks (O'Neil U/D Ratio)</span>
+          </div>
+          <div class="sm-stat-strip">
+            <div class="sm-stat-cell"><span class="sm-stat-k">Median U/D</span><span class="sm-stat-v ${udMed >= 1.2 ? "pos" : udMed <= 0.8 ? "neg" : ""}">${fmtNum(udMed, 2)}</span></div>
+            <div class="sm-stat-cell"><span class="sm-stat-k">Mean U/D</span><span class="sm-stat-v">${fmtNum(udMean, 2)}</span></div>
+            <div class="sm-stat-cell"><span class="sm-stat-k">Acc / Dist Split</span><span class="sm-stat-v"><span class="pos">${udAcc}</span> / <span class="neg">${udDist}</span></span></div>
+          </div>
+          <div class="sm-regime-bar" title="Accumulation ≥1.2 · Neutral 0.8–1.2 · Distribution ≤0.8">
+            <div style="width:${udAccPct}%;background:var(--green)"></div>
+            <div style="width:${udNeuPct}%;background:var(--border-strong)"></div>
+            <div style="width:${udDistPct}%;background:var(--red)"></div>
+          </div>
+          <div class="sm-dl-row" style="font-size:11.5px">
+            <span class="pos">● Acc (&ge;1.2): ${udAcc} (${udAccPct}%)</span>
+            <span class="muted">● Neutral: ${udNeu} (${udNeuPct}%)</span>
+            <span class="neg">● Dist (&le;0.8): ${udDist} (${udDistPct}%)</span>
+          </div>
+          <div class="sm-note-box">${esc(udTakeaway)}</div>
+        </div>
+
+        <div class="sm-chart-card">
+          <div class="sm-chart-hdr">
+            <span class="sm-chart-title">3. Abnormal Volume Surges (RVOL vs 20d Avg)</span>
+            <span class="muted">Top ${Math.min(8, vf.length)} of ${vf.length}</span>
+          </div>
+          <div class="sm-stat-strip">
+            <div class="sm-stat-cell"><span class="sm-stat-k">Median RVOL</span><span class="sm-stat-v">${fmtNum(vfMedR, 2)}x</span></div>
+            <div class="sm-stat-cell"><span class="sm-stat-k">Mean 1D Ret</span><span class="sm-stat-v ${clsPct(vfMeanRet)}">${fmtPct(vfMeanRet, 1)}</span></div>
+            <div class="sm-stat-cell"><span class="sm-stat-k">Total Flow</span><span class="sm-stat-v">${fmtCap(totFlow)}</span></div>
           </div>
           <div class="sm-bar-list">${volBarsHtml}</div>
+          <div class="sm-axis-labels"><span>0x</span><span>1.35x threshold</span><span>${fmtNum(maxVolR, 1)}x</span></div>
         </div>
 
         <div class="sm-chart-card">
           <div class="sm-chart-hdr">
-            <span class="sm-chart-title">Highest Short Positions (% of Float)</span>
-            <span class="muted">&ge;10% Squeeze Zone</span>
+            <span class="sm-chart-title">4. Short Interest Crowding (% of Float)</span>
+            <span class="muted">Top ${Math.min(8, si.length)} of ${si.length} tracked</span>
+          </div>
+          <div class="sm-stat-strip">
+            <div class="sm-stat-cell"><span class="sm-stat-k">Median Short</span><span class="sm-stat-v warn">${fmtNum(siMed, 1)}%</span></div>
+            <div class="sm-stat-cell"><span class="sm-stat-k">&ge;10% Float</span><span class="sm-stat-v neg">${siGt10} stocks</span></div>
+            <div class="sm-stat-cell"><span class="sm-stat-k">&ge;20% Extreme</span><span class="sm-stat-v neg">${siGt20} stocks</span></div>
           </div>
           <div class="sm-bar-list">${siBarsHtml}</div>
+          <div class="sm-axis-labels"><span>0%</span><span>10%</span><span>20%</span><span>${Math.round(maxSi)}%</span></div>
         </div>
       `;
 
       chartsEl.querySelectorAll(".sm-bar-row[data-sym]").forEach((row) => {
         row.onclick = () => openStock(row.dataset.sym);
       });
+
+      if ($("vfCountBadge")) $("vfCountBadge").textContent = `(${vf.length} stocks)`;
+      if ($("insBuyMeta")) $("insBuyMeta").textContent = `(n = ${insBuys.length} · ${fmtCap(insBuyUsd)})`;
+      if ($("insSellMeta")) $("insSellMeta").textContent = `(n = ${insSells.length} · ${fmtCap(insSellUsd)})`;
+      if ($("siMeta")) $("siMeta").textContent = `(Median ${fmtNum(siMed, 1)}%)`;
     }
 
     $("volumeFlowGrid").innerHTML = vf.length ? vf.map((x) => `
