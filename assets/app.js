@@ -2854,7 +2854,7 @@
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideTip(); });
   }
 
-  // ---- AUTOMATIC INSTALL PROMPT (Asks automatically if not running as installed app; asks again next visit if not installed) ----
+  // ---- AUTOMATIC INSTALL SCREEN POP-UP (Pops up on top of opening page every time until installed) ----
   function initAutoInstallPrompt() {
     const isStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
@@ -2865,37 +2865,59 @@
     const isIOS = /iPhone|iPad|iPod/i.test(ua);
     const isInApp = /Telegram|FBAN|FBAV|Instagram|Line|MicroMessenger/i.test(ua);
 
-    let bar = null;
-    const removeBar = () => {
-      if (bar) { bar.remove(); bar = null; }
+    let overlay = null;
+    const closeOverlay = () => {
+      if (overlay) { overlay.remove(); overlay = null; }
     };
 
-    const showInstallBar = (hasNativePrompt) => {
-      if (bar) removeBar();
-      bar = document.createElement("div");
-      bar.className = "install-bar";
-      const subText = hasNativePrompt
-        ? "Install racenter to your home screen"
-        : isInApp
-          ? "Open in Safari or Chrome to install racenter"
-          : isIOS
-            ? "Tap Share → Add to Home Screen"
-            : "Tap browser menu (⋮) → Install App";
+    const renderOverlay = (hasNativePrompt) => {
+      if (overlay) closeOverlay();
+      overlay = document.createElement("div");
+      overlay.className = "install-overlay";
+      overlay.setAttribute("role", "dialog");
+      overlay.setAttribute("aria-modal", "true");
 
-      bar.innerHTML = `
-        <div class="install-bar-text">
-          <strong>Install racenter</strong>
-          <span>${esc(subText)}</span>
-        </div>
-        <div class="install-bar-actions">
-          ${hasNativePrompt ? `<button type="button" class="btn-primary-accent install-now-btn" id="autoInstallNowBtn">Install</button>` : ""}
-          <button type="button" class="install-dismiss-btn" id="autoInstallDismissBtn" aria-label="Dismiss">✕</button>
+      const stepsHtml = hasNativePrompt
+        ? `<p class="install-modal-desc">Install <strong>racenter</strong> directly to your device home screen for full-screen native access.</p>`
+        : isInApp
+          ? `<div class="install-steps">
+               <div><strong>1.</strong> Tap the browser menu (<strong>⋯ / ⋮</strong>) and choose <strong>Open in ${isIOS ? "Safari" : "Chrome"}</strong>.</div>
+               <div><strong>2.</strong> Tap <strong>${isIOS ? "Share → Add to Home Screen" : "Menu ⋮ → Install App"}</strong>.</div>
+             </div>`
+          : isIOS
+            ? `<div class="install-steps">
+                 <div><strong>1.</strong> Tap the <strong>Share</strong> button at the bottom of Safari.</div>
+                 <div><strong>2.</strong> Select <strong>Add to Home Screen</strong> → <strong>Add</strong>.</div>
+               </div>`
+            : `<div class="install-steps">
+                 <div><strong>1.</strong> Tap your browser menu (<strong>⋮</strong>) or address-bar install icon.</div>
+                 <div><strong>2.</strong> Select <strong>Install App / Add to Home Screen</strong>.</div>
+               </div>`;
+
+      overlay.innerHTML = `
+        <div class="install-overlay-bg" id="installOverlayBg"></div>
+        <div class="install-modal-card">
+          <div class="install-modal-hdr">
+            <div>
+              <div class="install-modal-eyebrow">App Installation</div>
+              <h2 class="install-modal-title">Install racenter</h2>
+            </div>
+            <button type="button" class="install-dismiss-btn" id="autoInstallDismissBtn" aria-label="Close">✕</button>
+          </div>
+          ${stepsHtml}
+          <div class="install-modal-actions">
+            ${hasNativePrompt ? `<button type="button" class="btn-primary-accent install-modal-primary" id="autoInstallNowBtn">Install racenter Now</button>` : ""}
+            <button type="button" class="btn-secondary install-modal-secondary" id="autoInstallLaterBtn">Continue in Browser</button>
+          </div>
         </div>
       `;
-      document.body.appendChild(bar);
+      document.body.appendChild(overlay);
 
-      bar.querySelector("#autoInstallDismissBtn").onclick = removeBar;
-      const nowBtn = bar.querySelector("#autoInstallNowBtn");
+      overlay.querySelector("#installOverlayBg").onclick = closeOverlay;
+      overlay.querySelector("#autoInstallDismissBtn").onclick = closeOverlay;
+      overlay.querySelector("#autoInstallLaterBtn").onclick = closeOverlay;
+
+      const nowBtn = overlay.querySelector("#autoInstallNowBtn");
       if (nowBtn) {
         nowBtn.onclick = async () => {
           if (!state.deferredInstallPrompt) return;
@@ -2903,7 +2925,7 @@
           try {
             const choice = await state.deferredInstallPrompt.userChoice;
             if (choice && choice.outcome === "accepted") {
-              removeBar();
+              closeOverlay();
             }
           } catch {}
           state.deferredInstallPrompt = null;
@@ -2911,23 +2933,19 @@
       }
     };
 
+    // Show the install screen immediately on page open when not running as an installed app
+    renderOverlay(Boolean(state.deferredInstallPrompt));
+
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       state.deferredInstallPrompt = e;
-      showInstallBar(true);
+      renderOverlay(true);
     });
 
     window.addEventListener("appinstalled", () => {
       state.deferredInstallPrompt = null;
-      removeBar();
+      closeOverlay();
     });
-
-    // If native beforeinstallprompt doesn't fire (e.g. iOS Safari or Telegram in-app browser), show the install bar automatically
-    setTimeout(() => {
-      if (!bar && !state.deferredInstallPrompt) {
-        showInstallBar(false);
-      }
-    }, 1000);
   }
 
   // ---- BOOT ----
