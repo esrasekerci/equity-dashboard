@@ -220,7 +220,7 @@
     document.documentElement.dataset.theme = theme;
     $("themeToggle").textContent = theme === "dark" ? "☀️" : "🌙";
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", theme === "dark" ? "#080d17" : "#ffffff");
+    if (meta) meta.setAttribute("content", theme === "dark" ? "#0b0e11" : "#ffffff");
     if (state.view === "stock" && state.activeTicker && state.chartTab === "interactive") {
       const t = state.tickerCache[`${state.date}:${state.activeTicker}`];
       if (t) mountInteractiveChart(t);
@@ -1513,6 +1513,116 @@
   function renderSmartMoney() {
     const sm = (state.summary && state.summary.smart_money) || {};
     const vf = sm.volume_flow || [];
+    const si = sm.short_interest || [];
+    const insBuys = sm.insider_buys || [];
+    const insSells = sm.insider_sells || [];
+
+    // 1. Binance-Style Smart Money Visual Graphs (Flow Donut, Institutional Volume Bar Chart, Short Interest Bar Chart)
+    const chartsEl = $("smartMoneyCharts");
+    if (chartsEl) {
+      let accUsd = 0;
+      let distUsd = 0;
+      for (const x of vf) {
+        const dv = Number(x.dollar_volume_usd || 0);
+        if (x.flow === "Accumulation") accUsd += dv;
+        else distUsd += dv;
+      }
+      const totFlow = accUsd + distUsd;
+      const accPct = totFlow > 0 ? Math.round((accUsd / totFlow) * 100) : 50;
+      const distPct = 100 - accPct;
+      const r = 38;
+      const circ = 2 * Math.PI * r;
+      const accDash = (accPct / 100) * circ;
+      const distDash = circ - accDash;
+
+      const insBuyUsd = insBuys.reduce((s, x) => s + Number(x.value_usd || 0), 0);
+      const insSellUsd = insSells.reduce((s, x) => s + Number(x.value_usd || 0), 0);
+
+      const maxVolR = Math.max(2.0, ...vf.map((x) => Number(x.vol_ratio_20d || 0)));
+      const volBarsHtml = vf.length
+        ? vf.slice(0, 7).map((x) => {
+            const pct = Math.min(100, (Number(x.vol_ratio_20d || 0) / maxVolR) * 100);
+            const isUp = x.flow === "Accumulation";
+            return `
+              <div class="sm-bar-row" data-sym="${esc(x.symbol)}">
+                <span class="sm-bar-sym">${esc(x.symbol)}</span>
+                <div class="sm-bar-track"><div class="sm-bar-fill ${isUp ? "up" : "dn"}" style="width:${pct.toFixed(1)}%"></div></div>
+                <span class="sm-bar-val ${isUp ? "pos" : "neg"}">${fmtNum(x.vol_ratio_20d, 2)}x (${fmtPct(x.change_1d_pct, 1)})</span>
+              </div>`;
+          }).join("")
+        : `<div class="muted">No unusual volume surges (&ge; 1.35x) today.</div>`;
+
+      const maxSi = Math.max(12, ...si.map((x) => Number(x.short_pct_float || 0)));
+      const siBarsHtml = si.length
+        ? si.slice(0, 7).map((x) => {
+            const val = Number(x.short_pct_float || 0);
+            const pct = Math.min(100, (val / maxSi) * 100);
+            return `
+              <div class="sm-bar-row" data-sym="${esc(x.symbol)}">
+                <span class="sm-bar-sym">${esc(x.symbol)}</span>
+                <div class="sm-bar-track"><div class="sm-bar-fill ${val >= 10 ? "dn" : "warn"}" style="width:${pct.toFixed(1)}%"></div></div>
+                <span class="sm-bar-val ${val >= 10 ? "neg" : "warn"}">${fmtNum(val, 1)}% float</span>
+              </div>`;
+          }).join("")
+        : `<div class="muted">No short interest data available.</div>`;
+
+      chartsEl.innerHTML = `
+        <div class="sm-chart-card">
+          <div class="sm-chart-hdr">
+            <span class="sm-chart-title">Institutional Dollar Flow Split</span>
+            <span class="muted">${vf.length} active</span>
+          </div>
+          <div class="sm-donut-wrap">
+            <svg class="sm-donut-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--bg-card-2)" stroke-width="11" />
+              <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--red)" stroke-width="11"
+                stroke-dasharray="${distDash.toFixed(1)} ${circ.toFixed(1)}"
+                stroke-dashoffset="${(-accDash).toFixed(1)}" transform="rotate(-90 50 50)" />
+              <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--green)" stroke-width="11"
+                stroke-dasharray="${accDash.toFixed(1)} ${circ.toFixed(1)}"
+                transform="rotate(-90 50 50)" />
+              <text x="50" y="48" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="800">${accPct}%</text>
+              <text x="50" y="61" text-anchor="middle" fill="var(--muted)" font-size="8.5" font-weight="600">INFLOW</text>
+            </svg>
+            <div class="sm-donut-legend">
+              <div class="sm-dl-row">
+                <span class="pos">● Accumulation</span>
+                <strong>${fmtCap(accUsd)} (${accPct}%)</strong>
+              </div>
+              <div class="sm-dl-row">
+                <span class="neg">● Distribution</span>
+                <strong>${fmtCap(distUsd)} (${distPct}%)</strong>
+              </div>
+              <div class="sm-dl-row" style="padding-top:6px;border-top:1px solid var(--border)">
+                <span class="muted">Form 4 Buys / Sells</span>
+                <strong><span class="pos">${fmtCap(insBuyUsd)}</span> / <span class="neg">${fmtCap(insSellUsd)}</span></strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sm-chart-card">
+          <div class="sm-chart-hdr">
+            <span class="sm-chart-title">Institutional Volume Surge (vs 20d Avg)</span>
+            <span class="muted">Green = Buy · Red = Sell</span>
+          </div>
+          <div class="sm-bar-list">${volBarsHtml}</div>
+        </div>
+
+        <div class="sm-chart-card">
+          <div class="sm-chart-hdr">
+            <span class="sm-chart-title">Highest Short Positions (% of Float)</span>
+            <span class="muted">&ge;10% Squeeze Zone</span>
+          </div>
+          <div class="sm-bar-list">${siBarsHtml}</div>
+        </div>
+      `;
+
+      chartsEl.querySelectorAll(".sm-bar-row[data-sym]").forEach((row) => {
+        row.onclick = () => openStock(row.dataset.sym);
+      });
+    }
+
     $("volumeFlowGrid").innerHTML = vf.length ? vf.map((x) => `
       <div class="notable-card" data-sym="${esc(x.symbol)}">
         <div class="notable-top">
@@ -1564,7 +1674,6 @@
     `).join("") : `<div class="muted">No recent SC 13D / 13G (&gt;5% stake) filings in the 90-day window.</div>`;
     $("smWhaleFilings").querySelectorAll(".ticker-pill").forEach((p) => { p.onclick = () => openStock(p.dataset.sym); });
 
-    const si = sm.short_interest || [];
     $("smShortInterest").innerHTML = si.length ? si.map((x) => `
       <div class="level-row" data-sym="${esc(x.symbol)}" style="cursor:pointer">
         <div>
@@ -2157,10 +2266,16 @@
       destroyInteractiveChart();
       const ov = state.chartOverlays;
       const is1M = state.chartRange === "1M";
+      const hasAll = Array.isArray(tech.series_all) && tech.series_all.length > 5;
+      const ranges = hasAll ? ["1M", "3M", "6M", "1Y", "5Y", "ALL"] : ["1M", "3M", "6M", "1Y"];
+      const at = tech.all_time_stats || null;
+      const athBanner = (state.chartRange === "ALL" || state.chartRange === "5Y") && at
+        ? `<div class="muted" style="font-size:11.5px;margin-bottom:6px">Since ${esc(at.ipo_date)} · ATH <strong>$${fmtNum(at.ath)}</strong> (${esc(at.ath_date)}, <span class="${clsPct(at.pct_from_ath)}">${fmtPct(at.pct_from_ath, 1)}</span>) · ATL <strong>$${fmtNum(at.atl)}</strong></div>`
+        : "";
       body.innerHTML = `
         <div class="chart-toolbar">
           <div class="chart-tabs" id="rangeBar">
-            ${["1M", "3M", "6M", "1Y"].map((r) => `<button class="chip ${state.chartRange === r ? "active" : ""}" data-range="${r}">${r}</button>`).join("")}
+            ${ranges.map((r) => `<button class="chip ${state.chartRange === r ? "active" : ""}" data-range="${r}">${r}</button>`).join("")}
             <button class="chip" id="resetChartFitBtn" title="Reset zoom">⟲ Fit</button>
           </div>
           <div class="chart-tabs" id="overlayBar">
@@ -2170,13 +2285,13 @@
             <button class="chip ${ov.sr ? "active" : ""}" data-ov="sr">S/R</button>
           </div>
         </div>
+        ${athBanner}
         <div class="tv-legend" id="tvLegend"></div>
         <div class="tv-chart-wrap ${is1M ? "is-1m" : ""}" id="tvChartWrap">
           <div class="tv-chart-box" id="tvChart"></div>
           <div class="tv-day-overlay ${is1M ? "" : "hidden"}" id="tvDayOverlay"></div>
           <div class="tv-day-axis ${is1M ? "" : "hidden"}" id="tvDayAxis"></div>
-        </div>
-        <div class="tv-daily-strip ${is1M ? "" : "hidden"}" id="tvDailyStrip"></div>`;
+        </div>`;
       $("rangeBar").querySelectorAll("button[data-range]").forEach((b) => {
         b.onclick = () => { state.chartRange = b.dataset.range; renderChartBody(); };
       });
@@ -2323,17 +2438,22 @@
     destroyInteractiveChart();
     box.innerHTML = "";
 
-    const rawAll = t.technical?.series || [];
+    const isLongRange = state.chartRange === "5Y" || state.chartRange === "ALL";
+    const rawAll = isLongRange && Array.isArray(t.technical?.series_all) && t.technical.series_all.length
+      ? t.technical.series_all
+      : (t.technical?.series || []);
     if (!rawAll.length) { box.innerHTML = `<div class="muted">No price history available.</div>`; return; }
 
-    // Precompute exact Close-to-Previous-Close 1D % change on every daily bar so it matches the stock header 100%
+    // Precompute exact Close-to-Previous-Close % change on every bar
     const all = rawAll.map((d, i) => {
       const prevC = i > 0 ? rawAll[i - 1].c : d.o;
       const chg1d = prevC ? ((d.c - prevC) / prevC) * 100 : 0;
       return { ...d, prevC, chg1d };
     });
 
-    const n = { "1M": 22, "3M": 66, "6M": 132, "1Y": 260 }[state.chartRange] || 132;
+    const n = state.chartRange === "ALL"
+      ? all.length
+      : ({ "1M": 22, "3M": 66, "6M": 132, "1Y": 260, "5Y": 260 }[state.chartRange] || 132);
     const data = all.slice(-n);
     const is1M = state.chartRange === "1M";
 
@@ -2383,6 +2503,12 @@
         tickMarkFormatter: (time) => {
           const s = typeof time === "string" ? time : `${time.year}-${String(time.month).padStart(2, "0")}-${String(time.day).padStart(2, "0")}`;
           const [y, m, d] = s.split("-").map(Number);
+          if (state.chartRange === "ALL") {
+            return m === 1 ? String(y) : `${MONTHS[(m || 1) - 1]} '${String(y).slice(2)}`;
+          }
+          if (state.chartRange === "5Y") {
+            return `${MONTHS[(m || 1) - 1]} '${String(y).slice(2)}`;
+          }
           if (state.chartRange === "1M" || state.chartRange === "3M") {
             return `${MONTHS[(m || 1) - 1]} ${d}`;
           }
@@ -2603,37 +2729,6 @@
       highlightDay(d.t);
     };
     const byTime = Object.fromEntries(timelinePoints.map((d) => [d.t, d]));
-
-    if (is1M && dailyStrip) {
-      dailyStrip.innerHTML = `
-        <div class="daily-strip-hdr">
-          <strong>1M Day-by-Day Series (${data.length} Trading Days · NYSE/NASDAQ Closed Sat–Sun)</strong>
-          <span class="muted">Tap any day for exact OHLCV</span>
-        </div>
-        <div class="daily-strip-grid">
-          ${data.map((d, i) => {
-            const [, m, dayNum] = d.t.split("-").map(Number);
-            const mLabel = MONTHS[(m || 1) - 1];
-            const wd = WEEKDAYS[dayOfWeek(d.t)];
-            const chg = d.chg1d ?? 0;
-            const afterWknd = i > 0 && daysBetween(data[i - 1].t, d.t) >= 2;
-            return `
-              <div class="daily-bar-cell ${chg >= 0 ? "up" : "dn"} ${afterWknd ? "after-wknd" : ""}" data-day="${esc(d.t)}">
-                <div class="dbc-date">${wd} ${mLabel} ${dayNum}</div>
-                <div class="dbc-close">$${fmtNum(d.c)}</div>
-                <div class="dbc-chg ${clsPct(chg)}">${fmtPct(chg, 1)}</div>
-              </div>`;
-          }).join("")}
-        </div>`;
-      dailyStrip.querySelectorAll(".daily-bar-cell").forEach((cell) => {
-        const selectDay = () => {
-          const item = byTime[cell.dataset.day];
-          if (item) setLegend(item);
-        };
-        cell.addEventListener("mouseenter", selectDay);
-        cell.addEventListener("click", selectDay);
-      });
-    }
 
     setLegend(data[data.length - 1]);
     chart.subscribeCrosshairMove((p) => {
