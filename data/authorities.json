@@ -119,71 +119,6 @@
       "sector": "antitrust_tech"
     },
     {
-      "agency": "DOJ",
-      "title": "Federal grand jury indicts Albion man for defrauding the VA out of hundreds of thousands of dollars",
-      "url": "https://www.justice.gov/usao-wdny/pr/federal-grand-jury-indicts-albion-man-defrauding-va-out-hundreds-thousands-dollars",
-      "published": "2026-11-20T12:00:00+00:00",
-      "source": "DOJ Official",
-      "summary": "U.S. Attorney Michael DiGiacomo announced today that a federal grand jury has returned an indictment charging Timmie L. Haynes, 64, of Albion, NY, with five counts of wire fraud, which carries a maximum penalty of 20 years in prison. This action is part of the Trump Administration’s Task Force to Eliminate Fraud.",
-      "categories": [
-        "DOJ Declaration",
-        "antitrust_legal"
-      ],
-      "sector": "antitrust_legal"
-    },
-    {
-      "agency": "DOJ",
-      "title": "Illegal alien charged with falsely claiming U.S. citizenship at DFW Airport",
-      "url": "https://www.justice.gov/usao-ndtx/pr/illegal-alien-charged-falsely-claiming-us-citizenship-dfw-airport",
-      "published": "2026-11-20T12:00:00+00:00",
-      "source": "DOJ Official",
-      "summary": "United States Attorney for the Northern District of Texas Ryan Raybould announced that an illegal alien from Mexico has been indicted for falsely claiming to be a U.S. Citizen after allegedly attempting to enter the country using a fraudulently obtained U.S. passport at Dallas Fort Worth International Airport.",
-      "categories": [
-        "DOJ Declaration",
-        "antitrust_legal"
-      ],
-      "sector": "antitrust_legal"
-    },
-    {
-      "agency": "DOJ",
-      "title": "Illinois Man Charged with Possession and Transportation of Child Pornography",
-      "url": "https://www.justice.gov/usao-nj/pr/illinois-man-charged-possession-and-transportation-child-pornography",
-      "published": "2026-11-20T12:00:00+00:00",
-      "source": "DOJ Official",
-      "summary": "An Illinois man was charged with possessing and transporting child sexual abuse material that had been generated using Super Intelligence (SI).",
-      "categories": [
-        "DOJ Declaration",
-        "antitrust_legal"
-      ],
-      "sector": "antitrust_legal"
-    },
-    {
-      "agency": "DOJ",
-      "title": "Cheyenne Resident Charged with Wire Fraud and Money Laundering in Connection with $270,000 Fraud Scheme",
-      "url": "https://www.justice.gov/usao-wy/pr/cheyenne-resident-charged-wire-fraud-and-money-laundering-connection-270000-fraud-scheme",
-      "published": "2026-11-20T12:00:00+00:00",
-      "source": "DOJ Official",
-      "summary": "CHEYENNE, Wyo. – A federal indictment has been unsealed charging Ariyan Devonte Trawick , of Cheyenne, in connection with a scheme to defraud three victims between March and August 2024.",
-      "categories": [
-        "DOJ Declaration",
-        "antitrust_legal"
-      ],
-      "sector": "antitrust_legal"
-    },
-    {
-      "agency": "DOJ",
-      "title": "Federal Jury Finds Couple Guilty of Wire Fraud and Money Laundering in Scheme to Defraud Medicare, Medicaid, and Private Insurers Out of Over $15 Million",
-      "url": "https://www.justice.gov/usao-mn/pr/federal-jury-finds-couple-guilty-wire-fraud-and-money-laundering-scheme-defraud-medicare",
-      "published": "2026-11-20T12:00:00+00:00",
-      "source": "DOJ Official",
-      "summary": "",
-      "categories": [
-        "DOJ Declaration",
-        "antitrust_legal"
-      ],
-      "sector": "antitrust_legal"
-    },
-    {
       "agency": "NHTSA",
       "title": "NHTSA Recall 25V359000 (Tesla Model Y): VISIBILITY:WINDSHIELD WIPER/WASHER:LINKAGES",
       "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V359000",
@@ -236,32 +171,6 @@
       "sector": "clean_energy"
     },
     {
-      "agency": "DOJ",
-      "title": "Notice Pursuant to the National Cooperative Research and Production Act of 1993-Rust Foundation",
-      "url": "https://www.federalregister.gov/documents/2026/11/10/2026-22915/notice-pursuant-to-the-national-cooperative-research-and-production-act-of-1993-rust-foundation",
-      "published": "2026-11-10T00:00:00+00:00",
-      "source": "Federal Register (Justice Department, Antitrust Division)",
-      "summary": "",
-      "categories": [
-        "Antitrust",
-        "Notice"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "DOJ",
-      "title": "Notice Pursuant to the National Cooperative Research and Production Act of 1993-Silicon Integration Initiative, Inc.",
-      "url": "https://www.federalregister.gov/documents/2026/11/10/2026-22914/notice-pursuant-to-the-national-cooperative-research-and-production-act-of-1993-silicon-integration",
-      "published": "2026-11-10T00:00:00+00:00",
-      "source": "Federal Register (Justice Department, Antitrust Division)",
-      "summary": "",
-      "categories": [
-        "Antitrust",
-        "Notice"
-      ],
-      "sector": "macro_policy"
-    },
-    {
       "agency": "Commerce / BIS",
       "title": "Addressing Remote Access to Advanced Semiconductors",
       "url": "https://www.federalregister.gov/documents/2026/11/19/2026-23529/addressing-remote-access-to-advanced-semiconductors",
@@ -271,32 +180,6 @@
       "categories": [
         "Export controls",
         "Rule"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "FTC",
-      "title": "Granting of Requests for Early Termination of the Waiting Period Under the Premerger Notification Rules",
-      "url": "https://www.federalregister.gov/documents/2026/11/20/2026-23714/granting-of-requests-for-early-termination-of-the-waiting-period-under-the-premerger-notification",
-      "published": "2026-11-20T00:00:00+00:00",
-      "source": "Federal Register (Federal Trade Commission)",
-      "summary": "",
-      "categories": [
-        "Antitrust",
-        "Notice"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "US ITC",
-      "title": "Notice of Receipt of Complaint; Solicitation of Comments Relating to the Public Interest",
-      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23816/notice-of-receipt-of-complaint-solicitation-of-comments-relating-to-the-public-interest",
-      "published": "2026-11-23T00:00:00+00:00",
-      "source": "Federal Register (International Trade Commission)",
-      "summary": "Notice is hereby given that the U.S. International Trade Commission has received a complaint entitled Certain Athletic Footwear, DN 3954; the Commission is soliciting comments on any public interest issues raised by the complaint or complainant's filing pursuant to the Commission's Rules of Practice and Procedure.",
-      "categories": [
-        "Tariffs & trade",
-        "Notice"
       ],
       "sector": "macro_policy"
     },
@@ -372,19 +255,6 @@
       "published": "2026-11-23T00:00:00+00:00",
       "source": "Federal Register (Treasury Department, Foreign Assets Control Office)",
       "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the names of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject to U.S. jurisdiction of these persons ar",
-      "categories": [
-        "Sanctions",
-        "Notice"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "SEC",
-      "title": "Self-Regulatory Organizations; 24X National Exchange LLC; Notice of Filing of a Proposed Rule Change To Adopt Rules To Govern the Trading of Options on the Exchange",
-      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23748/self-regulatory-organizations-24x-national-exchange-llc-notice-of-filing-of-a-proposed-rule-change",
-      "published": "2026-11-23T00:00:00+00:00",
-      "source": "Federal Register (Securities and Exchange Commission)",
-      "summary": "",
       "categories": [
         "Sanctions",
         "Notice"

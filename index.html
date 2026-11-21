@@ -44,6 +44,7 @@
     <nav class="subnav" id="mainNav" aria-label="Dashboard sections">
       <button class="nav-tab active" data-view="overview">Overview</button>
       <button class="nav-tab" data-view="screener">Screener <span class="badge-pill" id="navTickerCount">39</span></button>
+      <button class="nav-tab" data-view="network">Network</button>
       <button class="nav-tab" data-view="smartmoney">Smart Money</button>
       <button class="nav-tab" data-view="breaking">Breaking <span class="badge-pill hot" id="breakingCount">0</span></button>
       <button class="nav-tab" data-view="authorities">Authorities <span class="badge-pill" id="authoritiesCount">0</span></button>
@@ -112,9 +113,13 @@
         </div>
       </div>
 
+      <div class="filter-bar-scroll" style="margin-bottom:8px">
+        <div class="filter-bar" id="sectorFilterBar"></div>
+      </div>
+
       <div class="filter-bar-scroll">
         <div class="filter-bar" id="filterBar">
-          <button class="chip active" data-filter="all">All</button>
+          <button class="chip active" data-filter="all">All Signals</button>
           <button class="chip" data-filter="core">★ Core 10</button>
           <button class="chip" data-filter="signals">Patterns</button>
           <button class="chip" data-filter="earnings">Earnings ±10d</button>
@@ -135,12 +140,12 @@
               <th data-sort="sector">Sector</th>
               <th data-sort="close" class="num">Close</th>
               <th data-sort="change_1d_pct" class="num">1D %</th>
-              <th data-sort="notable_score" class="num">Score</th>
-              <th data-sort="rsi14" class="num">RSI-14</th>
-              <th>SMA 20/50/200</th>
-              <th data-sort="rs_spy_21d" class="num">vs SPY 21d</th>
-              <th data-sort="s1_dist" class="num">Near S1 / R1</th>
-              <th>Scenarios (B/N/S)</th>
+              <th data-sort="notable_score" class="num" data-tip="Notable Score (0–100)|Measures how active or unusual a stock is today (price move vs ATR, volume spike, patterns, RSI extremes, news &amp; SEC filings). High score = big activity today, NOT a buy/sell rating.">Score <span class="tip-badge">?</span></th>
+              <th data-sort="rsi14" class="num" data-tip="RSI-14 (Relative Strength Index)|0–100 momentum gauge over 14 days. Below 30 = Oversold (steep recent drop); Above 70 = Overbought (steep recent rally).">RSI-14 <span class="tip-badge">?</span></th>
+              <th data-tip="SMA 20 / 50 / 200 (Moving Averages)|Average closing price over the last 20, 50, and 200 trading days. Green = price above that average; Red = below.">SMA 20/50/200 <span class="tip-badge">?</span></th>
+              <th data-sort="rs_spy_21d" class="num" data-tip="vs SPY (21d Relative Strength)|The stock's 21-trading-day (~1 month) return minus the S&amp;P 500 (SPY) return. Positive = outperforming the market.">vs SPY 21d <span class="tip-badge">?</span></th>
+              <th data-sort="s1_dist" class="num" data-tip="Support (S1) &amp; Resistance (R1)|Distance % from current price to the nearest historical support floor (S1) and resistance ceiling (R1).">Near S1 / R1 <span class="tip-badge">?</span></th>
+              <th data-tip="20-Day Rule-Based Scenarios (Bull / Base / Bear %)|Heuristic probability split for the next 20 trading days based on trend, momentum, relative strength &amp; patterns. Not advice.">Scenarios (B/N/S) <span class="tip-badge">?</span></th>
               <th data-sort="earnings_days" class="num">Earnings</th>
             </tr>
           </thead>
@@ -150,6 +155,20 @@
 
       <!-- Mobile Card List -->
       <div id="screenerCards" class="screener-cards mobile-only"></div>
+    </section>
+
+    <!-- BUBBLE NETWORK EXPLORER VIEW -->
+    <section id="view-network" class="view hidden">
+      <div class="section-header">
+        <div>
+          <h2>Ecosystem Bubble Network Explorer</h2>
+          <p class="section-sub">Tap any bubble to inspect its relationship, or re-center the network to discover supply-chain, customer &amp; partner connections across the 39 stocks</p>
+        </div>
+      </div>
+      <div class="filter-bar-scroll" style="margin-bottom:8px">
+        <div class="filter-bar" id="networkHubBar"></div>
+      </div>
+      <div id="globalNetworkContainer"></div>
     </section>
 
     <!-- SMART MONEY / WHALE FLOW VIEW -->

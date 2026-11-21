@@ -4,40 +4,6 @@
   "max_age_hours": 3.0,
   "items": [
     {
-      "key": "92c59042b5495792",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "Trump Escapes Turmoil at Home by Seeking Out a Friendlier Audience Abroad",
-      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQNElHV3B6cVdUUEJLODFyNXAxbkpxZk5laXp1VVJ2N19lUHdFSl9wdFF2QzBFdVFiY3FySU1fQ3hzZHo2QW5DMjV1RnlvcEFsamtUdTlBWkJDSFZKY1g1ZFRXNTMtMDJDYk02VXBoUm1YeHFvUVgtY21lNmozZ2hlRmVRUm9mWW9BSzA3TzhZWGVPRGtBUEhEUDJvOWVRMG5BcEVBaHd6RFQ2SVBwckdDQjFjTVN0U1RGQnc?oc=5",
-      "source": "WSJ",
-      "source_tier": 1,
-      "published": "2026-11-21T11:19:44+00:00",
-      "importance": 72.6,
-      "categories": [
-        "policy_geopolitics"
-      ],
-      "age_hours": 0.57,
-      "detected_at": "2026-11-21T11:53:49+00:00"
-    },
-    {
-      "key": "eb309c9ea0bd7e30",
-      "symbol": "FSLR",
-      "name": "First Solar",
-      "title": "First Solar Fell While Profit Rose",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/first-solar-fell-while-profit-020951528.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-21T02:09:51+00:00",
-      "importance": 77.3,
-      "categories": [
-        "earnings_guidance",
-        "policy_geopolitics",
-        "regulatory_legal"
-      ],
-      "age_hours": 9.44,
-      "detected_at": "2026-11-21T11:35:57+00:00"
-    },
-    {
       "key": "666ad0373482ae5d",
       "symbol": "AMZN",
       "name": "Amazon",
@@ -56,24 +22,6 @@
       "detected_at": "2026-11-21T11:35:57+00:00"
     },
     {
-      "key": "659e3b546b0063d3",
-      "symbol": "MRVL",
-      "name": "Marvell Technology",
-      "title": "Marvell's $115 Billion Lumentum Deal Creates a New Valuation Test",
-      "url": "https://finance.yahoo.com/technology/articles/marvells-115-billion-lumentum-deal-214112963.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-20T21:41:12+00:00",
-      "importance": 72.3,
-      "categories": [
-        "earnings_guidance",
-        "m_and_a",
-        "data_centers_ai"
-      ],
-      "age_hours": 13.91,
-      "detected_at": "2026-11-21T11:35:57+00:00"
-    },
-    {
       "key": "9bbb3a5bbcb05678",
       "symbol": "ORCL",
       "name": "Oracle",
@@ -88,23 +36,6 @@
         "data_centers_ai"
       ],
       "age_hours": 12.88,
-      "detected_at": "2026-11-21T11:35:57+00:00"
-    },
-    {
-      "key": "62fdc9e40dfa3b62",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Trump critiques Jensen Huang's replacement as he wades deeper into Nvidia turmoil",
-      "url": "https://finance.yahoo.com/markets/article/trump-critiques-jensen-huangs-replacement-as-he-wades-deeper-into-nvidia-turmoil-210729338.html",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-20T21:07:29+00:00",
-      "importance": 62.1,
-      "categories": [
-        "policy_geopolitics",
-        "management"
-      ],
-      "age_hours": 14.47,
       "detected_at": "2026-11-21T11:35:57+00:00"
     },
     {
