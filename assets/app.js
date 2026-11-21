@@ -648,7 +648,11 @@
       {
         title: "Earnings Window (±10d)",
         count: (al.earnings_soon || []).length,
-        items: (al.earnings_soon || []).slice(0, 8).map((e) => `<span class="ticker-pill" data-sym="${esc(e.symbol)}"><strong>${esc(e.symbol)}</strong><span class="warn">${e.days >= 0 ? `in ${e.days}d` : `${Math.abs(e.days)}d ago`}</span></span>`),
+        items: (al.earnings_soon || []).slice(0, 8).map((e) => {
+          const row = (s.tickers || []).find((t) => t.symbol === e.symbol) || {};
+          const eUrl = secHtmlUrl(row.earnings_url || `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(e.symbol)}`);
+          return `<a class="ticker-pill" href="${esc(eUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><strong>${esc(e.symbol)}</strong><span class="warn">${e.days >= 0 ? `in ${e.days}d` : `${Math.abs(e.days)}d ago`} ↗</span></a>`;
+        }),
         empty: "No watchlist earnings within ±10d",
       },
       {
@@ -673,7 +677,7 @@
         <div class="alert-pills">${c.items.length ? c.items.join("") : `<span class="muted">${c.empty}</span>`}</div>
       </div>
     `).join("");
-    $("alertsSection").querySelectorAll(".ticker-pill").forEach((el) => {
+    $("alertsSection").querySelectorAll(".ticker-pill[data-sym]").forEach((el) => {
       el.onclick = () => openStock(el.dataset.sym);
     });
 

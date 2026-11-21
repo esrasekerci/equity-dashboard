@@ -1,5 +1,5 @@
 // Network-first service worker: always fetches fresh hourly news & daily data, falls back to cache offline.
-const CACHE = "racenter-v9";
+const CACHE = "racenter-v10";
 const SHELL = ["./", "./index.html", "./assets/app.css", "./assets/app.js", "./manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
