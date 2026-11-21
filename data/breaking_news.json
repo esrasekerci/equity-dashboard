@@ -1,76 +1,74 @@
 {
-  "updated_at": "2026-11-21T11:55:27+00:00",
+  "updated_at": "2026-11-21T17:51:16+00:00",
   "min_importance": 60.0,
   "max_age_hours": 3.0,
   "items": [
     {
-      "key": "666ad0373482ae5d",
-      "symbol": "AMZN",
-      "name": "Amazon",
-      "title": "Generac Stock In Focus After Earnings Beat And Amazon Supply Deal",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/generac-stock-focus-earnings-beat-001937973.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-21T00:19:37+00:00",
-      "importance": 73.3,
-      "categories": [
-        "earnings_guidance",
-        "contract_partnership",
-        "data_centers_ai"
-      ],
-      "age_hours": 11.27,
-      "detected_at": "2026-11-21T11:35:57+00:00"
-    },
-    {
-      "key": "9bbb3a5bbcb05678",
-      "symbol": "ORCL",
-      "name": "Oracle",
-      "title": "Oracle says OpenAI contract is fully funded, addresses market financing scrutiny",
-      "url": "https://finance.yahoo.com/technology/ai/articles/oracle-says-openai-contract-fully-224306974.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-20T22:43:06+00:00",
-      "importance": 64.4,
-      "categories": [
-        "contract_partnership",
-        "data_centers_ai"
-      ],
-      "age_hours": 12.88,
-      "detected_at": "2026-11-21T11:35:57+00:00"
-    },
-    {
-      "key": "e05c0678af39b781",
-      "symbol": "FED / MACRO",
-      "name": "FED / MACRO",
-      "title": "The Federal Reserve Is Expected to Raise Interest Rates Next Month. By How Much Is an Open Question.",
-      "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNdTFoLTh6OXU1N2ZjSmNYN09CTWhISTZuaVhMSXJCbklsdEFyWGpQN3B3c0NieVdVRUV6VnRDYjdIWG1vaFVOQWRRM19ZaklQMUZuUktlT2hCT3V3NnhCZDg2Y215b09aVmFFRkNyeTNmYzZYYWt1LXlnRkM3bG1ad1YxdGVNUnVhcE82RXh4TQ?oc=5",
-      "source": "Barron's",
+      "key": "ff69ae905ed2b861",
+      "symbol": "CHIPS / POLICY",
+      "name": "CHIPS / POLICY",
+      "title": "California Nvidia Probe Covers Potential Criminal Law Violations",
+      "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPM3ZKSUpVM0xWNVRuM3B0RjhyOTM0NUNoRmNYVnVKYm50andhaTFJVHZLenZrckE1aFZuMGhiSW42Mlh5c2lZcGc5eTg1NDQwWVRFQWxSOGtzWHk2S2pGLVpvM3N2enh4Mms5OTF0MHFXc0JnN3ZoYlB3ODJqX3FoSjJCTWlPOHQ2SjNOQ1Q3cjVNR0NWRVYxWVFEanpwZC1mSW5SeGpXSDRqX1d0TUVwdE1vYVJWUQ?oc=5",
+      "source": "Bloomberg.com",
       "source_tier": 1,
-      "published": "2026-11-20T22:39:00+00:00",
-      "importance": 80.4,
+      "published": "2026-11-21T17:11:23+00:00",
+      "importance": 70.4,
       "categories": [
-        "policy_geopolitics"
+        "regulatory_legal"
       ],
-      "age_hours": 12.95,
-      "detected_at": "2026-11-21T11:35:57+00:00"
+      "age_hours": 0.66,
+      "detected_at": "2026-11-21T17:51:16+00:00"
     },
     {
-      "key": "13ae02cb144c6f0e",
-      "symbol": "AI / DATA CENTERS",
-      "name": "AI / DATA CENTERS",
-      "title": "Live Updates: Trump Speaks on China Summit, Trade Deals and Data Centers",
-      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTFBmTEh2ZFRVUmZod25NaTdtQTlYYmpKYmd6T2pqMEhKTWJSdC1BT1hOMDMzV0k5bUw2RDYxS3EyZ1BjVmtOVWZ2UTRqSGVhVFMtSDc2bWkwQXZaSWo4SVoxNTRma25wVGJnSmVhNzhlYVF1dw?oc=5",
+      "key": "ec8a0c988400aecb",
+      "symbol": "CHIPS / POLICY",
+      "name": "CHIPS / POLICY",
+      "title": "Nvidia Said to Face S.E.C. Probe Into Its Accounting Practices",
+      "url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE5qSmxMVy1SN0NxMVRKNy1XTmdKbUJ0WVI4VlUwM3RQWnJvNkE0M1pLVVk3bHJZUUtYWUFJdUJjMllKbXhyYzNOR1dDazVJN2ZmaGxENktCS213Q29Vc2paREMxOEZGZkw5QzNHcU5KRjJxdVBjdHM2SlpR?oc=5",
       "source": "The New York Times",
       "source_tier": 1,
-      "published": "2026-11-21T01:12:00+00:00",
-      "importance": 77.3,
+      "published": "2026-11-21T16:06:00+00:00",
+      "importance": 69.4,
       "categories": [
-        "policy_geopolitics",
+        "regulatory_legal"
+      ],
+      "age_hours": 1.75,
+      "detected_at": "2026-11-21T17:51:16+00:00"
+    },
+    {
+      "key": "f2aa222abcbf91e4",
+      "symbol": "AI / DATA CENTERS",
+      "name": "AI / DATA CENTERS",
+      "title": "Trump wants to ban US companies from building overseas data centers as bans slow development — also considers putting a ‘tremendous tax’ in lieu of prohibition",
+      "url": "https://news.google.com/rss/articles/CBMitgJBVV95cUxOdU1Fd1lycFhaQzFpSjg2bGtjOGpoWnBmOUg1SW5BM1laTFY0LWpmQnZhYlozMV9BcnJ0LWtqQmhVZGRiWFI5bHJhNzNVSE14eXcySE1EV0ZwcUlkNHZqZXNLWmwtaW1jWTV2TDQ1RlZjMGdTcFNaYnRxMGRjNGJtdVpQWGtSaUplajdSSG95Mi1WT1MxYUphbE51ZW5KTVVDVmk0NUJHVG5yYTdiUm5EWmZWSUhYdG9BeEtTZV9XSTdLOGpsTGFwZ0tfdGoxeGhyQUdVU1JIa09jdnZyZnVZbjBaVDRyVnliSk1Odjhub0tURFJzMUhrQ1FVZ3hoU0FxcXkyN2hVbU50T1BVRmlmWXEzWWNuR3dqMHJJU3NwTU5GTTBRRnFwaHM5WFZPQS1UUDV5dnZn?oc=5",
+      "source": "Tom's Hardware",
+      "source_tier": 2,
+      "published": "2026-11-21T16:29:39+00:00",
+      "importance": 74.0,
+      "categories": [
+        "regulatory_legal",
         "data_centers_ai",
         "capex_expansion"
       ],
-      "age_hours": 10.4,
-      "detected_at": "2026-11-21T11:35:57+00:00"
+      "age_hours": 1.36,
+      "detected_at": "2026-11-21T17:51:16+00:00"
+    },
+    {
+      "key": "d9fe704a8aeae319",
+      "symbol": "AI / DATA CENTERS",
+      "name": "AI / DATA CENTERS",
+      "title": "Texas County Balks at SpaceX’s $24 Billion Data Center Tax Break. SpaceX Says Computing Equipment “Rapidly Depreciates”",
+      "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQTjdUZldlRUF1TmMxUXRtS1N0Qm9mdGc0SWJXVHFjTXFFTXM2WEdJM2IwSm52UHpUUDRwVk5CYTlNRTh1QUstUWhfM1B4eDRQakhqR3hpN0d6LWxiT2VsQnpGLVkxdFYyNXl4TVE5VkFCSURHSlNsT1p6VVdKU0J2QVFiODRuT1lQQ0pHZ2ExcjRhOTIweGtGZA?oc=5",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-21T15:08:25+00:00",
+      "importance": 66.4,
+      "categories": [
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 2.71,
+      "detected_at": "2026-11-21T17:51:16+00:00"
     }
   ]
 }
