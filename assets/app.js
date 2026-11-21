@@ -1108,61 +1108,6 @@
         </div>
 
         <div class="bubble-inspector" id="bubbleInspectorCard"></div>
-
-        <div class="bubble-table-wrap">
-          <div class="daily-strip-hdr" style="margin-bottom:8px">
-            <strong>${shown.length} Mapped Value-Chain Connections · <span class="touch-name-link" data-open-stock="${esc(center.symbol)}">${esc(center.symbol)} ↗</span></strong>
-          </div>
-          <div class="rel-cards-grid">
-            ${nodesPos.map((item, idx) => {
-              const rc = REL_COLORS[item.type] || REL_COLORS.peer;
-              const pRow = bySym[item.symbol] || {};
-              const spread = (item.change_1d_pct ?? 0) - (center.change_1d_pct ?? 0);
-              const corrStr = item.corr_60d != null ? `r = ${item.corr_60d >= 0 ? "+" : ""}${item.corr_60d.toFixed(2)}` : "—";
-              const betaStr = item.beta_60d != null ? ` · β = ${item.beta_60d.toFixed(2)}x` : "";
-              const sc = pRow.scenarios || { bullish: 0, base: 0, bearish: 0 };
-              const arts = Array.isArray(item.articles) ? item.articles : [];
-              const topUrl = item.source || arts[0]?.url || null;
-              const scaleHtml = topUrl && item.type === "co_mention"
-                ? `<a class="news-edge-link" href="${esc(topUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(item.scale || rc.label)} ↗</a>`
-                : `<strong style="color:var(--accent-2)">${esc(item.scale || rc.label)}</strong>`;
-              const noteHtml = arts.length
-                ? arts.slice(0, 2).map((a) => `
-                    <a class="rel-article-link" href="${esc(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-                      📰 ${esc(a.title)} <span class="muted">(${esc(a.source || "News")}${a.published ? ` · ${esc(a.published)}` : ""}) ↗</span>
-                    </a>`).join("")
-                : (topUrl && item.type === "co_mention"
-                    ? `<a class="rel-article-link" href="${esc(topUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">📰 ${esc(item.note || "Read co-mentioned news article")} ↗</a>`
-                    : `<div class="rcc-note">${esc(item.note || "")}</div>`);
-              return `
-                <div class="rel-conn-card" data-card-idx="${idx}">
-                  <div class="rcc-top">
-                    <div>
-                      <div class="rcc-sym">
-                        <strong class="touch-name-link" data-open-stock="${esc(item.symbol)}">${esc(item.symbol)} · ${esc(item.name)} ↗</strong>
-                        <span class="tag ${rc.badge}">${esc(rc.label)}</span>
-                        <span class="tag">${fmtCap(item.market_cap)}</span>
-                      </div>
-                    </div>
-                    <div style="text-align:right">
-                      <div style="font-weight:800;font-size:14.5px">$${fmtNum(item.close)}</div>
-                      <span class="price-pill ${clsPct(item.change_1d_pct)}" style="font-size:11.5px">${fmtPct(item.change_1d_pct, 1)}</span>
-                    </div>
-                  </div>
-                  <div class="rcc-stats">
-                    <span>Scale: ${scaleHtml}</span>
-                    <span>60d: <strong>${esc(corrStr + betaStr)}</strong></span>
-                    <span>Spread: <strong class="${clsPct(spread)}">${spread >= 0 ? "+" : ""}${spread.toFixed(1)}%</strong></span>
-                    <span>RSI-14: <strong class="${pRow.rsi14 < 30 ? "neg" : pRow.rsi14 > 70 ? "pos" : ""}">${fmtNum(pRow.rsi14, 1)}</strong></span>
-                    <span>21d vs SPY: <strong class="${clsPct(pRow.rs_spy_21d)}">${fmtPct(pRow.rs_spy_21d, 1)}</strong></span>
-                    <span>20d: <strong>Bull ${sc.bullish}% / Bear ${sc.bearish}%</strong></span>
-                  </div>
-                  ${item.type !== "co_mention" && item.note ? `<div class="rcc-note">${esc(item.note)}</div>` : ""}
-                  ${arts.length || item.type === "co_mention" ? `<div class="rel-articles-wrap">${noteHtml}</div>` : ""}
-                </div>`;
-            }).join("")}
-          </div>
-        </div>
       </div>
     `;
 
