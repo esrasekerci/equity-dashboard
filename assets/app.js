@@ -531,8 +531,18 @@
       state.date = dateStr;
       state.summary = await fetchJson(`data/${dateStr}/summary.json`);
       $("dateSelect").value = dateStr;
-      const lb = state.summary.last_bar ? `Close ${state.summary.last_bar}` : dateStr;
-      $("marketCloseBadge").textContent = `${lb} · ${state.summary.n_tickers} US stocks`;
+      const rawTs = state.index?.updated_at || state.summary.generated_at || "";
+      let updTxt = dateStr;
+      if (rawTs) {
+        const dt = new Date(rawTs);
+        if (!Number.isNaN(dt.getTime())) {
+          const pad = (n) => String(n).padStart(2, "0");
+          updTxt = `Updated ${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+        } else {
+          updTxt = `Updated ${rawTs.replace("T", " ").slice(0, 16)}`;
+        }
+      }
+      $("marketCloseBadge").textContent = updTxt;
       $("navTickerCount").textContent = String(state.summary.n_tickers || 0);
       renderOverview();
       renderScreener();
