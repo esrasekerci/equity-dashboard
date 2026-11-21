@@ -1,0 +1,25 @@
+{
+  "name": "Daily Equity Research Dashboard",
+  "short_name": "Equity Research",
+  "description": "Live 39-stock technical analysis, interactive candlestick charts, Smart Money flow, SEC filings, official authorities & breaking news.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080d17",
+  "theme_color": "#080d17",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -5,6 +5,7 @@
     date: null,
     summary: null,
     breaking: [],
+    authorities: [],
     tickerCache: {},
     view: "overview",
     prevView: "overview",
@@ -14,8 +15,13 @@
     sortKey: "notable_score",
     sortDir: -1,
     breakingCategory: "all",
+    authorityAgency: "all",
     stockTab: "news",
-    chartTab: "daily",
+    chartTab: "interactive",
+    chartRange: "6M",
+    chartOverlays: { sma20: true, sma50: true, sma200: false, sr: true },
+    tvChart: null,
+    tvResizeObs: null,
   };
 
   const $ = (id) => document.getElementById(id);
@@ -48,9 +54,9 @@
   }
 
   function setView(view) {
-    if (view !== "stock") state.prevView = view;
+    if (view !== "stock") { state.prevView = view; destroyInteractiveChart(); }
     state.view = view;
-    for (const v of ["overview", "screener", "smartmoney", "breaking", "macro", "stock"]) {
+    for (const v of ["overview", "screener", "smartmoney", "breaking", "authorities", "macro", "stock"]) {
       $(`view-${v}`).classList.toggle("hidden", v !== view);
     }
     document.querySelectorAll("#mainNav .nav-tab").forEach((btn) => {
@@ -80,6 +86,10 @@
     $("themeToggle").textContent = theme === "dark" ? "☀️" : "🌙";
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute("content", theme === "dark" ? "#080d17" : "#ffffff");
+    if (state.view === "stock" && state.activeTicker && state.chartTab === "interactive") {
+      const t = state.tickerCache[`${state.date}:${state.activeTicker}`];
+      if (t) mountInteractiveChart(t);
+    }
   }
 
   // ---- LOAD DATA ----
@@ -96,6 +106,68 @@
     renderBreaking();
   }
 
+  async function loadAuthorities() {
+    try {
+      const a = await fetchJson("data/authorities.json");
+      state.authorities = Array.isArray(a.items) ? a.items : [];
+      if (a.updated_at) $("authoritiesUpdated").textContent = `Official US Regulators · Updated ${a.updated_at.replace("T", " ").replace("Z", " UTC")}`;
+    } catch {
+      state.authorities = [];
+    }
+    renderAuthorities();
+  }
+
+  function renderAuthorities() {
+    const fallback = (state.summary?.feeds?.regulatory || []).map((x) => ({
+      agency: x.extra?.agency || x.source || "Federal Register",
+      title: x.title,
+      url: x.url,
+      published: x.published,
+      source: x.source,
+      summary: x.summary,
+      categories: x.categories || [],
+    }));
+    const items = state.authorities.length ? state.authorities : fallback;
+    $("authoritiesCount").textContent = String(items.length);
+
+    const bar = $("authorityAgencyBar");
+    const el = $("authoritiesList");
+    if (!items.length) {
+      bar.innerHTML = "";
+      el.innerHTML = `<div class="panel muted">No official authority declarations loaded yet.</div>`;
+      return;
+    }
+
+    const counts = {};
+    for (const it of items) {
+      const ag = it.agency || "Official";
+      counts[ag] = (counts[ag] || 0) + 1;
+    }
+    const agencies = ["all", ...Object.keys(counts).sort((a, b) => counts[b] - counts[a])];
+    if (!agencies.includes(state.authorityAgency)) state.authorityAgency = "all";
+
+    bar.innerHTML = agencies.map((ag) => {
+      const label = ag === "all" ? `All (${items.length})` : `${ag} (${counts[ag]})`;
+      return `<button class="chip ${state.authorityAgency === ag ? "active" : ""}" data-ag="${esc(ag)}">${esc(label)}</button>`;
+    }).join("");
+    bar.querySelectorAll("button").forEach((b) => {
+      b.onclick = () => { state.authorityAgency = b.dataset.ag; renderAuthorities(); };
+    });
+
+    const filtered = state.authorityAgency === "all" ? items : items.filter((x) => (x.agency || "Official") === state.authorityAgency);
+    el.innerHTML = filtered.map((it) => `
+      <div class="feed-item">
+        <div class="feed-meta">
+          <span class="tag amber">${esc(it.agency || it.source || "Official")}</span>
+          ${(it.categories || []).slice(0, 2).map((c) => `<span class="tag">${esc(String(c).replace(/_/g, " "))}</span>`).join("")}
+          <span>${esc((it.published || "").slice(0, 10))}</span>
+        </div>
+        <a class="feed-title" href="${esc(it.url || "#")}" target="_blank" rel="noopener">${esc(it.title)}</a>
+        ${it.summary ? `<div class="muted" style="margin-top:4px">${esc(it.summary.slice(0, 220))}${it.summary.length > 220 ? "…" : ""}</div>` : ""}
+      </div>
+    `).join("");
+  }
+
   async function loadDate(dateStr, openTicker = null) {
     $("loadingState").classList.remove("hidden");
     $("errorState").classList.add("hidden");
@@ -109,6 +181,7 @@
       renderOverview();
       renderScreener();
       renderSmartMoney();
+      renderAuthorities();
       renderMacro();
       $("loadingState").classList.add("hidden");
       if (openTicker) {
@@ -635,8 +708,11 @@
     const ins = t.insiders?.summary || {};
     const charts = t.charts || [];
 
-    if (!charts.includes(state.chartTab) && charts.length) state.chartTab = charts[0];
+    const hasSeries = Array.isArray(tech.series) && tech.series.length > 5;
+    const chartTabsAll = [...(hasSeries ? ["interactive"] : []), ...charts];
+    if (!chartTabsAll.includes(state.chartTab) && chartTabsAll.length) state.chartTab = chartTabsAll[0];
     const chartUrl = (kind) => `data/${state.date}/charts/${t.symbol}_${kind}.png`;
+    const chartLabel = (c) => (c === "interactive" ? "Interactive" : c === "daily" ? "Daily + S/R" : c === "momentum" ? "RSI / MACD" : "Weekly");
 
     // 52W range bar
     let rangeHtml = "";
@@ -697,15 +773,15 @@
         ${rangeHtml}
       </div>
 
-      ${charts.length ? `
+      ${chartTabsAll.length ? `
       <div class="chart-card">
         <div class="chart-header">
           <div class="chart-tabs" id="chartTabs">
-            ${charts.map((c) => `<button class="chip ${c === state.chartTab ? "active" : ""}" data-chart="${c}">${c === "daily" ? "Daily + S/R" : c === "momentum" ? "RSI / MACD" : "Weekly"}</button>`).join("")}
+            ${chartTabsAll.map((c) => `<button class="chip ${c === state.chartTab ? "active" : ""}" data-chart="${c}">${chartLabel(c)}</button>`).join("")}
           </div>
-          <span class="muted">Tap chart to zoom</span>
+          <span class="muted" id="chartHint">${state.chartTab === "interactive" ? "Drag · pinch to zoom · tap for prices" : "Tap chart to zoom"}</span>
         </div>
-        <img id="activeChartImg" class="chart-img" src="${chartUrl(state.chartTab)}" alt="${esc(t.symbol)} chart" />
+        <div id="chartBody"></div>
       </div>` : ""}
 
       <div class="section-header">
@@ -778,19 +854,53 @@
       </div>
     `;
 
+    const renderChartBody = () => {
+      const body = $("chartBody");
+      if (!body) return;
+      destroyInteractiveChart();
+      $("chartHint").textContent = state.chartTab === "interactive" ? "Drag · pinch to zoom · tap for prices" : "Tap chart to zoom";
+      if (state.chartTab === "interactive") {
+        const ov = state.chartOverlays;
+        body.innerHTML = `
+          <div class="chart-toolbar">
+            <div class="chart-tabs" id="rangeBar">
+              ${["1M", "3M", "6M", "1Y"].map((r) => `<button class="chip ${state.chartRange === r ? "active" : ""}" data-range="${r}">${r}</button>`).join("")}
+            </div>
+            <div class="chart-tabs" id="overlayBar">
+              <button class="chip ${ov.sma20 ? "active" : ""}" data-ov="sma20">SMA20</button>
+              <button class="chip ${ov.sma50 ? "active" : ""}" data-ov="sma50">SMA50</button>
+              <button class="chip ${ov.sma200 ? "active" : ""}" data-ov="sma200">SMA200</button>
+              <button class="chip ${ov.sr ? "active" : ""}" data-ov="sr">S/R</button>
+            </div>
+          </div>
+          <div class="tv-legend" id="tvLegend"></div>
+          <div class="tv-chart-box" id="tvChart"></div>`;
+        $("rangeBar").querySelectorAll("button").forEach((b) => {
+          b.onclick = () => { state.chartRange = b.dataset.range; renderChartBody(); };
+        });
+        $("overlayBar").querySelectorAll("button").forEach((b) => {
+          b.onclick = () => { state.chartOverlays[b.dataset.ov] = !state.chartOverlays[b.dataset.ov]; renderChartBody(); };
+        });
+        mountInteractiveChart(t);
+      } else {
+        body.innerHTML = `<img id="activeChartImg" class="chart-img" src="${chartUrl(state.chartTab)}" alt="${esc(t.symbol)} chart" />`;
+        $("activeChartImg").onclick = () => {
+          $("modalImg").src = $("activeChartImg").src;
+          $("imgModal").classList.remove("hidden");
+        };
+      }
+    };
+
     const tabsEl = $("chartTabs");
     if (tabsEl) {
       tabsEl.querySelectorAll("button").forEach((b) => {
         b.onclick = () => {
           state.chartTab = b.dataset.chart;
           tabsEl.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b));
-          $("activeChartImg").src = chartUrl(state.chartTab);
+          renderChartBody();
         };
       });
-      $("activeChartImg").onclick = () => {
-        $("modalImg").src = $("activeChartImg").src;
-        $("imgModal").classList.remove("hidden");
-      };
+      renderChartBody();
     }
 
     const renderSubTab = () => {
@@ -874,6 +984,116 @@
       };
     });
     renderSubTab();
+  }
+
+  // ---- INTERACTIVE CANDLESTICK CHART (TradingView Lightweight Charts) ----
+  function destroyInteractiveChart() {
+    if (state.tvResizeObs) { state.tvResizeObs.disconnect(); state.tvResizeObs = null; }
+    if (state.tvChart) { try { state.tvChart.remove(); } catch {} state.tvChart = null; }
+  }
+
+  function mountInteractiveChart(t) {
+    const box = $("tvChart");
+    if (!box) return;
+    if (!window.LightweightCharts) {
+      box.innerHTML = `<div class="loading-box"><div class="spinner"></div><p>Loading chart engine…</p></div>`;
+      setTimeout(() => { if ($("tvChart") && window.LightweightCharts) { box.innerHTML = ""; mountInteractiveChart(t); } }, 600);
+      return;
+    }
+    destroyInteractiveChart();
+    box.innerHTML = "";
+
+    const all = t.technical?.series || [];
+    const n = { "1M": 22, "3M": 66, "6M": 132, "1Y": 260 }[state.chartRange] || 132;
+    const data = all.slice(-n);
+    if (!data.length) { box.innerHTML = `<div class="muted">No price history available.</div>`; return; }
+
+    const dark = document.documentElement.dataset.theme !== "light";
+    const css = getComputedStyle(document.documentElement);
+    const textCol = css.getPropertyValue("--muted").trim() || "#8899b4";
+    const gridCol = dark ? "rgba(148,163,184,0.08)" : "rgba(15,23,42,0.06)";
+    const upCol = css.getPropertyValue("--green").trim() || "#22c55e";
+    const dnCol = css.getPropertyValue("--red").trim() || "#f43f5e";
+
+    const LC = window.LightweightCharts;
+    const chart = LC.createChart(box, {
+      width: box.clientWidth,
+      height: box.clientHeight,
+      layout: { background: { type: "solid", color: "transparent" }, textColor: textCol, fontSize: 11 },
+      grid: { vertLines: { color: gridCol }, horzLines: { color: gridCol } },
+      crosshair: { mode: LC.CrosshairMode.Normal },
+      rightPriceScale: { borderColor: gridCol, scaleMargins: { top: 0.06, bottom: 0.24 } },
+      timeScale: { borderColor: gridCol, timeVisible: false },
+      handleScroll: true,
+      handleScale: true,
+    });
+    state.tvChart = chart;
+
+    const candles = chart.addCandlestickSeries({
+      upColor: upCol, downColor: dnCol, borderUpColor: upCol, borderDownColor: dnCol, wickUpColor: upCol, wickDownColor: dnCol,
+    });
+    candles.setData(data.map((d) => ({ time: d.t, open: d.o, high: d.h, low: d.l, close: d.c })));
+
+    const vol = chart.addHistogramSeries({ priceFormat: { type: "volume" }, priceScaleId: "vol" });
+    chart.priceScale("vol").applyOptions({ scaleMargins: { top: 0.8, bottom: 0 } });
+    vol.setData(data.map((d) => ({ time: d.t, value: d.v, color: d.c >= d.o ? "rgba(34,197,94,0.35)" : "rgba(244,63,94,0.35)" })));
+
+    const ov = state.chartOverlays;
+    const lineDefs = [
+      ["sma20", "s20", "#f59e0b"],
+      ["sma50", "s50", "#3b82f6"],
+      ["sma200", "s200", "#a855f7"],
+    ];
+    for (const [key, field, color] of lineDefs) {
+      if (!ov[key]) continue;
+      const pts = data.filter((d) => d[field] != null).map((d) => ({ time: d.t, value: d[field] }));
+      if (!pts.length) continue;
+      const s = chart.addLineSeries({ color, lineWidth: 1.5, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+      s.setData(pts);
+    }
+
+    if (ov.sr) {
+      const lv = t.technical?.computed?.levels || {};
+      for (const x of [...(lv.support || []), ...(lv.resistance || [])]) {
+        if (x.price == null) continue;
+        candles.createPriceLine({
+          price: x.price,
+          color: x.role === "support" ? upCol : dnCol,
+          lineWidth: 1,
+          lineStyle: LC.LineStyle.Dashed,
+          axisLabelVisible: true,
+          title: x.label || "",
+        });
+      }
+    }
+
+    chart.timeScale().fitContent();
+
+    const legend = $("tvLegend");
+    const setLegend = (d) => {
+      if (!legend || !d) return;
+      const chg = d.o ? ((d.c - d.o) / d.o) * 100 : 0;
+      legend.innerHTML = `
+        <span><strong>${esc(d.t)}</strong></span>
+        <span>O ${fmtNum(d.o)}</span><span>H ${fmtNum(d.h)}</span><span>L ${fmtNum(d.l)}</span>
+        <span>C <strong class="${clsPct(chg)}">${fmtNum(d.c)}</strong></span>
+        <span class="${clsPct(chg)}">${fmtPct(chg)}</span>
+        <span class="muted">Vol ${Number(d.v || 0).toLocaleString()}</span>`;
+    };
+    const byTime = Object.fromEntries(data.map((d) => [d.t, d]));
+    setLegend(data[data.length - 1]);
+    chart.subscribeCrosshairMove((p) => {
+      if (!p || !p.time) { setLegend(data[data.length - 1]); return; }
+      const key = typeof p.time === "string" ? p.time : `${p.time.year}-${String(p.time.month).padStart(2, "0")}-${String(p.time.day).padStart(2, "0")}`;
+      setLegend(byTime[key] || data[data.length - 1]);
+    });
+
+    if (window.ResizeObserver) {
+      state.tvResizeObs = new ResizeObserver(() => {
+        if (state.tvChart && box.clientWidth) state.tvChart.applyOptions({ width: box.clientWidth, height: box.clientHeight });
+      });
+      state.tvResizeObs.observe(box);
+    }
   }
 
   // ---- EVENTS ----
@@ -978,15 +1198,20 @@
       const targetDate = dates.some((d) => d.date === wantedDate) ? wantedDate : state.index.latest;
       const wantedTicker = params.get("ticker");
       const wantedView = params.get("view");
-      if (wantedView && ["overview", "screener", "smartmoney", "breaking", "macro"].includes(wantedView)) state.view = wantedView;
+      if (wantedView && ["overview", "screener", "smartmoney", "breaking", "authorities", "macro"].includes(wantedView)) state.view = wantedView;
 
       await loadBreaking();
+      await loadAuthorities();
       await loadDate(targetDate, wantedTicker);
     } catch (err) {
       $("loadingState").classList.add("hidden");
       $("errorState").textContent = `Failed to load dashboard index: ${err.message}`;
       $("errorState").classList.remove("hidden");
     }
+  }
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
   }
 
   boot();

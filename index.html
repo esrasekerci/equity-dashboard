@@ -3,11 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#090e1a" />
+  <meta name="theme-color" content="#080d17" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Equity Research" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="icon" type="image/png" href="assets/icon-192.png" />
   <meta property="og:title" content="Daily Equity Research Dashboard" />
-  <meta property="og:description" content="Live 39-stock technical analysis, sector heatmap, support/resistance levels, SEC filings, insider activity & macro indicators." />
+  <meta property="og:description" content="Live 39-stock technical analysis, interactive charts, Smart Money flow, official legal authorities, SEC filings & macro." />
   <title>Daily Equity Research Dashboard</title>
   <link rel="stylesheet" href="assets/app.css" />
+  <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -39,6 +46,7 @@
       <button class="nav-tab" data-view="screener">Screener <span class="badge-pill" id="navTickerCount">39</span></button>
       <button class="nav-tab" data-view="smartmoney">Smart Money</button>
       <button class="nav-tab" data-view="breaking">Breaking <span class="badge-pill hot" id="breakingCount">0</span></button>
+      <button class="nav-tab" data-view="authorities">Authorities <span class="badge-pill" id="authoritiesCount">0</span></button>
       <button class="nav-tab" data-view="macro">Macro</button>
       <button class="nav-tab hidden" data-view="stock" id="stockNavTab">Stock</button>
     </nav>
@@ -196,6 +204,20 @@
         <div class="filter-bar" id="breakingCategoryBar"></div>
       </div>
       <div id="breakingList" class="feed-list"></div>
+    </section>
+
+    <!-- OFFICIAL AUTHORITIES & LEGAL DECLARATIONS VIEW -->
+    <section id="view-authorities" class="view hidden">
+      <div class="section-header">
+        <div>
+          <h2>Official Legal &amp; Regulatory Authorities</h2>
+          <p class="section-sub" id="authoritiesUpdated">White House Executive Orders · SEC · DOJ · FTC · Commerce/BIS · Treasury/OFAC · FERC · NRC · NHTSA</p>
+        </div>
+      </div>
+      <div class="filter-bar-scroll">
+        <div class="filter-bar" id="authorityAgencyBar"></div>
+      </div>
+      <div id="authoritiesList" class="feed-list"></div>
     </section>
 
     <!-- MACRO & WORLD VIEW -->
