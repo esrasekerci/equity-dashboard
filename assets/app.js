@@ -1,4 +1,4 @@
-/* Daily Equity Research Dynamic Dashboard */
+/* Daily Equity Research Dynamic Dashboard (Desktop + Mobile-First) */
 (() => {
   const state = {
     index: null,
@@ -7,6 +7,7 @@
     breaking: [],
     tickerCache: {},
     view: "overview",
+    prevView: "overview",
     activeTicker: null,
     filter: "all",
     activeSector: null,
@@ -42,13 +43,13 @@
     if (state.date) params.set("date", state.date);
     if (state.view === "stock" && state.activeTicker) params.set("ticker", state.activeTicker);
     else if (state.view !== "overview") params.set("view", state.view);
-    const next = `${location.pathname}?${params.toString()}`;
-    history.replaceState(null, "", next);
+    history.replaceState(null, "", `${location.pathname}?${params.toString()}`);
   }
 
   function setView(view) {
+    if (view !== "stock") state.prevView = view;
     state.view = view;
-    for (const v of ["overview", "breaking", "macro", "stock"]) {
+    for (const v of ["overview", "screener", "breaking", "macro", "stock"]) {
       $(`view-${v}`).classList.toggle("hidden", v !== view);
     }
     document.querySelectorAll("#mainNav .nav-tab").forEach((btn) => {
@@ -65,14 +66,19 @@
   // ---- THEME ----
   function initTheme() {
     const saved = localStorage.getItem("eqr_theme") || "dark";
-    document.documentElement.dataset.theme = saved;
-    $("themeToggle").textContent = saved === "dark" ? "☀️" : "🌙";
+    applyTheme(saved);
     $("themeToggle").addEventListener("click", () => {
       const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-      document.documentElement.dataset.theme = next;
       localStorage.setItem("eqr_theme", next);
-      $("themeToggle").textContent = next === "dark" ? "☀️" : "🌙";
+      applyTheme(next);
     });
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    $("themeToggle").textContent = theme === "dark" ? "☀️" : "🌙";
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", theme === "dark" ? "#080d17" : "#ffffff");
   }
 
   // ---- LOAD DATA ----
@@ -81,7 +87,7 @@
       const b = await fetchJson("data/breaking_news.json");
       state.breaking = Array.isArray(b.items) ? b.items : [];
       $("breakingCount").textContent = String(state.breaking.length);
-      if (b.updated_at) $("breakingUpdated").textContent = `Last checked: ${b.updated_at.replace("T", " ").replace("Z", " UTC")}`;
+      if (b.updated_at) $("breakingUpdated").textContent = `Updated ${b.updated_at.replace("T", " ").replace("Z", " UTC")} · Auto-checked every 2h Mon–Fri`;
     } catch {
       state.breaking = [];
       $("breakingCount").textContent = "0";
@@ -96,9 +102,11 @@
       state.date = dateStr;
       state.summary = await fetchJson(`data/${dateStr}/summary.json`);
       $("dateSelect").value = dateStr;
-      const lb = state.summary.last_bar ? `Market close: ${state.summary.last_bar}` : `Report: ${dateStr}`;
-      $("marketCloseBadge").textContent = `${lb} · ${state.summary.n_tickers} stocks`;
+      const lb = state.summary.last_bar ? `Close ${state.summary.last_bar}` : dateStr;
+      $("marketCloseBadge").textContent = `${lb} · ${state.summary.n_tickers} US stocks`;
+      $("navTickerCount").textContent = String(state.summary.n_tickers || 0);
       renderOverview();
+      renderScreener();
       renderMacro();
       $("loadingState").classList.add("hidden");
       if (openTicker) {
@@ -122,74 +130,93 @@
     const br = s.breadth || {};
     const mp = (s.alerts && s.alerts.macro_pulse) || {};
 
-    // Breaking news banner on home if recent (< 24h) items exist
+    // Breaking news banner
     const banner = $("breakingBanner");
     if (state.breaking.length > 0) {
       const latest = state.breaking[0];
       banner.innerHTML = `
-        <div>
+        <div class="breaking-banner-body">
           <span class="breaking-tag">Breaking</span>
-          <strong>${esc(latest.symbol)}</strong> — ${esc(latest.title)}
-          <span class="muted">(${esc(latest.source || "")})</span>
+          <span class="breaking-headline"><strong>${esc(latest.symbol)}</strong> · ${esc(latest.title)}</span>
+          <div class="muted" style="margin-top:3px">${esc(latest.source || "")} · ${state.breaking.length} alerts</div>
         </div>
-        <button class="btn-secondary" id="openBreakingBtn">View all ${state.breaking.length} alerts →</button>
+        <span class="breaking-arrow">›</span>
       `;
       banner.classList.remove("hidden");
-      $("openBreakingBtn").onclick = () => setView("breaking");
+      banner.onclick = () => setView("breaking");
     } else {
       banner.classList.add("hidden");
     }
 
-    // KPI strip
+    // KPI Strip
+    const adv = br.advancers ?? 0;
+    const dec = br.decliners ?? 0;
+    const tot = Math.max(1, adv + dec);
+    const advPct = Math.round((adv / tot) * 100);
     const fomcDays = mp.fomc && mp.fomc.days_to_decision != null ? `${mp.fomc.days_to_decision}d` : "—";
     const fomcNext = mp.fomc && mp.fomc.next_meeting ? mp.fomc.next_meeting[1] : "";
+
     const kpis = [
-      { label: "SPY (1D / 21D)", val: fmtPct(hm.spy_ret_1d), cls: clsPct(hm.spy_ret_1d), sub: `21D: ${fmtPct(hm.spy_ret_21d)}` },
-      { label: "Watchlist Breadth", val: `${br.advancers ?? 0}↑ / ${br.decliners ?? 0}↓`, cls: clsPct(br.avg_ret_1d), sub: `Avg 1D: ${fmtPct(br.avg_ret_1d)} (${br.n ?? s.n_tickers} stocks)` },
-      { label: "US 10Y Yield", val: mp.dgs10 ? `${fmtNum(mp.dgs10.latest, 2)}%` : "—", cls: "", sub: mp.dgs10 ? `1W: ${fmtNum(mp.dgs10.change_1w, 2)}pp` : "FRED" },
-      { label: "VIX Volatility", val: mp.vix ? fmtNum(mp.vix.latest, 2) : "—", cls: mp.vix && mp.vix.latest >= 20 ? "warn" : "", sub: mp.vix ? `1W: ${fmtNum(mp.vix.change_1w, 2)}` : "FRED" },
-      { label: "WTI Crude Oil", val: mp.wti ? `$${fmtNum(mp.wti.latest, 2)}` : "—", cls: "", sub: mp.wti ? `1M: ${fmtNum(mp.wti.change_1m, 2)}` : "FRED" },
-      { label: "Next FOMC", val: fomcDays, cls: "", sub: fomcNext ? `Decision: ${fomcNext}` : "Fed calendar" },
+      { label: "SPY (1D)", val: fmtPct(hm.spy_ret_1d), cls: clsPct(hm.spy_ret_1d), sub: `21D: ${fmtPct(hm.spy_ret_21d)}` },
+      {
+        label: "Breadth",
+        val: `${adv}↑ / ${dec}↓`,
+        cls: clsPct(br.avg_ret_1d),
+        sub: `Avg 1D: ${fmtPct(br.avg_ret_1d)}`,
+        extra: `<div class="breadth-bar"><div class="breadth-up" style="width:${advPct}%"></div><div class="breadth-dn" style="width:${100 - advPct}%"></div></div>`,
+      },
+      { label: "US 10Y", val: mp.dgs10 ? `${fmtNum(mp.dgs10.latest, 2)}%` : "—", cls: "", sub: mp.dgs10 ? `1W: ${fmtNum(mp.dgs10.change_1w, 2)}pp` : "FRED" },
+      { label: "VIX", val: mp.vix ? fmtNum(mp.vix.latest, 1) : "—", cls: mp.vix && mp.vix.latest >= 20 ? "warn" : "", sub: mp.vix ? `1W: ${fmtNum(mp.vix.change_1w, 1)}` : "FRED" },
+      { label: "WTI Oil", val: mp.wti ? `$${fmtNum(mp.wti.latest, 1)}` : "—", cls: "", sub: mp.wti ? `1M: ${fmtNum(mp.wti.change_1m, 1)}` : "FRED" },
+      { label: "Next FOMC", val: fomcDays, cls: "", sub: fomcNext ? fomcNext : "Fed calendar" },
     ];
     $("kpiStrip").innerHTML = kpis.map((k) => `
       <div class="kpi-card">
         <div class="kpi-label">${esc(k.label)}</div>
         <div class="kpi-val ${k.cls}">${esc(k.val)}</div>
         <div class="kpi-sub">${esc(k.sub)}</div>
+        ${k.extra || ""}
       </div>
     `).join("");
 
-    // Alerts radar
+    // Alerts Radar
     const al = s.alerts || {};
-    const patternsAll = [...(al.breakouts || []).map((x) => ({ ...x, dir: "bull" })), ...(al.breakdowns || []).map((x) => ({ ...x, dir: "bear" }))];
+    const patternsAll = [
+      ...(al.breakouts || []).map((x) => ({ ...x, dir: "bull" })),
+      ...(al.breakdowns || []).map((x) => ({ ...x, dir: "bear" })),
+    ];
     const alertsHtml = [
       {
-        title: `Breakouts & Breakdowns (${patternsAll.length})`,
-        items: patternsAll.slice(0, 10).map((p) => `<span class="ticker-pill" data-sym="${esc(p.symbol)}"><strong>${esc(p.symbol)}</strong><span class="${p.dir === "bull" ? "pos" : "neg"}">${esc(p.kind)}</span></span>`),
+        title: "Patterns & Breakouts",
+        count: patternsAll.length,
+        items: patternsAll.slice(0, 8).map((p) => `<span class="ticker-pill" data-sym="${esc(p.symbol)}"><strong>${esc(p.symbol)}</strong><span class="${p.dir === "bull" ? "pos" : "neg"}">${esc(p.kind)}</span></span>`),
         empty: "No active pattern signals",
       },
       {
-        title: `Earnings Window ±10d (${(al.earnings_soon || []).length})`,
-        items: (al.earnings_soon || []).slice(0, 10).map((e) => `<span class="ticker-pill" data-sym="${esc(e.symbol)}"><strong>${esc(e.symbol)}</strong><span class="muted">${e.days >= 0 ? `in ${e.days}d` : `${Math.abs(e.days)}d ago`}</span></span>`),
+        title: "Earnings Window (±10d)",
+        count: (al.earnings_soon || []).length,
+        items: (al.earnings_soon || []).slice(0, 8).map((e) => `<span class="ticker-pill" data-sym="${esc(e.symbol)}"><strong>${esc(e.symbol)}</strong><span class="warn">${e.days >= 0 ? `in ${e.days}d` : `${Math.abs(e.days)}d ago`}</span></span>`),
         empty: "No watchlist earnings within ±10d",
       },
       {
-        title: `Extreme RSI (${(al.oversold || []).length} oversold · ${(al.overbought || []).length} overbought)`,
+        title: "Extreme RSI (<30 / >70)",
+        count: (al.oversold || []).length + (al.overbought || []).length,
         items: [
-          ...(al.oversold || []).slice(0, 6).map((x) => `<span class="ticker-pill" data-sym="${esc(x.symbol)}"><strong>${esc(x.symbol)}</strong><span class="neg">RSI ${x.rsi14}</span></span>`),
-          ...(al.overbought || []).slice(0, 6).map((x) => `<span class="ticker-pill" data-sym="${esc(x.symbol)}"><strong>${esc(x.symbol)}</strong><span class="pos">RSI ${x.rsi14}</span></span>`),
+          ...(al.oversold || []).slice(0, 5).map((x) => `<span class="ticker-pill" data-sym="${esc(x.symbol)}"><strong>${esc(x.symbol)}</strong><span class="neg">${x.rsi14}</span></span>`),
+          ...(al.overbought || []).slice(0, 5).map((x) => `<span class="ticker-pill" data-sym="${esc(x.symbol)}"><strong>${esc(x.symbol)}</strong><span class="pos">${x.rsi14}</span></span>`),
         ],
-        empty: "All tickers between RSI 30–70",
+        empty: "All tickers neutral (30–70)",
       },
       {
-        title: `Open-Market Insider Buys (${(al.insider_buys || []).length})`,
+        title: "Form 4 Insider Buys",
+        count: (al.insider_buys || []).length,
         items: (al.insider_buys || []).slice(0, 8).map((x) => `<span class="ticker-pill" data-sym="${esc(x.symbol)}"><strong>${esc(x.symbol)}</strong><span class="pos">${x.buys} buy${x.buys > 1 ? "s" : ""}</span></span>`),
-        empty: "No open-market Form 4 buys in window",
+        empty: "No open-market Form 4 buys",
       },
     ];
     $("alertsSection").innerHTML = alertsHtml.map((c) => `
       <div class="alert-card">
-        <div class="alert-title">${esc(c.title)}</div>
+        <div class="alert-title"><span>${esc(c.title)}</span><span class="alert-count">${c.count}</span></div>
         <div class="alert-pills">${c.items.length ? c.items.join("") : `<span class="muted">${c.empty}</span>`}</div>
       </div>
     `).join("");
@@ -197,62 +224,61 @@
       el.onclick = () => openStock(el.dataset.sym);
     });
 
-    // Sector heatmap
+    // Sector Heatmap
     const sectors = hm.sectors || [];
     $("sectorHeatmap").innerHTML = sectors.map((sec) => {
       const r = sec.avg_ret_1d != null ? sec.avg_ret_1d : sec.etf_ret_1d;
-      const intensity = Math.min(0.32, Math.max(0.08, Math.abs(r || 0) / 25));
-      const bg = r > 0 ? `rgba(34, 197, 94, ${intensity})` : r < 0 ? `rgba(239, 68, 68, ${intensity})` : "var(--bg-card)";
+      const intensity = Math.min(0.28, Math.max(0.08, Math.abs(r || 0) / 28));
+      const bg = r > 0 ? `rgba(34, 197, 94, ${intensity})` : r < 0 ? `rgba(244, 63, 94, ${intensity})` : "var(--bg-card)";
       const active = state.activeSector === sec.sector ? "active-sector" : "";
       return `
         <div class="heat-tile ${active}" data-sector="${esc(sec.sector)}" style="background:${bg}">
-          <div class="heat-name">${esc(fmtSector(sec.sector))}</div>
-          <div class="heat-etf">${esc(sec.etf)} · ${(sec.members || []).length} stocks</div>
+          <div class="heat-top">
+            <span class="heat-name">${esc(fmtSector(sec.sector))}</span>
+            <span class="heat-etf">${esc(sec.etf)}</span>
+          </div>
           <div class="heat-ret ${clsPct(r)}">${fmtPct(r)}</div>
-          <div class="muted">ETF 1D: ${fmtPct(sec.etf_ret_1d)} · 21D: ${fmtPct(sec.etf_ret_21d)}</div>
+          <div class="muted">${(sec.members || []).length} stocks · ETF ${fmtPct(sec.etf_ret_1d, 1)}</div>
         </div>
       `;
     }).join("");
     $("sectorHeatmap").querySelectorAll(".heat-tile").forEach((el) => {
       el.onclick = () => {
-        const sec = el.dataset.sector;
-        state.activeSector = state.activeSector === sec ? null : sec;
-        renderOverview();
+        state.activeSector = el.dataset.sector;
+        renderScreener();
+        setView("screener");
       };
     });
 
-    // Notable movers
+    // Notable Movers
     const bySym = Object.fromEntries((s.tickers || []).map((t) => [t.symbol, t]));
-    $("notableGrid").innerHTML = (s.notable || []).slice(0, 8).map((n) => {
+    $("notableGrid").innerHTML = (s.notable || []).slice(0, 6).map((n) => {
       const row = bySym[n.symbol] || {};
       return `
         <div class="notable-card" data-sym="${esc(n.symbol)}">
           <div class="notable-top">
             <div>
-              <span class="notable-sym">${esc(n.symbol)}</span>
-              <span class="muted">${esc(row.name || "")}</span>
+              <div class="notable-sym">${esc(n.symbol)}${row.is_core ? ' <span class="core-star">★</span>' : ""}</div>
+              <div class="notable-name">${esc(row.name || "")}</div>
             </div>
-            <span class="score-badge">Score ${fmtNum(n.score, 1)}</span>
+            <div style="text-align:right">
+              <div class="price-pill ${clsPct(row.change_1d_pct)}">$${fmtNum(row.close)} · ${fmtPct(row.change_1d_pct, 1)}</div>
+              <div style="margin-top:4px"><span class="score-badge">Score ${fmtNum(n.score, 0)}</span></div>
+            </div>
           </div>
-          <div>
-            <strong>$${fmtNum(row.close)}</strong>
-            <span class="${clsPct(row.change_1d_pct)}" style="margin-left:6px;font-weight:700">${fmtPct(row.change_1d_pct)}</span>
-            ${row.rsi14 != null ? `<span class="muted" style="margin-left:8px">RSI ${row.rsi14}</span>` : ""}
-          </div>
-          <ul class="notable-why">${(n.why || []).slice(0, 3).map((w) => `<li>${esc(w)}</li>`).join("")}</ul>
+          <ul class="notable-why">${(n.why || []).slice(0, 2).map((w) => `<li>${esc(w)}</li>`).join("")}</ul>
         </div>
       `;
     }).join("");
     $("notableGrid").querySelectorAll(".notable-card").forEach((el) => {
       el.onclick = () => openStock(el.dataset.sym);
     });
-
-    renderScreener();
   }
 
-  function renderScreener() {
+  // ---- SCREENER (Desktop Table + Mobile Cards) ----
+  function getFilteredRows() {
     const s = state.summary;
-    if (!s) return;
+    if (!s) return [];
     let rows = [...(s.tickers || [])];
 
     if (state.activeSector) {
@@ -281,16 +307,23 @@
       if (typeof va === "string") return va.localeCompare(String(vb)) * dir;
       return (va - vb) * dir;
     });
+    return rows;
+  }
 
-    $("screenerCount").textContent = `(${rows.length} of ${(s.tickers || []).length})`;
+  function renderScreener() {
+    const s = state.summary;
+    if (!s) return;
+    const rows = getFilteredRows();
+    $("screenerCount").textContent = `(${rows.length}/${(s.tickers || []).length})`;
 
+    document.querySelectorAll("#screenerTable th[data-sort]").forEach((th) => {
+      th.classList.toggle("sorted", th.dataset.sort === state.sortKey);
+    });
+
+    // Desktop table rows
     $("screenerBody").innerHTML = rows.map((r) => {
-      const sma = [
-        [20, r.above_sma20],
-        [50, r.above_sma50],
-        [200, r.above_sma200],
-      ].map(([p, up]) => `<span class="sma-dot ${up ? "up" : "dn"}">${p}</span>`).join("");
-
+      const sma = [[20, r.above_sma20], [50, r.above_sma50], [200, r.above_sma200]]
+        .map(([p, up]) => `<span class="sma-dot ${up ? "up" : "dn"}">${p}</span>`).join("");
       const sc = r.scenarios || { bullish: 0, base: 0, bearish: 0 };
       const s1Txt = r.s1 ? `S ${fmtPct(r.s1.distance_pct, 1)}` : "—";
       const r1Txt = r.r1 ? `R ${fmtPct(r.r1.distance_pct, 1)}` : "—";
@@ -299,7 +332,7 @@
       return `
         <tr data-sym="${esc(r.symbol)}">
           <td>
-            <strong>${esc(r.symbol)}</strong>${r.is_core ? '<span class="core-star" title="Core starter ticker">★</span>' : ""}
+            <strong>${esc(r.symbol)}</strong>${r.is_core ? ' <span class="core-star">★</span>' : ""}
             <div class="muted">${esc(r.name)}</div>
           </td>
           <td><span class="tag">${esc(fmtSector(r.sector))}</span></td>
@@ -322,27 +355,79 @@
         </tr>
       `;
     }).join("");
-
     $("screenerBody").querySelectorAll("tr").forEach((tr) => {
       tr.onclick = () => openStock(tr.dataset.sym);
     });
+
+    // Mobile cards
+    $("screenerCards").innerHTML = rows.length ? rows.map((r) => {
+      const sma = [[20, r.above_sma20], [50, r.above_sma50], [200, r.above_sma200]]
+        .map(([p, up]) => `<span class="sma-dot ${up ? "up" : "dn"}">${p}</span>`).join("");
+      const sc = r.scenarios || { bullish: 0, base: 0, bearish: 0 };
+      const earnChip = r.earnings_days != null && Math.abs(r.earnings_days) <= 10
+        ? `<span class="tag amber">Earn ${r.earnings_days >= 0 ? `in ${r.earnings_days}d` : `${Math.abs(r.earnings_days)}d ago`}</span>` : "";
+      const s1r1 = `${r.s1 ? `S1 ${fmtPct(r.s1.distance_pct, 1)}` : ""} ${r.r1 ? `· R1 ${fmtPct(r.r1.distance_pct, 1)}` : ""}`.trim();
+
+      return `
+        <div class="stock-card" data-sym="${esc(r.symbol)}">
+          <div class="sc-top">
+            <div style="min-width:0">
+              <div class="sc-sym-row">
+                <span class="sc-sym">${esc(r.symbol)}</span>
+                ${r.is_core ? '<span class="core-star">★</span>' : ""}
+                <span class="tag">${esc(fmtSector(r.sector))}</span>
+              </div>
+              <div class="muted" style="margin-top:2px">${esc(r.name)}</div>
+            </div>
+            <div class="sc-price-col">
+              <div class="sc-price">$${fmtNum(r.close)}</div>
+              <span class="price-pill ${clsPct(r.change_1d_pct)}" style="margin-top:3px;font-size:12px">${fmtPct(r.change_1d_pct)}</span>
+            </div>
+          </div>
+
+          <div class="sc-metrics">
+            <div><div class="sc-m-k">Score</div><div class="sc-m-v">${fmtNum(r.notable_score, 0)}</div></div>
+            <div><div class="sc-m-k">RSI-14</div><div class="sc-m-v ${r.rsi14 < 30 ? "neg" : r.rsi14 > 70 ? "pos" : ""}">${fmtNum(r.rsi14, 1)}</div></div>
+            <div><div class="sc-m-k">vs SPY</div><div class="sc-m-v ${clsPct(r.rs_spy_21d)}">${fmtPct(r.rs_spy_21d, 1)}</div></div>
+            <div><div class="sc-m-k">Trend</div><div class="sc-m-v"><div class="sma-dots">${sma}</div></div></div>
+          </div>
+
+          <div class="sc-bottom">
+            <div>
+              <div class="prob-bar">
+                <div class="prob-bull" style="width:${sc.bullish}%"></div>
+                <div class="prob-base" style="width:${sc.base}%"></div>
+                <div class="prob-bear" style="width:${sc.bearish}%"></div>
+              </div>
+              <div class="prob-labels">Bull ${sc.bullish}% · Base ${sc.base}% · Bear ${sc.bearish}%</div>
+            </div>
+            <div style="text-align:right">
+              ${earnChip || `<span class="muted">${esc(s1r1)}</span>`}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("") : `<div class="panel muted">No stocks match the active filter.</div>`;
+
+    $("screenerCards").querySelectorAll(".stock-card").forEach((card) => {
+      card.onclick = () => openStock(card.dataset.sym);
+    });
   }
 
-  // ---- BREAKING NEWS VIEW ----
+  // ---- BREAKING NEWS ----
   function renderBreaking() {
     const el = $("breakingList");
     if (!state.breaking.length) {
-      el.innerHTML = `<div class="panel muted">No breaking alerts logged yet. Important high-impact headlines are checked every 2 hours on weekdays and posted automatically here and to your Telegram channel.</div>`;
+      el.innerHTML = `<div class="panel muted">No breaking alerts yet. Important headlines are checked every 2 hours on weekdays and posted here &amp; to Telegram.</div>`;
       return;
     }
     el.innerHTML = state.breaking.map((item) => `
       <div class="feed-item">
         <div class="feed-meta">
           <span class="ticker-pill" data-sym="${esc(item.symbol)}"><strong>${esc(item.symbol)}</strong></span>
-          <span class="tag amber">Importance ${fmtNum(item.importance, 0)}</span>
-          ${(item.categories || []).map((c) => `<span class="tag">${esc(c)}</span>`).join("")}
-          <span>${esc(item.source || "")}</span>
-          <span>${esc((item.published || "").replace("T", " ").slice(0, 16))} UTC</span>
+          <span class="tag amber">Score ${fmtNum(item.importance, 0)}</span>
+          ${(item.categories || []).slice(0, 2).map((c) => `<span class="tag">${esc(c.replace(/_/g, " "))}</span>`).join("")}
+          <span>${esc(item.source || "")} · ${esc((item.published || "").replace("T", " ").slice(0, 16))}</span>
         </div>
         <a class="feed-title" href="${esc(item.url || "#")}" target="_blank" rel="noopener">${esc(item.title)}</a>
       </div>
@@ -352,7 +437,7 @@
     });
   }
 
-  // ---- MACRO VIEW ----
+  // ---- MACRO ----
   function renderMacro() {
     const s = state.summary;
     const mc = s.macro || {};
@@ -361,7 +446,8 @@
       ? `Next FOMC: ${fomc.next_meeting[0]} – ${fomc.next_meeting[1]} (${fomc.days_to_decision}d away)`
       : "";
 
-    $("macroBody").innerHTML = (mc.series || []).map((row) => `
+    const series = mc.series || [];
+    $("macroBody").innerHTML = series.map((row) => `
       <tr>
         <td><strong>${esc(row.label)}</strong>${row.stale ? ' <span class="tag amber">stale</span>' : ""}</td>
         <td class="muted">${esc(row.id)}</td>
@@ -373,9 +459,18 @@
       </tr>
     `).join("");
 
+    $("macroCardsMobile").innerHTML = series.map((row) => `
+      <div class="macro-card">
+        <div class="kpi-label">${esc(row.id)}</div>
+        <div style="font-size:12px;font-weight:600;margin-top:2px">${esc(row.label)}</div>
+        <div class="macro-val">${row.available ? fmtNum(row.latest, 2) : "—"} <span class="muted">${esc(row.unit || "")}</span></div>
+        <div class="muted">1W: ${fmtNum(row.change_1w, 2)} · 1M: ${fmtNum(row.change_1m, 2)}</div>
+      </div>
+    `).join("");
+
     const renderFeed = (id, items) => {
       $(id).innerHTML = (items || []).length
-        ? items.slice(0, 12).map((it) => `
+        ? items.slice(0, 10).map((it) => `
           <div class="feed-item">
             <div class="feed-meta"><span>${esc(it.source || "")}</span><span>${esc((it.published || "").slice(0, 10))}</span></div>
             <a class="feed-title" href="${esc(it.url || "#")}" target="_blank" rel="noopener">${esc(it.title)}</a>
@@ -399,7 +494,7 @@
       }
       renderStock(state.tickerCache[cacheKey]);
     } catch (err) {
-      $("stockContent").innerHTML = `<div class="error-box">Could not load ${esc(sym)} for ${esc(state.date)}: ${esc(err.message)}</div>`;
+      $("stockContent").innerHTML = `<div class="error-box">Could not load ${esc(sym)}: ${esc(err.message)}</div>`;
     }
   }
 
@@ -419,46 +514,88 @@
     const charts = t.charts || [];
 
     if (!charts.includes(state.chartTab) && charts.length) state.chartTab = charts[0];
-
     const chartUrl = (kind) => `data/${state.date}/charts/${t.symbol}_${kind}.png`;
-    const allLevels = [
-      ...[...(lv.resistance || [])].reverse(),
-      ...(lv.support || []),
-    ];
+
+    // 52W range bar
+    let rangeHtml = "";
+    if (val.fifty_two_week_low != null && val.fifty_two_week_high != null && facts.last_close != null && val.fifty_two_week_high > val.fifty_two_week_low) {
+      const pct = Math.max(0, Math.min(100, ((facts.last_close - val.fifty_two_week_low) / (val.fifty_two_week_high - val.fifty_two_week_low)) * 100));
+      rangeHtml = `
+        <div class="range-box">
+          <div class="range-labels">
+            <span>52W Low $${fmtNum(val.fifty_two_week_low)}</span>
+            <span>${pct.toFixed(0)}% of 52W range</span>
+            <span>52W High $${fmtNum(val.fifty_two_week_high)}</span>
+          </div>
+          <div class="range-track"><div class="range-fill"></div><div class="range-dot" style="left:${pct}%"></div></div>
+        </div>
+      `;
+    }
+
+    const scByName = Object.fromEntries((judg.scenarios || []).map((x) => [x.name, x.probability_pct || 0]));
+    const resLevels = [...(lv.resistance || [])].reverse();
+    const supLevels = lv.support || [];
+
+    const renderLevelRow = (x) => `
+      <div class="level-row">
+        <div>
+          <span class="tag ${x.role === "support" ? "bull" : "bear"}">${esc(x.label)}</span>
+          <strong style="margin-left:6px">$${fmtNum(x.price)}</strong>
+          <span class="muted" style="margin-left:5px">($${fmtNum(x.band_low)}–$${fmtNum(x.band_high)})</span>
+        </div>
+        <div style="text-align:right">
+          <span class="${clsPct(x.distance_pct)}" style="font-weight:700;font-size:12.5px">${fmtPct(x.distance_pct, 1)}</span>
+          <div class="muted"><span class="strength-bar"><span class="strength-fill" style="width:${Math.min(100, x.strength || 0)}%"></span></span>${fmtNum(x.strength, 0)}/100</div>
+        </div>
+      </div>
+    `;
 
     $("stockContent").innerHTML = `
       <div class="stock-hero">
-        <div>
-          <h1 class="stock-title">
-            ${esc(t.symbol)}
-            <span style="font-weight:500;font-size:18px;color:var(--muted)">${esc(t.name)}</span>
-            ${t.is_core ? '<span class="tag amber">★ Core</span>' : ""}
-            <span class="tag">${esc(fmtSector(t.sector))} (${esc(t.sector_etf || "")})</span>
-            <span class="score-badge">Notable ${fmtNum(t.notable?.score, 1)}</span>
-          </h1>
-          <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
-            ${(t.notable?.why || []).map((w) => `<span class="tag">${esc(w)}</span>`).join("")}
-            ${patterns.map((p) => `<span class="tag ${p.direction === "bullish" ? "bull" : "bear"}">${esc(p.label)}</span>`).join("")}
+        <div class="hero-top">
+          <div>
+            <h1 class="stock-title">
+              ${esc(t.symbol)}
+              ${t.is_core ? '<span class="tag amber">★ Core</span>' : ""}
+              <span class="score-badge">Score ${fmtNum(t.notable?.score, 0)}</span>
+            </h1>
+            <div class="stock-company">${esc(t.name)} · ${esc(fmtSector(t.sector))} (${esc(t.sector_etf || "")})</div>
+          </div>
+          <div class="stock-price-box">
+            <div class="stock-price">$${fmtNum(facts.last_close)}</div>
+            <div style="margin-top:4px"><span class="price-pill ${clsPct(facts.change_1d_pct)}">${fmtPct(facts.change_1d_pct)}</span></div>
+            <div class="muted" style="margin-top:4px">Close ${esc(facts.last_bar || "")}</div>
           </div>
         </div>
-        <div class="stock-price-box">
-          <div class="stock-price">$${fmtNum(facts.last_close)}</div>
-          <div class="${clsPct(facts.change_1d_pct)}" style="font-size:16px;font-weight:700">${fmtPct(facts.change_1d_pct)}</div>
-          <div class="muted">Close ${esc(facts.last_bar || "")} · Vol ${facts.last_volume ? Number(facts.last_volume).toLocaleString() : "—"}</div>
+
+        <div class="hero-tags">
+          ${(t.notable?.why || []).map((w) => `<span class="tag">${esc(w)}</span>`).join("")}
+          ${patterns.map((p) => `<span class="tag ${p.direction === "bullish" ? "bull" : "bear"}">${esc(p.label)}</span>`).join("")}
         </div>
+        ${rangeHtml}
       </div>
 
       ${charts.length ? `
       <div class="chart-card">
-        <div class="chart-tabs" id="chartTabs">
-          ${charts.map((c) => `<button class="chip ${c === state.chartTab ? "active" : ""}" data-chart="${c}">${c === "daily" ? "Daily + S/R + MAs" : c === "momentum" ? "Momentum (RSI / MACD)" : "Weekly Trend"}</button>`).join("")}
+        <div class="chart-header">
+          <div class="chart-tabs" id="chartTabs">
+            ${charts.map((c) => `<button class="chip ${c === state.chartTab ? "active" : ""}" data-chart="${c}">${c === "daily" ? "Daily + S/R" : c === "momentum" ? "RSI / MACD" : "Weekly"}</button>`).join("")}
+          </div>
+          <span class="muted">Tap chart to zoom</span>
         </div>
         <img id="activeChartImg" class="chart-img" src="${chartUrl(state.chartTab)}" alt="${esc(t.symbol)} chart" />
       </div>` : ""}
 
       <div class="section-header">
-        <h2>Rule-Based 20-Day Scenarios</h2>
-        <span class="muted">Heuristic model (not calibrated, not investment advice) · Composite score: ${fmtNum(judg.score, 2)}</span>
+        <div>
+          <h2>Rule-Based 20-Day Scenarios</h2>
+          <p class="section-sub">Heuristic model (not advice) · Technical score ${fmtNum(judg.score, 2)}</p>
+        </div>
+      </div>
+      <div class="prob-bar wide">
+        <div class="prob-bull" style="width:${scByName.bullish || 0}%"></div>
+        <div class="prob-base" style="width:${scByName.base || 0}%"></div>
+        <div class="prob-bear" style="width:${scByName.bearish || 0}%"></div>
       </div>
       <div class="scenarios-grid">
         ${(judg.scenarios || []).map((sc) => `
@@ -467,66 +604,54 @@
               <strong style="text-transform:capitalize">${esc(sc.name)} Case</strong>
               <span class="scenario-prob ${sc.name === "bullish" ? "pos" : sc.name === "bearish" ? "neg" : ""}">${sc.probability_pct}%</span>
             </div>
-            <div class="muted"><strong>Trigger:</strong> ${esc(sc.trigger?.condition || "—")}</div>
-            <div class="muted" style="margin-top:4px"><strong>Target zone:</strong> $${fmtNum(sc.target_zone?.low)} – $${fmtNum(sc.target_zone?.high)}</div>
-            <div class="muted" style="margin-top:4px"><strong>Invalidation:</strong> ${esc(sc.invalidation?.condition || "—")}</div>
+            <div class="scenario-row"><strong>Trigger:</strong> ${esc(sc.trigger?.condition || "—")}</div>
+            <div class="scenario-row"><strong>Target:</strong> $${fmtNum(sc.target_zone?.low)} – $${fmtNum(sc.target_zone?.high)}</div>
+            <div class="scenario-row"><strong>Invalidation:</strong> ${esc(sc.invalidation?.condition || "—")}</div>
           </div>
         `).join("")}
       </div>
 
       <div class="two-col">
         <div class="panel">
-          <h3>Support &amp; Resistance Levels</h3>
-          <div class="table-wrap">
-            <table class="data-table">
-              <thead><tr><th>Level</th><th class="num">Price</th><th class="num">Dist</th><th class="num">Strength</th><th class="num">Touches</th></tr></thead>
-              <tbody>
-                ${allLevels.map((x) => `
-                  <tr>
-                    <td><span class="tag ${x.role === "support" ? "bull" : "bear"}">${esc(x.label)}</span></td>
-                    <td class="num"><strong>$${fmtNum(x.price)}</strong><div class="muted">$${fmtNum(x.band_low)}–$${fmtNum(x.band_high)}</div></td>
-                    <td class="num ${clsPct(x.distance_pct)}">${fmtPct(x.distance_pct, 1)}</td>
-                    <td class="num"><span class="strength-bar"><span class="strength-fill" style="width:${Math.min(100, x.strength || 0)}%"></span></span>${fmtNum(x.strength, 0)}</td>
-                    <td class="num">${x.touches ?? "—"}</td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
+          <h3>Support &amp; Resistance Ladder</h3>
+          <div class="level-list">
+            ${resLevels.map(renderLevelRow).join("")}
+            <div class="level-current">Current Price · $${fmtNum(facts.last_close)}</div>
+            ${supLevels.map(renderLevelRow).join("")}
           </div>
         </div>
 
         <div class="panel">
-          <h3>Technical Indicators &amp; Fundamentals</h3>
+          <h3>Indicators &amp; Fundamentals</h3>
           <div class="kv-grid">
             <div class="kv"><div class="kv-k">RSI (14)</div><div class="kv-v">${fmtNum(ind.rsi14, 1)} <span class="muted">${esc(ind.rsi_zone || "")}</span></div></div>
-            <div class="kv"><div class="kv-k">SMA 20 / 50 / 200</div><div class="kv-v">${fmtNum(ind.sma20, 1)} / ${fmtNum(ind.sma50, 1)} / ${fmtNum(ind.sma200, 1)}</div></div>
-            <div class="kv"><div class="kv-k">MACD / Signal</div><div class="kv-v">${fmtNum(ind.macd, 2)} / ${fmtNum(ind.macd_signal, 2)}</div></div>
-            <div class="kv"><div class="kv-k">vs SPY (21d / 63d)</div><div class="kv-v ${clsPct(rs.vs_spy?.["21d"])}">${fmtPct(rs.vs_spy?.["21d"], 1)} / ${fmtPct(rs.vs_spy?.["63d"], 1)}</div></div>
+            <div class="kv"><div class="kv-k">SMA 20/50/200</div><div class="kv-v">${fmtNum(ind.sma20, 0)} / ${fmtNum(ind.sma50, 0)} / ${fmtNum(ind.sma200, 0)}</div></div>
+            <div class="kv"><div class="kv-k">vs SPY (21d)</div><div class="kv-v ${clsPct(rs.vs_spy?.["21d"])}">${fmtPct(rs.vs_spy?.["21d"], 1)}</div></div>
             <div class="kv"><div class="kv-k">vs ${esc(t.sector_etf || "Sector")} (21d)</div><div class="kv-v ${clsPct(rs.vs_sector?.["21d"])}">${fmtPct(rs.vs_sector?.["21d"], 1)}</div></div>
             <div class="kv"><div class="kv-k">Market Cap</div><div class="kv-v">${fmtCap(val.market_cap)}</div></div>
-            <div class="kv"><div class="kv-k">Trailing / Fwd P/E</div><div class="kv-v">${fmtNum(val.trailing_pe, 1)} / ${fmtNum(val.forward_pe, 1)}</div></div>
-            <div class="kv"><div class="kv-k">52W Range</div><div class="kv-v">$${fmtNum(val.fifty_two_week_low, 1)} – $${fmtNum(val.fifty_two_week_high, 1)}</div></div>
+            <div class="kv"><div class="kv-k">P/E (TTM / Fwd)</div><div class="kv-v">${fmtNum(val.trailing_pe, 1)} / ${fmtNum(val.forward_pe, 1)}</div></div>
             <div class="kv"><div class="kv-k">FCF (TTM)</div><div class="kv-v">${fmtCap(der.free_cash_flow_ttm)}</div></div>
             <div class="kv"><div class="kv-k">Cash / Debt</div><div class="kv-v">${fmtCap(der.cash)} / ${fmtCap(der.total_debt)}</div></div>
             <div class="kv"><div class="kv-k">Analyst Target Δ</div><div class="kv-v ${clsPct(der.target_mean_vs_price_pct)}">${fmtPct(der.target_mean_vs_price_pct, 1)}</div></div>
-            <div class="kv"><div class="kv-k">Earnings / Surprise</div><div class="kv-v">${esc((cal.earnings_dates || [])[0] || "—")} (${fmtPct(der.last_eps_surprise_pct, 1)})</div></div>
+            <div class="kv"><div class="kv-k">Earnings</div><div class="kv-v">${esc((cal.earnings_dates || [])[0] || "—")}</div></div>
           </div>
         </div>
       </div>
 
       <div class="panel">
-        <div class="filter-bar" id="stockSubTabs" style="margin-bottom:12px">
-          <button class="chip ${state.stockTab === "news" ? "active" : ""}" data-stab="news">News (${(t.news || []).length})</button>
-          <button class="chip ${state.stockTab === "filings" ? "active" : ""}" data-stab="filings">SEC Filings (${(t.filings || []).length})</button>
-          <button class="chip ${state.stockTab === "insiders" ? "active" : ""}" data-stab="insiders">Insiders Form 4 (${(t.insiders?.items || []).length})</button>
-          <button class="chip ${state.stockTab === "regulatory" ? "active" : ""}" data-stab="regulatory">Regulatory (${(t.regulatory?.items || []).length})</button>
-          <button class="chip ${state.stockTab === "peers" ? "active" : ""}" data-stab="peers">Sector Peers</button>
+        <div class="filter-bar-scroll" style="margin:0 -15px 12px;padding:0 15px">
+          <div class="filter-bar" id="stockSubTabs">
+            <button class="chip ${state.stockTab === "news" ? "active" : ""}" data-stab="news">News (${(t.news || []).length})</button>
+            <button class="chip ${state.stockTab === "filings" ? "active" : ""}" data-stab="filings">SEC Filings (${(t.filings || []).length})</button>
+            <button class="chip ${state.stockTab === "insiders" ? "active" : ""}" data-stab="insiders">Insiders (${(t.insiders?.items || []).length})</button>
+            <button class="chip ${state.stockTab === "regulatory" ? "active" : ""}" data-stab="regulatory">Regulatory (${(t.regulatory?.items || []).length})</button>
+            <button class="chip ${state.stockTab === "peers" ? "active" : ""}" data-stab="peers">Peers</button>
+          </div>
         </div>
         <div id="stockSubContent"></div>
       </div>
     `;
 
-    // Chart switching + zoom
     const tabsEl = $("chartTabs");
     if (tabsEl) {
       tabsEl.querySelectorAll("button").forEach((b) => {
@@ -549,7 +674,6 @@
           ? `<div class="feed-list">${t.news.slice(0, 18).map((n) => `
               <div class="feed-item">
                 <div class="feed-meta">
-                  <span class="tag">${esc(n.id || "")}</span>
                   <span class="tag amber">Imp ${fmtNum(n.importance, 0)}</span>
                   <span>${esc(n.source || "")}</span>
                   <span>${esc((n.published || "").replace("T", " ").slice(0, 16))}</span>
@@ -561,19 +685,19 @@
         box.innerHTML = (t.filings || []).length
           ? `<div class="feed-list">${t.filings.map((f) => `
               <div class="feed-item">
-                <div class="feed-meta"><span class="tag">${esc(f.id || "")}</span><span class="tag">${esc(f.extra?.form || "")}</span><span>${esc((f.published || "").slice(0, 10))}</span></div>
+                <div class="feed-meta"><span class="tag">${esc(f.extra?.form || "")}</span><span>${esc((f.published || "").slice(0, 10))}</span></div>
                 <a class="feed-title" href="${esc(f.url || "#")}" target="_blank" rel="noopener">${esc(f.title)}</a>
               </div>`).join("")}</div>`
           : `<div class="muted">No recent SEC filings tracked.</div>`;
       } else if (state.stockTab === "insiders") {
-        const hdr = `<div class="muted" style="margin-bottom:10px">90-day Form 4 summary: <strong>${ins.open_market_buys ?? 0}</strong> buys (${fmtCap(ins.buy_value_usd)}) · <strong>${ins.open_market_sells ?? 0}</strong> sells (${fmtCap(ins.sell_value_usd)})</div>`;
+        const hdr = `<div class="muted" style="margin-bottom:10px">90d Form 4: <strong>${ins.open_market_buys ?? 0}</strong> buys (${fmtCap(ins.buy_value_usd)}) · <strong>${ins.open_market_sells ?? 0}</strong> sells (${fmtCap(ins.sell_value_usd)})</div>`;
         box.innerHTML = hdr + ((t.insiders?.items || []).length
           ? `<div class="feed-list">${t.insiders.items.map((x) => `
               <div class="feed-item">
                 <div class="feed-meta"><span class="tag ${x.extra?.code === "P" ? "bull" : "bear"}">${esc(x.extra?.code || "")}</span><span>${esc((x.published || "").slice(0, 10))}</span></div>
                 <a class="feed-title" href="${esc(x.url || "#")}" target="_blank" rel="noopener">${esc(x.title)}</a>
               </div>`).join("")}</div>`
-          : `<div class="muted">No Form 4 insider transactions found (foreign private issuers do not file Form 4).</div>`);
+          : `<div class="muted">No Form 4 insider transactions (foreign issuers do not file Form 4).</div>`);
       } else if (state.stockTab === "regulatory") {
         box.innerHTML = (t.regulatory?.items || []).length
           ? `<div class="feed-list">${t.regulatory.items.slice(0, 15).map((x) => `
@@ -586,15 +710,15 @@
         const peers = t.sector_context?.peers || [];
         box.innerHTML = peers.length
           ? `<div class="table-wrap"><table class="data-table">
-              <thead><tr><th>Peer</th><th class="num">1D %</th><th class="num">21D %</th><th class="num">63D %</th></tr></thead>
+              <thead><tr><th>Peer</th><th class="num">1D</th><th class="num">21D</th><th class="num">63D</th></tr></thead>
               <tbody>${peers.map((p) => `
                 <tr data-sym="${esc(p.symbol)}" style="cursor:pointer">
-                  <td><strong>${esc(p.symbol)}</strong> <span class="muted">${esc(p.name || "")}</span></td>
-                  <td class="num ${clsPct(p.ret_1d)}">${fmtPct(p.ret_1d)}</td>
-                  <td class="num ${clsPct(p.ret_21d)}">${fmtPct(p.ret_21d)}</td>
-                  <td class="num ${clsPct(p.ret_63d)}">${fmtPct(p.ret_63d)}</td>
+                  <td><strong>${esc(p.symbol)}</strong></td>
+                  <td class="num ${clsPct(p.ret_1d)}">${fmtPct(p.ret_1d, 1)}</td>
+                  <td class="num ${clsPct(p.ret_21d)}">${fmtPct(p.ret_21d, 1)}</td>
+                  <td class="num ${clsPct(p.ret_63d)}">${fmtPct(p.ret_63d, 1)}</td>
                 </tr>`).join("")}</tbody></table></div>`
-          : `<div class="muted">No peer comparison data available.</div>`;
+          : `<div class="muted">No peer comparison data.</div>`;
         box.querySelectorAll("tr[data-sym]").forEach((tr) => {
           tr.onclick = () => openStock(tr.dataset.sym);
         });
@@ -611,10 +735,11 @@
     renderSubTab();
   }
 
-  // ---- SEARCH & EVENTS ----
+  // ---- EVENTS ----
   function wireEvents() {
     $("brandHome").onclick = () => setView("overview");
-    $("backToOverview").onclick = () => setView("overview");
+    $("backToOverview").onclick = () => setView(state.prevView || "overview");
+    $("viewAllScreenerBtn").onclick = () => setView("screener");
 
     document.querySelectorAll("#mainNav .nav-tab").forEach((btn) => {
       btn.onclick = () => setView(btn.dataset.view);
@@ -632,7 +757,14 @@
 
     $("clearSectorChip").onclick = () => {
       state.activeSector = null;
-      renderOverview();
+      renderScreener();
+    };
+
+    $("mobileSortSelect").onchange = () => {
+      const [k, d] = $("mobileSortSelect").value.split(":");
+      state.sortKey = k;
+      state.sortDir = Number(d);
+      renderScreener();
     };
 
     document.querySelectorAll("#screenerTable th[data-sort]").forEach((th) => {
@@ -644,7 +776,6 @@
       };
     });
 
-    // Quick search dropdown
     const inp = $("quickSearch");
     const dd = $("searchDropdown");
     inp.addEventListener("input", () => {
@@ -657,7 +788,7 @@
       dd.innerHTML = hits.map((h) => `
         <div class="search-item" data-sym="${esc(h.symbol)}">
           <span><strong>${esc(h.symbol)}</strong> <span class="muted">${esc(h.name)}</span></span>
-          <span class="${clsPct(h.change_1d_pct)}">${fmtPct(h.change_1d_pct)}</span>
+          <span class="price-pill ${clsPct(h.change_1d_pct)}" style="font-size:12px">${fmtPct(h.change_1d_pct, 1)}</span>
         </div>
       `).join("");
       dd.classList.remove("hidden");
@@ -675,7 +806,6 @@
       if (!e.target.closest(".search-wrap")) dd.classList.add("hidden");
     });
 
-    // Prev/Next ticker pager
     const stepTicker = (delta) => {
       const list = (state.summary?.tickers || []).map((x) => x.symbol);
       const idx = list.indexOf(state.activeTicker);
@@ -685,7 +815,6 @@
     $("prevTickerBtn").onclick = () => stepTicker(-1);
     $("nextTickerBtn").onclick = () => stepTicker(1);
 
-    // Lightbox modal
     const closeModal = () => $("imgModal").classList.add("hidden");
     $("modalCloseBtn").onclick = closeModal;
     $("modalCloseBg").onclick = closeModal;
@@ -700,7 +829,7 @@
       state.index = await fetchJson("data/index.json");
       const dates = state.index.dates || [];
       $("dateSelect").innerHTML = dates.map((d) =>
-        `<option value="${esc(d.date)}">${esc(d.date)} (SPY ${fmtPct(d.spy_ret_1d, 1)})</option>`
+        `<option value="${esc(d.date)}">${esc(d.date)}</option>`
       ).join("");
 
       const params = new URLSearchParams(location.search);
@@ -708,7 +837,7 @@
       const targetDate = dates.some((d) => d.date === wantedDate) ? wantedDate : state.index.latest;
       const wantedTicker = params.get("ticker");
       const wantedView = params.get("view");
-      if (wantedView && ["overview", "breaking", "macro"].includes(wantedView)) state.view = wantedView;
+      if (wantedView && ["overview", "screener", "breaking", "macro"].includes(wantedView)) state.view = wantedView;
 
       await loadBreaking();
       await loadDate(targetDate, wantedTicker);

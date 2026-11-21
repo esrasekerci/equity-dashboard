@@ -2,37 +2,43 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#090e1a" />
+  <meta property="og:title" content="Daily Equity Research Dashboard" />
+  <meta property="og:description" content="Live 39-stock technical analysis, sector heatmap, support/resistance levels, SEC filings, insider activity & macro indicators." />
   <title>Daily Equity Research Dashboard</title>
   <link rel="stylesheet" href="assets/app.css" />
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="brand" id="brandHome" role="button" tabindex="0">
-        <span class="brand-dot"></span>
-        <div>
-          <div class="brand-title">Equity Research</div>
-          <div class="brand-sub" id="marketCloseBadge">Loading market data…</div>
+      <div class="brand-row">
+        <div class="brand" id="brandHome" role="button" tabindex="0">
+          <div class="brand-mark">ER</div>
+          <div>
+            <div class="brand-title">Equity Research</div>
+            <div class="brand-sub" id="marketCloseBadge">Loading market data…</div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <select id="dateSelect" class="select-control" aria-label="Report date"></select>
+          <button id="themeToggle" class="icon-btn" title="Toggle light/dark theme" aria-label="Toggle theme">☀️</button>
         </div>
       </div>
 
-      <div class="topbar-controls">
-        <div class="search-wrap">
-          <input id="quickSearch" type="search" placeholder="Jump to ticker (e.g. NVDA, MU)…" autocomplete="off" />
-          <div id="searchDropdown" class="search-dropdown hidden"></div>
-        </div>
-
-        <select id="dateSelect" class="select-control" aria-label="Report date"></select>
-
-        <button id="themeToggle" class="icon-btn" title="Toggle light/dark theme" aria-label="Toggle theme">☀️</button>
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="quickSearch" type="search" placeholder="Search ticker or company (NVDA, MU, TSLA…)" autocomplete="off" />
+        <div id="searchDropdown" class="search-dropdown hidden"></div>
       </div>
     </div>
 
-    <nav class="subnav" id="mainNav">
-      <button class="nav-tab active" data-view="overview">Overview &amp; Screener</button>
-      <button class="nav-tab" data-view="breaking">Breaking News <span class="badge-pill" id="breakingCount">0</span></button>
-      <button class="nav-tab" data-view="macro">Macro &amp; World</button>
+    <nav class="subnav" id="mainNav" aria-label="Dashboard sections">
+      <button class="nav-tab active" data-view="overview">Overview</button>
+      <button class="nav-tab" data-view="screener">Screener <span class="badge-pill" id="navTickerCount">39</span></button>
+      <button class="nav-tab" data-view="breaking">Breaking <span class="badge-pill hot" id="breakingCount">0</span></button>
+      <button class="nav-tab" data-view="macro">Macro</button>
       <button class="nav-tab hidden" data-view="stock" id="stockNavTab">Stock</button>
     </nav>
   </header>
@@ -40,7 +46,7 @@
   <main class="container" id="appRoot">
     <div id="loadingState" class="loading-box">
       <div class="spinner"></div>
-      <p>Loading equity dashboard…</p>
+      <p>Loading market intelligence…</p>
     </div>
 
     <div id="errorState" class="error-box hidden"></div>
@@ -49,36 +55,70 @@
     <section id="view-overview" class="view hidden">
       <div id="breakingBanner" class="breaking-banner hidden"></div>
       <div id="kpiStrip" class="kpi-grid"></div>
+
+      <div class="section-header">
+        <div>
+          <h2>Market Signals &amp; Catalysts</h2>
+          <p class="section-sub">Auto-detected patterns, earnings window, extreme RSI &amp; Form 4 insider buys</p>
+        </div>
+      </div>
       <div id="alertsSection" class="alerts-grid"></div>
 
       <div class="section-header">
-        <h2>Sector Heatmap</h2>
-        <span class="muted">Click any sector to filter the screener</span>
+        <div>
+          <h2>Sector Heatmap</h2>
+          <p class="section-sub">Tap any sector to filter the screener</p>
+        </div>
       </div>
       <div id="sectorHeatmap" class="heatmap-grid"></div>
 
       <div class="section-header">
-        <h2>Top Notable Movers</h2>
-        <span class="muted">Computed ranking (volatility, volume, news, filings, technicals)</span>
+        <div>
+          <h2>Top Notable Movers</h2>
+          <p class="section-sub">Ranked by volatility, volume surge, news, filings &amp; technicals</p>
+        </div>
+        <button class="link-btn" id="viewAllScreenerBtn">View all 39 →</button>
       </div>
       <div id="notableGrid" class="notable-grid"></div>
+    </section>
 
+    <!-- SCREENER VIEW -->
+    <section id="view-screener" class="view hidden">
       <div class="section-header screener-head">
-        <h2>Watchlist Screener <span class="muted" id="screenerCount"></span></h2>
+        <div>
+          <h2>Watchlist Screener <span class="muted" id="screenerCount"></span></h2>
+          <p class="section-sub">Tap any stock for charts, S/R levels, scenarios &amp; filings</p>
+        </div>
+        <div class="sort-mobile-wrap">
+          <label for="mobileSortSelect" class="muted">Sort</label>
+          <select id="mobileSortSelect" class="select-control compact">
+            <option value="notable_score:-1">Notable Score (High)</option>
+            <option value="change_1d_pct:-1">1D Change (Best)</option>
+            <option value="change_1d_pct:1">1D Change (Worst)</option>
+            <option value="rsi14:1">RSI-14 (Oversold)</option>
+            <option value="rsi14:-1">RSI-14 (Overbought)</option>
+            <option value="rs_spy_21d:-1">vs SPY 21d (Strongest)</option>
+            <option value="symbol:1">Ticker (A–Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-bar-scroll">
         <div class="filter-bar" id="filterBar">
           <button class="chip active" data-filter="all">All</button>
-          <button class="chip" data-filter="core">Core 10</button>
+          <button class="chip" data-filter="core">★ Core 10</button>
           <button class="chip" data-filter="signals">Patterns</button>
           <button class="chip" data-filter="earnings">Earnings ±10d</button>
           <button class="chip" data-filter="oversold">RSI &lt; 30</button>
           <button class="chip" data-filter="overbought">RSI &gt; 70</button>
           <button class="chip" data-filter="bullish">Bullish Bias</button>
           <button class="chip" data-filter="bearish">Bearish Bias</button>
-          <button class="chip hidden" id="clearSectorChip">Sector: <span id="activeSectorLabel"></span> ✕</button>
+          <button class="chip chip-sector hidden" id="clearSectorChip">Sector: <span id="activeSectorLabel"></span> ✕</button>
         </div>
       </div>
 
-      <div class="table-wrap">
+      <!-- Desktop Table -->
+      <div class="table-wrap desktop-only">
         <table class="screener-table" id="screenerTable">
           <thead>
             <tr>
@@ -98,13 +138,18 @@
           <tbody id="screenerBody"></tbody>
         </table>
       </div>
+
+      <!-- Mobile Card List -->
+      <div id="screenerCards" class="screener-cards mobile-only"></div>
     </section>
 
     <!-- BREAKING NEWS VIEW -->
     <section id="view-breaking" class="view hidden">
       <div class="section-header">
-        <h2>Breaking &amp; Important News Feed</h2>
-        <span class="muted" id="breakingUpdated">Checked automatically every 2 hours on weekdays</span>
+        <div>
+          <h2>Breaking &amp; Important News</h2>
+          <p class="section-sub" id="breakingUpdated">Checked automatically every 2 hours on weekdays</p>
+        </div>
       </div>
       <div id="breakingList" class="feed-list"></div>
     </section>
@@ -112,10 +157,15 @@
     <!-- MACRO & WORLD VIEW -->
     <section id="view-macro" class="view hidden">
       <div class="section-header">
-        <h2>US Macro Indicators (FRED)</h2>
-        <span class="muted" id="fomcBadge"></span>
+        <div>
+          <h2>US Macro Indicators (FRED)</h2>
+          <p class="section-sub" id="fomcBadge"></p>
+        </div>
       </div>
-      <div class="table-wrap">
+
+      <div id="macroCardsMobile" class="macro-cards mobile-only"></div>
+
+      <div class="table-wrap desktop-only">
         <table class="data-table" id="macroTable">
           <thead>
             <tr>
@@ -151,7 +201,7 @@
     <!-- STOCK DEEP-DIVE VIEW -->
     <section id="view-stock" class="view hidden">
       <div class="stock-topbar">
-        <button class="btn-secondary" id="backToOverview">← Back to Watchlist</button>
+        <button class="btn-secondary" id="backToOverview">← Back</button>
         <div class="stock-pager">
           <button class="btn-secondary" id="prevTickerBtn">← Prev</button>
           <button class="btn-secondary" id="nextTickerBtn">Next →</button>
@@ -165,14 +215,14 @@
   <div id="imgModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-backdrop" id="modalCloseBg"></div>
     <div class="modal-body">
-      <button class="modal-close" id="modalCloseBtn">✕</button>
+      <button class="modal-close" id="modalCloseBtn" aria-label="Close zoom">✕</button>
       <img id="modalImg" src="" alt="Chart zoom" />
     </div>
   </div>
 
   <footer class="footer">
-    <div>Daily Equity Research · Data from Yahoo Finance, SEC EDGAR, FRED, Federal Reserve, Federal Register &amp; RSS feeds.</div>
-    <div class="disclaimer">Research and rule-based scenarios only — NOT investment advice. Verify all figures at the cited source before acting.</div>
+    <div>Daily Equity Research · Yahoo Finance, SEC EDGAR, FRED, Federal Reserve &amp; RSS feeds.</div>
+    <div class="disclaimer">Research and rule-based scenarios only — NOT investment advice.</div>
   </footer>
 
   <script src="assets/app.js"></script>
