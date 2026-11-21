@@ -2396,7 +2396,6 @@
         <div class="tv-legend" id="tvLegend"></div>
         <div class="tv-chart-wrap ${is1M ? "is-1m" : ""}" id="tvChartWrap">
           <div class="tv-chart-box" id="tvChart"></div>
-          <div class="tv-sr-overlay" id="tvSrOverlay"></div>
           <div class="tv-day-overlay ${is1M ? "" : "hidden"}" id="tvDayOverlay"></div>
           <div class="tv-day-axis ${is1M ? "" : "hidden"}" id="tvDayAxis"></div>
         </div>`;
@@ -2671,58 +2670,25 @@
       s.setData(pts);
     }
 
-    // Draw Support (S1–S3) & Resistance (R1–R3) dashed price lines + translucent shaded S/R zone bands (band_low..band_high)
-    const lvAll = t.technical?.computed?.levels || {};
-    const srLevelsToDraw = [];
+    // Only draw S/R price lines within the visible price range (±12%) so distant S2/S3 labels never stack at the bottom of the axis
     if (ov.sr) {
       const visLow = Math.min(...data.map((d) => d.l));
       const visHigh = Math.max(...data.map((d) => d.h));
-      const minP = visLow * 0.65;
-      const maxP = visHigh * 1.45;
-      for (const x of [...(lvAll.support || []), ...(lvAll.resistance || [])]) {
+      const minP = visLow * 0.88;
+      const maxP = visHigh * 1.12;
+      const lv = t.technical?.computed?.levels || {};
+      for (const x of [...(lv.support || []), ...(lv.resistance || [])]) {
         if (x.price == null || x.price < minP || x.price > maxP) continue;
-        srLevelsToDraw.push(x);
         candles.createPriceLine({
           price: x.price,
           color: x.role === "support" ? upCol : dnCol,
-          lineWidth: 1.2,
+          lineWidth: 1,
           lineStyle: LC.LineStyle.Dashed,
           axisLabelVisible: true,
           title: x.label || "",
         });
       }
     }
-
-    const srOverlay = $("tvSrOverlay");
-    const syncSrZones = () => {
-      if (!srOverlay || !state.tvChart) return;
-      if (!ov.sr || !srLevelsToDraw.length) {
-        srOverlay.innerHTML = "";
-        return;
-      }
-      const rightAxisW = state.tvChart.priceScale("right")?.width?.() || 58;
-      srOverlay.style.right = `${rightAxisW}px`;
-      const maxH = box.clientHeight || 320;
-      const bands = [];
-      for (const x of srLevelsToDraw) {
-        const hi = x.band_high ?? x.price;
-        const lo = x.band_low ?? x.price;
-        const yTop = candles.priceToCoordinate(hi);
-        const yBot = candles.priceToCoordinate(lo);
-        if (yTop == null || yBot == null) continue;
-        const top = Math.max(0, Math.min(yTop, yBot));
-        const bot = Math.min(maxH, Math.max(yTop, yBot));
-        if (bot <= 0 || top >= maxH) continue;
-        const h = Math.max(4, bot - top);
-        const cls = x.role === "support" ? "sup" : "res";
-        bands.push(
-          `<div class="tv-sr-band ${cls}" style="top:${top.toFixed(1)}px;height:${h.toFixed(1)}px">` +
-            `<span class="tv-sr-tag">${esc(x.label || "")}</span>` +
-          `</div>`
-        );
-      }
-      srOverlay.innerHTML = bands.join("");
-    };
 
     // Day-by-day separation for 1M (Monthly Series): every single trading day has its own vertical column separator,
     // its own bottom date tick centered under its candle, and its own separate daily card in the monthly strip.
@@ -2824,22 +2790,20 @@
       if (!state.tvChart) return;
       state.tvChart.timeScale().fitContent();
       if (is1M) sync1MDayColumns();
-      syncSrZones();
     };
 
     fitAllBars();
     requestAnimationFrame(fitAllBars);
-    setTimeout(fitAllBars, 80);
+    setTimeout(fitAllBars, 60);
 
     const resetBtn = $("resetChartFitBtn");
     if (resetBtn) resetBtn.onclick = fitAllBars;
 
-    chart.timeScale().subscribeVisibleLogicalRangeChange(() => {
-      requestAnimationFrame(() => {
-        if (is1M) sync1MDayColumns();
-        syncSrZones();
+    if (is1M) {
+      chart.timeScale().subscribeVisibleLogicalRangeChange(() => {
+        requestAnimationFrame(sync1MDayColumns);
       });
-    });
+    }
 
     const legend = $("tvLegend");
     const highlightDay = (dateStr) => {
@@ -3110,8 +3074,9 @@
     if (isStandalone) return;
 
     const ua = navigator.userAgent || "";
-    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     const isInApp = /Telegram|FBAN|FBAV|Instagram|Line|MicroMessenger/i.test(ua);
+    const appUrl = "https://esrasekerci.github.io/equity-dashboard/";
 
     let overlay = null;
     const closeOverlay = () => {
@@ -3127,15 +3092,15 @@
 
       const stepsHtml = hasNativePrompt
         ? `<p class="install-modal-desc">Install <strong>racenter</strong> directly to your device home screen for full-screen native access.</p>`
-        : isInApp
+        : isIOS
           ? `<div class="install-steps">
-               <div><strong>1.</strong> Tap the browser menu (<strong>⋯ / ⋮</strong>) and choose <strong>Open in ${isIOS ? "Safari" : "Chrome"}</strong>.</div>
-               <div><strong>2.</strong> Tap <strong>${isIOS ? "Share → Add to Home Screen" : "Menu ⋮ → Install App"}</strong>.</div>
+               <div><strong>1.</strong> If opened inside Telegram, tap the <strong>Safari compass icon</strong> at the bottom-right first (Apple only allows app installs from Safari).</div>
+               <div><strong>2.</strong> In Safari, tap the <strong>Share</strong> button (bottom bar) → scroll down → tap <strong>Add to Home Screen</strong> → <strong>Add</strong>.</div>
              </div>`
-          : isIOS
+          : isInApp
             ? `<div class="install-steps">
-                 <div><strong>1.</strong> Tap the <strong>Share</strong> button at the bottom of Safari.</div>
-                 <div><strong>2.</strong> Select <strong>Add to Home Screen</strong> → <strong>Add</strong>.</div>
+                 <div><strong>1.</strong> Tap the browser menu (<strong>⋯ / ⋮</strong>) and choose <strong>Open in Chrome</strong>.</div>
+                 <div><strong>2.</strong> Tap <strong>Menu ⋮ → Install App</strong>.</div>
                </div>`
             : `<div class="install-steps">
                  <div><strong>1.</strong> Tap your browser menu (<strong>⋮</strong>) or address-bar install icon.</div>
@@ -3147,7 +3112,7 @@
         <div class="install-modal-card">
           <div class="install-modal-hdr">
             <div>
-              <div class="install-modal-eyebrow">App Installation</div>
+              <div class="install-modal-eyebrow">${isIOS ? "iOS App Installation" : "App Installation"}</div>
               <h2 class="install-modal-title">Install racenter</h2>
             </div>
             <button type="button" class="install-dismiss-btn" id="autoInstallDismissBtn" aria-label="Close">✕</button>
@@ -3155,6 +3120,7 @@
           ${stepsHtml}
           <div class="install-modal-actions">
             ${hasNativePrompt ? `<button type="button" class="btn-primary-accent install-modal-primary" id="autoInstallNowBtn">Install racenter Now</button>` : ""}
+            ${!hasNativePrompt && isIOS ? `<button type="button" class="btn-primary-accent install-modal-primary" id="copyIosLinkBtn">Copy Link to Open in Safari</button>` : ""}
             <button type="button" class="btn-secondary install-modal-secondary" id="autoInstallLaterBtn">Continue in Browser</button>
           </div>
         </div>
@@ -3164,6 +3130,14 @@
       overlay.querySelector("#installOverlayBg").onclick = closeOverlay;
       overlay.querySelector("#autoInstallDismissBtn").onclick = closeOverlay;
       overlay.querySelector("#autoInstallLaterBtn").onclick = closeOverlay;
+
+      const copyBtn = overlay.querySelector("#copyIosLinkBtn");
+      if (copyBtn) {
+        copyBtn.onclick = () => {
+          navigator.clipboard?.writeText(appUrl).catch(() => {});
+          copyBtn.textContent = "✓ Link Copied — Paste in Safari";
+        };
+      }
 
       const nowBtn = overlay.querySelector("#autoInstallNowBtn");
       if (nowBtn) {

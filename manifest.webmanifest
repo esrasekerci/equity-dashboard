@@ -1,14 +1,22 @@
 {
+  "id": "/equity-dashboard/",
   "name": "racenter",
   "short_name": "racenter",
-  "description": "Quantitative 39-stock intelligence: interactive candlestick charts, supply-chain value network, Smart Money flow, SEC filings & live regulatory watch.",
+  "description": "Quantitative 39-stock intelligence: interactive all-time charts, supply-chain network, Smart Money flow, SEC filings & live regulatory watch.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#0b0e11",
+  "theme_color": "#0b0e11",
   "orientation": "portrait-primary",
   "icons": [
+    {
+      "src": "assets/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "assets/icon-192.png",
       "sizes": "192x192",
