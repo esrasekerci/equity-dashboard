@@ -30,6 +30,8 @@
 
         <div class="header-actions">
           <select id="dateSelect" class="select-control" aria-label="Report date"></select>
+          <button id="openMathGuideBtn" class="btn-secondary compact-hdr-btn" title="Mathematical Formulations &amp; Quantitative Score Models">∑ Math</button>
+          <button id="installAppBtn" class="btn-secondary compact-hdr-btn" title="Install as Mobile or Desktop App">📲 App</button>
           <button id="themeToggle" class="icon-btn" title="Toggle light/dark theme" aria-label="Toggle theme">☀️</button>
         </div>
       </div>
@@ -99,22 +101,24 @@
           <h2>Watchlist Screener <span class="muted" id="screenerCount"></span></h2>
           <p class="section-sub">Tap any stock for charts, S/R levels, scenarios &amp; filings</p>
         </div>
-        <div class="sort-mobile-wrap">
-          <label for="mobileSortSelect" class="muted">Sort</label>
-          <select id="mobileSortSelect" class="select-control compact">
-            <option value="notable_score:-1">Notable Score (High)</option>
-            <option value="change_1d_pct:-1">1D Change (Best)</option>
-            <option value="change_1d_pct:1">1D Change (Worst)</option>
-            <option value="rsi14:1">RSI-14 (Oversold)</option>
-            <option value="rsi14:-1">RSI-14 (Overbought)</option>
-            <option value="rs_spy_21d:-1">vs SPY 21d (Strongest)</option>
-            <option value="symbol:1">Ticker (A–Z)</option>
-          </select>
+        <div class="screener-controls">
+          <div class="control-group">
+            <label for="sectorSelect" class="muted">Sector</label>
+            <select id="sectorSelect" class="select-control compact"></select>
+          </div>
+          <div class="control-group">
+            <label for="mobileSortSelect" class="muted">Sort</label>
+            <select id="mobileSortSelect" class="select-control compact">
+              <option value="notable_score:-1">Notable Score (High)</option>
+              <option value="change_1d_pct:-1">1D Change (Best)</option>
+              <option value="change_1d_pct:1">1D Change (Worst)</option>
+              <option value="rsi14:1">RSI-14 (Oversold)</option>
+              <option value="rsi14:-1">RSI-14 (Overbought)</option>
+              <option value="rs_spy_21d:-1">vs SPY 21d (Strongest)</option>
+              <option value="symbol:1">Ticker (A–Z)</option>
+            </select>
+          </div>
         </div>
-      </div>
-
-      <div class="filter-bar-scroll" style="margin-bottom:8px">
-        <div class="filter-bar" id="sectorFilterBar"></div>
       </div>
 
       <div class="filter-bar-scroll">
@@ -140,12 +144,12 @@
               <th data-sort="sector">Sector</th>
               <th data-sort="close" class="num">Close</th>
               <th data-sort="change_1d_pct" class="num">1D %</th>
-              <th data-sort="notable_score" class="num" data-tip="Notable Score (0–100)|Measures how active or unusual a stock is today (price move vs ATR, volume spike, patterns, RSI extremes, news &amp; SEC filings). High score = big activity today, NOT a buy/sell rating.">Score <span class="tip-badge">?</span></th>
-              <th data-sort="rsi14" class="num" data-tip="RSI-14 (Relative Strength Index)|0–100 momentum gauge over 14 days. Below 30 = Oversold (steep recent drop); Above 70 = Overbought (steep recent rally).">RSI-14 <span class="tip-badge">?</span></th>
-              <th data-tip="SMA 20 / 50 / 200 (Moving Averages)|Average closing price over the last 20, 50, and 200 trading days. Green = price above that average; Red = below.">SMA 20/50/200 <span class="tip-badge">?</span></th>
-              <th data-sort="rs_spy_21d" class="num" data-tip="vs SPY (21d Relative Strength)|The stock's 21-trading-day (~1 month) return minus the S&amp;P 500 (SPY) return. Positive = outperforming the market.">vs SPY 21d <span class="tip-badge">?</span></th>
-              <th data-sort="s1_dist" class="num" data-tip="Support (S1) &amp; Resistance (R1)|Distance % from current price to the nearest historical support floor (S1) and resistance ceiling (R1).">Near S1 / R1 <span class="tip-badge">?</span></th>
-              <th data-tip="20-Day Rule-Based Scenarios (Bull / Base / Bear %)|Heuristic probability split for the next 20 trading days based on trend, momentum, relative strength &amp; patterns. Not advice.">Scenarios (B/N/S) <span class="tip-badge">?</span></th>
+              <th data-sort="notable_score" class="num" data-tip="Notable Score (0–100) — Mathematical Formulation|Formula: S = 12·min(|r_1d|/ATR%, 3)·I(z≥1) + 8·(min(RVOL_20,3)-1)·I(RVOL>1.3) + S_struct + 6·I(RSI∉[25,75]) + (0.25·I_max + 1.5·N_24h) + 8·I(SEC) + 4·I(Form4) + 10·I(Earn≤7d). Hover any stock's score badge for its live plugged-in calculation.">Score <span class="tip-badge">∑</span></th>
+              <th data-sort="rsi14" class="num" data-tip="Wilder's RSI-14 (1978)|Formula: RSI_14 = 100 - [100 / (1 + EMA_{1/14}(ΔP⁺)/EMA_{1/14}(ΔP⁻))]. <30 = Oversold; >70 = Overbought.">RSI-14 <span class="tip-badge">?</span></th>
+              <th data-tip="Simple Moving Averages (SMA 20 / 50 / 200)|Formula: SMA_k = (1/k)·∑ C_{t-i}. Green = price above that average; Red = below.">SMA 20/50/200 <span class="tip-badge">?</span></th>
+              <th data-sort="rs_spy_21d" class="num" data-tip="Benchmark Excess Return (α_21d vs SPY)|Formula: α_21d = R_{stock,21d} - R_{SPY,21d}. Positive = outperforming S&amp;P 500.">vs SPY 21d <span class="tip-badge">?</span></th>
+              <th data-sort="s1_dist" class="num" data-tip="Support (S1) &amp; Resistance (R1)|Distance % from current price to nearest fractal/VAP support floor (S1) and resistance ceiling (R1).">Near S1 / R1 <span class="tip-badge">?</span></th>
+              <th data-tip="Multi-Factor Logistic Scenario Model (Bull / Base / Bear %)|Formula: S_tech = 0.30·V_MA + 0.30·V_Mom + 0.25·V_RS + 0.15·V_Pat. P_bull = (1-P_base)/(1+e^{-3·S_tech}). Hover any row's bar for its live factor numbers.">Scenarios (B/N/S) <span class="tip-badge">∑</span></th>
               <th data-sort="earnings_days" class="num">Earnings</th>
             </tr>
           </thead>
@@ -159,14 +163,17 @@
 
     <!-- BUBBLE NETWORK EXPLORER VIEW -->
     <section id="view-network" class="view hidden">
-      <div class="section-header">
+      <div class="section-header screener-head">
         <div>
-          <h2>Ecosystem Bubble Network Explorer</h2>
-          <p class="section-sub">Tap any bubble to inspect its relationship, or re-center the network to discover supply-chain, customer &amp; partner connections across the 39 stocks</p>
+          <h2>Supply-Chain &amp; Ecosystem Value Network</h2>
+          <p class="section-sub">Bubble size = Market Cap ($) · Edge badge = Annual Spend / Revenue Share / MW &amp; 60d Return Correlation (r) · Click any bubble to center it</p>
         </div>
-      </div>
-      <div class="filter-bar-scroll" style="margin-bottom:8px">
-        <div class="filter-bar" id="networkHubBar"></div>
+        <div class="screener-controls">
+          <div class="control-group">
+            <label for="networkHubSelect" class="muted">Center Stock</label>
+            <select id="networkHubSelect" class="select-control compact"></select>
+          </div>
+        </div>
       </div>
       <div id="globalNetworkContainer"></div>
     </section>
@@ -303,6 +310,12 @@
       <button class="modal-close" id="modalCloseBtn" aria-label="Close zoom">✕</button>
       <img id="modalImg" src="" alt="Chart zoom" />
     </div>
+  </div>
+
+  <!-- Rich info modal (Sector Explorer / Mathematical Formulations / App Install) -->
+  <div id="infoModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" id="infoModalCloseBg"></div>
+    <div class="modal-card" id="infoModalBody"></div>
   </div>
 
   <footer class="footer">

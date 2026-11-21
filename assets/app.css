@@ -774,19 +774,153 @@ a:hover { text-decoration: underline; }
 .floating-tooltip {
   position: fixed;
   z-index: 200;
-  max-width: 300px;
+  max-width: 370px;
   background: var(--bg-elev);
   color: var(--text);
   border: 1px solid var(--accent);
   border-radius: 11px;
-  padding: 10px 12px;
-  font-size: 12.5px;
-  line-height: 1.45;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+  padding: 11px 13px;
+  font-size: 12.2px;
+  line-height: 1.48;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
   pointer-events: none;
   transition: opacity 0.12s ease;
 }
-.floating-tooltip strong { color: var(--accent-2); display: block; margin-bottom: 3px; font-size: 13px; }
+.floating-tooltip strong { color: var(--accent-2); display: block; margin-bottom: 4px; font-size: 13px; }
+
+/* Dropdown Controls & Header Buttons */
+.screener-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+}
+.compact-hdr-btn {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+/* Info Modal (Sector Explorer / Mathematical Formulations / App Install) */
+.modal-card {
+  position: relative;
+  z-index: 101;
+  width: min(920px, 95vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.modal-card-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-2);
+  margin-bottom: 2px;
+}
+.modal-close-inline {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  font-size: 15px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Mathematical Formulations & Live Score Breakdown Boxes */
+.math-guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.math-box {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 12px 14px;
+}
+.math-title {
+  font-weight: 800;
+  font-size: 13.5px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.math-eq {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  color: var(--accent-2);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.28);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 7px;
+  overflow-x: auto;
+}
+.math-sub {
+  font-size: 12.2px;
+  color: var(--text-soft);
+  line-height: 1.55;
+}
+.math-sub code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  background: var(--bg-card);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--text);
+}
+
+/* Supply-Chain Bubble Breadcrumbs & Hop Banner */
+.bubble-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  padding: 7px 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.bubble-hop-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 10px;
+}
+.bubble-table-wrap {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
 
 /* Lightbox Modal */
 .modal { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 12px; }
