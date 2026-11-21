@@ -2523,24 +2523,22 @@
 
       if (!coords.length) return;
 
-      // Vertical separator line between every single day + highlighted Weekend (Sat–Sun) boundary or shaded column
+      // Vertical separator line between every single day + collision-free Weekend (Sat–Sun) markers
       const sepLines = [];
+      let lastWkndPillX = -999;
       for (let i = 0; i < coords.length; i++) {
         const cur = coords[i];
-        if (cur.d.isClosed) {
-          const leftEdge = i > 0 ? (coords[i - 1].x + cur.x) / 2 : cur.x - 10;
-          const rightEdge = i + 1 < coords.length ? (cur.x + coords[i + 1].x) / 2 : cur.x + 10;
-          const colW = Math.max(4, rightEdge - leftEdge);
-          sepLines.push(`<div class="tv-wknd-band" style="left:${leftEdge.toFixed(1)}px;width:${colW.toFixed(1)}px" title="${esc(cur.d.t)} (${esc(cur.d.wdLabel)}) — ${esc(cur.d.reason)}"></div>`);
-        }
         if (i > 0) {
           const prev = coords[i - 1];
-          const midX = ((prev.x + cur.x) / 2).toFixed(1);
+          const midXNum = (prev.x + cur.x) / 2;
+          const midX = midXNum.toFixed(1);
           const gapDays = daysBetween(prev.d.t, cur.d.t);
-          if (!ov.weekends && gapDays >= 2) {
+          if (gapDays >= 2) {
+            const showPill = midXNum >= 26 && midXNum <= plotW - 26 && (midXNum - lastWkndPillX) >= 54;
+            if (showPill) lastWkndPillX = midXNum;
             sepLines.push(
               `<div class="tv-day-sep wknd-sep" style="left:${midX}px">` +
-                `<span class="wknd-pill" title="US Equity Markets Closed (Saturday–Sunday)">Sat–Sun</span>` +
+                (showPill ? `<span class="wknd-pill" title="US Equity Markets Closed (Saturday–Sunday)">Sat–Sun</span>` : "") +
               `</div>`
             );
           } else {
@@ -2550,20 +2548,51 @@
       }
       dayOverlay.innerHTML = sepLines.join("");
 
-      // Individual date + weekday tick directly under every single day's slot
-      let prevMonth = null;
-      dayAxis.innerHTML = coords.map(({ d, x }, idx) => {
+      // Collision-free X-axis ticks: automatically adapts density to screen width & zoom level so labels NEVER overlap or clip
+      const minGap = plotW < 440 ? 44 : 38;
+      const edgePad = 20;
+      const picked = [];
+      let lastLabelX = -999;
+      let prevMonthSeen = null;
+
+      for (let idx = 0; idx < coords.length; idx++) {
+        const { d, x } = coords[idx];
         const [, m, dayNum] = d.t.split("-").map(Number);
+        const isMonthStart = prevMonthSeen !== null && m !== prevMonthSeen;
+        prevMonthSeen = m;
+        const isFirst = idx === 0;
+        const isLast = idx === coords.length - 1;
+        const clampedX = Math.max(edgePad, Math.min(plotW - edgePad, x));
+
+        if (isFirst) {
+          picked.push({ d, x: clampedX, m, dayNum, showMonth: true });
+          lastLabelX = clampedX;
+        } else if (isLast) {
+          if (clampedX - lastLabelX >= minGap) {
+            picked.push({ d, x: clampedX, m, dayNum, showMonth: picked[picked.length - 1]?.m !== m });
+          } else if (picked.length > 1 && clampedX - picked[picked.length - 2].x >= minGap) {
+            // Replace penultimate tick with the final bar's date so the latest trading day is always cleanly visible
+            picked[picked.length - 1] = { d, x: clampedX, m, dayNum, showMonth: picked[picked.length - 2]?.m !== m };
+          }
+        } else if (clampedX - lastLabelX >= minGap) {
+          const lastM = picked[picked.length - 1]?.m;
+          picked.push({ d, x: clampedX, m, dayNum, showMonth: isMonthStart || lastM !== m });
+          lastLabelX = clampedX;
+        } else if (isMonthStart && picked.length > 1 && clampedX - picked[picked.length - 2].x >= minGap) {
+          // Prefer showing the first trading day of a new month over the immediately preceding tick
+          picked[picked.length - 1] = { d, x: clampedX, m, dayNum, showMonth: true };
+          lastLabelX = clampedX;
+        }
+      }
+
+      dayAxis.innerHTML = picked.map(({ d, x, m, dayNum, showMonth }) => {
         const mLabel = MONTHS[(m || 1) - 1];
-        const showMonth = idx === 0 || m !== prevMonth;
-        prevMonth = m;
-        const subLabel = showMonth ? `${mLabel} ${d.wdLabel.slice(0, 2)}` : d.wdLabel;
-        const tip = d.isClosed
-          ? `${d.t} (${d.wdLabel}): ${d.reason}`
-          : `${d.t} (${d.wdLabel}): Close $${fmtNum(d.c)} (${fmtPct(d.chg1d, 2)})`;
+        const topLabel = showMonth ? `${mLabel} ${dayNum}` : `${dayNum}`;
+        const subLabel = d.wdLabel;
+        const tip = `${d.t} (${d.wdLabel}): Close $${fmtNum(d.c)} (${fmtPct(d.chg1d, 2)})`;
         return `
-          <div class="tv-day-tick ${d.isClosed ? "is-closed" : ""}" data-day="${esc(d.t)}" style="left:${x.toFixed(1)}px" title="${esc(tip)}">
-            <span class="tv-day-num">${dayNum}</span>
+          <div class="tv-day-tick" data-day="${esc(d.t)}" style="left:${x.toFixed(1)}px" title="${esc(tip)}">
+            <span class="tv-day-num">${esc(topLabel)}</span>
             <span class="tv-day-mon">${esc(subLabel)}</span>
           </div>`;
       }).join("");
