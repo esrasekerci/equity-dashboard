@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-21T17:51:16+00:00",
+  "updated_at": "2026-11-21T23:26:29+00:00",
   "items": [
     {
       "agency": "SEC",
@@ -117,6 +117,19 @@
         "antitrust_tech"
       ],
       "sector": "antitrust_tech"
+    },
+    {
+      "agency": "DOJ",
+      "title": "Senior Leader of the Sinaloa Cartel and One of FBI’s Ten Most Wanted Fugitives Arrested in Mexico Following a Homeland Security Task Force Investigation",
+      "url": "https://www.justice.gov/opa/pr/senior-leader-sinaloa-cartel-and-one-fbis-ten-most-wanted-fugitives-arrested-mexico",
+      "published": "2026-11-21T12:00:00+00:00",
+      "source": "DOJ Official",
+      "summary": "Fausto Isidro Meza Flores , also known as “Chapo Isidro,” an alleged leader of the Sinaloa Cartel, has been captured by the Mexican military following a Homeland Security Task Force Investigation.",
+      "categories": [
+        "DOJ Declaration",
+        "antitrust_legal"
+      ],
+      "sector": "antitrust_legal"
     },
     {
       "agency": "NHTSA",

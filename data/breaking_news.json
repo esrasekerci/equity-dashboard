@@ -1,74 +1,23 @@
 {
-  "updated_at": "2026-11-21T17:51:16+00:00",
+  "updated_at": "2026-11-21T23:26:29+00:00",
   "min_importance": 60.0,
   "max_age_hours": 3.0,
   "items": [
     {
-      "key": "ff69ae905ed2b861",
-      "symbol": "CHIPS / POLICY",
-      "name": "CHIPS / POLICY",
-      "title": "California Nvidia Probe Covers Potential Criminal Law Violations",
-      "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPM3ZKSUpVM0xWNVRuM3B0RjhyOTM0NUNoRmNYVnVKYm50andhaTFJVHZLenZrckE1aFZuMGhiSW42Mlh5c2lZcGc5eTg1NDQwWVRFQWxSOGtzWHk2S2pGLVpvM3N2enh4Mms5OTF0MHFXc0JnN3ZoYlB3ODJqX3FoSjJCTWlPOHQ2SjNOQ1Q3cjVNR0NWRVYxWVFEanpwZC1mSW5SeGpXSDRqX1d0TUVwdE1vYVJWUQ?oc=5",
-      "source": "Bloomberg.com",
-      "source_tier": 1,
-      "published": "2026-11-21T17:11:23+00:00",
-      "importance": 70.4,
-      "categories": [
-        "regulatory_legal"
-      ],
-      "age_hours": 0.66,
-      "detected_at": "2026-11-21T17:51:16+00:00"
-    },
-    {
-      "key": "ec8a0c988400aecb",
-      "symbol": "CHIPS / POLICY",
-      "name": "CHIPS / POLICY",
-      "title": "Nvidia Said to Face S.E.C. Probe Into Its Accounting Practices",
-      "url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE5qSmxMVy1SN0NxMVRKNy1XTmdKbUJ0WVI4VlUwM3RQWnJvNkE0M1pLVVk3bHJZUUtYWUFJdUJjMllKbXhyYzNOR1dDazVJN2ZmaGxENktCS213Q29Vc2paREMxOEZGZkw5QzNHcU5KRjJxdVBjdHM2SlpR?oc=5",
-      "source": "The New York Times",
-      "source_tier": 1,
-      "published": "2026-11-21T16:06:00+00:00",
-      "importance": 69.4,
-      "categories": [
-        "regulatory_legal"
-      ],
-      "age_hours": 1.75,
-      "detected_at": "2026-11-21T17:51:16+00:00"
-    },
-    {
-      "key": "f2aa222abcbf91e4",
-      "symbol": "AI / DATA CENTERS",
-      "name": "AI / DATA CENTERS",
-      "title": "Trump wants to ban US companies from building overseas data centers as bans slow development — also considers putting a ‘tremendous tax’ in lieu of prohibition",
-      "url": "https://news.google.com/rss/articles/CBMitgJBVV95cUxOdU1Fd1lycFhaQzFpSjg2bGtjOGpoWnBmOUg1SW5BM1laTFY0LWpmQnZhYlozMV9BcnJ0LWtqQmhVZGRiWFI5bHJhNzNVSE14eXcySE1EV0ZwcUlkNHZqZXNLWmwtaW1jWTV2TDQ1RlZjMGdTcFNaYnRxMGRjNGJtdVpQWGtSaUplajdSSG95Mi1WT1MxYUphbE51ZW5KTVVDVmk0NUJHVG5yYTdiUm5EWmZWSUhYdG9BeEtTZV9XSTdLOGpsTGFwZ0tfdGoxeGhyQUdVU1JIa09jdnZyZnVZbjBaVDRyVnliSk1Odjhub0tURFJzMUhrQ1FVZ3hoU0FxcXkyN2hVbU50T1BVRmlmWXEzWWNuR3dqMHJJU3NwTU5GTTBRRnFwaHM5WFZPQS1UUDV5dnZn?oc=5",
-      "source": "Tom's Hardware",
-      "source_tier": 2,
-      "published": "2026-11-21T16:29:39+00:00",
-      "importance": 74.0,
-      "categories": [
-        "regulatory_legal",
-        "data_centers_ai",
-        "capex_expansion"
-      ],
-      "age_hours": 1.36,
-      "detected_at": "2026-11-21T17:51:16+00:00"
-    },
-    {
-      "key": "d9fe704a8aeae319",
-      "symbol": "AI / DATA CENTERS",
-      "name": "AI / DATA CENTERS",
-      "title": "Texas County Balks at SpaceX’s $24 Billion Data Center Tax Break. SpaceX Says Computing Equipment “Rapidly Depreciates”",
-      "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQTjdUZldlRUF1TmMxUXRtS1N0Qm9mdGc0SWJXVHFjTXFFTXM2WEdJM2IwSm52UHpUUDRwVk5CYTlNRTh1QUstUWhfM1B4eDRQakhqR3hpN0d6LWxiT2VsQnpGLVkxdFYyNXl4TVE5VkFCSURHSlNsT1p6VVdKU0J2QVFiODRuT1lQQ0pHZ2ExcjRhOTIweGtGZA?oc=5",
+      "key": "f0e059ed67bc9ecd",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia faces US accounting probe amid deepening turmoil: media",
+      "url": "https://finance.yahoo.com/technology/ai/articles/nvidia-faces-us-accounting-probe-215354861.html?.tsrc=rss",
       "source": "Yahoo Finance",
       "source_tier": 2,
-      "published": "2026-11-21T15:08:25+00:00",
-      "importance": 66.4,
+      "published": "2026-11-21T21:53:54+00:00",
+      "importance": 64.3,
       "categories": [
-        "data_centers_ai",
-        "capex_expansion"
+        "regulatory_legal"
       ],
-      "age_hours": 2.71,
-      "detected_at": "2026-11-21T17:51:16+00:00"
+      "age_hours": 1.54,
+      "detected_at": "2026-11-21T23:26:29+00:00"
     }
   ]
 }
