@@ -2396,6 +2396,7 @@
         <div class="tv-legend" id="tvLegend"></div>
         <div class="tv-chart-wrap ${is1M ? "is-1m" : ""}" id="tvChartWrap">
           <div class="tv-chart-box" id="tvChart"></div>
+          <div class="tv-sr-overlay" id="tvSrOverlay"></div>
           <div class="tv-day-overlay ${is1M ? "" : "hidden"}" id="tvDayOverlay"></div>
           <div class="tv-day-axis ${is1M ? "" : "hidden"}" id="tvDayAxis"></div>
         </div>`;
@@ -2670,25 +2671,58 @@
       s.setData(pts);
     }
 
-    // Only draw S/R price lines within the visible price range (±12%) so distant S2/S3 labels never stack at the bottom of the axis
+    // Draw Support (S1–S3) & Resistance (R1–R3) dashed price lines + translucent shaded S/R zone bands (band_low..band_high)
+    const lvAll = t.technical?.computed?.levels || {};
+    const srLevelsToDraw = [];
     if (ov.sr) {
       const visLow = Math.min(...data.map((d) => d.l));
       const visHigh = Math.max(...data.map((d) => d.h));
-      const minP = visLow * 0.88;
-      const maxP = visHigh * 1.12;
-      const lv = t.technical?.computed?.levels || {};
-      for (const x of [...(lv.support || []), ...(lv.resistance || [])]) {
+      const minP = visLow * 0.65;
+      const maxP = visHigh * 1.45;
+      for (const x of [...(lvAll.support || []), ...(lvAll.resistance || [])]) {
         if (x.price == null || x.price < minP || x.price > maxP) continue;
+        srLevelsToDraw.push(x);
         candles.createPriceLine({
           price: x.price,
           color: x.role === "support" ? upCol : dnCol,
-          lineWidth: 1,
+          lineWidth: 1.2,
           lineStyle: LC.LineStyle.Dashed,
           axisLabelVisible: true,
           title: x.label || "",
         });
       }
     }
+
+    const srOverlay = $("tvSrOverlay");
+    const syncSrZones = () => {
+      if (!srOverlay || !state.tvChart) return;
+      if (!ov.sr || !srLevelsToDraw.length) {
+        srOverlay.innerHTML = "";
+        return;
+      }
+      const rightAxisW = state.tvChart.priceScale("right")?.width?.() || 58;
+      srOverlay.style.right = `${rightAxisW}px`;
+      const maxH = box.clientHeight || 320;
+      const bands = [];
+      for (const x of srLevelsToDraw) {
+        const hi = x.band_high ?? x.price;
+        const lo = x.band_low ?? x.price;
+        const yTop = candles.priceToCoordinate(hi);
+        const yBot = candles.priceToCoordinate(lo);
+        if (yTop == null || yBot == null) continue;
+        const top = Math.max(0, Math.min(yTop, yBot));
+        const bot = Math.min(maxH, Math.max(yTop, yBot));
+        if (bot <= 0 || top >= maxH) continue;
+        const h = Math.max(4, bot - top);
+        const cls = x.role === "support" ? "sup" : "res";
+        bands.push(
+          `<div class="tv-sr-band ${cls}" style="top:${top.toFixed(1)}px;height:${h.toFixed(1)}px">` +
+            `<span class="tv-sr-tag">${esc(x.label || "")}</span>` +
+          `</div>`
+        );
+      }
+      srOverlay.innerHTML = bands.join("");
+    };
 
     // Day-by-day separation for 1M (Monthly Series): every single trading day has its own vertical column separator,
     // its own bottom date tick centered under its candle, and its own separate daily card in the monthly strip.
@@ -2790,20 +2824,22 @@
       if (!state.tvChart) return;
       state.tvChart.timeScale().fitContent();
       if (is1M) sync1MDayColumns();
+      syncSrZones();
     };
 
     fitAllBars();
     requestAnimationFrame(fitAllBars);
-    setTimeout(fitAllBars, 60);
+    setTimeout(fitAllBars, 80);
 
     const resetBtn = $("resetChartFitBtn");
     if (resetBtn) resetBtn.onclick = fitAllBars;
 
-    if (is1M) {
-      chart.timeScale().subscribeVisibleLogicalRangeChange(() => {
-        requestAnimationFrame(sync1MDayColumns);
+    chart.timeScale().subscribeVisibleLogicalRangeChange(() => {
+      requestAnimationFrame(() => {
+        if (is1M) sync1MDayColumns();
+        syncSrZones();
       });
-    }
+    });
 
     const legend = $("tvLegend");
     const highlightDay = (dateStr) => {
