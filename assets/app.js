@@ -46,122 +46,103 @@
     if (Math.abs(n) >= 1e6) return `$${(n / 1e6).toFixed(1)}M`;
     return `$${n.toLocaleString()}`;
   };
-  const fmtSector = (s) => (s || "other").replace(/_/g, " ");
+  const SECTOR_LABELS = {
+    semiconductors: "Semiconductors",
+    neocloud_ai_infra: "Neocloud & AI Infra",
+    datacenter_neocloud: "Neocloud & AI Infra",
+    ai_cloud: "AI Cloud & Platforms",
+    software: "Enterprise AI Software",
+    hardware_infra: "AI Servers & Cooling",
+    megacap_platforms: "Megacap Cloud & AI",
+    power_utilities: "Power & Nuclear Utilities",
+    clean_energy: "Clean & Nuclear Energy",
+    energy: "Oil & Natural Gas",
+    ev_energy: "EV & Autonomous AI",
+    macro_policy: "Macro & Trade Policy",
+  };
+  const fmtSector = (s) => {
+    if (!s) return "Other";
+    const key = String(s).toLowerCase();
+    if (SECTOR_LABELS[key]) return SECTOR_LABELS[key];
+    return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  };
 
-  // Mathematical formulations & quantitative finance definitions for tooltips (hover with mouse or tap on mobile)
+  // Simple, clear Binance-style explanations for ? tooltips (exact formulas live on the dedicated "Formulas" tab)
   const GLOSSARY = {
     notable_score:
-      "Notable / Catalyst Score (0–100) — Mathematical Formulation|" +
-      "Formula: S = 12·min(|r_1d|/ATR%, 3)·I(z≥1) + 8·(min(RVOL_20,3)-1)·I(RVOL>1.3) + S_struct + 6·I(RSI∉[25,75]) + (0.25·I_max + 1.5·min(N_24h,5))·I(I≥40) + 8·I(SEC) + 4·I(|Form4|≥$1M) + 10·I(Earn≤7d). Combines Wilder ATR-normalized return Z-score, relative volume, structural breakouts, RSI tail extremes, news & SEC filings.",
+      "Notable Score (0–100)|Shows how unusually active a stock is today based on price move size, volume spike, news, and SEC filings. Higher score = more market attention today (not a buy/sell rating).",
     rsi14:
-      "Wilder's RSI-14 (J. Welles Wilder, 1978)|" +
-      "Formula: RSI_14 = 100 - [100 / (1 + RS)], where RS = EMA_{α=1/14}(ΔP⁺) / EMA_{α=1/14}(ΔP⁻) using Wilder's smoothing α = 1/14. <30 = Oversold (>2σ downside exhaustion); >70 = Overbought.",
+      "RSI-14 (Momentum)|0–100 speed gauge over the last 14 days. Below 30 = Oversold (sharp recent drop); Above 70 = Overbought (sharp recent rally); 30–70 = Neutral.",
     sma:
-      "Simple Moving Averages (SMA 20 / 50 / 200)|" +
-      "Formula: SMA_k(t) = (1/k)·∑_{i=0..k-1} C_{t-i}. Weinstein Regime: Bullish when C > SMA_50 > SMA_200; Bearish when C < SMA_50 < SMA_200.",
+      "SMA 20 / 50 / 200 (Trend Lines)|Average closing price over the last 20 (short-term), 50 (medium-term), and 200 (long-term) trading days. Green = price is above that trend line; Red = below.",
     rs_spy:
-      "Benchmark Excess Return (α_21d vs SPY)|" +
-      "Formula: α_{21d} = (C_t/C_{t-21} - 1) - (SPY_t/SPY_{t-21} - 1). Measures 1-month cross-sectional relative strength against the S&P 500.",
+      "vs SPY (1-Month Relative Strength)|How much the stock beat (+) or lagged (−) the S&P 500 index over the last 21 trading days.",
     rs_sector:
-      "Industry Excess Return (α_21d vs Sector ETF)|" +
-      "Formula: α_{sector,21d} = R_{stock,21d} - R_{ETF,21d}. Positive values indicate intra-sector leadership.",
+      "vs Sector ETF (1-Month)|How much the stock beat (+) or lagged (−) its own industry ETF over the last 21 trading days.",
     sr_levels:
-      "Fractal Pivot & Volume-at-Price (VAP) S/R Zones|" +
-      "Detected via 5-bar daily & 3-bar weekly fractal swing extrema clustered within tolerance δ = 0.6·ATR_14, merged with High-Volume Nodes (HVNs) from the 180-day Volume Profile.",
+      "Support (S1–S3) & Resistance (R1–R3)|Support (S) is a price floor where buyers previously stepped in; Resistance (R) is a price ceiling where sellers capped rallies.",
     sr_strength:
-      "Support/Resistance Confluence Strength (0–100)|" +
-      "Formula: Strength = 100 × [0.35·(1 - e^{-N_w/3}) + 0.30·VAP_density + 0.20·0.5^{Δt/60} + 0.10·I_MTF + 0.05·C_round], where N_w is weighted pivot touches (weekly=1.5x), VAP_density is volume concentration within ±0.5·ATR_14, and τ_{1/2}=60d.",
+      "Level Strength (0–100)|How reliable a Support or Resistance zone is, based on how many times price bounced there and how much volume traded at that price.",
     scenarios:
-      "Multi-Factor Logistic Scenario Model (Bull / Base / Bear %)|" +
-      "Formula: S_tech = 0.30·V_MA + 0.30·V_Mom + 0.25·V_RS + 0.15·V_Pat ∈ [-1,+1]. P_base = clip(0.45 - 0.20·|S_tech| + 0.10·I_range, 0.20, 0.55); P_bull = (1 - P_base) / (1 + e^{-3·S_tech}); P_bear = 1 - P_base - P_bull.",
+      "20-Day Scenarios (Bull / Base / Bear %)|Rule-based probability split for the next 20 trading days based on trend, momentum, and key price levels. Not financial advice.",
     tech_score:
-      "Multi-Factor Technical Composite Score S_tech ∈ [-1.00, +1.00]|" +
-      "Formula: S_tech = 0.30·V_MA(SMA50/200 regime) + 0.30·V_Mom(MACD_12,26,9 + RSI_14) + 0.25·V_RS(tanh(α_63d/0.15)) + 0.15·V_Pat(volume-confirmed breakout/channel).",
+      "Technical Score (-1.00 to +1.00)|Overall technical trend balance from -1.00 (strongly bearish) to +1.00 (strongly bullish).",
     breadth:
-      "Market Breadth & Advance/Decline Ratio|" +
-      "Formula: %Adv = N_up / (N_up + N_down); Equal-Weighted Index Return R_EW = (1/N)·∑ r_{i,1d} across all 39 watchlist stocks.",
+      "Market Breadth (Advancers / Decliners)|How many of the 39 watchlist stocks closed green (↑) vs red (↓) today, plus their average 1-day return.",
     vix:
-      "CBOE VIX Implied Volatility Index|" +
-      "30-day model-free annualized implied standard deviation from S&P 500 option prices. Daily expected 1σ move ≈ VIX / √252.",
+      "VIX Volatility Index|Market's 30-day 'fear gauge' on the S&P 500. Below 15 = calm market; 20–25 = elevated caution; Above 30 = high stress.",
     dgs10:
-      "US 10-Year Treasury Constant Maturity Yield (DGS10)|" +
-      "Risk-free discount rate r_f in DCF equity valuation: V_0 = ∑ FCF_t / (1 + r_f + ERP)^t.",
+      "US 10-Year Treasury Yield|Benchmark 10-year US government bond interest rate. Rising yields often pressure growth & tech stock valuations.",
     fomc:
-      "Next FOMC Policy Rate Decision|" +
-      "Trading/calendar days until the Federal Open Market Committee target federal funds rate announcement.",
+      "Next FOMC Decision|Countdown to the Federal Reserve's next interest-rate decision meeting.",
     vol_ratio:
-      "Relative Volume (RVOL_20)|" +
-      "Formula: RVOL_{20} = V_t / [(1/20)·∑_{i=1..20} V_{t-i}]. RVOL ≥ 1.5x indicates statistically significant institutional participation.",
+      "Volume vs 20d Average|Today's trading volume compared to the stock's normal 20-day average. 1.5x or higher signals heavy institutional activity.",
     updown_vol:
-      "20-Day Institutional Up/Down Volume Ratio|" +
-      "Formula: U/D_20 = [∑_{t∈Up_20} V_t] / [∑_{t∈Down_20} V_t]. >1.20 = Institutional Accumulation; <0.80 = Institutional Distribution.",
+      "Up/Down Volume Ratio (20d)|Volume on green days divided by volume on red days over the last 20 sessions. Above 1.2 = Accumulation (buying); Below 0.8 = Distribution (selling).",
     short_float:
-      "Short Interest % of Free Float|" +
-      "Formula: SI% = Shares_Short / Shares_Float. Elevated short interest (>10%) increases short-covering gamma/squeeze elasticity.",
+      "Short % of Float|Percentage of tradable shares currently borrowed and sold short by bears. High short interest (>10%) can fuel bigger swings.",
     pe:
-      "Price-to-Earnings Valuation Multiple (TTM / Forward)|" +
-      "Formula: P/E_TTM = Price / EPS_{trailing 12m}; Forward P/E = Price / E[EPS_{NTM}].",
+      "P/E Ratio (Trailing / Forward)|Stock price divided by last 12 months' earnings per share (TTM) vs estimated next 12 months' earnings (Forward).",
     fcf:
-      "Free Cash Flow (FCF TTM)|" +
-      "Formula: FCF = Operating Cash Flow (CFO) - Capital Expenditures (CapEx) over the trailing 4 quarters.",
+      "Free Cash Flow (TTM)|Actual cash generated by the business over the last 12 months after paying for data centers, fabs, and equipment.",
     target_upside:
-      "Wall Street Consensus Target Spread (Δ%)|" +
-      "Formula: Δ% = (P_{target,mean} - P_{current}) / P_{current} × 100%.",
+      "Analyst Target Δ|Percentage difference between the average Wall Street analyst price target and current price.",
     form4:
-      "SEC Form 4 Open-Market Insider Flow|" +
-      "Formula: Net_Insider = ∑(Code 'P' Open-Market Purchases $) - ∑(Code 'S' Open-Market Sales $) over trailing 90 days.",
+      "SEC Form 4 (Insider Trades)|Official SEC filing required within 2 business days whenever a company executive or director buys or sells shares.",
     whale_13d:
-      "SEC Schedule 13D / 13G Beneficial Ownership|" +
-      "Required within 5–10 business days when an institutional investor crosses ≥ 5.0% voting ownership of a public issuer.",
+      "SEC Schedule 13D / 13G|Official SEC filing required when a major fund or whale acquires more than 5% of a company.",
   };
   const tipAttr = (key) => (GLOSSARY[key] ? `data-tip="${esc(GLOSSARY[key])}"` : "");
 
-  // Dynamic per-stock mathematical tooltips with live plugged-in numbers
+  // Simple Binance-style per-stock tooltips (tap "Formulas" tab for full math & live step-by-step equations)
   function notableScoreTipAttr(r) {
     const bd = r?.notable_bd || r?.notable?.breakdown;
     if (!bd || !bd.terms) return tipAttr("notable_score");
     const tm = bd.terms;
-    const text =
-      `Notable Score = ${fmtNum(bd.total, 1)} / 100 (Live Mathematical Calculation)|` +
-      `Formula: S = 12·z_ATR + 8·(RVOL-1) + S_struct + S_RSI + S_news + S_SEC + S_Form4 + S_Earn. ` +
-      `Plugged-in values for ${r.symbol}: ` +
-      `• ATR Move Z-Score: z = |${fmtPct(r.change_1d_pct, 2)}| / ${bd.atr_pct ?? "—"}% = ${bd.z_atr}σ → +${tm.vol_z} pts ` +
-      `• Relative Vol: RVOL_20 = ${bd.rvol_20d ?? "—"}x → +${tm.rvol} pts ` +
-      `• Structure/Breakout → +${tm.pattern} pts ` +
-      `• Wilder RSI-14 Extreme → +${tm.rsi_extreme} pts ` +
-      `• News Velocity (Max Imp ${bd.top_news_imp}/100, ${bd.fresh_news_24h} in 24h) → +${tm.news} pts ` +
-      `• Material SEC 8-K/10-Q (${bd.major_sec_count}) → +${tm.sec} pts ` +
-      `• Insider Form 4 / Earnings → +${(tm.insider || 0) + (tm.earnings || 0)} pts = ${fmtNum(bd.total, 1)} pts`;
+    const parts = [];
+    if (tm.vol_z > 0) parts.push(`Price move (${bd.z_atr}x daily range: +${tm.vol_z})`);
+    if (tm.rvol > 0) parts.push(`Volume surge (${bd.rvol_20d}x avg: +${tm.rvol})`);
+    if (tm.pattern > 0) parts.push(`Chart breakout/pattern (+${tm.pattern})`);
+    if (tm.rsi_extreme > 0) parts.push(`Extreme RSI (+${tm.rsi_extreme})`);
+    if (tm.news > 0) parts.push(`News activity (+${tm.news})`);
+    if (tm.sec > 0) parts.push(`SEC filing (+${tm.sec})`);
+    if ((tm.insider || 0) + (tm.earnings || 0) > 0) parts.push(`Insider/Earnings (+${(tm.insider || 0) + (tm.earnings || 0)})`);
+    const summary = parts.length ? `Driven today by: ${parts.join(" · ")}.` : "Normal daily activity today.";
+    const text = `Notable Score: ${fmtNum(bd.total, 1)} / 100|Measures how unusually active ${r.symbol} is today. ${summary}`;
     return `data-tip="${esc(text)}"`;
   }
 
   function levelStrengthTipAttr(x) {
-    const c = x?.components;
-    if (!c) return tipAttr("sr_strength");
     const text =
-      `${x.label} ($${fmtNum(x.price)}) Strength = ${fmtNum(x.strength, 1)}/100 (Confluence Formula)|` +
-      `Formula: 100 × [0.35·C_touch + 0.30·C_vol + 0.20·C_recency + 0.10·C_MTF + 0.05·C_round]. ` +
-      `Live components at $${fmtNum(x.price)}: ` +
-      `• Fractal Touches (${x.touches} touches, 1-e^{-N_w/3}): C_touch = ${fmtNum(c.touches, 2)} (×35%) ` +
-      `• Volume-at-Price Profile Density: C_vol = ${fmtNum(c.volume, 2)} (×30%) ` +
-      `• Exponential Recency (0.5^{Δt/60d}, last ${x.last_touch || "—"}): C_rec = ${fmtNum(c.recency, 2)} (×20%) ` +
-      `• Multi-Timeframe Daily+Weekly: C_MTF = ${fmtNum(c.mtf, 2)} (×10%) ` +
-      `• Round-Number Anchor: C_round = ${fmtNum(c.round, 2)} (×5%) → Total = ${fmtNum(x.strength, 1)}/100`;
+      `${x.label} ($${fmtNum(x.price)}) — Strength ${fmtNum(x.strength, 0)}/100|` +
+      `Reliability score based on ${x.touches ?? 0} historical price bounces at this zone, trading volume concentration, and how recently it was tested (${x.last_touch || "recent"}).`;
     return `data-tip="${esc(text)}"`;
   }
 
   function techScenarioTipAttr(score, comps, sc) {
-    if (score == null || !comps) return tipAttr("scenarios");
-    const ma = comps.ma_trend?.vote ?? 0;
-    const mom = comps.momentum?.vote ?? 0;
-    const rs = comps.relative_strength?.vote ?? 0;
-    const pat = comps.patterns?.vote ?? 0;
     const text =
-      `Multi-Factor Technical & Logistic Scenario Model (S_tech = ${fmtNum(score, 3)})|` +
-      `1) Composite Factor Equation: S_tech = 0.30·V_MA(${fmtNum(ma, 2)}) + 0.30·V_Mom(${fmtNum(mom, 2)}) + 0.25·V_RS(${fmtNum(rs, 2)}) + 0.15·V_Pat(${fmtNum(pat, 2)}) = ${fmtNum(score, 3)} ∈ [-1,+1]. ` +
-      `2) Logistic Sigmoid Partition: P_base = clip(0.45 - 0.20·|${fmtNum(score, 2)}| + 0.10·I_range, 0.20, 0.55) → ${sc.base || 0}%; ` +
-      `P_bull = (1 - P_base) / (1 + e^{-3 × ${fmtNum(score, 2)}}) → ${sc.bullish || 0}%; ` +
-      `P_bear = 1 - P_base - P_bull → ${sc.bearish || 0}%.`;
+      `20-Day Scenario Split (Bull ${sc?.bullish ?? 0}% · Base ${sc?.base ?? 0}% · Bear ${sc?.bearish ?? 0}%)|` +
+      `Rule-based outlook combining trend lines (30%), momentum (30%), relative strength vs market (25%), and chart patterns (15%). Technical score: ${fmtNum(score, 2)}.`;
     return `data-tip="${esc(text)}"`;
   }
 
@@ -182,8 +163,8 @@
   function setView(view) {
     if (view !== "stock") { state.prevView = view; destroyInteractiveChart(); }
     state.view = view;
-    for (const v of ["overview", "screener", "network", "smartmoney", "breaking", "authorities", "macro", "stock"]) {
-      $(`view-${v}`).classList.toggle("hidden", v !== view);
+    for (const v of ["overview", "screener", "network", "smartmoney", "breaking", "authorities", "macro", "formulas", "stock"]) {
+      $(`view-${v}`)?.classList.toggle("hidden", v !== view);
     }
     document.querySelectorAll("#mainNav .nav-tab").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.view === view);
@@ -338,41 +319,33 @@
         <button class="btn-secondary compact-hdr-btn" id="filterScreenerBySecBtn">Open in Screener Table →</button>
       </div>
 
-      <div class="table-wrap" style="max-height:58vh;overflow-y:auto">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Stock</th>
-              <th class="num">Mkt Cap</th>
-              <th class="num">Close</th>
-              <th class="num">1D %</th>
-              <th class="num">vs SPY 21d</th>
-              <th class="num">RSI-14</th>
-              <th class="num">Score</th>
-              <th class="num">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${members.map((r) => `
-              <tr>
-                <td>
+      <div class="rel-cards-grid" style="max-height:60vh;overflow-y:auto;padding-right:2px">
+        ${members.map((r) => `
+          <div class="rel-conn-card">
+            <div class="rcc-top">
+              <div>
+                <div class="rcc-sym">
                   <strong>${esc(r.symbol)}</strong>${r.is_core ? ' <span class="core-star">★</span>' : ""}
-                  <div class="muted">${esc(r.name)}</div>
-                </td>
-                <td class="num">${fmtCap(r.market_cap)}</td>
-                <td class="num"><strong>$${fmtNum(r.close)}</strong></td>
-                <td class="num ${clsPct(r.change_1d_pct)}"><strong>${fmtPct(r.change_1d_pct)}</strong></td>
-                <td class="num ${clsPct(r.rs_spy_21d)}">${fmtPct(r.rs_spy_21d, 1)}</td>
-                <td class="num ${r.rsi14 < 30 ? "neg" : r.rsi14 > 70 ? "pos" : ""}">${fmtNum(r.rsi14, 1)}</td>
-                <td class="num"><span class="score-badge" ${notableScoreTipAttr(r)}>${fmtNum(r.notable_score, 1)}</span></td>
-                <td class="num" style="white-space:nowrap">
-                  <button class="btn-secondary compact-hdr-btn" data-sec-open="${esc(r.symbol)}">Analysis →</button>
-                  <button class="btn-secondary compact-hdr-btn" data-sec-net="${esc(r.symbol)}" title="Explore Supply-Chain Bubble Network">Network ⟲</button>
-                </td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
+                  <span class="tag">${fmtCap(r.market_cap)}</span>
+                </div>
+                <div class="muted">${esc(r.name)}</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:800;font-size:15px">$${fmtNum(r.close)}</div>
+                <span class="price-pill ${clsPct(r.change_1d_pct)}" style="font-size:12px">${fmtPct(r.change_1d_pct)}</span>
+              </div>
+            </div>
+            <div class="rcc-stats">
+              <span>21d vs SPY: <strong class="${clsPct(r.rs_spy_21d)}">${fmtPct(r.rs_spy_21d, 1)}</strong></span>
+              <span>RSI-14: <strong class="${r.rsi14 < 30 ? "neg" : r.rsi14 > 70 ? "pos" : ""}">${fmtNum(r.rsi14, 1)}</strong></span>
+              <span ${notableScoreTipAttr(r)}>Score: <strong>${fmtNum(r.notable_score, 1)}</strong> <span class="tip-badge">?</span></span>
+            </div>
+            <div class="rcc-actions">
+              <button class="btn-secondary compact-hdr-btn" data-sec-open="${esc(r.symbol)}">📊 Stock Analysis →</button>
+              <button class="btn-secondary compact-hdr-btn" data-sec-net="${esc(r.symbol)}">🕸️ Supply-Chain Network ⟲</button>
+            </div>
+          </div>
+        `).join("")}
       </div>
     `;
 
@@ -555,6 +528,7 @@
       renderSmartMoney();
       renderAuthorities();
       renderMacro();
+      renderFormulasView();
       $("loadingState").classList.add("hidden");
       if (openTicker) {
         await openStock(openTicker.toUpperCase());
@@ -706,7 +680,7 @@
             </div>
             <div style="text-align:right">
               <div class="price-pill ${clsPct(row.change_1d_pct)}">$${fmtNum(row.close)} · ${fmtPct(row.change_1d_pct, 1)}</div>
-              <div style="margin-top:4px"><span class="score-badge" ${notableScoreTipAttr(row)}>Score ${fmtNum(n.score, 0)} <span class="tip-badge">∑</span></span></div>
+              <div style="margin-top:4px"><span class="score-badge" ${notableScoreTipAttr(row)}>Score ${fmtNum(n.score, 0)} <span class="tip-badge">?</span></span></div>
             </div>
           </div>
           <ul class="notable-why">${(n.why || []).slice(0, 2).map((w) => `<li>${esc(w)}</li>`).join("")}</ul>
@@ -844,7 +818,7 @@
           </div>
 
           <div class="sc-metrics">
-            <div><div class="sc-m-k" ${notableScoreTipAttr(r)}>Score ∑</div><div class="sc-m-v">${fmtNum(r.notable_score, 0)}</div></div>
+            <div><div class="sc-m-k" ${notableScoreTipAttr(r)}>Score ?</div><div class="sc-m-v">${fmtNum(r.notable_score, 0)}</div></div>
             <div><div class="sc-m-k" ${tipAttr("rsi14")}>RSI-14 ?</div><div class="sc-m-v ${r.rsi14 < 30 ? "neg" : r.rsi14 > 70 ? "pos" : ""}">${fmtNum(r.rsi14, 1)}</div></div>
             <div><div class="sc-m-k" ${tipAttr("rs_spy")}>vs SPY ?</div><div class="sc-m-v ${clsPct(r.rs_spy_21d)}">${fmtPct(r.rs_spy_21d, 1)}</div></div>
             <div><div class="sc-m-k" ${tipAttr("sma")}>Trend ?</div><div class="sc-m-v"><div class="sma-dots">${sma}</div></div></div>
@@ -873,29 +847,84 @@
     wireSectorLinks($("screenerCards"));
   }
 
-  // ---- DYNAMIC SUPPLY-CHAIN & VALUE-CHAIN BUBBLE NETWORK (Bloomberg SPLC Style) ----
+  // ---- DYNAMIC SUPPLY-CHAIN & VALUE-CHAIN BUBBLE NETWORK (Zoom/Pan + Instant Detail Inspector) ----
   const REL_COLORS = {
-    supplier: { stroke: "#22c55e", badge: "bull", label: "Upstream Supplier", flow: "in" },
-    customer: { stroke: "#3b82f6", badge: "amber", label: "Downstream Customer", flow: "out" },
-    partner: { stroke: "#a855f7", badge: "", label: "Infra / Ecosystem Partner", flow: "bi" },
-    competitor: { stroke: "#f43f5e", badge: "bear", label: "Direct Competitor", flow: "none" },
-    co_mention: { stroke: "#f59e0b", badge: "amber", label: "News Co-Mention", flow: "none" },
-    peer: { stroke: "#64748b", badge: "", label: "Sector Peer", flow: "none" },
+    supplier: { stroke: "#22c55e", badge: "bull", label: "Upstream Supplier", short: "Supplier", flow: "in" },
+    customer: { stroke: "#3b82f6", badge: "amber", label: "Downstream Customer", short: "Customer", flow: "out" },
+    partner: { stroke: "#a855f7", badge: "", label: "Infra / Ecosystem Partner", short: "Partner", flow: "bi" },
+    competitor: { stroke: "#f43f5e", badge: "bear", label: "Direct Competitor", short: "Competitor", flow: "none" },
+    co_mention: { stroke: "#f59e0b", badge: "amber", label: "News Co-Mention", short: "Co-Mention", flow: "none" },
+    peer: { stroke: "#64748b", badge: "", label: "Sector Peer", short: "Peer", flow: "none" },
   };
 
   function capRadius(mcap) {
-    // Logarithmic market-cap scaling ($1B -> 24px, $50B -> 29px, $500B -> 35px, $3T -> 41px)
-    if (!mcap || mcap <= 0) return 26;
+    if (!mcap || mcap <= 0) return 29;
     const logB = Math.log10(Math.max(1, mcap / 1e9)); // 0 for $1B, 3.5 for $3.1T
-    return Math.round(Math.max(24, Math.min(41, 24 + logB * 4.8)));
+    return Math.round(Math.max(27, Math.min(44, 27 + logB * 4.8)));
+  }
+
+  function computeCollisionFreeLayout(items) {
+    // Group clockwise by role so Partners sit Top, Customers Right, Competitors Bottom, Suppliers Left,
+    // then run 45 iterations of 2D circle-repulsion relaxation so zero bubbles or labels ever overlap.
+    const roleOrder = { partner: 0, customer: 1, competitor: 2, co_mention: 3, peer: 4, supplier: 5 };
+    const sorted = [...items].sort((a, b) => (roleOrder[a.type] ?? 4) - (roleOrder[b.type] ?? 4));
+    const total = Math.max(1, sorted.length);
+    const nodes = sorted.map((item, idx) => {
+      const r = capRadius(item.market_cap);
+      const ring = total <= 7 ? 175 : (idx % 2 === 0 ? 158 : 232);
+      const angle = (idx / total) * Math.PI * 2 - Math.PI / 2;
+      return {
+        ...item,
+        x: Math.cos(angle) * ring * 1.12,
+        y: Math.sin(angle) * ring,
+        r,
+      };
+    });
+
+    const centerR = 54;
+    for (let iter = 0; iter < 45; iter++) {
+      // 1. Keep minimum distance from center hub (0, 0)
+      for (const n of nodes) {
+        const dist = Math.hypot(n.x, n.y) || 1;
+        const minC = centerR + n.r + 58;
+        if (dist < minC) {
+          const push = (minC - dist) * 0.65;
+          n.x += (n.x / dist) * push;
+          n.y += (n.y / dist) * push;
+        }
+      }
+      // 2. Pairwise bubble-to-bubble repulsion (guarantees >= 30px air gap between every pair of bubbles)
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i];
+          const b = nodes[j];
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const dist = Math.hypot(dx, dy) || 0.1;
+          const minD = a.r + b.r + 30;
+          if (dist < minD) {
+            const push = ((minD - dist) / 2) * 0.65;
+            const ux = dx / dist;
+            const uy = dy / dist;
+            a.x -= ux * push;
+            a.y -= uy * push;
+            b.x += ux * push;
+            b.y += uy * push;
+          }
+        }
+      }
+    }
+
+    return nodes.map((n) => ({ ...n, x: Math.round(n.x), y: Math.round(n.y) }));
   }
 
   function renderBubbleNetwork(container, centerSym, filterKey, onRecenter, opts = {}) {
     if (!container || !state.summary) return;
     const net = state.summary.network || {};
     const linksMap = net.links_by_symbol || {};
-    const bySym = Object.fromEntries((state.summary.tickers || []).map((t) => [t.symbol, t]));
-    const center = bySym[centerSym] || (state.summary.tickers || [])[0];
+    const allTickers = [...(state.summary.tickers || [])].sort((a, b) => (b.market_cap || 0) - (a.market_cap || 0));
+    const bySym = Object.fromEntries(allTickers.map((t) => [t.symbol, t]));
+    const center = bySym[centerSym] || allTickers[0];
     if (!center) return;
 
     const historyArr = opts.history || [center.symbol];
@@ -906,7 +935,7 @@
     let shown = filterKey === "all"
       ? (nonPeer.length >= 4 ? [...nonPeer, ...allLinks.filter((x) => x.type === "peer").slice(0, 3)] : allLinks)
       : allLinks.filter((x) => x.type === filterKey);
-    shown = shown.slice(0, 16);
+    shown = shown.slice(0, 14);
 
     const counts = { all: allLinks.length };
     for (const l of allLinks) counts[l.type] = (counts[l.type] || 0) + 1;
@@ -920,70 +949,27 @@
       ["peer", "Sector Peers"],
     ].filter(([k]) => k === "all" || counts[k] > 0);
 
-    const W = 880, H = 470, cx = W / 2, cy = H / 2;
-
-    // Structured Value-Chain Zone positioning when viewing "all", or radial ring when viewing a single category
-    const nodesPos = [];
-    if (filterKey === "all") {
-      const suppliers = shown.filter((x) => x.type === "supplier");
-      const customers = shown.filter((x) => x.type === "customer");
-      const partners = shown.filter((x) => x.type === "partner");
-      const bottomGroup = shown.filter((x) => x.type === "competitor" || x.type === "co_mention" || x.type === "peer");
-
-      // Left Zone: Upstream Suppliers (x ~ 110..240)
-      suppliers.forEach((item, i) => {
-        const tot = suppliers.length;
-        const ySpan = Math.min(320, tot * 76);
-        const y0 = cy - ySpan / 2;
-        const y = tot === 1 ? cy : y0 + (i / (tot - 1)) * ySpan;
-        const x = (i % 2 === 0 ? 135 : 225);
-        nodesPos.push({ ...item, x: Math.round(x), y: Math.round(y), r: capRadius(item.market_cap) });
-      });
-
-      // Right Zone: Downstream Customers (x ~ 655..755)
-      customers.forEach((item, i) => {
-        const tot = customers.length;
-        const ySpan = Math.min(350, tot * 64);
-        const y0 = cy - ySpan / 2;
-        const y = tot === 1 ? cy : y0 + (i / (tot - 1)) * ySpan;
-        const x = (i % 2 === 0 ? 745 : 650);
-        nodesPos.push({ ...item, x: Math.round(x), y: Math.round(y), r: capRadius(item.market_cap) });
-      });
-
-      // Top Arc: Infrastructure & Ecosystem Partners (y ~ 62..105)
-      partners.forEach((item, i) => {
-        const tot = partners.length;
-        const xSpan = Math.min(360, tot * 88);
-        const x0 = cx - xSpan / 2;
-        const x = tot === 1 ? cx : x0 + (i / (tot - 1)) * xSpan;
-        const y = (i % 2 === 0 ? 64 : 104);
-        nodesPos.push({ ...item, x: Math.round(x), y: Math.round(y), r: capRadius(item.market_cap) });
-      });
-
-      // Bottom Arc: Direct Competitors, News Co-Mentions & Peers (y ~ 368..410)
-      bottomGroup.forEach((item, i) => {
-        const tot = bottomGroup.length;
-        const xSpan = Math.min(380, tot * 88);
-        const x0 = cx - xSpan / 2;
-        const x = tot === 1 ? cx : x0 + (i / (tot - 1)) * xSpan;
-        const y = (i % 2 === 0 ? 404 : 366);
-        nodesPos.push({ ...item, x: Math.round(x), y: Math.round(y), r: capRadius(item.market_cap) });
-      });
-    } else {
-      shown.forEach((item, idx) => {
-        const total = Math.max(1, shown.length);
-        const ring = total > 8 ? (idx % 2 === 0 ? 150 : 195) : 172;
-        const angle = (idx / total) * Math.PI * 2 - Math.PI / 2;
-        nodesPos.push({
-          ...item,
-          x: Math.round(cx + Math.cos(angle) * ring * 1.45),
-          y: Math.round(cy + Math.sin(angle) * ring * 0.92),
-          r: capRadius(item.market_cap),
-        });
-      });
+    const nodesPos = computeCollisionFreeLayout(shown);
+    let selectedIdx = 0;
+    if (lastEdge) {
+      const found = nodesPos.findIndex((x) => x.symbol === lastEdge.from);
+      if (found !== -1) selectedIdx = found;
     }
 
-    // Subtle inter-neighbor cross-links (showing how orbiting bubbles also connect to each other!)
+    // Tight world bounding box around (0, 0) + all orbiting bubbles so zero empty black space appears on mobile or desktop
+    let minX = -90, maxX = 90, minY = -90, maxY = 90;
+    for (const n of nodesPos) {
+      minX = Math.min(minX, n.x - n.r - 28);
+      maxX = Math.max(maxX, n.x + n.r + 28);
+      minY = Math.min(minY, n.y - n.r - 28);
+      maxY = Math.max(maxY, n.y + n.r + 28);
+    }
+    const baseW = Math.max(420, maxX - minX);
+    const baseH = Math.max(400, maxY - minY);
+    const baseCX = (minX + maxX) / 2;
+    const baseCY = (minY + maxY) / 2;
+
+    // Subtle inter-neighbor cross-links
     const posBySym = Object.fromEntries(nodesPos.map((n) => [n.symbol, n]));
     const crossEdgesSvg = [];
     const seenCross = new Set();
@@ -995,129 +981,118 @@
         seenCross.add(pairKey);
         const m = posBySym[l.symbol];
         crossEdgesSvg.push(
-          `<path d="M ${n.x} ${n.y} Q ${cx} ${cy} ${m.x} ${m.y}" fill="none" stroke="rgba(148,163,184,0.16)" stroke-width="1.1" stroke-dasharray="2 4" />`
+          `<path d="M ${n.x} ${n.y} Q 0 0 ${m.x} ${m.y}" fill="none" stroke="rgba(148,163,184,0.14)" stroke-width="1.1" stroke-dasharray="3 4" />`
         );
       }
     }
 
-    // Primary edges with quantified Scale badge + 60d Correlation + animated directional flow particles
+    // Primary edges with compact non-overlapping midpoint badges + animated directional flow particles
     const edgesSvg = nodesPos.map((n, i) => {
       const rc = REL_COLORS[n.type] || REL_COLORS.peer;
-      const mx = Math.round(cx * 0.44 + n.x * 0.56);
-      const my = Math.round(cy * 0.44 + n.y * 0.56);
-      const scaleTxt = n.scale || rc.label.split(" ")[0];
-      const corrTxt = n.corr_60d != null ? `r=${n.corr_60d >= 0 ? "+" : ""}${n.corr_60d.toFixed(2)}` : "";
-      const pillTxt = scaleTxt.length > 22 ? scaleTxt.slice(0, 21) + "…" : scaleTxt;
-      const pillW = Math.max(66, Math.min(142, pillTxt.length * 5.4 + 14));
-      const pathId = `edgePath_${center.symbol}_${n.symbol}_${i}`;
-      const dPath = rc.flow === "in"
-        ? `M ${n.x} ${n.y} L ${cx} ${cy}`
-        : `M ${cx} ${cy} L ${n.x} ${n.y}`;
+      const mx = Math.round(n.x * 0.52);
+      const my = Math.round(n.y * 0.52);
+      const rawScale = n.scale || rc.short;
+      const shortScale = rawScale.split("·")[0].trim();
+      const pillTxt = shortScale.length > 14 ? shortScale.slice(0, 13) + "…" : shortScale;
+      const pillW = Math.max(48, Math.min(104, pillTxt.length * 5.8 + 12));
+      const dPath = rc.flow === "in" ? `M ${n.x} ${n.y} L 0 0` : `M 0 0 L ${n.x} ${n.y}`;
       const showParticle = rc.flow === "in" || rc.flow === "out" || rc.flow === "bi";
 
       return `
         <g class="bubble-edge" data-idx="${i}">
-          <path id="${pathId}" d="${dPath}" fill="none" stroke="${rc.stroke}" stroke-width="${n.type === "peer" ? 1.4 : 2.4}" stroke-opacity="0.62" ${n.type === "peer" || n.type === "competitor" ? 'stroke-dasharray="5 4"' : ""} />
+          <path class="edge-line" d="${dPath}" fill="none" stroke="${rc.stroke}" stroke-width="${n.type === "peer" ? 1.5 : 2.6}" stroke-opacity="0.65" ${n.type === "peer" || n.type === "competitor" ? 'stroke-dasharray="5 4"' : ""} />
           ${showParticle ? `
-            <circle r="3.2" fill="${rc.stroke}">
+            <circle r="3.4" fill="${rc.stroke}">
               <animateMotion dur="${2.2 + (i % 4) * 0.4}s" repeatCount="indefinite" path="${dPath}" />
             </circle>` : ""}
           <g class="edge-badge" data-idx="${i}" style="cursor:pointer">
-            <rect x="${mx - pillW / 2}" y="${my - 11}" width="${pillW}" height="${corrTxt ? 22 : 16}" rx="6" fill="var(--bg-elev)" stroke="${rc.stroke}" stroke-opacity="0.7" />
-            <text x="${mx}" y="${my - (corrTxt ? 1 : -2)}" text-anchor="middle" fill="var(--text)" font-size="8.5" font-weight="700">${esc(pillTxt)}</text>
-            ${corrTxt ? `<text x="${mx}" y="${my + 8}" text-anchor="middle" fill="var(--muted)" font-size="7.8" font-weight="700">${esc(rc.label.split(" ").pop())} · 60d ${esc(corrTxt)}</text>` : ""}
+            <rect x="${mx - pillW / 2}" y="${my - 8}" width="${pillW}" height="16" rx="6" fill="var(--bg-elev)" stroke="${rc.stroke}" stroke-width="1.2" stroke-opacity="0.85" />
+            <text x="${mx}" y="${my + 3}" text-anchor="middle" fill="var(--text)" font-size="8.8" font-weight="800">${esc(pillTxt)}</text>
           </g>
         </g>`;
     }).join("");
 
-    // Orbiting bubbles (sized by Market Cap, displaying Symbol + Market Cap + 1D %)
+    // Orbiting bubbles (sized by Market Cap, printing Symbol + Market Cap + 1D % cleanly inside)
     const nodesSvg = nodesPos.map((n, i) => {
       const rc = REL_COLORS[n.type] || REL_COLORS.peer;
       const chg = n.change_1d_pct;
-      const fill = chg > 0 ? "rgba(34, 197, 94, 0.24)" : chg < 0 ? "rgba(244, 63, 94, 0.24)" : "rgba(59, 130, 246, 0.2)";
+      const fill = chg > 0 ? "rgba(34, 197, 94, 0.25)" : chg < 0 ? "rgba(244, 63, 94, 0.25)" : "rgba(59, 130, 246, 0.22)";
       const capTxt = fmtCap(n.market_cap);
       return `
         <g class="bubble-node orbit-bubble" data-idx="${i}" data-sym="${esc(n.symbol)}">
-          <title>${esc(n.symbol)} (${esc(n.name)}) — ${esc(rc.label)}: ${esc(n.scale || "")} | ${esc(n.note || "")} | Click to select &amp; re-center on ${esc(n.symbol)}</title>
-          <circle cx="${n.x}" cy="${n.y}" r="${n.r + 4}" fill="none" stroke="${rc.stroke}" stroke-width="1.5" stroke-opacity="0.38" />
+          <circle class="sel-ring" cx="${n.x}" cy="${n.y}" r="${n.r + 6}" fill="none" stroke="var(--accent-2)" stroke-width="2.5" stroke-dasharray="4 3" opacity="0" />
+          <circle cx="${n.x}" cy="${n.y}" r="${n.r + 3}" fill="none" stroke="${rc.stroke}" stroke-width="1.4" stroke-opacity="0.38" />
           <circle cx="${n.x}" cy="${n.y}" r="${n.r}" fill="var(--bg-card)" stroke="${rc.stroke}" stroke-width="2.6" />
           <circle cx="${n.x}" cy="${n.y}" r="${n.r}" fill="${fill}" />
-          <text x="${n.x}" y="${n.y - 7}" text-anchor="middle" fill="var(--text)" font-size="11.5" font-weight="900">${esc(n.symbol)}</text>
-          <text x="${n.x}" y="${n.y + 4}" text-anchor="middle" fill="var(--text-soft)" font-size="8.8" font-weight="700">${esc(capTxt)}</text>
-          <text x="${n.x}" y="${n.y + 15}" text-anchor="middle" fill="${chg >= 0 ? "var(--green)" : "var(--red)"}" font-size="9.2" font-weight="800">${fmtPct(chg, 1)}</text>
+          <text x="${n.x}" y="${n.y - 7}" text-anchor="middle" fill="var(--text)" font-size="12" font-weight="900">${esc(n.symbol)}</text>
+          <text x="${n.x}" y="${n.y + 4}" text-anchor="middle" fill="var(--text-soft)" font-size="9" font-weight="700">${esc(capTxt)}</text>
+          <text x="${n.x}" y="${n.y + 15}" text-anchor="middle" fill="${chg >= 0 ? "var(--green)" : "var(--red)"}" font-size="9.5" font-weight="800">${fmtPct(chg, 1)}</text>
         </g>`;
     }).join("");
 
     const cChg = center.change_1d_pct;
     const centerSvg = `
       <g class="bubble-node center-bubble" data-sym="${esc(center.symbol)}">
-        <circle cx="${cx}" cy="${cy}" r="56" fill="rgba(59, 130, 246, 0.16)" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 3" />
-        <circle cx="${cx}" cy="${cy}" r="48" fill="var(--bg-elev)" stroke="var(--accent)" stroke-width="3.2" />
-        <text x="${cx}" y="${cy - 14}" text-anchor="middle" fill="var(--text)" font-size="15" font-weight="900">${esc(center.symbol)}</text>
-        <text x="${cx}" y="${cy}" text-anchor="middle" fill="var(--accent-2)" font-size="9.5" font-weight="800">${esc(fmtCap(center.market_cap))}</text>
-        <text x="${cx}" y="${cy + 13}" text-anchor="middle" fill="var(--text-soft)" font-size="10" font-weight="700">$${fmtNum(center.close)}</text>
-        <text x="${cx}" y="${cy + 26}" text-anchor="middle" fill="${cChg >= 0 ? "var(--green)" : "var(--red)"}" font-size="10" font-weight="800">${fmtPct(cChg, 1)}</text>
+        <circle cx="0" cy="0" r="56" fill="rgba(59, 130, 246, 0.18)" stroke="var(--accent)" stroke-width="1.8" stroke-dasharray="5 3" />
+        <circle cx="0" cy="0" r="48" fill="var(--bg-elev)" stroke="var(--accent)" stroke-width="3.2" />
+        <text x="0" y="-13" text-anchor="middle" fill="var(--text)" font-size="15.5" font-weight="900">${esc(center.symbol)}</text>
+        <text x="0" y="1" text-anchor="middle" fill="var(--accent-2)" font-size="9.8" font-weight="800">${esc(fmtCap(center.market_cap))}</text>
+        <text x="0" y="13" text-anchor="middle" fill="var(--text-soft)" font-size="10" font-weight="700">$${fmtNum(center.close)}</text>
+        <text x="0" y="25" text-anchor="middle" fill="${cChg >= 0 ? "var(--green)" : "var(--red)"}" font-size="10.2" font-weight="800">${fmtPct(cChg, 1)}</text>
       </g>`;
-
-    const zoneHeadersSvg = filterKey === "all" ? `
-      <text x="145" y="24" text-anchor="middle" fill="#22c55e" font-size="10.5" font-weight="800" letter-spacing="0.06em">◄ UPSTREAM SUPPLIERS (COGS / FAB / HBM)</text>
-      <text x="${cx}" y="24" text-anchor="middle" fill="#a855f7" font-size="10.5" font-weight="800" letter-spacing="0.06em">▲ INFRASTRUCTURE &amp; ECOSYSTEM PARTNERS</text>
-      <text x="735" y="24" text-anchor="middle" fill="#3b82f6" font-size="10.5" font-weight="800" letter-spacing="0.06em">DOWNSTREAM CUSTOMERS (CAPEX / REVENUE) ►</text>
-      <text x="${cx}" y="${H - 10}" text-anchor="middle" fill="#f43f5e" font-size="10" font-weight="800" letter-spacing="0.06em">▼ DIRECT COMPETITORS · SAME-DAY NEWS CO-MENTIONS · PEERS</text>
-    ` : "";
 
     const breadcrumbHtml = historyArr.length > 1 ? `
       <div class="bubble-breadcrumbs">
-        <span class="muted">Discovery Path:</span>
+        <span class="muted">Path:</span>
         ${historyArr.map((sym, idx) => `
           <button class="chip ${sym === center.symbol ? "active" : ""}" data-hop-sym="${esc(sym)}" style="padding:3px 9px;font-size:11.5px">${esc(sym)}</button>
           ${idx < historyArr.length - 1 ? '<span class="muted">➔</span>' : ""}
         `).join("")}
       </div>` : "";
 
-    const lastEdgeBanner = lastEdge ? `
-      <div class="bubble-hop-banner">
-        <div>
-          <span class="tag ${(REL_COLORS[lastEdge.type] || REL_COLORS.peer).badge}">${esc((REL_COLORS[lastEdge.type] || REL_COLORS.peer).label)}</span>
-          <strong style="margin-left:6px">${esc(lastEdge.from)} ➔ ${esc(center.symbol)}</strong>
-          ${lastEdge.scale ? `<span class="tag amber" style="margin-left:6px">${esc(lastEdge.scale)}</span>` : ""}
-          ${lastEdge.corr_60d != null ? `<span class="tag" style="margin-left:4px">60d Corr r = ${lastEdge.corr_60d >= 0 ? "+" : ""}${lastEdge.corr_60d.toFixed(2)}${lastEdge.beta_60d != null ? ` · β = ${lastEdge.beta_60d.toFixed(2)}x` : ""}</span>` : ""}
-          <div class="muted" style="margin-top:3px">${esc(lastEdge.note || "")}</div>
-        </div>
-        <button class="btn-secondary" data-open-stock="${esc(center.symbol)}">Open ${esc(center.symbol)} Stock Page →</button>
-      </div>` : "";
-
     container.innerHTML = `
       <div class="bubble-card">
         <div class="bubble-header">
           <div>
-            <strong style="font-size:15.5px">${esc(center.symbol)} (${esc(center.name)} · ${fmtCap(center.market_cap)}) Supply-Chain &amp; Value Network</strong>
-            <span class="tag sector-link" data-sector="${esc(center.sector)}" style="margin-left:6px">${esc(fmtSector(center.sector))}</span>
-            <div class="muted">Bubble size = Market Cap ($) · Edge badge = Annual Spend / Revenue % / Contract MW &amp; 60d Return Correlation (r) · <strong>Click any bubble to select &amp; center it</strong></div>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <strong style="font-size:16px">${esc(center.symbol)} · ${esc(center.name)} (${fmtCap(center.market_cap)})</strong>
+              <span class="tag sector-link" data-sector="${esc(center.sector)}">${esc(fmtSector(center.sector))}</span>
+            </div>
+            <div class="muted" style="margin-top:2px">Tap any bubble or edge to inspect its deal size &amp; 60d correlation · Drag to pan · Pinch or use + / − to zoom</div>
           </div>
-          <div class="control-group">
-            <label class="muted">Relation</label>
-            <select class="select-control compact" id="bubbleFilterSelect">
-              ${filterTabs.map(([k, lbl]) => `<option value="${k}" ${filterKey === k ? "selected" : ""}>${esc(lbl)} (${counts[k] || 0})</option>`).join("")}
-            </select>
+          <div class="screener-controls">
+            <div class="control-group">
+              <label class="muted">Hub</label>
+              <select class="select-control compact" id="bubbleHubSelect">
+                ${allTickers.map((t) => `<option value="${esc(t.symbol)}" ${t.symbol === center.symbol ? "selected" : ""}>${esc(t.symbol)} (${fmtCap(t.market_cap)})</option>`).join("")}
+              </select>
+            </div>
+            <div class="control-group">
+              <label class="muted">Filter</label>
+              <select class="select-control compact" id="bubbleFilterSelect">
+                ${filterTabs.map(([k, lbl]) => `<option value="${k}" ${filterKey === k ? "selected" : ""}>${esc(lbl)} (${counts[k] || 0})</option>`).join("")}
+              </select>
+            </div>
           </div>
         </div>
 
         ${breadcrumbHtml}
-        ${lastEdgeBanner}
 
         <div class="bubble-legend">
-          <span><i class="legend-dot" style="background:#22c55e"></i>Upstream Supplier (flows into ${esc(center.symbol)})</span>
-          <span><i class="legend-dot" style="background:#3b82f6"></i>Downstream Customer (buys from ${esc(center.symbol)})</span>
-          <span><i class="legend-dot" style="background:#a855f7"></i>Infra / Ecosystem Partner</span>
-          <span><i class="legend-dot" style="background:#f43f5e"></i>Direct Competitor</span>
-          <span><i class="legend-dot" style="background:#f59e0b"></i>News Co-Mention</span>
-          <span><i class="legend-dot" style="background:#64748b"></i>Sector Peer</span>
+          <span><i class="legend-dot" style="background:#22c55e"></i>Supplier (Left)</span>
+          <span><i class="legend-dot" style="background:#a855f7"></i>Partner (Top)</span>
+          <span><i class="legend-dot" style="background:#3b82f6"></i>Customer (Right)</span>
+          <span><i class="legend-dot" style="background:#f43f5e"></i>Competitor (Bottom)</span>
+          <span><i class="legend-dot" style="background:#f59e0b"></i>Co-Mention</span>
         </div>
 
-        <div class="bubble-stage">
-          <svg class="bubble-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
-            ${zoneHeadersSvg}
+        <div class="bubble-stage" id="bubbleStage">
+          <div class="bubble-zoom-bar">
+            <button type="button" class="zoom-btn" id="bZoomInBtn" title="Zoom In">+</button>
+            <button type="button" class="zoom-btn" id="bZoomOutBtn" title="Zoom Out">−</button>
+            <button type="button" class="zoom-btn reset" id="bZoomResetBtn" title="Reset Zoom &amp; Pan">100%</button>
+          </div>
+          <svg class="bubble-svg" id="bubbleSvg" viewBox="${baseCX - baseW / 2} ${baseCY - baseH / 2} ${baseW} ${baseH}" preserveAspectRatio="xMidYMid meet">
             ${crossEdgesSvg.join("")}
             ${edgesSvg}
             ${nodesSvg}
@@ -1125,56 +1100,56 @@
           </svg>
         </div>
 
-        <div class="bubble-table-wrap">
-          <div class="daily-strip-hdr" style="margin-bottom:6px">
-            <strong>${esc(center.symbol)} Quantified Value-Chain &amp; 60-Day Correlation Matrix (${shown.length} Connections Shown)</strong>
-            <div style="display:flex;gap:6px">
-              <button class="btn-secondary compact-hdr-btn" data-open-stock="${esc(center.symbol)}">Open ${esc(center.symbol)} Full Analysis →</button>
-            </div>
+        <div class="filter-bar-scroll" style="margin:10px 0 6px;padding:0">
+          <div class="filter-bar" id="bubbleQuickSelectBar">
+            ${nodesPos.map((item, idx) => {
+              const rc = REL_COLORS[item.type] || REL_COLORS.peer;
+              return `<button type="button" class="chip" data-qsel="${idx}"><i class="legend-dot" style="background:${rc.stroke}"></i><strong>${esc(item.symbol)}</strong> <span class="muted">${esc((item.scale || rc.short).split("·")[0].trim())}</span></button>`;
+            }).join("")}
           </div>
-          <div class="table-wrap">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Company</th>
-                  <th>Role</th>
-                  <th class="num">Mkt Cap</th>
-                  <th>Quantified Deal Size / Revenue Exposure</th>
-                  <th class="num" data-tip="60-Trading-Day Empirical Return Correlation (r) &amp; Beta (β)|Computed from the last 60 trading days of daily closing prices: r = Cov(r_A, r_B)/(σ_A·σ_B). Beta β measures how many % this stock moves per 1% move in ${esc(center.symbol)}.">60d Corr / β <span class="tip-badge">?</span></th>
-                  <th class="num">1D Move (Spread)</th>
-                  <th>Relationship Breakdown</th>
-                  <th class="num">Select</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${shown.map((item, idx) => {
-                  const rc = REL_COLORS[item.type] || REL_COLORS.peer;
-                  const spread = (item.change_1d_pct ?? 0) - (center.change_1d_pct ?? 0);
-                  const corrStr = item.corr_60d != null ? `r=${item.corr_60d >= 0 ? "+" : ""}${item.corr_60d.toFixed(2)}` : "—";
-                  const betaStr = item.beta_60d != null ? `β=${item.beta_60d.toFixed(2)}x` : "";
-                  return `
-                    <tr data-row-idx="${idx}" style="cursor:pointer">
-                      <td>
+        </div>
+
+        <div class="bubble-inspector" id="bubbleInspectorCard"></div>
+
+        <div class="bubble-table-wrap">
+          <div class="daily-strip-hdr" style="margin-bottom:8px">
+            <strong>All ${shown.length} Mapped Value-Chain Connections for ${esc(center.symbol)}</strong>
+            <button class="btn-secondary compact-hdr-btn" data-open-stock="${esc(center.symbol)}">📊 Open ${esc(center.symbol)} Stock Page →</button>
+          </div>
+          <div class="rel-cards-grid">
+            ${nodesPos.map((item, idx) => {
+              const rc = REL_COLORS[item.type] || REL_COLORS.peer;
+              const spread = (item.change_1d_pct ?? 0) - (center.change_1d_pct ?? 0);
+              const corrStr = item.corr_60d != null ? `r = ${item.corr_60d >= 0 ? "+" : ""}${item.corr_60d.toFixed(2)}` : "—";
+              const betaStr = item.beta_60d != null ? ` · β = ${item.beta_60d.toFixed(2)}x` : "";
+              return `
+                <div class="rel-conn-card" data-card-idx="${idx}">
+                  <div class="rcc-top">
+                    <div>
+                      <div class="rcc-sym">
                         <strong>${esc(item.symbol)}</strong>
-                        <div class="muted">${esc(item.name)}</div>
-                      </td>
-                      <td><span class="tag ${rc.badge}">${esc(rc.label)}</span></td>
-                      <td class="num"><strong>${fmtCap(item.market_cap)}</strong></td>
-                      <td><strong style="color:var(--accent-2)">${esc(item.scale || rc.label)}</strong></td>
-                      <td class="num"><strong>${esc(corrStr)}</strong> <span class="muted">${esc(betaStr)}</span></td>
-                      <td class="num">
-                        <span class="${clsPct(item.change_1d_pct)}"><strong>${fmtPct(item.change_1d_pct, 1)}</strong></span>
-                        <div class="muted">(${spread >= 0 ? "+" : ""}${spread.toFixed(1)}% vs ${esc(center.symbol)})</div>
-                      </td>
-                      <td class="muted" style="max-width:300px;font-size:12px">${esc(item.note || "")}</td>
-                      <td class="num" style="white-space:nowrap">
-                        <button class="btn-secondary compact-hdr-btn" data-hop-idx="${idx}">Select Bubble ⟲</button>
-                        <button class="btn-secondary compact-hdr-btn" data-open-stock="${esc(item.symbol)}">Page →</button>
-                      </td>
-                    </tr>`;
-                }).join("")}
-              </tbody>
-            </table>
+                        <span class="tag ${rc.badge}">${esc(rc.label)}</span>
+                        <span class="tag">${fmtCap(item.market_cap)}</span>
+                      </div>
+                      <div class="muted">${esc(item.name)}</div>
+                    </div>
+                    <div style="text-align:right">
+                      <div style="font-weight:800;font-size:14.5px">$${fmtNum(item.close)}</div>
+                      <span class="price-pill ${clsPct(item.change_1d_pct)}" style="font-size:11.5px">${fmtPct(item.change_1d_pct, 1)}</span>
+                    </div>
+                  </div>
+                  <div class="rcc-stats">
+                    <span>Scale: <strong style="color:var(--accent-2)">${esc(item.scale || rc.label)}</strong></span>
+                    <span>60d Corr: <strong>${esc(corrStr + betaStr)}</strong></span>
+                    <span>Spread: <strong>${spread >= 0 ? "+" : ""}${spread.toFixed(1)}%</strong></span>
+                  </div>
+                  <div class="rcc-note">${esc(item.note || "")}</div>
+                  <div class="rcc-actions">
+                    <button type="button" class="btn-secondary compact-hdr-btn" data-hop-idx="${idx}">🎯 Center on ${esc(item.symbol)} ⟲</button>
+                    <button type="button" class="btn-secondary compact-hdr-btn" data-open-stock="${esc(item.symbol)}">📊 ${esc(item.symbol)} Page →</button>
+                  </div>
+                </div>`;
+            }).join("")}
           </div>
         </div>
       </div>
@@ -1184,6 +1159,11 @@
     container.querySelectorAll("[data-open-stock]").forEach((btn) => {
       btn.onclick = (e) => { e.stopPropagation(); openStock(btn.dataset.openStock); };
     });
+
+    const hubSel = container.querySelector("#bubbleHubSelect");
+    if (hubSel) {
+      hubSel.onchange = () => onRecenter(hubSel.value, "all", null);
+    }
     const bfs = container.querySelector("#bubbleFilterSelect");
     if (bfs) {
       bfs.onchange = () => onRecenter(center.symbol, bfs.value, null);
@@ -1192,7 +1172,7 @@
       b.onclick = () => onRecenter(b.dataset.hopSym, "all", null);
     });
 
-    const selectOrbitItem = (item) => {
+    const recenterOnItem = (item) => {
       if (!item) return;
       onRecenter(item.symbol, "all", {
         from: center.symbol,
@@ -1205,22 +1185,237 @@
       });
     };
 
-    // 1-Click on ANY orbiting bubble or edge badge immediately selects & centers that bubble!
-    container.querySelectorAll(".bubble-node[data-idx], .edge-badge[data-idx]").forEach((nodeEl) => {
-      nodeEl.onclick = (e) => {
+    // Interactive SVG Zoom & Pan Engine (supports + / - / Reset buttons, 1-finger drag pan, 2-finger pinch zoom & mouse wheel)
+    const stage = container.querySelector("#bubbleStage");
+    const svg = container.querySelector("#bubbleSvg");
+    const resetBtn = container.querySelector("#bZoomResetBtn");
+    const viewState = { zoom: window.innerWidth <= 640 ? 1.12 : 1.0, panX: 0, panY: 0 };
+
+    const updateViewBox = () => {
+      if (!svg || !stage) return;
+      const rect = stage.getBoundingClientRect();
+      const stageAR = rect.width > 50 && rect.height > 50 ? rect.width / rect.height : 1.15;
+      let fitW = baseW;
+      let fitH = baseH;
+      if (fitW / fitH > stageAR) {
+        fitH = fitW / stageAR;
+      } else {
+        fitW = fitH * stageAR;
+      }
+      const vw = fitW / viewState.zoom;
+      const vh = fitH / viewState.zoom;
+      const vx = baseCX - vw / 2 + viewState.panX;
+      const vy = baseCY - vh / 2 + viewState.panY;
+      svg.setAttribute("viewBox", `${vx.toFixed(1)} ${vy.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}`);
+      if (resetBtn) resetBtn.textContent = `${Math.round(viewState.zoom * 100)}%`;
+    };
+
+    updateViewBox();
+    requestAnimationFrame(updateViewBox);
+
+    container.querySelector("#bZoomInBtn").onclick = (e) => {
+      e.stopPropagation();
+      viewState.zoom = Math.min(3.8, viewState.zoom * 1.3);
+      updateViewBox();
+    };
+    container.querySelector("#bZoomOutBtn").onclick = (e) => {
+      e.stopPropagation();
+      viewState.zoom = Math.max(0.65, viewState.zoom / 1.3);
+      updateViewBox();
+    };
+    resetBtn.onclick = (e) => {
+      e.stopPropagation();
+      viewState.zoom = window.innerWidth <= 640 ? 1.12 : 1.0;
+      viewState.panX = 0;
+      viewState.panY = 0;
+      updateViewBox();
+    };
+
+    // Mouse / 1-finger drag pan & 2-finger pinch-to-zoom on stage
+    let isDragging = false;
+    let dragMoved = 0;
+    let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
+    let pinchStartDist = null;
+    let pinchStartZoom = 1;
+
+    stage.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 1.14 : 0.88;
+      viewState.zoom = Math.max(0.65, Math.min(3.8, viewState.zoom * factor));
+      updateViewBox();
+    }, { passive: false });
+
+    stage.addEventListener("pointerdown", (e) => {
+      if (e.target.closest(".bubble-zoom-bar")) return;
+      isDragging = true;
+      dragMoved = 0;
+      startX = e.clientX;
+      startY = e.clientY;
+      startPanX = viewState.panX;
+      startPanY = viewState.panY;
+    });
+    window.addEventListener("pointermove", (e) => {
+      if (!isDragging || pinchStartDist != null) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      dragMoved = Math.max(dragMoved, Math.hypot(dx, dy));
+      if (dragMoved > 4) {
+        const rect = stage.getBoundingClientRect();
+        const scale = (baseW / viewState.zoom) / Math.max(200, rect.width);
+        viewState.panX = startPanX - dx * scale;
+        viewState.panY = startPanY - dy * scale;
+        updateViewBox();
+      }
+    });
+    window.addEventListener("pointerup", () => { isDragging = false; });
+
+    stage.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 2) {
+        pinchStartDist = Math.hypot(
+          e.touches[1].clientX - e.touches[0].clientX,
+          e.touches[1].clientY - e.touches[0].clientY
+        );
+        pinchStartZoom = viewState.zoom;
+      }
+    }, { passive: true });
+    stage.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 2 && pinchStartDist > 10) {
+        e.preventDefault();
+        const dist = Math.hypot(
+          e.touches[1].clientX - e.touches[0].clientX,
+          e.touches[1].clientY - e.touches[0].clientY
+        );
+        viewState.zoom = Math.max(0.65, Math.min(3.8, pinchStartZoom * (dist / pinchStartDist)));
+        updateViewBox();
+      }
+    }, { passive: false });
+    stage.addEventListener("touchend", () => { pinchStartDist = null; }, { passive: true });
+
+    // Selected Bubble & Relationship Inspector Drawer
+    const inspector = container.querySelector("#bubbleInspectorCard");
+    const inspectItem = (idx, panToNode = false) => {
+      if (idx < 0 || idx >= nodesPos.length) return;
+      selectedIdx = idx;
+      const item = nodesPos[idx];
+      const rc = REL_COLORS[item.type] || REL_COLORS.peer;
+      const spread = (item.change_1d_pct ?? 0) - (center.change_1d_pct ?? 0);
+      const corrStr = item.corr_60d != null ? `r = ${item.corr_60d >= 0 ? "+" : ""}${item.corr_60d.toFixed(2)}` : "—";
+      const betaStr = item.beta_60d != null ? `β = ${item.beta_60d.toFixed(2)}x` : "—";
+
+      // Highlight selected bubble, edge, quick-pill, and card
+      container.querySelectorAll(".orbit-bubble").forEach((el) => {
+        const match = Number(el.dataset.idx) === idx;
+        el.classList.toggle("selected", match);
+        const ring = el.querySelector(".sel-ring");
+        if (ring) ring.setAttribute("opacity", match ? "1" : "0");
+      });
+      container.querySelectorAll(".bubble-edge").forEach((el) => {
+        const match = Number(el.dataset.idx) === idx;
+        const line = el.querySelector(".edge-line");
+        if (line) {
+          line.setAttribute("stroke-opacity", match ? "1" : "0.32");
+          line.setAttribute("stroke-width", match ? "3.6" : "1.8");
+        }
+      });
+      container.querySelectorAll("#bubbleQuickSelectBar button").forEach((b) => {
+        b.classList.toggle("active", Number(b.dataset.qsel) === idx);
+      });
+      container.querySelectorAll(".rel-conn-card").forEach((c) => {
+        c.classList.toggle("active", Number(c.dataset.cardIdx) === idx);
+      });
+
+      if (panToNode && viewState.zoom > 1.25) {
+        viewState.panX = item.x * 0.45;
+        viewState.panY = item.y * 0.45;
+        updateViewBox();
+      }
+
+      if (inspector) {
+        inspector.innerHTML = `
+          <div class="inspector-head">
+            <div>
+              <div class="inspector-title">
+                <strong>${esc(center.symbol)} ↔ ${esc(item.symbol)} (${esc(item.name)})</strong>
+                <span class="tag ${rc.badge}">${esc(rc.label)}</span>
+                <span class="tag sector-link" data-sector="${esc(item.sector)}">${esc(fmtSector(item.sector))}</span>
+              </div>
+            </div>
+            <div class="inspector-actions">
+              <button type="button" class="btn-primary-accent" id="insRecenterBtn">🎯 Center Network on ${esc(item.symbol)} ⟲</button>
+              <button type="button" class="btn-secondary" id="insOpenPageBtn">📊 Open ${esc(item.symbol)} Stock Page →</button>
+            </div>
+          </div>
+
+          <div class="inspector-metrics">
+            <div class="ins-metric">
+              <div class="ins-k">Deal / Revenue Scale</div>
+              <div class="ins-v" style="color:var(--accent-2)">${esc(item.scale || rc.label)}</div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">60-Day Empirical Corr &amp; Beta</div>
+              <div class="ins-v">${esc(corrStr)} · ${esc(betaStr)}</div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">${esc(item.symbol)} Price &amp; Mkt Cap</div>
+              <div class="ins-v">$${fmtNum(item.close)} <span class="${clsPct(item.change_1d_pct)}">(${fmtPct(item.change_1d_pct, 1)})</span> · ${fmtCap(item.market_cap)}</div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">1D Spread vs ${esc(center.symbol)}</div>
+              <div class="ins-v ${clsPct(spread)}">${spread >= 0 ? "+" : ""}${spread.toFixed(2)}%</div>
+            </div>
+          </div>
+
+          <div class="inspector-note">
+            <strong>Supply-Chain &amp; Fundamental Mechanism:</strong> ${esc(item.note || "Connected in the watchlist ecosystem.")}
+          </div>
+        `;
+        wireSectorLinks(inspector);
+        inspector.querySelector("#insRecenterBtn").onclick = () => recenterOnItem(item);
+        inspector.querySelector("#insOpenPageBtn").onclick = () => openStock(item.symbol);
+      }
+    };
+
+    if (nodesPos.length > 0) {
+      inspectItem(selectedIdx, false);
+    } else if (inspector) {
+      inspector.innerHTML = `<div class="muted">No connections match the selected filter.</div>`;
+    }
+
+    // 1-Tap on any orbiting bubble or edge badge selects & highlights it in the Inspector;
+    // tapping an already-selected bubble re-centers the network on that bubble!
+    container.querySelectorAll(".orbit-bubble[data-idx], .edge-badge[data-idx]").forEach((nodeEl) => {
+      nodeEl.addEventListener("click", (e) => {
+        if (dragMoved > 7) return;
         e.stopPropagation();
-        selectOrbitItem(nodesPos[Number(nodeEl.dataset.idx)]);
+        const idx = Number(nodeEl.dataset.idx);
+        if (idx === selectedIdx && nodeEl.classList.contains("orbit-bubble")) {
+          recenterOnItem(nodesPos[idx]);
+        } else {
+          inspectItem(idx, true);
+        }
+      });
+    });
+
+    container.querySelectorAll("#bubbleQuickSelectBar button").forEach((b) => {
+      b.onclick = () => inspectItem(Number(b.dataset.qsel), true);
+    });
+    container.querySelectorAll(".rel-conn-card").forEach((card) => {
+      card.onclick = (e) => {
+        if (e.target.closest("button")) return;
+        inspectItem(Number(card.dataset.cardIdx), true);
+        inspector?.scrollIntoView({ behavior: "smooth", block: "nearest" });
       };
     });
-    container.querySelectorAll("[data-hop-idx], tr[data-row-idx]").forEach((el) => {
+    container.querySelectorAll("[data-hop-idx]").forEach((el) => {
       el.onclick = (e) => {
         e.stopPropagation();
-        const idx = Number(el.dataset.hopIdx ?? el.dataset.rowIdx);
-        selectOrbitItem(shown[idx]);
+        recenterOnItem(nodesPos[Number(el.dataset.hopIdx)]);
       };
     });
 
-    container.querySelector(".center-bubble")?.addEventListener("click", () => openStock(center.symbol));
+    container.querySelector(".center-bubble")?.addEventListener("click", () => {
+      if (dragMoved <= 7) openStock(center.symbol);
+    });
   }
 
   function renderNetworkView() {
@@ -1229,19 +1424,6 @@
     const tickers = [...(s.tickers || [])].sort((a, b) => (b.market_cap || 0) - (a.market_cap || 0));
     if (!tickers.some((t) => t.symbol === state.networkCenter)) {
       state.networkCenter = tickers[0]?.symbol ?? "NVDA";
-    }
-    const sel = $("networkHubSelect");
-    if (sel) {
-      sel.innerHTML = tickers.map((t) =>
-        `<option value="${esc(t.symbol)}" ${t.symbol === state.networkCenter ? "selected" : ""}>${esc(t.symbol)} — ${esc(t.name)} (${fmtCap(t.market_cap)})</option>`
-      ).join("");
-      sel.onchange = () => {
-        state.networkCenter = sel.value;
-        state.networkFilter = "all";
-        if (!state.networkHistory.includes(sel.value)) state.networkHistory.push(sel.value);
-        state.networkLastEdge = null;
-        renderNetworkView();
-      };
     }
     renderBubbleNetwork(
       $("globalNetworkContainer"),
@@ -1451,6 +1633,153 @@
     renderFeed("regFeed", s.feeds?.regulatory);
   }
 
+  // ---- DEDICATED FORMULAS & QUANTITATIVE METHODOLOGY PAGE ----
+  function renderFormulasView(focusSym = null) {
+    const box = $("formulasPageContainer");
+    const s = state.summary;
+    if (!box || !s) return;
+    const tickers = [...(s.tickers || [])].sort((a, b) => (b.notable_score || 0) - (a.notable_score || 0));
+    const activeSym = focusSym || state.formulaTicker || state.activeTicker || tickers[0]?.symbol || "NVDA";
+    state.formulaTicker = activeSym;
+    const r = tickers.find((x) => x.symbol === activeSym) || tickers[0] || {};
+    const bd = r.notable_bd || {};
+    const tm = bd.terms || {};
+    const jc = r.tech_components || {};
+    const sc = r.scenarios || { bullish: 0, base: 0, bearish: 0 };
+
+    box.innerHTML = `
+      <div class="section-header screener-head">
+        <div>
+          <h2>How Every Score &amp; Indicator Is Calculated</h2>
+          <p class="section-sub">Step-by-step mathematical formulations using peer-reviewed quantitative finance methods, plus a live stock calculator</p>
+        </div>
+        <div class="screener-controls">
+          <div class="control-group">
+            <label for="formulaTickerSelect" class="muted">Live Example Stock</label>
+            <select id="formulaTickerSelect" class="select-control compact">
+              ${tickers.map((t) => `<option value="${esc(t.symbol)}" ${t.symbol === r.symbol ? "selected" : ""}>${esc(t.symbol)} — ${esc(t.name)} (Score ${fmtNum(t.notable_score, 1)})</option>`).join("")}
+            </select>
+          </div>
+          <button class="btn-secondary compact-hdr-btn" id="formulaOpenStockBtn">Open ${esc(r.symbol)} Page →</button>
+        </div>
+      </div>
+
+      <div class="math-guide-list">
+        <div class="math-box">
+          <div class="math-title">1. Daily Notable / Catalyst Score (0–100) — Live Calculation for ${esc(r.symbol)}: <span style="color:var(--accent-2)">${fmtNum(r.notable_score, 1)} / 100</span></div>
+          <div class="math-sub" style="margin-bottom:8px">
+            <strong>What it means in plain English:</strong> Measures how unusually active a stock is today compared to its own normal behavior. Combines price move size relative to normal daily volatility (ATR), trading volume surge, chart breakouts, extreme RSI, news velocity, and SEC filings.
+          </div>
+          <div class="math-eq">
+            S<sub>notable</sub> = 12·z<sub>ATR</sub>·I<sub>z≥1</sub> + 8·(min(RVOL<sub>20</sub>, 3) - 1)·I<sub>RVOL&gt;1.3</sub> + S<sub>pattern</sub> + 6·I<sub>RSI∉[25,75]</sub> + (0.25·I<sub>max</sub> + 1.5·min(N<sub>24h</sub>, 5))·I<sub>I≥40</sub> + 8·I<sub>SEC</sub> + 4·I<sub>Form4</sub> + 10·I<sub>Earn≤7d</sub>
+          </div>
+          <div class="rel-cards-grid" style="margin-top:8px">
+            <div class="ins-metric">
+              <div class="ins-k">1) ATR Volatility Z-Score (12 · z<sub>ATR</sub>)</div>
+              <div class="ins-v">z = |${fmtPct(r.change_1d_pct, 2)}| / ${bd.atr_pct ?? "—"}% = ${bd.z_atr ?? 0}σ → <strong style="color:var(--accent-2)">+${fmtNum(tm.vol_z, 1)} pts</strong></div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">2) Volume Surge (8 · (RVOL<sub>20</sub> - 1))</div>
+              <div class="ins-v">RVOL<sub>20</sub> = ${fmtNum(r.vol_ratio_20d, 2)}x 20d avg → <strong style="color:var(--accent-2)">+${fmtNum(tm.rvol, 1)} pts</strong></div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">3) Chart Pattern &amp; Extreme RSI</div>
+              <div class="ins-v">Pattern: <strong>+${fmtNum(tm.pattern, 1)} pts</strong> · RSI (${fmtNum(r.rsi14, 1)}): <strong>+${fmtNum(tm.rsi_extreme, 1)} pts</strong></div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">4) News, SEC Filings &amp; Events</div>
+              <div class="ins-v">News (${bd.fresh_news_24h ?? 0} in 24h, Max Imp ${bd.top_news_imp ?? 0}): <strong>+${fmtNum(tm.news, 1)}</strong> · SEC: <strong>+${fmtNum(tm.sec, 1)}</strong> · Event: <strong>+${fmtNum((tm.insider || 0) + (tm.earnings || 0), 1)}</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="math-box">
+          <div class="math-title">2. Multi-Factor Technical Score (S<sub>tech</sub> ∈ [-1, +1]) &amp; 20-Day Scenario Probabilities — Live for ${esc(r.symbol)}: <span style="color:var(--accent-2)">S<sub>tech</sub> = ${fmtNum(r.tech_score, 3)}</span></div>
+          <div class="math-sub" style="margin-bottom:8px">
+            <strong>What it means in plain English:</strong> Combines four standard technical dimensions into a single directional balance from <code>-1.00</code> (strongly bearish) to <code>+1.00</code> (strongly bullish), then converts that score via a logistic sigmoid curve into 20-day <strong>Bull / Base / Bear %</strong> probabilities that sum to 100%.
+          </div>
+          <div class="math-eq">
+            S<sub>tech</sub> = 0.30 · V<sub>MA</sub> + 0.30 · V<sub>Mom</sub> + 0.25 · V<sub>RS</sub> + 0.15 · V<sub>Pat</sub><br/>
+            P<sub>base</sub> = clip(0.45 - 0.20·|S<sub>tech</sub>| + 0.10·I<sub>range</sub>, 0.20, 0.55), &nbsp; P<sub>bull</sub> = (1 - P<sub>base</sub>) / (1 + e<sup>-3·S<sub>tech</sub></sup>), &nbsp; P<sub>bear</sub> = 1 - P<sub>base</sub> - P<sub>bull</sub>
+          </div>
+          <div class="rel-cards-grid" style="margin-top:8px">
+            <div class="ins-metric">
+              <div class="ins-k">V<sub>MA</sub> — Moving Average Trend (Weight 30%)</div>
+              <div class="ins-v">Vote = ${fmtNum(jc.ma_trend?.vote, 3)} → Weighted: <strong style="color:var(--accent-2)">${fmtNum((jc.ma_trend?.vote || 0) * 0.3, 3)}</strong></div>
+              <div class="muted" style="font-size:11px;margin-top:2px">0.4·sgn(C - SMA200) + 0.3·sgn(C - SMA50) + 0.3·sgn(SMA50 - SMA200)</div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">V<sub>Mom</sub> — RSI-14 &amp; MACD Momentum (Weight 30%)</div>
+              <div class="ins-v">Vote = ${fmtNum(jc.momentum?.vote, 3)} → Weighted: <strong style="color:var(--accent-2)">${fmtNum((jc.momentum?.vote || 0) * 0.3, 3)}</strong></div>
+              <div class="muted" style="font-size:11px;margin-top:2px">(1/3)·[sgn(MACD) + sgn(MACD_Hist) + clip((RSI_14 - 50)/25, -1, 1)]</div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">V<sub>RS</sub> — Relative Strength vs SPY &amp; Sector (Weight 25%)</div>
+              <div class="ins-v">Vote = ${fmtNum(jc.relative_strength?.vote, 3)} → Weighted: <strong style="color:var(--accent-2)">${fmtNum((jc.relative_strength?.vote || 0) * 0.25, 3)}</strong></div>
+              <div class="muted" style="font-size:11px;margin-top:2px">0.5·[tanh(α_63d,SPY / 0.15) + tanh(α_63d,Sector / 0.15)]</div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">V<sub>Pat</sub> — Chart Pattern &amp; Resulting Probabilities (Weight 15%)</div>
+              <div class="ins-v">Vote = ${fmtNum(jc.patterns?.vote, 3)} → <strong class="pos">Bull ${sc.bullish}%</strong> · <strong>Base ${sc.base}%</strong> · <strong class="neg">Bear ${sc.bearish}%</strong></div>
+              <div class="muted" style="font-size:11px;margin-top:2px">Volume-confirmed breakout/breakdown (±1.0) &amp; channel direction</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="math-box">
+          <div class="math-title">3. Support &amp; Resistance Confluence Strength (0–100)</div>
+          <div class="math-sub" style="margin-bottom:8px">
+            <strong>What it means in plain English:</strong> Evaluates how strong a price floor (Support S1–S3) or ceiling (Resistance R1–R3) is by combining five independent pieces of evidence: number of historical price bounces, trading volume concentrated at that price, recency of the last test, daily + weekly alignment, and round-number anchors.
+          </div>
+          <div class="math-eq">
+            Strength(L) = 100 × [ 0.35·(1 - e<sup>-N<sub>w</sub>/3</sup>) + 0.30·VAP(L ± 0.5·ATR<sub>14</sub>) + 0.20·(0.5<sup>Δt/60</sup>) + 0.10·I<sub>MTF</sub> + 0.05·C<sub>round</sub> ]
+          </div>
+          <div class="math-sub">
+            • <strong>35% Touch Count Saturation</strong>: <code>C_touch = 1 - exp(-N_w / 3)</code> (daily swing pivot = 1.0x, weekly swing pivot = 1.5x).<br/>
+            • <strong>30% Volume-at-Price (VAP) Density</strong>: Share of 180-day volume traded within <code>±0.5 · ATR_14</code> of the level relative to the highest-volume price zone.<br/>
+            • <strong>20% Exponential Time Decay</strong>: <code>C_recency = 0.5^(Δt / 60 days)</code> so recently tested levels score higher than stale ones.<br/>
+            • <strong>10% Multi-Timeframe (MTF) Confirmation</strong>: <code>1.0</code> when both Daily and Weekly fractal swing pivots cluster at the same price.<br/>
+            • <strong>5% Psychological Round Number</strong>: <code>1.0</code> at major round prices (<code>$100, $200, $500</code>), <code>0.5</code> at half-steps (<code>$50, $150</code>).<br/>
+            • <strong>Live Nearest Levels for ${esc(r.symbol)}</strong>:
+              Nearest Support <strong>${r.s1 ? `${r.s1.label} = $${fmtNum(r.s1.price)} (${fmtPct(r.s1.distance_pct, 1)}, Strength ${fmtNum(r.s1.strength, 0)}/100)` : "—"}</strong> ·
+              Nearest Resistance <strong>${r.r1 ? `${r.r1.label} = $${fmtNum(r.r1.price)} (${fmtPct(r.r1.distance_pct, 1)}, Strength ${fmtNum(r.r1.strength, 0)}/100)` : "—"}</strong>
+          </div>
+        </div>
+
+        <div class="math-box">
+          <div class="math-title">4. Widespread Accepted Indicator &amp; Network Formulations</div>
+          <div class="rel-cards-grid" style="margin-top:8px">
+            <div class="ins-metric">
+              <div class="ins-k">Wilder's RSI-14 (J. Welles Wilder, 1978)</div>
+              <div class="ins-v"><code>RSI = 100 - 100 / (1 + EMA<sub>1/14</sub>(Gain) / EMA<sub>1/14</sub>(Loss))</code></div>
+              <div class="muted" style="font-size:11.5px;margin-top:3px">${esc(r.symbol)} Live RSI-14: <strong>${fmtNum(r.rsi14, 1)}</strong> (&lt;30 Oversold, &gt;70 Overbought)</div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">Wilder's ATR-14 (Average True Range)</div>
+              <div class="ins-v"><code>TR = max(H-L, |H-C<sub>t-1</sub>|, |L-C<sub>t-1</sub>|); ATR = EMA<sub>1/14</sub>(TR)</code></div>
+              <div class="muted" style="font-size:11.5px;margin-top:3px">${esc(r.symbol)} Live ATR % of Price: <strong>${bd.atr_pct ?? "—"}%</strong> daily range</div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">Institutional Up/Down Volume Ratio (20d)</div>
+              <div class="ins-v"><code>U/D<sub>20</sub> = (∑ Volume on Green Days) / (∑ Volume on Red Days)</code></div>
+              <div class="muted" style="font-size:11.5px;margin-top:3px">${esc(r.symbol)} Live 20d Up/Down Vol: <strong>${fmtNum(r.updown_vol_20d, 2)}</strong> (&gt;1.2 Accumulation, &lt;0.8 Distribution)</div>
+            </div>
+            <div class="ins-metric">
+              <div class="ins-k">Supply-Chain 60-Day Return Correlation (r) &amp; Beta (β)</div>
+              <div class="ins-v"><code>r = Cov<sub>60d</sub>(r<sub>A</sub>, r<sub>B</sub>) / (σ<sub>A</sub>·σ<sub>B</sub>); β<sub>B|A</sub> = Cov(r<sub>B</sub>, r<sub>A</sub>) / Var(r<sub>A</sub>)</code></div>
+              <div class="muted" style="font-size:11.5px;margin-top:3px">Measures how strongly each supplier/customer co-moves with the center stock over the last 60 trading days.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const sel = box.querySelector("#formulaTickerSelect");
+    if (sel) sel.onchange = () => renderFormulasView(sel.value);
+    const btn = box.querySelector("#formulaOpenStockBtn");
+    if (btn) btn.onclick = () => openStock(r.symbol);
+  }
+
   // ---- STOCK DEEP DIVE ----
   async function openStock(sym) {
     state.activeTicker = sym;
@@ -1517,99 +1846,21 @@
         </div>
         <div style="text-align:right">
           <span class="${clsPct(x.distance_pct)}" style="font-weight:700;font-size:12.5px">${fmtPct(x.distance_pct, 1)}</span>
-          <div class="muted" ${levelStrengthTipAttr(x)}><span class="strength-bar"><span class="strength-fill" style="width:${Math.min(100, x.strength || 0)}%"></span></span>${fmtNum(x.strength, 0)}/100 <span class="tip-badge">∑</span></div>
+          <div class="muted" ${levelStrengthTipAttr(x)}><span class="strength-bar"><span class="strength-fill" style="width:${Math.min(100, x.strength || 0)}%"></span></span>${fmtNum(x.strength, 0)}/100 <span class="tip-badge">?</span></div>
         </div>
       </div>
     `;
 
-    const bd = t.notable?.breakdown || {};
-    const tm = bd.terms || {};
-    const jc = judg.components || {};
-    const allLevels = [...resLevels, ...supLevels];
+    const rsSpy21 = rs.vs_spy?.excess_21d != null ? rs.vs_spy.excess_21d * 100 : rs.vs_spy?.["21d"];
+    const rsSec21 = rs.vs_sector?.excess_21d != null ? rs.vs_sector.excess_21d * 100 : rs.vs_sector?.["21d"];
 
     const quantMathPanelHtml = `
-      <div class="panel" style="margin-bottom:16px">
-        <div class="daily-strip-hdr" style="margin-bottom:10px">
-          <div>
-            <h3 style="margin:0">∑ Quantitative Score Formulations &amp; Live Mathematical Calculation (${esc(t.symbol)})</h3>
-            <div class="muted">Exact deterministic equations and plugged-in values used to compute ${esc(t.symbol)}'s scores today</div>
-          </div>
-          <button class="btn-secondary compact-hdr-btn" id="openFullMathModalBtn">Full Methodology Reference →</button>
+      <div class="panel" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <strong style="font-size:14px">How are ${esc(t.symbol)}'s scores (${fmtNum(t.notable?.score, 1)}/100 Notable · ${fmtNum(judg.score, 2)} Technical) calculated?</strong>
+          <div class="muted">Inspect the exact mathematical formulations &amp; live step-by-step numbers for ${esc(t.symbol)} on the dedicated Formulas page.</div>
         </div>
-
-        <div class="math-guide-list">
-          <div class="math-box">
-            <div class="math-title">1. Multi-Factor Technical Composite (S<sub>tech</sub> = ${fmtNum(judg.score, 3)}) &amp; Logistic Sigmoid Scenario Probabilities</div>
-            <div class="math-eq">
-              S<sub>tech</sub> = 0.30·V<sub>MA</sub>(${fmtNum(jc.ma_trend?.vote, 2)}) + 0.30·V<sub>Mom</sub>(${fmtNum(jc.momentum?.vote, 2)}) + 0.25·V<sub>RS</sub>(${fmtNum(jc.relative_strength?.vote, 2)}) + 0.15·V<sub>Pat</sub>(${fmtNum(jc.patterns?.vote, 2)}) = <strong>${fmtNum(judg.score, 3)}</strong>
-            </div>
-            <div class="math-sub">
-              • <strong>MA Regime (30%)</strong>: <code>0.4·sgn(C-SMA200) + 0.3·sgn(C-SMA50) + 0.3·sgn(SMA50-SMA200)</code> → Vote = <strong>${fmtNum(jc.ma_trend?.vote, 3)}</strong> (Contrib: ${fmtNum((jc.ma_trend?.vote || 0) * 0.3, 3)})<br/>
-              • <strong>Momentum (30%)</strong>: <code>(1/3)·[sgn(MACD=${fmtNum(ind.macd, 2)}) + sgn(Hist=${fmtNum(ind.macd_hist, 2)}) + clip((RSI_14(${fmtNum(ind.rsi14, 1)})-50)/25, -1, 1)]</code> → Vote = <strong>${fmtNum(jc.momentum?.vote, 3)}</strong> (Contrib: ${fmtNum((jc.momentum?.vote || 0) * 0.3, 3)})<br/>
-              • <strong>Relative Strength (25%)</strong>: <code>0.5·[tanh(α_63d,SPY/0.15) + tanh(α_63d,Sector/0.15)]</code> → Vote = <strong>${fmtNum(jc.relative_strength?.vote, 3)}</strong> (Contrib: ${fmtNum((jc.relative_strength?.vote || 0) * 0.25, 3)})<br/>
-              • <strong>Patterns (15%)</strong>: Volume-confirmed breakout/channel vote = <strong>${fmtNum(jc.patterns?.vote, 3)}</strong> (Contrib: ${fmtNum((jc.patterns?.vote || 0) * 0.15, 3)})<br/>
-              • <strong>Logistic Sigmoid Partition</strong>:
-                <code>P_base = clip(0.45 - 0.20·|${fmtNum(judg.score, 2)}| + 0.10·I_range, 0.20, 0.55)</code> → <strong>${scByName.base || 0}%</strong>;
-                <code>P_bull = (1 - P_base) / (1 + e^{-3 × ${fmtNum(judg.score, 2)}})</code> → <strong>${scByName.bullish || 0}%</strong>;
-                <code>P_bear = 1 - P_base - P_bull</code> → <strong>${scByName.bearish || 0}%</strong>
-            </div>
-          </div>
-
-          <div class="math-box">
-            <div class="math-title">2. Daily Notable / Catalyst Score (S<sub>notable</sub> = ${fmtNum(t.notable?.score, 1)} / 100)</div>
-            <div class="math-eq">
-              S<sub>notable</sub> = 12·z<sub>ATR</sub>·I<sub>z≥1</sub> (${fmtNum(tm.vol_z, 1)}) + 8·(RVOL<sub>20</sub>-1)·I<sub>&gt;1.3</sub> (${fmtNum(tm.rvol, 1)}) + S<sub>struct</sub> (${fmtNum(tm.pattern, 1)}) + S<sub>RSI</sub> (${fmtNum(tm.rsi_extreme, 1)}) + S<sub>news</sub> (${fmtNum(tm.news, 1)}) + S<sub>SEC</sub> (${fmtNum(tm.sec, 1)}) + S<sub>Event</sub> (${fmtNum((tm.insider || 0) + (tm.earnings || 0), 1)}) = <strong>${fmtNum(t.notable?.score, 1)}</strong>
-            </div>
-            <div class="math-sub">
-              • <strong>ATR-Normalized Return Z-Score</strong>: <code>z_ATR = min(|${fmtPct(facts.change_1d_pct, 2)}| / ${bd.atr_pct ?? fmtNum((ind.atr_pct || 0) * 100, 2)}%, 3.0) = ${bd.z_atr ?? 0}σ</code> → <strong>+${fmtNum(tm.vol_z, 1)} pts</strong><br/>
-              • <strong>Abnormal Relative Volume</strong>: <code>RVOL_20 = V_t / SMA_20(V) = ${fmtNum(ind.vol_ratio_vs_20d, 2)}x</code> → <strong>+${fmtNum(tm.rvol, 1)} pts</strong><br/>
-              • <strong>Breakout / Pattern &amp; Wilder RSI-14 Tail</strong>: Structure = <strong>+${fmtNum(tm.pattern, 1)} pts</strong> · RSI (${fmtNum(ind.rsi14, 1)}) extreme = <strong>+${fmtNum(tm.rsi_extreme, 1)} pts</strong><br/>
-              • <strong>News Velocity &amp; SEC EDGAR Filings</strong>: Top News Imp (${bd.top_news_imp ?? 0}/100, ${bd.fresh_news_24h ?? 0} in 24h) = <strong>+${fmtNum(tm.news, 1)} pts</strong> · Material SEC 8-K/10-Q (${bd.major_sec_count ?? 0}) = <strong>+${fmtNum(tm.sec, 1)} pts</strong> · Form 4 / Earnings = <strong>+${fmtNum((tm.insider || 0) + (tm.earnings || 0), 1)} pts</strong>
-            </div>
-          </div>
-
-          ${allLevels.length ? `
-          <div class="math-box">
-            <div class="math-title">3. Support &amp; Resistance Confluence Strength Breakdown (100 × ∑ w<sub>i</sub>·C<sub>i</sub>)</div>
-            <div class="math-eq">
-              Strength(L) = 100 × [ 0.35·C<sub>touch</sub>(1 - e<sup>-N<sub>w</sub>/3</sup>) + 0.30·C<sub>vol</sub>(VAP) + 0.20·C<sub>rec</sub>(0.5<sup>Δt/60</sup>) + 0.10·C<sub>MTF</sub> + 0.05·C<sub>round</sub> ]
-            </div>
-            <div class="table-wrap" style="margin-top:6px">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Level</th>
-                    <th class="num">Price</th>
-                    <th class="num">Touches (N)</th>
-                    <th class="num">C<sub>touch</sub> (35%)</th>
-                    <th class="num">C<sub>vol</sub> VAP (30%)</th>
-                    <th class="num">C<sub>recency</sub> (20%)</th>
-                    <th class="num">C<sub>MTF</sub> (10%)</th>
-                    <th class="num">C<sub>round</sub> (5%)</th>
-                    <th class="num">Total Strength</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${allLevels.map((lvItem) => {
-                    const c = lvItem.components || {};
-                    return `
-                      <tr>
-                        <td><span class="tag ${lvItem.role === "support" ? "bull" : "bear"}">${esc(lvItem.label)}</span></td>
-                        <td class="num"><strong>$${fmtNum(lvItem.price)}</strong></td>
-                        <td class="num">${lvItem.touches ?? 0}</td>
-                        <td class="num">${fmtNum(c.touches, 2)}</td>
-                        <td class="num">${fmtNum(c.volume, 2)}</td>
-                        <td class="num">${fmtNum(c.recency, 2)}</td>
-                        <td class="num">${fmtNum(c.mtf, 2)}</td>
-                        <td class="num">${fmtNum(c.round, 2)}</td>
-                        <td class="num"><strong>${fmtNum(lvItem.strength, 1)} / 100</strong></td>
-                      </tr>`;
-                  }).join("")}
-                </tbody>
-              </table>
-            </div>
-          </div>` : ""}
-        </div>
+        <button class="btn-secondary compact-hdr-btn" id="openFullMathModalBtn">See ${esc(t.symbol)} Calculation on Formulas Page →</button>
       </div>
     `;
 
@@ -1620,7 +1871,7 @@
             <h1 class="stock-title">
               ${esc(t.symbol)}
               ${t.is_core ? '<span class="tag amber">★ Core</span>' : ""}
-              <span class="score-badge" ${notableScoreTipAttr(t)}>Score ${fmtNum(t.notable?.score, 0)} <span class="tip-badge">∑</span></span>
+              <span class="score-badge" ${notableScoreTipAttr(t)}>Score ${fmtNum(t.notable?.score, 0)} <span class="tip-badge">?</span></span>
             </h1>
             <div class="stock-company">
               ${esc(t.name)} ·
@@ -1656,8 +1907,8 @@
 
       <div class="section-header">
         <div>
-          <h2 ${techScenarioTipAttr(judg.score, judg.components, scByName)}>Rule-Based 20-Day Scenarios <span class="tip-badge">∑</span></h2>
-          <p class="section-sub" ${techScenarioTipAttr(judg.score, judg.components, scByName)}>Multi-factor logistic model (not advice) · Technical score S<sub>tech</sub> = ${fmtNum(judg.score, 2)} <span class="tip-badge">∑</span></p>
+          <h2 ${techScenarioTipAttr(judg.score, judg.components, scByName)}>Rule-Based 20-Day Scenarios <span class="tip-badge">?</span></h2>
+          <p class="section-sub" ${techScenarioTipAttr(judg.score, judg.components, scByName)}>Heuristic model (not advice) · Technical score ${fmtNum(judg.score, 2)} <span class="tip-badge">?</span></p>
         </div>
       </div>
       <div class="prob-bar wide">
@@ -1694,8 +1945,8 @@
           <div class="kv-grid">
             <div class="kv" ${tipAttr("rsi14")}><div class="kv-k">RSI (14) ?</div><div class="kv-v">${fmtNum(ind.rsi14, 1)} <span class="muted">${esc(ind.rsi_zone || "")}</span></div></div>
             <div class="kv" ${tipAttr("sma")}><div class="kv-k">SMA 20/50/200 ?</div><div class="kv-v">${fmtNum(ind.sma20, 0)} / ${fmtNum(ind.sma50, 0)} / ${fmtNum(ind.sma200, 0)}</div></div>
-            <div class="kv" ${tipAttr("rs_spy")}><div class="kv-k">vs SPY (21d) ?</div><div class="kv-v ${clsPct(rs.vs_spy?.["21d"])}">${fmtPct(rs.vs_spy?.["21d"], 1)}</div></div>
-            <div class="kv" ${tipAttr("rs_sector")}><div class="kv-k">vs ${esc(t.sector_etf || "Sector")} (21d) ?</div><div class="kv-v ${clsPct(rs.vs_sector?.["21d"])}">${fmtPct(rs.vs_sector?.["21d"], 1)}</div></div>
+            <div class="kv" ${tipAttr("rs_spy")}><div class="kv-k">vs SPY (21d) ?</div><div class="kv-v ${clsPct(rsSpy21)}">${fmtPct(rsSpy21, 1)}</div></div>
+            <div class="kv" ${tipAttr("rs_sector")}><div class="kv-k">vs ${esc(t.sector_etf || "Sector")} (21d) ?</div><div class="kv-v ${clsPct(rsSec21)}">${fmtPct(rsSec21, 1)}</div></div>
             <div class="kv"><div class="kv-k">Market Cap</div><div class="kv-v">${fmtCap(val.market_cap)}</div></div>
             <div class="kv" ${tipAttr("pe")}><div class="kv-k">P/E (TTM / Fwd) ?</div><div class="kv-v">${fmtNum(val.trailing_pe, 1)} / ${fmtNum(val.forward_pe, 1)}</div></div>
             <div class="kv" ${tipAttr("fcf")}><div class="kv-k">FCF (TTM) ?</div><div class="kv-v">${fmtCap(der.free_cash_flow_ttm)}</div></div>
@@ -1866,7 +2117,12 @@
     renderSubTab();
     wireSectorLinks($("stockContent"));
     const mathBtn = $("openFullMathModalBtn");
-    if (mathBtn) mathBtn.onclick = openMathGuideModal;
+    if (mathBtn) {
+      mathBtn.onclick = () => {
+        renderFormulasView(t.symbol);
+        setView("formulas");
+      };
+    }
 
     // Mount interactive Ecosystem Bubble Network for this stock (supports hopping bubble-to-bubble)
     state.stockBubbleCenter = t.symbol;
@@ -2410,7 +2666,7 @@
       const targetDate = dates.some((d) => d.date === wantedDate) ? wantedDate : state.index.latest;
       const wantedTicker = params.get("ticker");
       const wantedView = params.get("view");
-      if (wantedView && ["overview", "screener", "network", "smartmoney", "breaking", "authorities", "macro"].includes(wantedView)) state.view = wantedView;
+      if (wantedView && ["overview", "screener", "network", "smartmoney", "breaking", "authorities", "macro", "formulas"].includes(wantedView)) state.view = wantedView;
 
       await loadBreaking();
       await loadAuthorities();
