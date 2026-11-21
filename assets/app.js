@@ -1088,8 +1088,6 @@
                 ${filterTabs.map(([k, lbl]) => `<option value="${k}" ${filterKey === k ? "selected" : ""}>${esc(lbl)} (${counts[k] || 0})</option>`).join("")}
               </select>
             </div>
-            <button type="button" class="btn-secondary compact-hdr-btn" id="toggleFullNetBtn" title="Toggle Full-Page Network">${isFull ? "✕ Exit Full Page" : "⛶ Full Page"}</button>
-            ${!opts.embeddedInStock ? `<button type="button" class="btn-secondary compact-hdr-btn close-tab-btn" id="closeNetViewBtn" title="Close Network tab">✕ Close</button>` : ""}
           </div>
         </div>
 
