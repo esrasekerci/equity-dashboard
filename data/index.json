@@ -1,0 +1,18 @@
+{
+  "latest": "2026-11-21",
+  "updated_at": "2026-11-21T10:41:05Z",
+  "dates": [
+    {
+      "date": "2026-11-21",
+      "last_bar": "2026-11-20",
+      "n_tickers": 39,
+      "spy_ret_1d": -3.64,
+      "avg_ret_1d": -9.31,
+      "top": [
+        "NVDA",
+        "AVGO",
+        "ANET"
+      ]
+    }
+  ]
+}

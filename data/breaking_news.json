@@ -1,0 +1,147 @@
+{
+  "updated_at": "2026-11-21T10:50:29+00:00",
+  "min_importance": 68.0,
+  "items": [
+    {
+      "key": "ffe759c0024ea590",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia’s Finance Chief Kress to Lead First Earnings Call Following Huang’s Ouster",
+      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOYWNSeEVqX0dfVEF1QnBYdks5Tk92TU9mWEdlYkZ1a285YnBfOThIeGkybjZSTG9oSkJIYUE5WFgwYlZtdzBuVUQwQzJZTm1fcEtCeFBWd242RkVIVThYaVFaSm5sV1ppZlBWdGdtUkVNRXRUZ1dCWVpBd2hzMlhISWhyNms4R1BSUzM4S282SG5NT2J3VExlWjVtb015ZUd1UEpoQVh3US1oZGotRlQ0LWJrZUItbmtiWjlEcg?oc=5",
+      "source": "WSJ",
+      "published": "2026-11-21T09:08:07+00:00",
+      "importance": 81.2,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 1.7,
+      "detected_at": "2026-11-21T10:50:29+00:00"
+    },
+    {
+      "key": "7c2564a8787b731e",
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "title": "Did Microsoft AI Partnership Just Shift Danaher's (DHR) Investment Narrative?",
+      "url": "https://finance.yahoo.com/technology/ai/articles/did-microsoft-ai-partnership-just-051538591.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "published": "2026-11-21T05:15:38+00:00",
+      "importance": 76.1,
+      "categories": [
+        "m_and_a",
+        "contract_partnership"
+      ],
+      "age_hours": 5.6,
+      "detected_at": "2026-11-21T10:50:29+00:00"
+    },
+    {
+      "key": "86ce55dea05f0171",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "Generac Stock In Focus After Earnings Beat And Amazon Supply Deal",
+      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQTjFIUlJxYUE5MlRvWXZ4bHdkSWpSVUtnODIwd3pyeE1OM1RZamtEbTZ5SFNtS1RzVnpQT1l0MUJqZ1Z1THgySDd0cExoZzRqUzBMSG8xVGhmWTJTdTlQWXMxcVNfNFpRU3o1eWdVZ3lCMFdJTmxmWWY1R3l3MUJxeFRXMlVpMnRuZUFBSjhIX0lwMTIySC1DNWxDNm92LUU?oc=5",
+      "source": "Yahoo Finance",
+      "published": "2026-11-21T00:19:00+00:00",
+      "importance": 74.2,
+      "categories": [
+        "earnings_guidance",
+        "contract_partnership"
+      ],
+      "age_hours": 10.5,
+      "detected_at": "2026-11-21T10:50:29+00:00"
+    },
+    {
+      "key": "6e5d5e5b9c3fa287",
+      "symbol": "OKLO",
+      "name": "Oklo",
+      "title": "Wall Street Has Cut Its Oklo Target Nearly in Half. Guggenheim Still Sees 91% Upside",
+      "url": "https://www.tikr.com/blog/wall-street-has-cut-its-oklo-target-nearly-in-half-guggenheim-still-sees-91-upside?ref=yahoofinance&tlnk=yf-261121-m6hj4mwq&.tsrc=rss",
+      "source": "Yahoo Finance",
+      "published": "2026-11-21T07:04:14+00:00",
+      "importance": 72.2,
+      "categories": [
+        "m_and_a",
+        "analyst"
+      ],
+      "age_hours": 3.8,
+      "detected_at": "2026-11-21T10:50:29+00:00"
+    },
+    {
+      "key": "ba42744fadd55162",
+      "symbol": "SMCI",
+      "name": "Super Micro Computer",
+      "title": "Super Micro Just Dropped 33% in a Month After a Record Quarter. Is It Time to Sell, or Load Up?",
+      "url": "https://www.tikr.com/blog/super-micro-just-dropped-33-in-a-month-after-a-record-quarter-is-it-time-to-sell-or-load-up?ref=yahoofinance&tlnk=yf-261121-xjw76j5j&.tsrc=rss",
+      "source": "Yahoo Finance",
+      "published": "2026-11-21T10:08:33+00:00",
+      "importance": 71.7,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 0.7,
+      "detected_at": "2026-11-21T10:50:29+00:00"
+    },
+    {
+      "key": "5b6bfd00690f6d04",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "Memory Was “a Commodity Even Five Years Ago,” Micron’s President Says. Its Stock Still Trades Like One",
+      "url": "https://www.tikr.com/blog/memory-was-a-commodity-even-five-years-ago-microns-president-says-its-stock-still-trades-like-one?ref=yahoofinance&tlnk=yf-261121-4p44hrjp&.tsrc=rss",
+      "source": "Yahoo Finance",
+      "published": "2026-11-21T08:50:14+00:00",
+      "importance": 70.1,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 2.0,
+      "detected_at": "2026-11-21T10:50:29+00:00"
+    },
+    {
+      "key": "42455b63a31e86f4",
+      "symbol": "MRVL",
+      "name": "Marvell Technology",
+      "title": "Data Center AI Chips Could Change the Winners: Broadcom and Marvell",
+      "url": "https://247wallst.com/investing/2026/11/20/data-center-ai-chips-could-change-the-winners-broadcom-and-marvell/?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "published": "2026-11-20T23:25:54+00:00",
+      "importance": 69.5,
+      "categories": [
+        "earnings_guidance",
+        "capex_expansion"
+      ],
+      "age_hours": 11.4,
+      "detected_at": "2026-11-21T10:50:29+00:00"
+    },
+    {
+      "key": "bde1135a28260748",
+      "symbol": "AVGO",
+      "name": "Broadcom",
+      "title": "Data Center AI Chips Could Change the Winners: Broadcom and Marvell",
+      "url": "https://247wallst.com/investing/2026/11/20/data-center-ai-chips-could-change-the-winners-broadcom-and-marvell/?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "published": "2026-11-20T23:25:54+00:00",
+      "importance": 69.5,
+      "categories": [
+        "earnings_guidance",
+        "capex_expansion"
+      ],
+      "age_hours": 11.4,
+      "detected_at": "2026-11-21T10:50:29+00:00"
+    },
+    {
+      "key": "5621126729ab4409",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "Micron's stock drops 46% since June but outlook shows strong revenue growth and tighter memory supply ahead.",
+      "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQQkJ4anVKeERGS1B0S01xbF80UExkcWowcFpsYUtYR2p4TE5EOHlfWjFrZ2NlNFB1TVpjVGU5QUpPTDBMb0ZZdVJJcDVOXzVnbWFLMDFqcnd3azlIT05qU2Rqb2YtWExhTkRzejFBeG9fT19ZOGhjbmgwOFEwNDJnNnJEampmQTFTYlE1MmxfSlVSZw?oc=5",
+      "source": "Pluang",
+      "published": "2026-11-21T10:37:22+00:00",
+      "importance": 69.0,
+      "categories": [
+        "earnings_guidance",
+        "market_move"
+      ],
+      "age_hours": 0.2,
+      "detected_at": "2026-11-21T10:50:29+00:00"
+    }
+  ]
+}

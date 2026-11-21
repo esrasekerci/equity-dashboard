@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Equity Research Dashboard</title>
+  <link rel="stylesheet" href="assets/app.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" id="brandHome" role="button" tabindex="0">
+        <span class="brand-dot"></span>
+        <div>
+          <div class="brand-title">Equity Research</div>
+          <div class="brand-sub" id="marketCloseBadge">Loading market data…</div>
+        </div>
+      </div>
+
+      <div class="topbar-controls">
+        <div class="search-wrap">
+          <input id="quickSearch" type="search" placeholder="Jump to ticker (e.g. NVDA, MU)…" autocomplete="off" />
+          <div id="searchDropdown" class="search-dropdown hidden"></div>
+        </div>
+
+        <select id="dateSelect" class="select-control" aria-label="Report date"></select>
+
+        <button id="themeToggle" class="icon-btn" title="Toggle light/dark theme" aria-label="Toggle theme">☀️</button>
+      </div>
+    </div>
+
+    <nav class="subnav" id="mainNav">
+      <button class="nav-tab active" data-view="overview">Overview &amp; Screener</button>
+      <button class="nav-tab" data-view="breaking">Breaking News <span class="badge-pill" id="breakingCount">0</span></button>
+      <button class="nav-tab" data-view="macro">Macro &amp; World</button>
+      <button class="nav-tab hidden" data-view="stock" id="stockNavTab">Stock</button>
+    </nav>
+  </header>
+
+  <main class="container" id="appRoot">
+    <div id="loadingState" class="loading-box">
+      <div class="spinner"></div>
+      <p>Loading equity dashboard…</p>
+    </div>
+
+    <div id="errorState" class="error-box hidden"></div>
+
+    <!-- OVERVIEW VIEW -->
+    <section id="view-overview" class="view hidden">
+      <div id="breakingBanner" class="breaking-banner hidden"></div>
+      <div id="kpiStrip" class="kpi-grid"></div>
+      <div id="alertsSection" class="alerts-grid"></div>
+
+      <div class="section-header">
+        <h2>Sector Heatmap</h2>
+        <span class="muted">Click any sector to filter the screener</span>
+      </div>
+      <div id="sectorHeatmap" class="heatmap-grid"></div>
+
+      <div class="section-header">
+        <h2>Top Notable Movers</h2>
+        <span class="muted">Computed ranking (volatility, volume, news, filings, technicals)</span>
+      </div>
+      <div id="notableGrid" class="notable-grid"></div>
+
+      <div class="section-header screener-head">
+        <h2>Watchlist Screener <span class="muted" id="screenerCount"></span></h2>
+        <div class="filter-bar" id="filterBar">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="core">Core 10</button>
+          <button class="chip" data-filter="signals">Patterns</button>
+          <button class="chip" data-filter="earnings">Earnings ±10d</button>
+          <button class="chip" data-filter="oversold">RSI &lt; 30</button>
+          <button class="chip" data-filter="overbought">RSI &gt; 70</button>
+          <button class="chip" data-filter="bullish">Bullish Bias</button>
+          <button class="chip" data-filter="bearish">Bearish Bias</button>
+          <button class="chip hidden" id="clearSectorChip">Sector: <span id="activeSectorLabel"></span> ✕</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="screener-table" id="screenerTable">
+          <thead>
+            <tr>
+              <th data-sort="symbol">Ticker</th>
+              <th data-sort="sector">Sector</th>
+              <th data-sort="close" class="num">Close</th>
+              <th data-sort="change_1d_pct" class="num">1D %</th>
+              <th data-sort="notable_score" class="num">Score</th>
+              <th data-sort="rsi14" class="num">RSI-14</th>
+              <th>SMA 20/50/200</th>
+              <th data-sort="rs_spy_21d" class="num">vs SPY 21d</th>
+              <th data-sort="s1_dist" class="num">Near S1 / R1</th>
+              <th>Scenarios (B/N/S)</th>
+              <th data-sort="earnings_days" class="num">Earnings</th>
+            </tr>
+          </thead>
+          <tbody id="screenerBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- BREAKING NEWS VIEW -->
+    <section id="view-breaking" class="view hidden">
+      <div class="section-header">
+        <h2>Breaking &amp; Important News Feed</h2>
+        <span class="muted" id="breakingUpdated">Checked automatically every 2 hours on weekdays</span>
+      </div>
+      <div id="breakingList" class="feed-list"></div>
+    </section>
+
+    <!-- MACRO & WORLD VIEW -->
+    <section id="view-macro" class="view hidden">
+      <div class="section-header">
+        <h2>US Macro Indicators (FRED)</h2>
+        <span class="muted" id="fomcBadge"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="macroTable">
+          <thead>
+            <tr>
+              <th>Indicator</th>
+              <th>Series</th>
+              <th class="num">Latest</th>
+              <th>Date</th>
+              <th class="num">1W</th>
+              <th class="num">1M</th>
+              <th class="num">3M</th>
+            </tr>
+          </thead>
+          <tbody id="macroBody"></tbody>
+        </table>
+      </div>
+
+      <div class="three-col-feeds">
+        <div>
+          <h3 class="subhead">Federal Reserve</h3>
+          <div id="fedFeed" class="feed-list compact"></div>
+        </div>
+        <div>
+          <h3 class="subhead">World &amp; Geopolitics</h3>
+          <div id="worldFeed" class="feed-list compact"></div>
+        </div>
+        <div>
+          <h3 class="subhead">Federal Register / Policy</h3>
+          <div id="regFeed" class="feed-list compact"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STOCK DEEP-DIVE VIEW -->
+    <section id="view-stock" class="view hidden">
+      <div class="stock-topbar">
+        <button class="btn-secondary" id="backToOverview">← Back to Watchlist</button>
+        <div class="stock-pager">
+          <button class="btn-secondary" id="prevTickerBtn">← Prev</button>
+          <button class="btn-secondary" id="nextTickerBtn">Next →</button>
+        </div>
+      </div>
+      <div id="stockContent"></div>
+    </section>
+  </main>
+
+  <!-- Image lightbox modal -->
+  <div id="imgModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" id="modalCloseBg"></div>
+    <div class="modal-body">
+      <button class="modal-close" id="modalCloseBtn">✕</button>
+      <img id="modalImg" src="" alt="Chart zoom" />
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div>Daily Equity Research · Data from Yahoo Finance, SEC EDGAR, FRED, Federal Reserve, Federal Register &amp; RSS feeds.</div>
+    <div class="disclaimer">Research and rule-based scenarios only — NOT investment advice. Verify all figures at the cited source before acting.</div>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
