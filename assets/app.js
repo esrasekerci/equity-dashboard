@@ -49,7 +49,7 @@
   function setView(view) {
     if (view !== "stock") state.prevView = view;
     state.view = view;
-    for (const v of ["overview", "screener", "breaking", "macro", "stock"]) {
+    for (const v of ["overview", "screener", "smartmoney", "breaking", "macro", "stock"]) {
       $(`view-${v}`).classList.toggle("hidden", v !== view);
     }
     document.querySelectorAll("#mainNav .nav-tab").forEach((btn) => {
@@ -107,6 +107,7 @@
       $("navTickerCount").textContent = String(state.summary.n_tickers || 0);
       renderOverview();
       renderScreener();
+      renderSmartMoney();
       renderMacro();
       $("loadingState").classList.add("hidden");
       if (openTicker) {
@@ -414,6 +415,77 @@
     });
   }
 
+  // ---- SMART MONEY / WHALE FLOW ----
+  function renderSmartMoney() {
+    const sm = (state.summary && state.summary.smart_money) || {};
+    const vf = sm.volume_flow || [];
+    $("volumeFlowGrid").innerHTML = vf.length ? vf.map((x) => `
+      <div class="notable-card" data-sym="${esc(x.symbol)}">
+        <div class="notable-top">
+          <div>
+            <div class="notable-sym">${esc(x.symbol)} <span class="tag ${x.flow === "Accumulation" ? "bull" : "bear"}">${esc(x.flow)}</span></div>
+            <div class="notable-name">${esc(x.name || "")}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="price-pill ${clsPct(x.change_1d_pct)}">${fmtPct(x.change_1d_pct, 1)}</div>
+            <div style="margin-top:4px"><span class="score-badge">${fmtNum(x.vol_ratio_20d, 2)}x vol</span></div>
+          </div>
+        </div>
+        <div class="muted" style="margin-top:6px">
+          Dollar flow: <strong>${fmtCap(x.dollar_volume_usd)}</strong> · 20d Up/Down vol: <strong>${fmtNum(x.updown_vol_20d, 2)}</strong>
+        </div>
+      </div>
+    `).join("") : `<div class="panel muted">No unusual volume surges (&ge; 1.35x) on this session.</div>`;
+    $("volumeFlowGrid").querySelectorAll(".notable-card").forEach((el) => {
+      el.onclick = () => openStock(el.dataset.sym);
+    });
+
+    const renderInsList = (id, items, emptyTxt, badgeCls) => {
+      $(id).innerHTML = (items || []).length ? items.slice(0, 12).map((x) => `
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="ticker-pill" data-sym="${esc(x.symbol)}"><strong>${esc(x.symbol)}</strong></span>
+            ${x.value_usd ? `<span class="tag ${badgeCls}">${fmtCap(x.value_usd)}</span>` : ""}
+            <span>${esc((x.published || "").slice(0, 10))}</span>
+          </div>
+          <a class="feed-title" href="${esc(x.url || "#")}" target="_blank" rel="noopener">${esc(x.title)}</a>
+        </div>
+      `).join("") : `<div class="muted">${emptyTxt}</div>`;
+      $(id).querySelectorAll(".ticker-pill").forEach((p) => { p.onclick = () => openStock(p.dataset.sym); });
+    };
+
+    renderInsList("smInsiderBuys", sm.insider_buys, "No open-market Form 4 insider buys in the 90-day window.", "bull");
+    renderInsList("smInsiderSells", sm.insider_sells, "No open-market Form 4 insider sells in the 90-day window.", "bear");
+
+    const wf = sm.whale_filings || [];
+    $("smWhaleFilings").innerHTML = wf.length ? wf.map((f) => `
+      <div class="feed-item">
+        <div class="feed-meta">
+          <span class="ticker-pill" data-sym="${esc(f.symbol)}"><strong>${esc(f.symbol)}</strong></span>
+          <span class="tag amber">${esc(f.form)}</span>
+          <span>${esc((f.published || "").slice(0, 10))}</span>
+        </div>
+        <a class="feed-title" href="${esc(f.url || "#")}" target="_blank" rel="noopener">${esc(f.title)}</a>
+      </div>
+    `).join("") : `<div class="muted">No recent SC 13D / 13G (&gt;5% stake) filings in the 90-day window.</div>`;
+    $("smWhaleFilings").querySelectorAll(".ticker-pill").forEach((p) => { p.onclick = () => openStock(p.dataset.sym); });
+
+    const si = sm.short_interest || [];
+    $("smShortInterest").innerHTML = si.length ? si.map((x) => `
+      <div class="level-row" data-sym="${esc(x.symbol)}" style="cursor:pointer">
+        <div>
+          <strong>${esc(x.symbol)}</strong>
+          <span class="muted" style="margin-left:6px">${esc(x.name || "")}</span>
+        </div>
+        <div style="text-align:right">
+          <span class="tag ${x.short_pct_float >= 10 ? "bear" : "amber"}">${fmtNum(x.short_pct_float, 1)}% float</span>
+          <span class="${clsPct(x.change_1d_pct)}" style="margin-left:6px;font-size:12px;font-weight:700">${fmtPct(x.change_1d_pct, 1)}</span>
+        </div>
+      </div>
+    `).join("") : `<div class="muted">Short interest unavailable.</div>`;
+    $("smShortInterest").querySelectorAll(".level-row").forEach((r) => { r.onclick = () => openStock(r.dataset.sym); });
+  }
+
   // ---- BREAKING NEWS ----
   function renderBreaking() {
     const el = $("breakingList");
@@ -633,6 +705,9 @@
             <div class="kv"><div class="kv-k">FCF (TTM)</div><div class="kv-v">${fmtCap(der.free_cash_flow_ttm)}</div></div>
             <div class="kv"><div class="kv-k">Cash / Debt</div><div class="kv-v">${fmtCap(der.cash)} / ${fmtCap(der.total_debt)}</div></div>
             <div class="kv"><div class="kv-k">Analyst Target Δ</div><div class="kv-v ${clsPct(der.target_mean_vs_price_pct)}">${fmtPct(der.target_mean_vs_price_pct, 1)}</div></div>
+            <div class="kv"><div class="kv-k">Vol vs 20d Avg</div><div class="kv-v">${fmtNum(ind.vol_ratio_vs_20d, 2)}x <span class="muted">(${fmtCap((facts.last_close || 0) * (facts.last_volume || 0))})</span></div></div>
+            <div class="kv"><div class="kv-k">Up/Dn Vol (20d)</div><div class="kv-v ${ind.updown_volume_20d != null ? (ind.updown_volume_20d >= 1.2 ? "pos" : ind.updown_volume_20d <= 0.8 ? "neg" : "") : ""}">${fmtNum(ind.updown_volume_20d, 2)}</div></div>
+            <div class="kv"><div class="kv-k">Short % Float</div><div class="kv-v">${val.short_pct_float != null ? `${fmtNum(val.short_pct_float * 100, 1)}%` : "—"}</div></div>
             <div class="kv"><div class="kv-k">Earnings</div><div class="kv-v">${esc((cal.earnings_dates || [])[0] || "—")}</div></div>
           </div>
         </div>
@@ -642,8 +717,9 @@
         <div class="filter-bar-scroll" style="margin:0 -15px 12px;padding:0 15px">
           <div class="filter-bar" id="stockSubTabs">
             <button class="chip ${state.stockTab === "news" ? "active" : ""}" data-stab="news">News (${(t.news || []).length})</button>
-            <button class="chip ${state.stockTab === "filings" ? "active" : ""}" data-stab="filings">SEC Filings (${(t.filings || []).length})</button>
+            <button class="chip ${state.stockTab === "institutions" ? "active" : ""}" data-stab="institutions">Institutions (${(t.fundamentals?.holders?.institutional || []).length})</button>
             <button class="chip ${state.stockTab === "insiders" ? "active" : ""}" data-stab="insiders">Insiders (${(t.insiders?.items || []).length})</button>
+            <button class="chip ${state.stockTab === "filings" ? "active" : ""}" data-stab="filings">SEC Filings (${(t.filings || []).length})</button>
             <button class="chip ${state.stockTab === "regulatory" ? "active" : ""}" data-stab="regulatory">Regulatory (${(t.regulatory?.items || []).length})</button>
             <button class="chip ${state.stockTab === "peers" ? "active" : ""}" data-stab="peers">Peers</button>
           </div>
@@ -681,6 +757,21 @@
                 <a class="feed-title" href="${esc(n.url || "#")}" target="_blank" rel="noopener">${esc(n.title)}</a>
               </div>`).join("")}</div>`
           : `<div class="muted">No recent news items.</div>`;
+      } else if (state.stockTab === "institutions") {
+        const inst = t.fundamentals?.holders?.institutional || [];
+        box.innerHTML = inst.length
+          ? `<div class="level-list">${inst.slice(0, 12).map((h) => `
+              <div class="level-row">
+                <div>
+                  <strong>${esc(h.holder || "")}</strong>
+                  <div class="muted">${h.shares ? Number(h.shares).toLocaleString() + " shares" : ""} ${h.reported ? "· " + esc(h.reported) : ""}</div>
+                </div>
+                <div style="text-align:right">
+                  <strong>${h.pct != null ? `${(Number(h.pct) * 100).toFixed(2)}%` : "—"}</strong>
+                  <div class="muted">${fmtCap(h.value)}</div>
+                </div>
+              </div>`).join("")}</div>`
+          : `<div class="muted">Institutional holder breakdown unavailable.</div>`;
       } else if (state.stockTab === "filings") {
         box.innerHTML = (t.filings || []).length
           ? `<div class="feed-list">${t.filings.map((f) => `
@@ -837,7 +928,7 @@
       const targetDate = dates.some((d) => d.date === wantedDate) ? wantedDate : state.index.latest;
       const wantedTicker = params.get("ticker");
       const wantedView = params.get("view");
-      if (wantedView && ["overview", "screener", "breaking", "macro"].includes(wantedView)) state.view = wantedView;
+      if (wantedView && ["overview", "screener", "smartmoney", "breaking", "macro"].includes(wantedView)) state.view = wantedView;
 
       await loadBreaking();
       await loadDate(targetDate, wantedTicker);
