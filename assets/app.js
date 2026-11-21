@@ -38,6 +38,15 @@
   const fmtNum = (v, d = 2) => (v == null || Number.isNaN(Number(v)) ? "—" : Number(v).toFixed(d));
   const fmtPct = (v, d = 2) => (v == null || Number.isNaN(Number(v)) ? "—" : `${Number(v) >= 0 ? "+" : ""}${Number(v).toFixed(d)}%`);
   const clsPct = (v) => (v == null ? "" : Number(v) > 0 ? "pos" : Number(v) < 0 ? "neg" : "");
+  const secHtmlUrl = (url) => {
+    if (!url) return "#";
+    const m = String(url).match(/^(https:\/\/www\.sec\.gov\/Archives\/edgar\/data\/\d+\/)(\d{18})\/[^/]+\.xml$/i);
+    if (m) {
+      const acc = m[2];
+      return `${m[1]}${acc}/${acc.slice(0, 10)}-${acc.slice(10, 12)}-${acc.slice(12)}-index.htm`;
+    }
+    return url;
+  };
   const fmtCap = (v) => {
     if (v == null || Number.isNaN(Number(v))) return "—";
     const n = Number(v);
@@ -1652,7 +1661,7 @@
             ${x.value_usd ? `<span class="tag ${badgeCls}">${fmtCap(x.value_usd)}</span>` : ""}
             <span>${esc((x.published || "").slice(0, 10))}</span>
           </div>
-          <a class="feed-title" href="${esc(x.url || "#")}" target="_blank" rel="noopener">${esc(x.title)}</a>
+          <a class="feed-title" href="${esc(secHtmlUrl(x.url))}" target="_blank" rel="noopener">${esc(x.title)}</a>
         </div>
       `).join("") : `<div class="muted">${emptyTxt}</div>`;
       $(id).querySelectorAll(".ticker-pill").forEach((p) => { p.onclick = () => openStock(p.dataset.sym); });
@@ -2346,7 +2355,7 @@
           ? `<div class="feed-list">${t.insiders.items.map((x) => `
               <div class="feed-item">
                 <div class="feed-meta"><span class="tag ${x.extra?.code === "P" ? "bull" : "bear"}">${esc(x.extra?.code || "")}</span><span>${esc((x.published || "").slice(0, 10))}</span></div>
-                <a class="feed-title" href="${esc(x.url || "#")}" target="_blank" rel="noopener">${esc(x.title)}</a>
+                <a class="feed-title" href="${esc(secHtmlUrl(x.url))}" target="_blank" rel="noopener">${esc(x.title)}</a>
               </div>`).join("")}</div>`
           : `<div class="muted">No Form 4 insider transactions (foreign issuers do not file Form 4).</div>`);
       } else if (state.stockTab === "regulatory") {
@@ -2354,7 +2363,7 @@
           ? `<div class="feed-list">${t.regulatory.items.slice(0, 15).map((x) => `
               <div class="feed-item">
                 <div class="feed-meta"><span>${esc(x.source || "")}</span><span>${esc((x.published || "").slice(0, 10))}</span></div>
-                <a class="feed-title" href="${esc(x.url || "#")}" target="_blank" rel="noopener">${esc(x.title)}</a>
+                <a class="feed-title" href="${esc(secHtmlUrl(x.url))}" target="_blank" rel="noopener">${esc(x.title)}</a>
               </div>`).join("")}</div>`
           : `<div class="muted">No regulatory or legal items found.</div>`;
       } else if (state.stockTab === "peers") {
