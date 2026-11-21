@@ -692,17 +692,20 @@
         const d = t.earnings_days;
         const badgeTxt = d === 0 ? "TODAY" : d === 1 ? "Tomorrow" : d > 1 ? `in ${d}d` : `${Math.abs(d)}d ago`;
         const badgeCls = d >= 0 && d <= 7 ? "amber" : "";
+        const officialUrl = secHtmlUrl(t.earnings_url || `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(t.symbol)}`);
+        const srcLabel = t.earnings_source || "Official";
         return `
-          <div class="level-row" data-sym="${esc(t.symbol)}" style="cursor:pointer">
+          <a class="level-row" href="${esc(officialUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
             <div>
               <strong>${esc(t.symbol)}</strong>
               <span class="muted" style="margin-left:6px">${esc(t.name)}</span>
+              <span class="muted" style="margin-left:6px;font-size:11px;color:var(--accent-2)">${esc(srcLabel)} ↗</span>
             </div>
             <div style="text-align:right">
               <span class="tag ${badgeCls}">${esc(badgeTxt)}</span>
               <span class="muted" style="margin-left:6px;font-variant-numeric:tabular-nums">${esc(t.earnings_date)}</span>
             </div>
-          </div>`;
+          </a>`;
       };
 
       ecGrid.innerHTML = `
@@ -719,9 +722,6 @@
           </div>
         </div>
       `;
-      ecGrid.querySelectorAll(".level-row[data-sym]").forEach((row) => {
-        row.onclick = () => openStock(row.dataset.sym);
-      });
     }
 
     // Sector Heatmap (clicking any sector opens the clean Sector Explorer modal)
