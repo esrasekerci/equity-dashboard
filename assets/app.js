@@ -356,7 +356,6 @@
                   <strong class="touch-name-link">${esc(r.symbol)} · ${esc(r.name)} ↗</strong>${r.is_core ? ' <span class="core-star">★</span>' : ""}
                   <span class="tag">${fmtCap(r.market_cap)}</span>
                 </div>
-                <div class="muted" style="margin-top:2px">Tap anywhere on this card to open full analysis, charts &amp; filings</div>
               </div>
               <div style="text-align:right">
                 <div style="font-weight:800;font-size:15px">$${fmtNum(r.close)}</div>
@@ -1054,26 +1053,12 @@
         <text x="0" y="25" text-anchor="middle" fill="${cChg >= 0 ? "var(--green)" : "var(--red)"}" font-size="10.2" font-weight="800">${fmtPct(cChg, 1)}</text>
       </g>`;
 
-    const breadcrumbHtml = historyArr.length > 1 ? `
-      <div class="bubble-breadcrumbs">
-        <span class="muted">Path:</span>
-        ${historyArr.map((sym, idx) => `
-          <button class="chip ${sym === center.symbol ? "active" : ""}" data-hop-sym="${esc(sym)}" style="padding:3px 9px;font-size:11.5px">${esc(sym)}</button>
-          ${idx < historyArr.length - 1 ? '<span class="muted">➔</span>' : ""}
-        `).join("")}
-      </div>` : "";
-
-    const isFull = Boolean(state.networkFullscreen);
-
     container.innerHTML = `
-      <div class="bubble-card ${isFull ? "is-fullscreen" : ""}" id="bubbleCardRoot">
+      <div class="bubble-card" id="bubbleCardRoot">
         <div class="bubble-header">
-          <div>
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <strong class="touch-name-link" data-open-stock="${esc(center.symbol)}" style="font-size:16.5px" title="Touch name to open ${esc(center.symbol)} analysis">${esc(center.symbol)} · ${esc(center.name)} (${fmtCap(center.market_cap)}) ↗</strong>
-              <span class="tag sector-link" data-sector="${esc(center.sector)}">${esc(fmtSector(center.sector))}</span>
-            </div>
-            <div class="muted" style="margin-top:3px">Touch any company name (↗) to open its stock analysis · Touch any bubble or card to inspect or center hub</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <strong class="touch-name-link" data-open-stock="${esc(center.symbol)}" style="font-size:16.5px">${esc(center.symbol)} · ${esc(center.name)} (${fmtCap(center.market_cap)}) ↗</strong>
+            <span class="tag sector-link" data-sector="${esc(center.sector)}">${esc(fmtSector(center.sector))}</span>
           </div>
           <div class="screener-controls">
             <div class="control-group">
@@ -1091,13 +1076,11 @@
           </div>
         </div>
 
-        ${breadcrumbHtml}
-
         <div class="bubble-legend">
-          <span><i class="legend-dot" style="background:#22c55e"></i>Supplier (Left)</span>
-          <span><i class="legend-dot" style="background:#a855f7"></i>Partner (Top)</span>
-          <span><i class="legend-dot" style="background:#3b82f6"></i>Customer (Right)</span>
-          <span><i class="legend-dot" style="background:#f43f5e"></i>Competitor (Bottom)</span>
+          <span><i class="legend-dot" style="background:#22c55e"></i>Supplier</span>
+          <span><i class="legend-dot" style="background:#a855f7"></i>Partner</span>
+          <span><i class="legend-dot" style="background:#3b82f6"></i>Customer</span>
+          <span><i class="legend-dot" style="background:#f43f5e"></i>Competitor</span>
           <span><i class="legend-dot" style="background:#f59e0b"></i>Co-Mention</span>
         </div>
 
@@ -1105,7 +1088,7 @@
           <div class="bubble-zoom-bar">
             <button type="button" class="zoom-btn" id="bZoomInBtn" title="Zoom In">+</button>
             <button type="button" class="zoom-btn" id="bZoomOutBtn" title="Zoom Out">−</button>
-            <button type="button" class="zoom-btn reset" id="bZoomResetBtn" title="Reset Zoom &amp; Pan">100%</button>
+            <button type="button" class="zoom-btn reset" id="bZoomResetBtn" title="Reset Zoom">100%</button>
           </div>
           <svg class="bubble-svg" id="bubbleSvg" viewBox="${baseCX - baseW / 2} ${baseCY - baseH / 2} ${baseW} ${baseH}" preserveAspectRatio="xMidYMid meet">
             ${crossEdgesSvg.join("")}
@@ -1128,8 +1111,7 @@
 
         <div class="bubble-table-wrap">
           <div class="daily-strip-hdr" style="margin-bottom:8px">
-            <strong>All ${shown.length} Mapped Value-Chain Connections for <span class="touch-name-link" data-open-stock="${esc(center.symbol)}">${esc(center.symbol)} ↗</span></strong>
-            <span class="muted">Touch any company name (↗) for stock analysis · Touch card to focus on network</span>
+            <strong>${shown.length} Mapped Value-Chain Connections · <span class="touch-name-link" data-open-stock="${esc(center.symbol)}">${esc(center.symbol)} ↗</span></strong>
           </div>
           <div class="rel-cards-grid">
             ${nodesPos.map((item, idx) => {
@@ -1139,6 +1121,19 @@
               const corrStr = item.corr_60d != null ? `r = ${item.corr_60d >= 0 ? "+" : ""}${item.corr_60d.toFixed(2)}` : "—";
               const betaStr = item.beta_60d != null ? ` · β = ${item.beta_60d.toFixed(2)}x` : "";
               const sc = pRow.scenarios || { bullish: 0, base: 0, bearish: 0 };
+              const arts = Array.isArray(item.articles) ? item.articles : [];
+              const topUrl = item.source || arts[0]?.url || null;
+              const scaleHtml = topUrl && item.type === "co_mention"
+                ? `<a class="news-edge-link" href="${esc(topUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(item.scale || rc.label)} ↗</a>`
+                : `<strong style="color:var(--accent-2)">${esc(item.scale || rc.label)}</strong>`;
+              const noteHtml = arts.length
+                ? arts.slice(0, 2).map((a) => `
+                    <a class="rel-article-link" href="${esc(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                      📰 ${esc(a.title)} <span class="muted">(${esc(a.source || "News")}${a.published ? ` · ${esc(a.published)}` : ""}) ↗</span>
+                    </a>`).join("")
+                : (topUrl && item.type === "co_mention"
+                    ? `<a class="rel-article-link" href="${esc(topUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">📰 ${esc(item.note || "Read co-mentioned news article")} ↗</a>`
+                    : `<div class="rcc-note">${esc(item.note || "")}</div>`);
               return `
                 <div class="rel-conn-card" data-card-idx="${idx}">
                   <div class="rcc-top">
@@ -1155,14 +1150,15 @@
                     </div>
                   </div>
                   <div class="rcc-stats">
-                    <span>Scale: <strong style="color:var(--accent-2)">${esc(item.scale || rc.label)}</strong></span>
-                    <span>60d Co-Movement: <strong>${esc(corrStr + betaStr)}</strong></span>
-                    <span>1D Spread vs ${esc(center.symbol)}: <strong class="${clsPct(spread)}">${spread >= 0 ? "+" : ""}${spread.toFixed(1)}%</strong></span>
+                    <span>Scale: ${scaleHtml}</span>
+                    <span>60d: <strong>${esc(corrStr + betaStr)}</strong></span>
+                    <span>Spread: <strong class="${clsPct(spread)}">${spread >= 0 ? "+" : ""}${spread.toFixed(1)}%</strong></span>
                     <span>RSI-14: <strong class="${pRow.rsi14 < 30 ? "neg" : pRow.rsi14 > 70 ? "pos" : ""}">${fmtNum(pRow.rsi14, 1)}</strong></span>
                     <span>21d vs SPY: <strong class="${clsPct(pRow.rs_spy_21d)}">${fmtPct(pRow.rs_spy_21d, 1)}</strong></span>
-                    <span>20d Bias: <strong>Bull ${sc.bullish}% / Bear ${sc.bearish}%</strong></span>
+                    <span>20d: <strong>Bull ${sc.bullish}% / Bear ${sc.bearish}%</strong></span>
                   </div>
-                  <div class="rcc-note">${esc(item.note || "")}</div>
+                  ${item.type !== "co_mention" && item.note ? `<div class="rcc-note">${esc(item.note)}</div>` : ""}
+                  ${arts.length || item.type === "co_mention" ? `<div class="rel-articles-wrap">${noteHtml}</div>` : ""}
                 </div>`;
             }).join("")}
           </div>
@@ -1402,26 +1398,40 @@
         updateViewBox();
       }
 
+      const arts = Array.isArray(item.articles) ? item.articles : [];
+      const topUrl = item.source || arts[0]?.url || null;
+      const insScaleHtml = topUrl && item.type === "co_mention"
+        ? `<a class="news-edge-link" href="${esc(topUrl)}" target="_blank" rel="noopener">${esc(item.scale || rc.label)} ↗</a>`
+        : `<span style="color:var(--accent-2)">${esc(item.scale || rc.label)}</span>`;
+      const insArticlesHtml = arts.length
+        ? `<div class="rel-articles-wrap" style="margin-top:8px">${arts.map((a) => `
+            <a class="rel-article-link" href="${esc(a.url)}" target="_blank" rel="noopener">
+              📰 ${esc(a.title)} <span class="muted">(${esc(a.source || "News")}${a.published ? ` · ${esc(a.published)}` : ""}) ↗</span>
+            </a>`).join("")}</div>`
+        : (topUrl && item.type === "co_mention"
+            ? `<div class="rel-articles-wrap" style="margin-top:8px"><a class="rel-article-link" href="${esc(topUrl)}" target="_blank" rel="noopener">📰 ${esc(item.note || "Open co-mentioned article")} ↗</a></div>`
+            : "");
+
       if (inspector) {
         inspector.innerHTML = `
           <div class="inspector-head">
             <div>
               <div class="inspector-title">
-                <strong class="touch-name-link" data-open-stock="${esc(center.symbol)}" title="Touch to open ${esc(center.symbol)}">${esc(center.symbol)} ↗</strong>
+                <strong class="touch-name-link" data-open-stock="${esc(center.symbol)}">${esc(center.symbol)} ↗</strong>
                 <span class="muted">↔</span>
-                <strong class="touch-name-link" data-open-stock="${esc(item.symbol)}" title="Touch to open ${esc(item.symbol)}">${esc(item.symbol)} · ${esc(item.name)} ↗</strong>
+                <strong class="touch-name-link" data-open-stock="${esc(item.symbol)}">${esc(item.symbol)} · ${esc(item.name)} ↗</strong>
                 <span class="tag ${rc.badge}">${esc(rc.label)}</span>
                 <span class="tag sector-link" data-sector="${esc(item.sector)}">${esc(fmtSector(item.sector))}</span>
               </div>
-              <div class="muted" style="margin-top:3px">${esc(flowDesc)} · Touch either company name above to open its stock analysis, or tap ${esc(item.symbol)}'s bubble again to make it the center hub</div>
+              <div class="muted" style="margin-top:3px">${esc(flowDesc)}</div>
             </div>
           </div>
 
           <div class="inspector-metrics">
             <div class="ins-metric">
               <div class="ins-k">Economic &amp; Contract Scale</div>
-              <div class="ins-v" style="color:var(--accent-2)">${esc(item.scale || rc.label)}</div>
-              <div class="muted" style="font-size:11px;margin-top:2px">${esc(rc.label)} relationship</div>
+              <div class="ins-v">${insScaleHtml}</div>
+              <div class="muted" style="font-size:11px;margin-top:2px">${esc(rc.label)}</div>
             </div>
             <div class="ins-metric">
               <div class="ins-k">60-Day Return Correlation &amp; Beta</div>
@@ -1441,18 +1451,15 @@
           </div>
 
           <div class="inspector-note">
-            <strong>Supply-Chain &amp; Fundamental Mechanism:</strong> ${esc(item.note || "Connected in the watchlist ecosystem.")}<br/>
-            <span class="muted" style="display:inline-block;margin-top:4px"><strong>${esc(item.symbol)} Nearest Key Levels:</strong> ${esc(s1r1Txt)} · <strong>20d Volume Ratio:</strong> ${fmtNum(pRow.vol_ratio_20d, 2)}x avg</span>
+            ${item.type !== "co_mention" ? `<strong>Supply-Chain &amp; Fundamental Mechanism:</strong> ${esc(item.note || "Connected in the watchlist ecosystem.")}<br/>` : ""}
+            <span class="muted" style="display:inline-block;margin-top:2px"><strong>${esc(item.symbol)} Key Levels:</strong> ${esc(s1r1Txt)} · <strong>20d Vol Ratio:</strong> ${fmtNum(pRow.vol_ratio_20d, 2)}x avg</span>
+            ${insArticlesHtml}
           </div>
         `;
         wireSectorLinks(inspector);
         inspector.querySelectorAll("[data-open-stock]").forEach((el) => {
           el.onclick = (e) => {
             e.stopPropagation();
-            if (state.networkFullscreen) {
-              state.networkFullscreen = false;
-              document.body.classList.remove("no-scroll");
-            }
             openStock(el.dataset.openStock);
           };
         });
@@ -1465,15 +1472,21 @@
       inspector.innerHTML = `<div class="muted">No connections match the selected filter.</div>`;
     }
 
-    // 1-Tap on any orbiting bubble or edge badge selects & highlights it in the Inspector;
-    // tapping an already-selected bubble re-centers the network on that bubble!
     container.querySelectorAll(".orbit-bubble[data-idx], .edge-badge[data-idx]").forEach((nodeEl) => {
       nodeEl.addEventListener("click", (e) => {
         if (dragMoved > 7) return;
         e.stopPropagation();
         const idx = Number(nodeEl.dataset.idx);
+        const targetItem = nodesPos[idx];
+        if (nodeEl.classList.contains("edge-badge") && targetItem?.type === "co_mention") {
+          const url = targetItem.source || targetItem.articles?.[0]?.url;
+          if (url) {
+            window.open(url, "_blank", "noopener");
+            return;
+          }
+        }
         if (idx === selectedIdx && nodeEl.classList.contains("orbit-bubble")) {
-          recenterOnItem(nodesPos[idx]);
+          recenterOnItem(targetItem);
         } else {
           inspectItem(idx, true);
         }
@@ -2027,10 +2040,7 @@
     const charts = t.charts || [];
 
     const hasSeries = Array.isArray(tech.series) && tech.series.length > 5;
-    const chartTabsAll = [...(hasSeries ? ["interactive"] : []), ...charts];
-    if (!chartTabsAll.includes(state.chartTab) && chartTabsAll.length) state.chartTab = chartTabsAll[0];
-    const chartUrl = (kind) => `data/${state.date}/charts/${t.symbol}_${kind}.png`;
-    const chartLabel = (c) => (c === "interactive" ? "Interactive" : c === "daily" ? "Daily + S/R" : c === "momentum" ? "RSI / MACD" : "Weekly");
+    state.chartTab = "interactive";
 
     // 52W range bar
     let rangeHtml = "";
@@ -2107,14 +2117,8 @@
         ${rangeHtml}
       </div>
 
-      ${chartTabsAll.length ? `
+      ${hasSeries ? `
       <div class="chart-card">
-        <div class="chart-header">
-          <div class="chart-tabs" id="chartTabs">
-            ${chartTabsAll.map((c) => `<button class="chip ${c === state.chartTab ? "active" : ""}" data-chart="${c}">${chartLabel(c)}</button>`).join("")}
-          </div>
-          <span class="muted" id="chartHint">${state.chartTab === "interactive" ? "Drag · pinch to zoom · tap for prices" : "Tap chart to zoom"}</span>
-        </div>
         <div id="chartBody"></div>
       </div>` : ""}
 
@@ -2196,57 +2200,38 @@
       const body = $("chartBody");
       if (!body) return;
       destroyInteractiveChart();
-      $("chartHint").textContent = state.chartTab === "interactive" ? "Drag · pinch to zoom · tap any day for exact OHLCV" : "Tap chart to zoom";
-      if (state.chartTab === "interactive") {
-        const ov = state.chartOverlays;
-        const is1M = state.chartRange === "1M";
-        body.innerHTML = `
-          <div class="chart-toolbar">
-            <div class="chart-tabs" id="rangeBar">
-              ${["1M", "3M", "6M", "1Y"].map((r) => `<button class="chip ${state.chartRange === r ? "active" : ""}" data-range="${r}">${r}</button>`).join("")}
-              <button class="chip" id="resetChartFitBtn" title="Reset zoom to fit full range">⟲ Fit</button>
-            </div>
-            <div class="chart-tabs" id="overlayBar">
-              <button class="chip ${ov.sma20 ? "active" : ""}" data-ov="sma20">SMA20</button>
-              <button class="chip ${ov.sma50 ? "active" : ""}" data-ov="sma50">SMA50</button>
-              <button class="chip ${ov.sma200 ? "active" : ""}" data-ov="sma200">SMA200</button>
-              <button class="chip ${ov.sr ? "active" : ""}" data-ov="sr">S/R</button>
-            </div>
+      const ov = state.chartOverlays;
+      const is1M = state.chartRange === "1M";
+      body.innerHTML = `
+        <div class="chart-toolbar">
+          <div class="chart-tabs" id="rangeBar">
+            ${["1M", "3M", "6M", "1Y"].map((r) => `<button class="chip ${state.chartRange === r ? "active" : ""}" data-range="${r}">${r}</button>`).join("")}
+            <button class="chip" id="resetChartFitBtn" title="Reset zoom">⟲ Fit</button>
           </div>
-          <div class="tv-legend" id="tvLegend"></div>
-          <div class="tv-chart-wrap ${is1M ? "is-1m" : ""}" id="tvChartWrap">
-            <div class="tv-chart-box" id="tvChart"></div>
-            <div class="tv-day-overlay ${is1M ? "" : "hidden"}" id="tvDayOverlay"></div>
-            <div class="tv-day-axis ${is1M ? "" : "hidden"}" id="tvDayAxis"></div>
+          <div class="chart-tabs" id="overlayBar">
+            <button class="chip ${ov.sma20 ? "active" : ""}" data-ov="sma20">SMA20</button>
+            <button class="chip ${ov.sma50 ? "active" : ""}" data-ov="sma50">SMA50</button>
+            <button class="chip ${ov.sma200 ? "active" : ""}" data-ov="sma200">SMA200</button>
+            <button class="chip ${ov.sr ? "active" : ""}" data-ov="sr">S/R</button>
           </div>
-          <div class="tv-daily-strip ${is1M ? "" : "hidden"}" id="tvDailyStrip"></div>`;
-        $("rangeBar").querySelectorAll("button[data-range]").forEach((b) => {
-          b.onclick = () => { state.chartRange = b.dataset.range; renderChartBody(); };
-        });
-        $("overlayBar").querySelectorAll("button").forEach((b) => {
-          b.onclick = () => { state.chartOverlays[b.dataset.ov] = !state.chartOverlays[b.dataset.ov]; renderChartBody(); };
-        });
-        mountInteractiveChart(t);
-      } else {
-        body.innerHTML = `<img id="activeChartImg" class="chart-img" src="${chartUrl(state.chartTab)}" alt="${esc(t.symbol)} chart" />`;
-        $("activeChartImg").onclick = () => {
-          $("modalImg").src = $("activeChartImg").src;
-          $("imgModal").classList.remove("hidden");
-        };
-      }
+        </div>
+        <div class="tv-legend" id="tvLegend"></div>
+        <div class="tv-chart-wrap ${is1M ? "is-1m" : ""}" id="tvChartWrap">
+          <div class="tv-chart-box" id="tvChart"></div>
+          <div class="tv-day-overlay ${is1M ? "" : "hidden"}" id="tvDayOverlay"></div>
+          <div class="tv-day-axis ${is1M ? "" : "hidden"}" id="tvDayAxis"></div>
+        </div>
+        <div class="tv-daily-strip ${is1M ? "" : "hidden"}" id="tvDailyStrip"></div>`;
+      $("rangeBar").querySelectorAll("button[data-range]").forEach((b) => {
+        b.onclick = () => { state.chartRange = b.dataset.range; renderChartBody(); };
+      });
+      $("overlayBar").querySelectorAll("button").forEach((b) => {
+        b.onclick = () => { state.chartOverlays[b.dataset.ov] = !state.chartOverlays[b.dataset.ov]; renderChartBody(); };
+      });
+      mountInteractiveChart(t);
     };
 
-    const tabsEl = $("chartTabs");
-    if (tabsEl) {
-      tabsEl.querySelectorAll("button").forEach((b) => {
-        b.onclick = () => {
-          state.chartTab = b.dataset.chart;
-          tabsEl.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b));
-          renderChartBody();
-        };
-      });
-      renderChartBody();
-    }
+    if (hasSeries) renderChartBody();
 
     const renderSubTab = () => {
       const box = $("stockSubContent");
@@ -2786,11 +2771,10 @@
     $("nextTickerBtn").onclick = () => stepTicker(1);
 
     const closeModal = () => {
-      $("imgModal").classList.add("hidden");
       closeInfoModal();
     };
-    $("modalCloseBtn").onclick = closeModal;
-    $("modalCloseBg").onclick = closeModal;
+    if ($("modalCloseBtn")) $("modalCloseBtn").onclick = closeModal;
+    if ($("modalCloseBg")) $("modalCloseBg").onclick = closeModal;
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
   }
 

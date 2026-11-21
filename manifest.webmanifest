@@ -1,12 +1,12 @@
 {
-  "name": "AlphaNexus · Market Intelligence",
-  "short_name": "AlphaNexus",
-  "description": "Institutional 39-stock quantitative intelligence: interactive candlestick charts, supply-chain value network, Smart Money flow, SEC filings & live regulatory watch.",
+  "name": "racenter",
+  "short_name": "racenter",
+  "description": "Quantitative 39-stock intelligence: interactive candlestick charts, supply-chain value network, Smart Money flow, SEC filings & live regulatory watch.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#080d17",
-  "theme_color": "#080d17",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "portrait-primary",
   "icons": [
     {

@@ -105,17 +105,12 @@ a:hover { text-decoration: underline; }
   min-width: 0;
 }
 .brand-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 11px;
-  background: radial-gradient(circle at 70% 25%, #0f2942 0%, #091122 65%, #050914 100%);
-  border: 1px solid rgba(56, 189, 248, 0.45);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.28), inset 0 0 8px rgba(56, 189, 248, 0.18);
 }
 .brand-title {
   font-weight: 800;
@@ -1194,7 +1189,7 @@ a:hover { text-decoration: underline; }
   .stock-price { font-size: 24px; }
 }
 
-/* Interactive Touch Name Links (Navigate by touching any ticker/company name) */
+/* Interactive Touch Name Links & Direct News Links */
 .touch-name-link {
   color: var(--accent-2);
   cursor: pointer;
@@ -1204,6 +1199,34 @@ a:hover { text-decoration: underline; }
 .touch-name-link:hover, .touch-name-link:active {
   color: #fde047;
   border-bottom-color: #fde047;
+}
+.news-edge-link {
+  color: var(--amber);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.rel-articles-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 6px;
+}
+.rel-article-link {
+  display: block;
+  padding: 7px 10px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 12.2px;
+  line-height: 1.4;
+  text-decoration: none;
+}
+.rel-article-link:hover {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: var(--amber);
+  text-decoration: none;
 }
 
 /* Closable Stock Tab & View Close Buttons */
