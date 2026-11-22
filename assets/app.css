@@ -2019,9 +2019,11 @@ body.no-scroll { overflow: hidden; }
   z-index: 140;
   min-width: 170px;
   max-width: min(290px, calc(100vw - 24px));
-  max-height: min(310px, 48vh);
+  max-height: min(300px, 46vh);
+  max-height: min(300px, 46dvh);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   background: var(--bg-elev);
   border: 1px solid var(--border-strong);
   border-radius: 10px;
@@ -2132,23 +2134,54 @@ body.no-scroll { overflow: hidden; }
 }
 .pro-stat {
   background: var(--bg-elev);
-  padding: 9px 11px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 3px;
+  min-width: 0;
 }
 .pro-stat-k {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   color: var(--muted);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 .pro-stat-v {
   font-size: 15px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--text);
+}
+.pro-legal-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.pro-legal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--text-soft);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.pro-legal-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-decoration: none;
 }
 .pro-scenario {
   border-top: 2px solid var(--border-strong);
@@ -2271,9 +2304,11 @@ body.no-scroll { overflow: hidden; }
   outline: none;
 }
 .search-palette-results {
-  max-height: min(360px, 52vh);
+  max-height: min(340px, 46vh);
+  max-height: min(340px, 44dvh);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 @media (max-width: 820px) {
   .search-overlay {

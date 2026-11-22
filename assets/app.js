@@ -2597,6 +2597,32 @@
     const dollarVol = (facts.last_close || 0) * (facts.last_volume || 0);
     const activeSignals = [...patterns.map((p) => ({ text: p.label, cls: p.direction === "bullish" ? "bull" : "bear" }))];
 
+    // Official Legal & SEC Document Links (top of stock page)
+    const filingsArr = Array.isArray(t.filings) ? t.filings : [];
+    const insArr = Array.isArray(t.insiders?.items) ? t.insiders.items : [];
+    const cikMatch = [...filingsArr, ...insArr]
+      .map((x) => String(x?.url || "").match(/\/edgar\/data\/(\d+)\//i))
+      .find(Boolean);
+    const cik = cikMatch ? cikMatch[1] : null;
+    const secBrowseUrl = cik
+      ? `https://www.sec.gov/edgar/browse/?CIK=${cik.padStart(10, "0")}`
+      : `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(t.symbol)}`;
+    const findFiling = (re) => filingsArr.find((f) => re.test(`${f.form || ""} ${f.extra?.form || ""} ${f.title || ""}`));
+    const latestAnnualQ = findFiling(/\b(10-K|10-Q|20-F|40-F)\b/i);
+    const latest8k = findFiling(/\b(8-K|6-K)\b/i);
+    const latestForm4 = insArr.find((x) => x && x.url);
+    const officialSite = t.fundamentals?.profile?.ir_website || t.fundamentals?.profile?.website || "";
+    const legalLinks = [
+      { label: "SEC EDGAR", url: secBrowseUrl },
+      latestAnnualQ?.url ? { label: (latestAnnualQ.title || "").match(/\b(10-K|10-Q|20-F|40-F)\b/i)?.[1]?.toUpperCase() || "10-Q / 10-K", url: secHtmlUrl(latestAnnualQ.url) } : null,
+      latest8k?.url ? { label: (latest8k.title || "").match(/\b(8-K|6-K)\b/i)?.[1]?.toUpperCase() || "8-K", url: secHtmlUrl(latest8k.url) } : null,
+      latestForm4?.url ? { label: "Form 4", url: secHtmlUrl(latestForm4.url) } : null,
+      /^https?:\/\//i.test(officialSite) ? { label: "Official Site", url: officialSite } : null,
+    ].filter(Boolean);
+    const legalBarHtml = legalLinks.length
+      ? `<div class="pro-legal-bar" aria-label="Official legal documents">${legalLinks.map((l) => `<a class="pro-legal-chip" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("")}</div>`
+      : "";
+
     $("stockContent").innerHTML = `
       <div class="stock-hero pro-hero">
         <div class="hero-top">
@@ -2622,11 +2648,11 @@
 
         <div class="pro-stat-strip">
           <div class="pro-stat">
-            <span class="pro-stat-k">Market Cap</span>
+            <span class="pro-stat-k">Mkt Cap</span>
             <span class="pro-stat-v">${fmtCap(val.market_cap)}</span>
           </div>
           <div class="pro-stat" ${tipAttr("rsi14")}>
-            <span class="pro-stat-k">RSI (14) <span class="tip-badge">?</span></span>
+            <span class="pro-stat-k">RSI 14 <span class="tip-badge">?</span></span>
             <span class="pro-stat-v ${ind.rsi14 < 30 ? "neg" : ind.rsi14 > 70 ? "pos" : ""}">${fmtNum(ind.rsi14, 1)}</span>
           </div>
           <div class="pro-stat" ${tipAttr("vol_ratio")}>
@@ -2634,7 +2660,7 @@
             <span class="pro-stat-v">${fmtNum(ind.vol_ratio_vs_20d, 2)}x</span>
           </div>
           <div class="pro-stat" ${tipAttr("rs_spy")}>
-            <span class="pro-stat-k">21d vs SPY <span class="tip-badge">?</span></span>
+            <span class="pro-stat-k">vs SPY <span class="tip-badge">?</span></span>
             <span class="pro-stat-v ${clsPct(rsSpy21)}">${fmtPct(rsSpy21, 1)}</span>
           </div>
           <div class="pro-stat" ${tipAttr("updown_vol")}>
@@ -2651,6 +2677,7 @@
         <div class="hero-tags" style="margin-top:10px">
           ${activeSignals.map((s) => `<span class="tag ${s.cls}">${esc(s.text)}</span>`).join("")}
         </div>` : ""}
+        ${legalBarHtml}
         ${rangeHtml}
       </div>
 
@@ -3342,7 +3369,8 @@
       searchOverlay.classList.remove("hidden");
       inp.value = "";
       renderSearchHits("");
-      requestAnimationFrame(() => inp.focus());
+      // Focus synchronously inside user gesture so iOS Safari opens the keyboard immediately
+      inp.focus();
       try { history.pushState({ ...currentHistoryState(), overlay: "search" }, "", location.href); } catch {}
     };
 
@@ -3559,9 +3587,11 @@
     const stockViewEl = $("view-stock");
     const stockDragZone = $("stockDragZone");
     if (stockViewEl) {
-      let sStartY = 0, sStartT = 0, sDy = 0, sDragging = false;
-      const beginSlide = (y) => {
+      let sStartX = 0, sStartY = 0, sStartT = 0, sDy = 0, sDragging = false, sLocked = false;
+      const beginSlide = (x, y) => {
         sDragging = true;
+        sLocked = false;
+        sStartX = x;
         sStartY = y;
         sStartT = performance.now();
         sDy = 0;
@@ -3577,6 +3607,7 @@
       const endSlide = () => {
         if (!sDragging) return;
         sDragging = false;
+        sLocked = false;
         const dt = Math.max(1, performance.now() - sStartT);
         const vel = sDy / dt;
         if (sDy > 72 || (sDy > 28 && vel > 0.48)) {
@@ -3598,21 +3629,34 @@
 
       stockViewEl.addEventListener("touchstart", (e) => {
         if (e.touches.length !== 1) return;
-        if (e.target.closest("#tvChart, .bubble-stage, .cselect-menu")) return;
+        const t = e.touches[0];
+        // Preserve iOS left-edge swipe-back & horizontal pill/chart/network gestures
+        if (t.clientX < 24) return;
+        if (e.target.closest("#tvChart, .bubble-stage, .cselect-menu, .quick-jump-bar, .pro-subtabs, .filter-bar-scroll")) return;
         const onHandle = Boolean(e.target.closest("#stockDragZone, .pro-hero"));
         if (window.scrollY <= 4 || onHandle) {
-          beginSlide(e.touches[0].clientY);
+          beginSlide(t.clientX, t.clientY);
         }
       }, { passive: true });
       stockViewEl.addEventListener("touchmove", (e) => {
         if (!sDragging || e.touches.length !== 1) return;
+        const rawDx = e.touches[0].clientX - sStartX;
         const rawDy = e.touches[0].clientY - sStartY;
-        if (rawDy <= 0 && sDy === 0) {
-          sDragging = false;
-          return;
+        if (!sLocked) {
+          if (Math.abs(rawDx) > Math.abs(rawDy) && Math.abs(rawDx) > 8) {
+            sDragging = false;
+            return;
+          }
+          if (rawDy <= 0) {
+            sDragging = false;
+            return;
+          }
+          if (rawDy > 8) sLocked = true;
         }
-        if (rawDy > 6) e.preventDefault();
-        moveSlide(e.touches[0].clientY);
+        if (sLocked) {
+          e.preventDefault();
+          moveSlide(e.touches[0].clientY);
+        }
       }, { passive: false });
       stockViewEl.addEventListener("touchend", endSlide, { passive: true });
       stockViewEl.addEventListener("touchcancel", endSlide, { passive: true });
@@ -3620,7 +3664,7 @@
       if (stockDragZone) {
         stockDragZone.addEventListener("pointerdown", (e) => {
           if (e.pointerType === "touch") return;
-          beginSlide(e.clientY);
+          beginSlide(e.clientX, e.clientY);
           try { stockDragZone.setPointerCapture(e.pointerId); } catch {}
         });
         stockDragZone.addEventListener("pointermove", (e) => {
@@ -3970,11 +4014,13 @@
     const bodyObs = new MutationObserver(() => scanAll());
     bodyObs.observe(document.body, { childList: true, subtree: true });
 
-    document.addEventListener("click", (e) => {
+    const onOutsideClose = (e) => {
       if (openMenu && !e.target.closest(".cselect-menu") && !e.target.closest(".cselect-wrap")) {
         closeAll();
       }
-    });
+    };
+    document.addEventListener("pointerdown", onOutsideClose, { passive: true });
+    document.addEventListener("click", onOutsideClose);
     window.addEventListener("scroll", () => { if (openMenu) closeAll(); }, { passive: true });
     window.addEventListener("resize", () => { if (openMenu) closeAll(); }, { passive: true });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && openMenu) closeAll(); });
