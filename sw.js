@@ -1,6 +1,6 @@
 // Network-first service worker: always fetches fresh hourly news & daily data, falls back to cache offline.
-const CACHE = "racenter-v12";
-const SHELL = ["./", "./index.html", "./assets/app.css", "./assets/app.js", "./manifest.webmanifest"];
+const CACHE = "racenter-v13";
+const SHELL = ["./", "./index.html", "./assets/app.css?v=13", "./assets/app.js?v=13", "./manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -15,10 +15,12 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
+  const sameOrigin = new URL(e.request.url).origin === location.origin;
+  const req = sameOrigin ? new Request(e.request, { cache: "no-cache" }) : e.request;
   e.respondWith(
-    fetch(e.request)
+    fetch(req)
       .then((res) => {
-        if (res.ok && new URL(e.request.url).origin === location.origin) {
+        if (res.ok && sameOrigin) {
           const copy = res.clone();
           caches.open(CACHE).then((c) => c.put(e.request, copy));
         }
