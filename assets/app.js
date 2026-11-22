@@ -2793,16 +2793,16 @@
         ? `<div class="muted" style="font-size:11.5px;margin-bottom:6px">Since ${esc(at.ipo_date)} · ATH <strong>$${fmtNum(at.ath)}</strong> (${esc(at.ath_date)}, <span class="${clsPct(at.pct_from_ath)}">${fmtPct(at.pct_from_ath, 1)}</span>) · ATL <strong>$${fmtNum(at.atl)}</strong></div>`
         : "";
       body.innerHTML = `
-        <div class="chart-toolbar">
-          <div class="chart-tabs" id="rangeBar">
-            ${ranges.map((r) => `<button class="chip ${state.chartRange === r ? "active" : ""}" data-range="${r}">${r}</button>`).join("")}
-            <button class="chip" id="resetChartFitBtn" title="Reset zoom">⟲ Fit</button>
+        <div class="tv-toolbar-pro">
+          <div class="tv-range-strip" id="rangeBar">
+            ${ranges.map((r) => `<button type="button" class="tv-rbtn ${state.chartRange === r ? "active" : ""}" data-range="${r}">${r}</button>`).join("")}
+            <button type="button" class="tv-rbtn tv-fit-btn" id="resetChartFitBtn" title="Reset zoom" aria-label="Reset zoom">⟲</button>
           </div>
-          <div class="chart-tabs" id="overlayBar">
-            <button class="chip ${ov.sma20 ? "active" : ""}" data-ov="sma20">SMA20</button>
-            <button class="chip ${ov.sma50 ? "active" : ""}" data-ov="sma50">SMA50</button>
-            <button class="chip ${ov.sma200 ? "active" : ""}" data-ov="sma200">SMA200</button>
-            <button class="chip ${ov.sr ? "active" : ""}" data-ov="sr">S/R</button>
+          <div class="tv-ind-strip" id="overlayBar">
+            <button type="button" class="tv-ibtn ${ov.sma20 ? "active" : ""}" data-ov="sma20">MA20</button>
+            <button type="button" class="tv-ibtn ${ov.sma50 ? "active" : ""}" data-ov="sma50">MA50</button>
+            <button type="button" class="tv-ibtn ${ov.sma200 ? "active" : ""}" data-ov="sma200">MA200</button>
+            <button type="button" class="tv-ibtn ${ov.sr ? "active" : ""}" data-ov="sr">S/R</button>
           </div>
         </div>
         ${athBanner}
