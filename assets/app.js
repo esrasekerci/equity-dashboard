@@ -2637,6 +2637,10 @@
             <span class="pro-stat-k">21d vs SPY <span class="tip-badge">?</span></span>
             <span class="pro-stat-v ${clsPct(rsSpy21)}">${fmtPct(rsSpy21, 1)}</span>
           </div>
+          <div class="pro-stat" ${tipAttr("updown_vol")}>
+            <span class="pro-stat-k">20d U/D <span class="tip-badge">?</span></span>
+            <span class="pro-stat-v ${ind.updown_volume_20d != null ? (ind.updown_volume_20d >= 1.2 ? "pos" : ind.updown_volume_20d <= 0.8 ? "neg" : "") : ""}">${fmtNum(ind.updown_volume_20d, 2)}x</span>
+          </div>
           <div class="pro-stat" ${notableScoreTipAttr(t)}>
             <span class="pro-stat-k">Score <span class="tip-badge">?</span></span>
             <span class="pro-stat-v">${fmtNum(t.notable?.score, 0)}<span class="muted">/100</span></span>
@@ -3292,22 +3296,35 @@
 
     const inp = $("quickSearch");
     const dd = $("searchDropdown");
+    const searchOverlay = $("searchOverlay");
+    const openSearchBtn = $("openSearchBtn");
+    const searchBackdrop = $("searchOverlayBackdrop");
     let searchActiveIdx = -1;
 
+    const closeSearchOverlay = () => {
+      if (!searchOverlay) return;
+      searchOverlay.classList.add("hidden");
+      inp.value = "";
+      inp.blur();
+    };
+
     const renderSearchHits = (q) => {
-      if (!state.summary) { dd.classList.add("hidden"); return; }
+      if (!state.summary) { dd.innerHTML = ""; return; }
       const tickers = state.summary.tickers || [];
       let hits;
       let header = "";
       if (!q) {
-        hits = [...tickers].sort((a, b) => (b.notable_score || 0) - (a.notable_score || 0)).slice(0, 6);
+        hits = [...tickers].sort((a, b) => (b.notable_score || 0) - (a.notable_score || 0)).slice(0, 7);
         header = `<div class="search-dd-hdr">Top Active Movers</div>`;
       } else {
         hits = tickers.filter((t) =>
           t.symbol.toLowerCase().includes(q) || (t.name || "").toLowerCase().includes(q)
-        ).slice(0, 8);
+        ).slice(0, 10);
       }
-      if (!hits.length) { dd.classList.add("hidden"); return; }
+      if (!hits.length) {
+        dd.innerHTML = `<div class="muted" style="padding:14px">No matching tickers.</div>`;
+        return;
+      }
       searchActiveIdx = -1;
       dd.innerHTML = header + hits.map((h) => `
         <div class="search-item" data-sym="${esc(h.symbol)}">
@@ -3315,13 +3332,26 @@
           <span class="price-pill ${clsPct(h.change_1d_pct)}" style="font-size:12px">${fmtPct(h.change_1d_pct, 1)}</span>
         </div>
       `).join("");
-      dd.classList.remove("hidden");
       dd.querySelectorAll(".search-item").forEach((el) => {
-        el.onclick = () => { inp.value = ""; dd.classList.add("hidden"); inp.blur(); openStock(el.dataset.sym); };
+        el.onclick = () => { closeSearchOverlay(); openStock(el.dataset.sym); };
       });
     };
 
-    inp.addEventListener("focus", () => renderSearchHits(inp.value.trim().toLowerCase()));
+    const openSearchOverlay = () => {
+      if (!searchOverlay) return;
+      searchOverlay.classList.remove("hidden");
+      inp.value = "";
+      renderSearchHits("");
+      requestAnimationFrame(() => inp.focus());
+      try { history.pushState({ ...currentHistoryState(), overlay: "search" }, "", location.href); } catch {}
+    };
+
+    openSearchBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openSearchOverlay();
+    });
+    searchBackdrop?.addEventListener("click", closeSearchOverlay);
+
     inp.addEventListener("input", () => renderSearchHits(inp.value.trim().toLowerCase()));
     inp.addEventListener("keydown", (e) => {
       const items = [...dd.querySelectorAll(".search-item")];
@@ -3339,12 +3369,8 @@
         const pick = (searchActiveIdx >= 0 ? items[searchActiveIdx] : items[0]);
         if (pick) { e.preventDefault(); pick.click(); }
       } else if (e.key === "Escape") {
-        dd.classList.add("hidden");
-        inp.blur();
+        closeSearchOverlay();
       }
-    });
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest(".search-wrap")) dd.classList.add("hidden");
     });
 
     // Mobile Bottom Navigation & Swipe-Down Slide-Up More Sheet
@@ -3465,6 +3491,9 @@
       state.isPopping = true;
       try {
         // Close open overlays first
+        if (searchOverlay && !searchOverlay.classList.contains("hidden")) {
+          closeSearchOverlay();
+        }
         if (moreSheet && !moreSheet.classList.contains("hidden")) {
           moreSheet.classList.add("hidden");
         }
@@ -3615,17 +3644,16 @@
       const inInput = tag === "input" || tag === "textarea" || tag === "select";
       if (e.key === "/" && !inInput && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
-        inp.focus();
-        inp.select();
+        openSearchOverlay();
         return;
       }
       if (e.key === "Escape") {
-        if (moreSheet && !moreSheet.classList.contains("hidden")) {
+        if (searchOverlay && !searchOverlay.classList.contains("hidden")) {
+          closeSearchOverlay();
+        } else if (moreSheet && !moreSheet.classList.contains("hidden")) {
           closeMoreSheet();
         } else if ($("infoModal") && !$("infoModal").classList.contains("hidden")) {
           closeModal();
-        } else if (!dd.classList.contains("hidden")) {
-          dd.classList.add("hidden");
         } else if (state.view === "stock") {
           closeStockTab();
         }

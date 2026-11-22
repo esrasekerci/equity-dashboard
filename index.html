@@ -16,7 +16,7 @@
   <meta property="og:title" content="racenter" />
   <meta property="og:description" content="Live 100-stock quantitative intelligence, Gold &amp; Silver benchmarks, interactive charts, supply-chain value network, Institutional Flow, official legal authorities &amp; SEC filings." />
   <title>racenter</title>
-  <link rel="stylesheet" href="assets/app.css?v=26" />
+  <link rel="stylesheet" href="assets/app.css?v=27" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -32,14 +32,10 @@
 
         <div class="header-actions">
           <select id="dateSelect" class="select-control hidden" aria-label="Report date"></select>
+          <button type="button" id="openSearchBtn" class="icon-btn search-trigger-btn" aria-label="Search" title="Search (/)">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
         </div>
-      </div>
-
-      <div class="search-wrap">
-        <span class="search-icon" aria-hidden="true">⌕</span>
-        <input id="quickSearch" type="search" placeholder="" aria-label="Search ticker or company" autocomplete="off" />
-        <kbd class="search-kbd" aria-hidden="true">/</kbd>
-        <div id="searchDropdown" class="search-dropdown hidden"></div>
       </div>
     </div>
 
@@ -381,11 +377,23 @@
     </div>
   </div>
 
+  <!-- Minimalist Spotlight Search Overlay -->
+  <div id="searchOverlay" class="search-overlay hidden" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="search-overlay-backdrop" id="searchOverlayBackdrop"></div>
+    <div class="search-palette">
+      <div class="search-palette-input-row">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted);flex-shrink:0"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="quickSearch" type="search" placeholder="" aria-label="Search ticker or company" autocomplete="off" />
+      </div>
+      <div id="searchDropdown" class="search-palette-results"></div>
+    </div>
+  </div>
+
   <!-- Minimalist Back-to-Top Button -->
   <button type="button" id="scrollTopBtn" class="scroll-top-btn hidden" aria-label="Back to top" title="Back to top">
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
 
-  <script src="assets/app.js?v=26"></script>
+  <script src="assets/app.js?v=27"></script>
 </body>
 </html>
