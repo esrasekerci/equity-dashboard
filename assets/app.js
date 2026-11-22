@@ -579,6 +579,7 @@
       }
       $("marketCloseBadge").textContent = updTxt;
       $("navTickerCount").textContent = String(state.summary.n_tickers || 0);
+      if ($("viewAllScreenerBtn")) $("viewAllScreenerBtn").textContent = `View all ${state.summary.n_tickers || 0} →`;
       renderOverview();
       renderScreener();
       renderNetworkView();
@@ -1868,8 +1869,8 @@
         const isPos = x.signedUsd >= 0;
         const pct = Math.min(100, (Math.abs(x.signedUsd) / maxSecAbs) * 100);
         return `
-          <div class="sm-bar-row" data-sector-open="${esc(x.sector)}">
-            <span class="sm-bar-sym" style="width:110px;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(fmtSector(x.sector))}</span>
+          <div class="sm-bar-row sec-row" data-sector-open="${esc(x.sector)}">
+            <span class="sm-bar-sym sec-sym">${esc(fmtSector(x.sector))}</span>
             <div class="sm-bar-track">
               <div class="sm-bar-fill ${isPos ? "up" : "dn"}" style="width:${pct.toFixed(1)}%"></div>
             </div>
