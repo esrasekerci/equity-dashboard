@@ -2606,7 +2606,7 @@
     const dollarVol = (facts.last_close || 0) * (facts.last_volume || 0);
     const activeSignals = [...patterns.map((p) => ({ text: p.label, cls: p.direction === "bullish" ? "bull" : "bear" }))];
 
-    // Single direct link to latest official financial statement (10-Q / 10-K / 20-F bilanço)
+    // Official Legal & SEC Document Links (top of stock page)
     const filingsArr = Array.isArray(t.filings) ? t.filings : [];
     const insArr = Array.isArray(t.insiders?.items) ? t.insiders.items : [];
     const cikMatch = [...filingsArr, ...insArr]
@@ -2617,16 +2617,20 @@
       ? `https://www.sec.gov/edgar/browse/?CIK=${cik.padStart(10, "0")}`
       : `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(t.symbol)}`;
     const findFiling = (re) => filingsArr.find((f) => re.test(`${f.form || ""} ${f.extra?.form || ""} ${f.title || ""}`));
-    const latestReport = findFiling(/\b(10-Q|10-K|20-F|40-F)\b/i) || findFiling(/\b(8-K|6-K)\b/i);
-    const reportForm = latestReport
-      ? ((`${latestReport.form || ""} ${latestReport.extra?.form || ""} ${latestReport.title || ""}`).match(/\b(10-Q|10-K|20-F|40-F|8-K|6-K)\b/i)?.[1]?.toUpperCase() || "Filing")
-      : null;
-    const reportDate = latestReport?.published ? String(latestReport.published).slice(0, 10) : "";
-    const balanceUrl = latestReport?.url ? secHtmlUrl(latestReport.url) : secBrowseUrl;
-    const balanceLabel = reportDate
-      ? `Latest Announcement · ${reportDate}`
-      : "Latest Announcement";
-    const legalBarHtml = `<div class="pro-legal-bar"><a class="pro-legal-chip" href="${esc(balanceUrl)}" target="_blank" rel="noopener">${esc(balanceLabel)} ↗</a></div>`;
+    const latestAnnualQ = findFiling(/\b(10-K|10-Q|20-F|40-F)\b/i);
+    const latest8k = findFiling(/\b(8-K|6-K)\b/i);
+    const latestForm4 = insArr.find((x) => x && x.url);
+    const officialSite = t.fundamentals?.profile?.ir_website || t.fundamentals?.profile?.website || "";
+    const legalLinks = [
+      { label: "SEC EDGAR", url: secBrowseUrl },
+      latestAnnualQ?.url ? { label: (latestAnnualQ.title || "").match(/\b(10-K|10-Q|20-F|40-F)\b/i)?.[1]?.toUpperCase() || "10-Q / 10-K", url: secHtmlUrl(latestAnnualQ.url) } : null,
+      latest8k?.url ? { label: (latest8k.title || "").match(/\b(8-K|6-K)\b/i)?.[1]?.toUpperCase() || "8-K", url: secHtmlUrl(latest8k.url) } : null,
+      latestForm4?.url ? { label: "Form 4", url: secHtmlUrl(latestForm4.url) } : null,
+      /^https?:\/\//i.test(officialSite) ? { label: "Official Site", url: officialSite } : null,
+    ].filter(Boolean);
+    const legalBarHtml = legalLinks.length
+      ? `<div class="pro-legal-bar" aria-label="Official legal documents">${legalLinks.map((l) => `<a class="pro-legal-chip" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("")}</div>`
+      : "";
 
     $("stockContent").innerHTML = `
       <div class="stock-hero pro-hero">
