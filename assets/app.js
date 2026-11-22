@@ -674,35 +674,31 @@
     ];
     $("alertsSection").innerHTML = alertsHtml.map((c) => {
       const extra = Math.max(0, c.items.length - INITIAL_SHOW);
-      const moreBtn = extra > 0
-        ? `<button type="button" class="ticker-pill alert-more-btn" data-more="${extra}" aria-expanded="false">+${extra} more ▾</button>`
-        : "";
+      const countBadge = extra > 0
+        ? `<span class="alert-count alert-count-toggle" data-count="${c.count}" title="Click to show all ${c.count}">${c.count} ▾</span>`
+        : `<span class="alert-count">${c.count}</span>`;
       return `
-      <div class="alert-card${extra > 0 ? " has-more" : ""}">
-        <div class="alert-title"${extra > 0 ? ' role="button" tabindex="0" style="cursor:pointer"' : ""}><span>${esc(c.title)}</span><span class="alert-count">${c.count}</span></div>
-        <div class="alert-pills">${c.items.length ? c.items.join("") + moreBtn : `<span class="muted">${c.empty}</span>`}</div>
+      <div class="alert-card${extra > 0 ? " has-more" : ""}" data-expanded="false">
+        <div class="alert-title"${extra > 0 ? ' role="button" tabindex="0" style="cursor:pointer"' : ""}><span>${esc(c.title)}</span>${countBadge}</div>
+        <div class="alert-pills">${c.items.length ? c.items.join("") : `<span class="muted">${c.empty}</span>`}</div>
       </div>
     `;
     }).join("");
     const toggleAlertCard = (card) => {
-      const btn = card && card.querySelector(".alert-more-btn");
-      if (!btn) return;
-      const expanded = btn.getAttribute("aria-expanded") === "true";
+      if (!card || !card.classList.contains("has-more")) return;
+      const expanded = card.dataset.expanded === "true";
       const nextExpanded = !expanded;
+      card.dataset.expanded = String(nextExpanded);
       card.querySelectorAll(".alert-extra-pill").forEach((p) => {
         p.classList.toggle("hidden", !nextExpanded);
         p.style.display = nextExpanded ? "inline-flex" : "none";
       });
-      btn.setAttribute("aria-expanded", String(nextExpanded));
-      btn.textContent = nextExpanded ? "Show less ▴" : `+${btn.dataset.more} more ▾`;
+      const badge = card.querySelector(".alert-count-toggle");
+      if (badge) {
+        badge.textContent = `${badge.dataset.count} ${nextExpanded ? "▴" : "▾"}`;
+      }
     };
     $("alertsSection").onclick = (ev) => {
-      const moreBtn = ev.target.closest(".alert-more-btn");
-      if (moreBtn) {
-        ev.preventDefault();
-        toggleAlertCard(moreBtn.closest(".alert-card"));
-        return;
-      }
       const titleEl = ev.target.closest(".alert-card.has-more .alert-title");
       if (titleEl) {
         toggleAlertCard(titleEl.closest(".alert-card"));

@@ -323,14 +323,17 @@ a:hover { text-decoration: underline; }
 }
 .ticker-pill:hover { border-color: var(--accent); transform: translateY(-1px); }
 .alert-extra-pill.hidden { display: none; }
-.alert-more-btn {
+.alert-count-toggle {
   color: var(--accent);
-  border-color: rgba(240, 185, 11, 0.35);
+  border: 1px solid rgba(240, 185, 11, 0.35);
   background: rgba(240, 185, 11, 0.08);
   font-weight: 700;
-  font-family: inherit;
+  transition: background 0.12s ease, border-color 0.12s ease;
 }
-.alert-more-btn:hover { background: rgba(240, 185, 11, 0.16); }
+.alert-card.has-more .alert-title:hover .alert-count-toggle {
+  background: rgba(240, 185, 11, 0.16);
+  border-color: var(--accent);
+}
 
 /* Heatmap */
 .heatmap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 9px; }
