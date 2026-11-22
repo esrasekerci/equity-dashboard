@@ -221,16 +221,9 @@
     const stockTab = $("stockNavTab");
     if (stockTab && state.activeTicker) {
       stockTab.classList.remove("hidden");
-      stockTab.innerHTML = `<span>${esc(state.activeTicker)}</span><span class="tab-close-x" data-close-stock-tab="1" title="Close ${esc(state.activeTicker)} tab">✕</span>`;
-      const closeX = stockTab.querySelector("[data-close-stock-tab]");
-      if (closeX) {
-        closeX.onclick = (e) => {
-          e.stopPropagation();
-          closeStockTab();
-        };
-      }
+      stockTab.innerHTML = `<span>${esc(state.activeTicker)}</span>`;
       if ($("backToOverview")) {
-        $("backToOverview").textContent = `✕ Close ${state.activeTicker}`;
+        $("backToOverview").textContent = "← Back";
       }
     }
     if (!fromHistory) {
@@ -369,7 +362,7 @@
             <strong class="${clsPct(hmSec.avg_ret_1d)}">${fmtPct(hmSec.avg_ret_1d, 2)}</strong>
           </div>
         </div>
-        <button class="modal-close-inline" id="closeInfoModalBtn" aria-label="Close">✕</button>
+        <button class="modal-close-inline hidden" id="closeInfoModalBtn" aria-label="Close"></button>
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
@@ -436,7 +429,7 @@
           <h2 style="font-size:19px">Mathematical Formulations &amp; Score Architecture</h2>
           <div class="muted">Every score on the dashboard uses deterministic, peer-reviewed quantitative finance equations (zero black-box AI). Hover or tap any score badge on any stock for its live plugged-in numbers.</div>
         </div>
-        <button class="modal-close-inline" id="closeInfoModalBtn" aria-label="Close">✕</button>
+        <button class="modal-close-inline hidden" id="closeInfoModalBtn" aria-label="Close"></button>
       </div>
 
       <div class="math-guide-list">
@@ -518,7 +511,7 @@
           <h2 style="font-size:19px">Where to Access &amp; Install the Equity Research App</h2>
           <div class="muted">Works as a standalone full-screen application on iPhone, iPad, Android, macOS, and Windows.</div>
         </div>
-        <button class="modal-close-inline" id="closeInfoModalBtn" aria-label="Close">✕</button>
+        <button class="modal-close-inline hidden" id="closeInfoModalBtn" aria-label="Close"></button>
       </div>
 
       <div class="math-guide-list">
@@ -2601,57 +2594,81 @@
 
     const rsSpy21 = rs.vs_spy?.excess_21d != null ? rs.vs_spy.excess_21d * 100 : rs.vs_spy?.["21d"];
     const rsSec21 = rs.vs_sector?.excess_21d != null ? rs.vs_sector.excess_21d * 100 : rs.vs_sector?.["21d"];
-
-    const quantMathPanelHtml = `
-      <div class="panel" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-        <div>
-          <strong style="font-size:14px">How are ${esc(t.symbol)}'s scores (${fmtNum(t.notable?.score, 1)}/100 Notable · ${fmtNum(judg.score, 2)} Technical) calculated?</strong>
-          <div class="muted">Inspect the exact mathematical formulations &amp; live step-by-step numbers for ${esc(t.symbol)} on the dedicated Formulas page.</div>
-        </div>
-        <button class="btn-secondary compact-hdr-btn" id="openFullMathModalBtn">See ${esc(t.symbol)} Calculation on Formulas Page →</button>
-      </div>
-    `;
+    const dollarVol = (facts.last_close || 0) * (facts.last_volume || 0);
+    const activeSignals = [...patterns.map((p) => ({ text: p.label, cls: p.direction === "bullish" ? "bull" : "bear" }))];
 
     $("stockContent").innerHTML = `
-      <div class="stock-hero">
+      <div class="stock-hero pro-hero">
         <div class="hero-top">
-          <div>
-            <h1 class="stock-title">
-              ${esc(t.symbol)}
-              ${t.is_core ? '<span class="tag amber">★ Core</span>' : ""}
-              <span class="score-badge" ${notableScoreTipAttr(t)}>Score ${fmtNum(t.notable?.score, 0)} <span class="tip-badge">?</span></span>
-            </h1>
-            <div class="stock-company">
-              ${esc(t.name)} ·
-              <span class="tag sector-link" data-sector="${esc(t.sector)}">${esc(fmtSector(t.sector))} (${esc(t.sector_etf || "")}) →</span>
+          <div style="min-width:0">
+            <div class="pro-hero-kicker">
+              <span class="pro-sector-link sector-link" data-sector="${esc(t.sector)}">${esc(fmtSector(t.sector))}</span>
+              ${t.sector_etf ? `<span class="muted">· ${esc(t.sector_etf)}</span>` : ""}
+              ${cal.earnings_dates?.[0] ? `<span class="muted">· Earnings ${esc(cal.earnings_dates[0])}</span>` : ""}
+            </div>
+            <div class="pro-title-row">
+              <h1 class="stock-title">${esc(t.symbol)}</h1>
+              <span class="pro-company-name">${esc(t.name)}</span>
             </div>
           </div>
           <div class="stock-price-box">
             <div class="stock-price">$${fmtNum(facts.last_close)}</div>
-            <div style="margin-top:4px"><span class="price-pill ${clsPct(facts.change_1d_pct)}">${fmtPct(facts.change_1d_pct)}</span></div>
-            <div class="muted" style="margin-top:4px">Close ${esc(facts.last_bar || "")}</div>
+            <div class="pro-price-sub">
+              <span class="price-pill ${clsPct(facts.change_1d_pct)}">${fmtPct(facts.change_1d_pct)}</span>
+              <span class="muted">${esc(facts.last_bar || "")}</span>
+            </div>
           </div>
         </div>
 
-        <div class="hero-tags">
-          ${(t.notable?.why || []).map((w) => `<span class="tag">${esc(w)}</span>`).join("")}
-          ${patterns.map((p) => `<span class="tag ${p.direction === "bullish" ? "bull" : "bear"}">${esc(p.label)}</span>`).join("")}
+        <div class="pro-stat-strip">
+          <div class="pro-stat">
+            <span class="pro-stat-k">Market Cap</span>
+            <span class="pro-stat-v">${fmtCap(val.market_cap)}</span>
+          </div>
+          <div class="pro-stat" ${tipAttr("rsi14")}>
+            <span class="pro-stat-k">RSI (14) <span class="tip-badge">?</span></span>
+            <span class="pro-stat-v ${ind.rsi14 < 30 ? "neg" : ind.rsi14 > 70 ? "pos" : ""}">${fmtNum(ind.rsi14, 1)}</span>
+          </div>
+          <div class="pro-stat" ${tipAttr("vol_ratio")}>
+            <span class="pro-stat-k">Rel Vol <span class="tip-badge">?</span></span>
+            <span class="pro-stat-v">${fmtNum(ind.vol_ratio_vs_20d, 2)}x</span>
+          </div>
+          <div class="pro-stat" ${tipAttr("rs_spy")}>
+            <span class="pro-stat-k">21d vs SPY <span class="tip-badge">?</span></span>
+            <span class="pro-stat-v ${clsPct(rsSpy21)}">${fmtPct(rsSpy21, 1)}</span>
+          </div>
+          <div class="pro-stat" ${notableScoreTipAttr(t)}>
+            <span class="pro-stat-k">Score <span class="tip-badge">?</span></span>
+            <span class="pro-stat-v">${fmtNum(t.notable?.score, 0)}<span class="muted">/100</span></span>
+          </div>
         </div>
+
+        ${activeSignals.length ? `
+        <div class="hero-tags" style="margin-top:10px">
+          ${activeSignals.map((s) => `<span class="tag ${s.cls}">${esc(s.text)}</span>`).join("")}
+        </div>` : ""}
         ${rangeHtml}
       </div>
 
+      <div class="quick-jump-bar" id="stockJumpBar" aria-label="Jump to stock section">
+        <button type="button" class="jump-pill" data-jump="stk-chart">Chart</button>
+        <button type="button" class="jump-pill" data-jump="stk-scenarios">Scenarios</button>
+        <button type="button" class="jump-pill" data-jump="stk-tearsheet">Levels &amp; Metrics</button>
+        <button type="button" class="jump-pill" data-jump="stk-network">Network</button>
+        <button type="button" class="jump-pill" data-jump="stk-intel">News &amp; Filings</button>
+      </div>
+
       ${hasSeries ? `
-      <div class="chart-card">
+      <div class="chart-card pro-card" id="stk-chart">
         <div id="chartBody"></div>
       </div>` : ""}
 
-      <div id="stockBubbleMount"></div>
-
-      <div class="section-header">
+      <div class="section-header" id="stk-scenarios">
         <div>
-          <h2 ${techScenarioTipAttr(judg.score, judg.components, scByName)}>Rule-Based 20-Day Scenarios <span class="tip-badge">?</span></h2>
-          <p class="section-sub" ${techScenarioTipAttr(judg.score, judg.components, scByName)}>Heuristic model (not advice) · Technical score ${fmtNum(judg.score, 2)} <span class="tip-badge">?</span></p>
+          <h2 ${techScenarioTipAttr(judg.score, judg.components, scByName)}>20-Day Scenario Matrix <span class="tip-badge">?</span></h2>
+          <p class="section-sub">Technical composite ${fmtNum(judg.score, 2)}</p>
         </div>
+        <button class="link-btn" id="openFullMathModalBtn">Methodology →</button>
       </div>
       <div class="prob-bar wide">
         <div class="prob-bull" style="width:${scByName.bullish || 0}%"></div>
@@ -2660,64 +2677,68 @@
       </div>
       <div class="scenarios-grid">
         ${(judg.scenarios || []).map((sc) => `
-          <div class="scenario-card ${esc(sc.name)}">
+          <div class="scenario-card pro-scenario ${esc(sc.name)}">
             <div class="scenario-head">
-              <strong style="text-transform:capitalize">${esc(sc.name)} Case</strong>
+              <strong style="text-transform:capitalize">${esc(sc.name)}</strong>
               <span class="scenario-prob ${sc.name === "bullish" ? "pos" : sc.name === "bearish" ? "neg" : ""}">${sc.probability_pct}%</span>
             </div>
-            <div class="scenario-row"><strong>Trigger:</strong> ${esc(sc.trigger?.condition || "—")}</div>
-            <div class="scenario-row"><strong>Target:</strong> $${fmtNum(sc.target_zone?.low)} – $${fmtNum(sc.target_zone?.high)}</div>
-            <div class="scenario-row"><strong>Invalidation:</strong> ${esc(sc.invalidation?.condition || "—")}</div>
+            <div class="scenario-row"><span class="muted">Trigger</span><div>${esc(sc.trigger?.condition || "—")}</div></div>
+            <div class="scenario-row"><span class="muted">Target Zone</span><div><strong>$${fmtNum(sc.target_zone?.low)} – $${fmtNum(sc.target_zone?.high)}</strong></div></div>
+            <div class="scenario-row"><span class="muted">Invalidation</span><div>${esc(sc.invalidation?.condition || "—")}</div></div>
           </div>
         `).join("")}
       </div>
 
-      <div class="two-col">
-        <div class="panel">
+      <div class="two-col" id="stk-tearsheet">
+        <div class="panel pro-panel">
           <h3 ${tipAttr("sr_levels")}>Support &amp; Resistance Ladder <span class="tip-badge">?</span></h3>
           <div class="level-list">
             ${resLevels.map(renderLevelRow).join("")}
-            <div class="level-current">Current Price · $${fmtNum(facts.last_close)}</div>
+            <div class="level-current">Last Close · $${fmtNum(facts.last_close)}</div>
             ${supLevels.map(renderLevelRow).join("")}
           </div>
         </div>
 
-        <div class="panel">
-          <h3>Indicators &amp; Fundamentals</h3>
-          <div class="kv-grid">
-            <div class="kv" ${tipAttr("rsi14")}><div class="kv-k">RSI (14) ?</div><div class="kv-v">${fmtNum(ind.rsi14, 1)} <span class="muted">${esc(ind.rsi_zone || "")}</span></div></div>
-            <div class="kv" ${tipAttr("sma")}><div class="kv-k">SMA 20/50/200 ?</div><div class="kv-v">${fmtNum(ind.sma20, 0)} / ${fmtNum(ind.sma50, 0)} / ${fmtNum(ind.sma200, 0)}</div></div>
-            <div class="kv" ${tipAttr("rs_spy")}><div class="kv-k">vs SPY (21d) ?</div><div class="kv-v ${clsPct(rsSpy21)}">${fmtPct(rsSpy21, 1)}</div></div>
-            <div class="kv" ${tipAttr("rs_sector")}><div class="kv-k">vs ${esc(t.sector_etf || "Sector")} (21d) ?</div><div class="kv-v ${clsPct(rsSec21)}">${fmtPct(rsSec21, 1)}</div></div>
-            <div class="kv"><div class="kv-k">Market Cap</div><div class="kv-v">${fmtCap(val.market_cap)}</div></div>
-            <div class="kv" ${tipAttr("pe")}><div class="kv-k">P/E (TTM / Fwd) ?</div><div class="kv-v">${fmtNum(val.trailing_pe, 1)} / ${fmtNum(val.forward_pe, 1)}</div></div>
-            <div class="kv" ${tipAttr("fcf")}><div class="kv-k">FCF (TTM) ?</div><div class="kv-v">${fmtCap(der.free_cash_flow_ttm)}</div></div>
-            <div class="kv"><div class="kv-k">Cash / Debt</div><div class="kv-v">${fmtCap(der.cash)} / ${fmtCap(der.total_debt)}</div></div>
-            <div class="kv" ${tipAttr("target_upside")}><div class="kv-k">Analyst Target Δ ?</div><div class="kv-v ${clsPct(der.target_mean_vs_price_pct)}">${fmtPct(der.target_mean_vs_price_pct, 1)}</div></div>
-            <div class="kv" ${tipAttr("vol_ratio")}><div class="kv-k">Vol vs 20d Avg ?</div><div class="kv-v">${fmtNum(ind.vol_ratio_vs_20d, 2)}x <span class="muted">(${fmtCap((facts.last_close || 0) * (facts.last_volume || 0))})</span></div></div>
-            <div class="kv" ${tipAttr("updown_vol")}><div class="kv-k">Up/Dn Vol (20d) ?</div><div class="kv-v ${ind.updown_volume_20d != null ? (ind.updown_volume_20d >= 1.2 ? "pos" : ind.updown_volume_20d <= 0.8 ? "neg" : "") : ""}">${fmtNum(ind.updown_volume_20d, 2)}</div></div>
-            <div class="kv" ${tipAttr("short_float")}><div class="kv-k">Short % Float ?</div><div class="kv-v">${val.short_pct_float != null ? `${fmtNum(val.short_pct_float * 100, 1)}%` : "—"}</div></div>
-            <div class="kv"><div class="kv-k">Earnings</div><div class="kv-v">${esc((cal.earnings_dates || [])[0] || "—")}</div></div>
+        <div class="panel pro-panel">
+          <h3>Key Metrics &amp; Fundamentals</h3>
+          <div class="pro-kv-table">
+            <div class="pro-kv-row" ${tipAttr("sma")}><span class="pro-kv-k">SMA 20 / 50 / 200 <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtNum(ind.sma20, 0)} / ${fmtNum(ind.sma50, 0)} / ${fmtNum(ind.sma200, 0)}</span></div>
+            <div class="pro-kv-row" ${tipAttr("rs_sector")}><span class="pro-kv-k">21d vs ${esc(t.sector_etf || "Sector")} <span class="tip-badge">?</span></span><span class="pro-kv-v ${clsPct(rsSec21)}">${fmtPct(rsSec21, 1)}</span></div>
+            <div class="pro-kv-row" ${tipAttr("pe")}><span class="pro-kv-k">P/E (TTM / Fwd) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtNum(val.trailing_pe, 1)} / ${fmtNum(val.forward_pe, 1)}</span></div>
+            <div class="pro-kv-row" ${tipAttr("fcf")}><span class="pro-kv-k">Free Cash Flow (TTM) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtCap(der.free_cash_flow_ttm)}</span></div>
+            <div class="pro-kv-row"><span class="pro-kv-k">Cash / Total Debt</span><span class="pro-kv-v">${fmtCap(der.cash)} / ${fmtCap(der.total_debt)}</span></div>
+            <div class="pro-kv-row" ${tipAttr("target_upside")}><span class="pro-kv-k">Analyst Target Implied <span class="tip-badge">?</span></span><span class="pro-kv-v ${clsPct(der.target_mean_vs_price_pct)}">${fmtPct(der.target_mean_vs_price_pct, 1)}</span></div>
+            <div class="pro-kv-row" ${tipAttr("vol_ratio")}><span class="pro-kv-k">Session Dollar Turnover <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtCap(dollarVol)}</span></div>
+            <div class="pro-kv-row" ${tipAttr("updown_vol")}><span class="pro-kv-k">20d Up/Down Volume <span class="tip-badge">?</span></span><span class="pro-kv-v ${ind.updown_volume_20d != null ? (ind.updown_volume_20d >= 1.2 ? "pos" : ind.updown_volume_20d <= 0.8 ? "neg" : "") : ""}">${fmtNum(ind.updown_volume_20d, 2)}x</span></div>
+            <div class="pro-kv-row" ${tipAttr("short_float")}><span class="pro-kv-k">Short Interest (% Float) <span class="tip-badge">?</span></span><span class="pro-kv-v">${val.short_pct_float != null ? `${fmtNum(val.short_pct_float * 100, 1)}%` : "—"}</span></div>
+            <div class="pro-kv-row"><span class="pro-kv-k">Next Earnings</span><span class="pro-kv-v">${esc((cal.earnings_dates || [])[0] || "—")}</span></div>
           </div>
         </div>
       </div>
 
-      ${quantMathPanelHtml}
+      <div id="stk-network">
+        <div id="stockBubbleMount"></div>
+      </div>
 
-      <div class="panel">
-        <div class="filter-bar-scroll" style="margin:0 -15px 12px;padding:0 15px">
-          <div class="filter-bar" id="stockSubTabs">
-            <button class="chip ${state.stockTab === "news" ? "active" : ""}" data-stab="news">News (${(t.news || []).length})</button>
-            <button class="chip ${state.stockTab === "institutions" ? "active" : ""}" data-stab="institutions">Institutions (${(t.fundamentals?.holders?.institutional || []).length})</button>
-            <button class="chip ${state.stockTab === "insiders" ? "active" : ""}" data-stab="insiders">Insiders (${(t.insiders?.items || []).length})</button>
-            <button class="chip ${state.stockTab === "filings" ? "active" : ""}" data-stab="filings">SEC Filings (${(t.filings || []).length})</button>
-            <button class="chip ${state.stockTab === "regulatory" ? "active" : ""}" data-stab="regulatory">Regulatory (${(t.regulatory?.items || []).length})</button>
-            <button class="chip ${state.stockTab === "peers" ? "active" : ""}" data-stab="peers">Peers</button>
-          </div>
+      <div class="panel pro-panel" id="stk-intel" style="margin-top:16px">
+        <div class="pro-subtabs" id="stockSubTabs">
+          <button type="button" class="pro-subtab ${state.stockTab === "news" ? "active" : ""}" data-stab="news">News <span class="muted">${(t.news || []).length}</span></button>
+          <button type="button" class="pro-subtab ${state.stockTab === "institutions" ? "active" : ""}" data-stab="institutions">Institutions <span class="muted">${(t.fundamentals?.holders?.institutional || []).length}</span></button>
+          <button type="button" class="pro-subtab ${state.stockTab === "insiders" ? "active" : ""}" data-stab="insiders">Insiders <span class="muted">${(t.insiders?.items || []).length}</span></button>
+          <button type="button" class="pro-subtab ${state.stockTab === "filings" ? "active" : ""}" data-stab="filings">SEC Filings <span class="muted">${(t.filings || []).length}</span></button>
+          <button type="button" class="pro-subtab ${state.stockTab === "regulatory" ? "active" : ""}" data-stab="regulatory">Regulatory <span class="muted">${(t.regulatory?.items || []).length}</span></button>
+          <button type="button" class="pro-subtab ${state.stockTab === "peers" ? "active" : ""}" data-stab="peers">Peers</button>
         </div>
         <div id="stockSubContent"></div>
       </div>
     `;
+
+    $("stockJumpBar")?.querySelectorAll(".jump-pill[data-jump]").forEach((btn) => {
+      btn.onclick = () => {
+        const el = $(btn.dataset.jump);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+    });
 
     const renderChartBody = () => {
       const body = $("chartBody");
@@ -3326,14 +3347,118 @@
       if (!e.target.closest(".search-wrap")) dd.classList.add("hidden");
     });
 
-    // Mobile Bottom Navigation & Slide-Up More Sheet
+    // Mobile Bottom Navigation & Swipe-Down Slide-Up More Sheet
     const moreSheet = $("mobileMoreSheet");
+    const morePanel = $("mobileMorePanel") || moreSheet?.querySelector(".more-sheet-panel");
+    const moreBackdrop = $("mobileMoreBackdrop");
     const openMoreSheet = () => {
       if (!moreSheet || !moreSheet.classList.contains("hidden")) return;
+      if (morePanel) {
+        morePanel.style.transition = "none";
+        morePanel.style.transform = "translateY(100%)";
+      }
+      if (moreBackdrop) moreBackdrop.style.opacity = "0";
       moreSheet.classList.remove("hidden");
+      requestAnimationFrame(() => {
+        if (morePanel) {
+          morePanel.style.transition = "transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)";
+          morePanel.style.transform = "translateY(0)";
+        }
+        if (moreBackdrop) {
+          moreBackdrop.style.transition = "opacity 0.2s ease";
+          moreBackdrop.style.opacity = "1";
+        }
+      });
       try { history.pushState({ ...currentHistoryState(), overlay: "more" }, "", location.href); } catch {}
     };
-    const closeMoreSheet = () => moreSheet?.classList.add("hidden");
+    const closeMoreSheet = (immediate = false) => {
+      if (!moreSheet || moreSheet.classList.contains("hidden")) return;
+      if (immediate || !morePanel) {
+        moreSheet.classList.add("hidden");
+        if (morePanel) morePanel.style.transform = "";
+        if (moreBackdrop) moreBackdrop.style.opacity = "";
+        return;
+      }
+      morePanel.style.transition = "transform 0.18s ease-in";
+      morePanel.style.transform = "translateY(100%)";
+      if (moreBackdrop) {
+        moreBackdrop.style.transition = "opacity 0.18s ease";
+        moreBackdrop.style.opacity = "0";
+      }
+      setTimeout(() => {
+        moreSheet.classList.add("hidden");
+        morePanel.style.transform = "";
+        if (moreBackdrop) moreBackdrop.style.opacity = "";
+      }, 185);
+    };
+
+    // Native swipe-down-to-dismiss gesture on More sheet (touch & pointer)
+    if (morePanel) {
+      let sheetStartY = 0;
+      let sheetStartT = 0;
+      let sheetDy = 0;
+      let sheetDragging = false;
+
+      const onDragStart = (y) => {
+        sheetDragging = true;
+        sheetStartY = y;
+        sheetStartT = performance.now();
+        sheetDy = 0;
+        morePanel.style.transition = "none";
+        if (moreBackdrop) moreBackdrop.style.transition = "none";
+      };
+      const onDragMove = (y) => {
+        if (!sheetDragging) return;
+        const dy = Math.max(0, y - sheetStartY);
+        sheetDy = dy;
+        morePanel.style.transform = `translateY(${dy}px)`;
+        if (moreBackdrop) moreBackdrop.style.opacity = String(Math.max(0.15, 1 - dy / 300));
+      };
+      const onDragEnd = () => {
+        if (!sheetDragging) return;
+        sheetDragging = false;
+        const dt = Math.max(1, performance.now() - sheetStartT);
+        const velocity = sheetDy / dt;
+        if (sheetDy > 60 || (sheetDy > 24 && velocity > 0.42)) {
+          closeMoreSheet(false);
+        } else {
+          morePanel.style.transition = "transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)";
+          morePanel.style.transform = "translateY(0)";
+          if (moreBackdrop) {
+            moreBackdrop.style.transition = "opacity 0.2s ease";
+            moreBackdrop.style.opacity = "1";
+          }
+        }
+      };
+
+      morePanel.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 1) onDragStart(e.touches[0].clientY);
+      }, { passive: true });
+      morePanel.addEventListener("touchmove", (e) => {
+        if (sheetDragging && e.touches.length === 1) {
+          const dy = e.touches[0].clientY - sheetStartY;
+          if (dy > 4) e.preventDefault();
+          onDragMove(e.touches[0].clientY);
+        }
+      }, { passive: false });
+      morePanel.addEventListener("touchend", onDragEnd, { passive: true });
+      morePanel.addEventListener("touchcancel", onDragEnd, { passive: true });
+
+      morePanel.addEventListener("pointerdown", (e) => {
+        if (e.pointerType === "touch") return;
+        if (e.target.closest(".more-sheet-item")) return;
+        onDragStart(e.clientY);
+        try { morePanel.setPointerCapture(e.pointerId); } catch {}
+      });
+      morePanel.addEventListener("pointermove", (e) => {
+        if (e.pointerType === "touch" || !sheetDragging) return;
+        onDragMove(e.clientY);
+      });
+      morePanel.addEventListener("pointerup", (e) => {
+        if (e.pointerType === "touch") return;
+        onDragEnd();
+      });
+    }
 
     // Native Phone Back Button & Browser Back/Forward Support
     window.addEventListener("popstate", (ev) => {
@@ -3465,16 +3590,16 @@
       e.stopPropagation();
       hideTip();
     });
+    tipEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      hideTip();
+    });
 
     const showTip = (target, clientX, clientY, fromClick = false) => {
       const raw = target.getAttribute("data-tip");
       if (!raw) return;
       const [title, body] = raw.includes("|") ? raw.split("|", 2) : ["Definition", raw];
-      tipEl.innerHTML = `<button type="button" class="tip-close-btn" aria-label="Close">✕</button><strong>${esc(title)}</strong><span>${esc(body)}</span>`;
-      const closeBtn = tipEl.querySelector(".tip-close-btn");
-      if (closeBtn) {
-        closeBtn.onclick = (e) => { e.stopPropagation(); hideTip(); };
-      }
+      tipEl.innerHTML = `<strong>${esc(title)}</strong><span>${esc(body)}</span>`;
 
       if (isMobileScreen() && fromClick) {
         tipEl.style.left = "";
@@ -3515,7 +3640,7 @@
       if (e.target.closest("[data-tip]")) hideTip();
     });
     document.addEventListener("click", (e) => {
-      if (e.target.closest(".floating-tooltip")) return;
+      if (e.target.closest(".floating-tooltip")) { hideTip(); return; }
       const el = e.target.closest("[data-tip]");
       const isDirectTipTrigger =
         el &&
@@ -3589,7 +3714,7 @@
               <div class="install-modal-eyebrow">${isIOS ? "iOS App Installation" : "App Installation"}</div>
               <h2 class="install-modal-title">Install racenter</h2>
             </div>
-            <button type="button" class="install-dismiss-btn" id="autoInstallDismissBtn" aria-label="Close">✕</button>
+            <button type="button" class="install-dismiss-btn hidden" id="autoInstallDismissBtn" aria-label="Close"></button>
           </div>
           ${stepsHtml}
           <div class="install-modal-actions">
@@ -3645,9 +3770,122 @@
   }
 
   // ---- BOOT ----
+  // ---- CUSTOM MINIMALIST DARK INLINE DROPDOWNS (Replaces OS Pop-Out <select>) ----
+  function initCustomSelects() {
+    let openWrap = null;
+    let openMenu = null;
+
+    const closeAll = () => {
+      if (openWrap) openWrap.classList.remove("open");
+      if (openMenu) openMenu.remove();
+      openWrap = null;
+      openMenu = null;
+    };
+
+    const syncLabel = (sel, btn) => {
+      const lbl = btn.querySelector(".cselect-label");
+      const opt = sel.options[sel.selectedIndex] || sel.options[0];
+      if (lbl) lbl.textContent = opt ? opt.textContent : "Select";
+      btn.parentElement.classList.toggle("hidden", sel.classList.contains("hidden"));
+    };
+
+    const enhanceOne = (sel) => {
+      if (!sel || sel.dataset.cselectInit === "1") return;
+      sel.dataset.cselectInit = "1";
+      const wrap = document.createElement("div");
+      wrap.className = "cselect-wrap" + (sel.classList.contains("hidden") ? " hidden" : "");
+      sel.parentNode.insertBefore(wrap, sel);
+      wrap.appendChild(sel);
+      sel.classList.add("cselect-native");
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "cselect-trigger";
+      btn.innerHTML = `<span class="cselect-label"></span><svg class="cselect-chev" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+      wrap.appendChild(btn);
+
+      const refresh = () => syncLabel(sel, btn);
+      refresh();
+
+      sel.addEventListener("change", refresh);
+      const optObs = new MutationObserver(refresh);
+      optObs.observe(sel, { childList: true, attributes: true, attributeFilter: ["class"] });
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (openWrap === wrap) {
+          closeAll();
+          return;
+        }
+        closeAll();
+        openWrap = wrap;
+        wrap.classList.add("open");
+
+        const menu = document.createElement("div");
+        menu.className = "cselect-menu";
+        const curVal = sel.value;
+        menu.innerHTML = [...sel.options].map((o) => {
+          const isSel = o.value === curVal;
+          return `<button type="button" class="cselect-opt${isSel ? " selected" : ""}" data-val="${esc(o.value)}"><span>${esc(o.textContent)}</span>${isSel ? '<span class="cselect-check">✓</span>' : ""}</button>`;
+        }).join("");
+        document.body.appendChild(menu);
+        openMenu = menu;
+
+        const r = btn.getBoundingClientRect();
+        const mw = Math.max(r.width, 180);
+        menu.style.minWidth = `${Math.min(mw, window.innerWidth - 24)}px`;
+        const mr = menu.getBoundingClientRect();
+        let left = r.left;
+        if (left + mr.width > window.innerWidth - 12) {
+          left = Math.max(12, window.innerWidth - mr.width - 12);
+        }
+        let top = r.bottom + 6;
+        if (top + mr.height > window.innerHeight - 16 && r.top - mr.height - 6 > 12) {
+          top = r.top - mr.height - 6;
+        }
+        menu.style.left = `${left}px`;
+        menu.style.top = `${top}px`;
+
+        const selBtn = menu.querySelector(".cselect-opt.selected");
+        if (selBtn) selBtn.scrollIntoView({ block: "nearest" });
+
+        menu.querySelectorAll(".cselect-opt").forEach((ob) => {
+          ob.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            const v = ob.dataset.val;
+            closeAll();
+            if (sel.value !== v) {
+              sel.value = v;
+              sel.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+            refresh();
+          });
+        });
+      });
+    };
+
+    const scanAll = () => {
+      document.querySelectorAll("select.select-control").forEach(enhanceOne);
+    };
+    scanAll();
+
+    const bodyObs = new MutationObserver(() => scanAll());
+    bodyObs.observe(document.body, { childList: true, subtree: true });
+
+    document.addEventListener("click", (e) => {
+      if (openMenu && !e.target.closest(".cselect-menu") && !e.target.closest(".cselect-wrap")) {
+        closeAll();
+      }
+    });
+    window.addEventListener("scroll", () => { if (openMenu) closeAll(); }, { passive: true });
+    window.addEventListener("resize", () => { if (openMenu) closeAll(); }, { passive: true });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && openMenu) closeAll(); });
+  }
+
   async function boot() {
     initTheme();
     initTooltips();
+    initCustomSelects();
     wireEvents();
     initAutoInstallPrompt();
     try {
