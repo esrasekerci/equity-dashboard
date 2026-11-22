@@ -161,15 +161,34 @@
     return res.json();
   }
 
-  function syncUrl() {
+  function currentHistoryState() {
+    return {
+      view: state.view,
+      ticker: state.view === "stock" ? state.activeTicker : null,
+      date: state.date,
+    };
+  }
+
+  function syncUrl(push = true) {
     const params = new URLSearchParams();
     if (state.date) params.set("date", state.date);
     if (state.view === "stock" && state.activeTicker) params.set("ticker", state.activeTicker);
     else if (state.view !== "overview") params.set("view", state.view);
-    history.replaceState(null, "", `${location.pathname}?${params.toString()}`);
+    const nextUrl = `${location.pathname}?${params.toString()}`;
+    const curUrl = `${location.pathname}${location.search}`;
+    const hState = currentHistoryState();
+    try {
+      if (push && !state.isPopping && nextUrl !== curUrl) {
+        history.pushState(hState, "", nextUrl);
+      } else {
+        history.replaceState(hState, "", nextUrl);
+      }
+    } catch {}
   }
 
-  function setView(view) {
+  function setView(view, opts = {}) {
+    const fromHistory = Boolean(opts.fromHistory);
+    const replace = Boolean(opts.replace);
     if (state.view && state.view !== view && state.view !== "stock") {
       state.prevView = state.view;
     }
@@ -214,7 +233,9 @@
         $("backToOverview").textContent = `✕ Close ${state.activeTicker}`;
       }
     }
-    syncUrl();
+    if (!fromHistory) {
+      syncUrl(!replace);
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -567,11 +588,11 @@
       renderFormulasView();
       $("loadingState").classList.add("hidden");
       if (openTicker) {
-        await openStock(openTicker.toUpperCase());
+        await openStock(openTicker.toUpperCase(), { replace: true });
       } else if (state.view === "stock" && state.activeTicker) {
-        await openStock(state.activeTicker);
+        await openStock(state.activeTicker, { replace: true });
       } else {
-        setView(state.view);
+        setView(state.view, { replace: true });
       }
     } catch (err) {
       $("loadingState").classList.add("hidden");
@@ -2510,9 +2531,9 @@
   }
 
   // ---- STOCK DEEP DIVE ----
-  async function openStock(sym) {
+  async function openStock(sym, opts = {}) {
     state.activeTicker = sym;
-    setView("stock");
+    setView("stock", opts);
     $("stockContent").innerHTML = `<div class="loading-box"><div class="spinner"></div><p>Loading ${esc(sym)}…</p></div>`;
     const cacheKey = `${state.date}:${sym}`;
     try {
@@ -3306,8 +3327,37 @@
 
     // Mobile Bottom Navigation & Slide-Up More Sheet
     const moreSheet = $("mobileMoreSheet");
-    const openMoreSheet = () => moreSheet?.classList.remove("hidden");
+    const openMoreSheet = () => {
+      if (!moreSheet || !moreSheet.classList.contains("hidden")) return;
+      moreSheet.classList.remove("hidden");
+      try { history.pushState({ ...currentHistoryState(), overlay: "more" }, "", location.href); } catch {}
+    };
     const closeMoreSheet = () => moreSheet?.classList.add("hidden");
+
+    // Native Phone Back Button & Browser Back/Forward Support
+    window.addEventListener("popstate", (ev) => {
+      state.isPopping = true;
+      try {
+        // Close open overlays first
+        if (moreSheet && !moreSheet.classList.contains("hidden")) {
+          moreSheet.classList.add("hidden");
+        }
+        if ($("infoModal") && !$("infoModal").classList.contains("hidden")) {
+          closeInfoModal();
+        }
+        const st = ev.state;
+        const params = new URLSearchParams(location.search);
+        const ticker = (st && st.ticker) || params.get("ticker");
+        const view = (st && st.view) || params.get("view") || (ticker ? "stock" : "overview");
+        if (view === "stock" && ticker) {
+          openStock(String(ticker).toUpperCase(), { fromHistory: true });
+        } else {
+          setView(view, { fromHistory: true });
+        }
+      } finally {
+        state.isPopping = false;
+      }
+    });
     document.querySelectorAll("#mobileBottomNav .mnav-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         if (btn.dataset.moreTrigger) {
