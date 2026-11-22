@@ -1452,18 +1452,22 @@
         updateViewBox();
       }
 
-      const arts = Array.isArray(item.articles) ? item.articles : [];
-      const topUrl = item.source || arts[0]?.url || null;
+      const isHttpUrl = (u) => typeof u === "string" && /^https?:\/\//i.test(u.trim());
+      const arts = (Array.isArray(item.articles) ? item.articles : []).filter((a) => a && isHttpUrl(a.url));
+      const fallbackNewsUrl = item.type === "co_mention"
+        ? `https://news.google.com/search?q=${encodeURIComponent(`${center.symbol} ${item.symbol} stock`)}`
+        : null;
+      const topUrl = (arts[0] && arts[0].url) || (isHttpUrl(item.source) ? item.source.trim() : null) || fallbackNewsUrl;
       const insScaleHtml = topUrl && item.type === "co_mention"
         ? `<a class="news-edge-link" href="${esc(topUrl)}" target="_blank" rel="noopener">${esc(item.scale || rc.label)} ↗</a>`
         : `<span style="color:var(--accent-2)">${esc(item.scale || rc.label)}</span>`;
       const insArticlesHtml = arts.length
         ? `<div class="rel-articles-wrap" style="margin-top:8px">${arts.map((a) => `
             <a class="rel-article-link" href="${esc(a.url)}" target="_blank" rel="noopener">
-              📰 ${esc(a.title)} <span class="muted">(${esc(a.source || "News")}${a.published ? ` · ${esc(a.published)}` : ""}) ↗</span>
+              ${esc(a.title)} <span class="muted">(${esc(a.source || "News")}${a.published ? ` · ${esc(a.published)}` : ""}) ↗</span>
             </a>`).join("")}</div>`
         : (topUrl && item.type === "co_mention"
-            ? `<div class="rel-articles-wrap" style="margin-top:8px"><a class="rel-article-link" href="${esc(topUrl)}" target="_blank" rel="noopener">📰 ${esc(item.note || "Open co-mentioned article")} ↗</a></div>`
+            ? `<div class="rel-articles-wrap" style="margin-top:8px"><a class="rel-article-link" href="${esc(topUrl)}" target="_blank" rel="noopener">${esc(item.note || `Co-mentioned news: ${center.symbol} & ${item.symbol}`)} <span class="muted">(Open News ↗)</span></a></div>`
             : "");
 
       if (inspector) {
