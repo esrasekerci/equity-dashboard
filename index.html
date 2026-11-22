@@ -14,9 +14,9 @@
   <link rel="apple-touch-icon-precomposed" sizes="180x180" href="assets/icon-180.png" />
   <link rel="icon" type="image/png" href="assets/icon-192.png" />
   <meta property="og:title" content="racenter" />
-  <meta property="og:description" content="Live 60-stock quantitative intelligence, Gold &amp; Silver benchmarks, interactive charts, supply-chain value network, Institutional Flow, official legal authorities &amp; SEC filings." />
+  <meta property="og:description" content="Live 100-stock quantitative intelligence, Gold &amp; Silver benchmarks, interactive charts, supply-chain value network, Institutional Flow, official legal authorities &amp; SEC filings." />
   <title>racenter</title>
-  <link rel="stylesheet" href="assets/app.css?v=19" />
+  <link rel="stylesheet" href="assets/app.css?v=22" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -37,7 +37,7 @@
 
       <div class="search-wrap">
         <span class="search-icon" aria-hidden="true">⌕</span>
-        <input id="quickSearch" type="search" placeholder="Search ticker or company (NVDA, MU, TSLA…)" autocomplete="off" />
+        <input id="quickSearch" type="search" placeholder="" aria-label="Search ticker or company" autocomplete="off" />
         <kbd class="search-kbd" aria-hidden="true">/</kbd>
         <div id="searchDropdown" class="search-dropdown hidden"></div>
       </div>
@@ -45,7 +45,7 @@
 
     <nav class="subnav" id="mainNav" aria-label="Dashboard sections">
       <button class="nav-tab active" data-view="overview">Overview</button>
-      <button class="nav-tab" data-view="screener">Screener <span class="badge-pill" id="navTickerCount">60</span></button>
+      <button class="nav-tab" data-view="screener">Screener <span class="badge-pill" id="navTickerCount">100</span></button>
       <button class="nav-tab" data-view="network">Network</button>
       <button class="nav-tab" data-view="smartmoney">Smart Money</button>
       <button class="nav-tab" data-view="breaking">Breaking <span class="badge-pill hot" id="breakingCount">0</span></button>
@@ -101,7 +101,7 @@
 
       <div class="section-header" id="sec-earnings" style="margin-top:18px">
         <div>
-          <h2>Earnings Calendar (Official Announcements)</h2>
+          <h2>Earnings Calendar</h2>
         </div>
       </div>
       <div id="earningsCalendarGrid" class="two-col"></div>
@@ -362,11 +362,10 @@
   <!-- Mobile "More" Slide-Up Sheet -->
   <div id="mobileMoreSheet" class="more-sheet hidden" role="dialog" aria-modal="true" aria-label="More sections">
     <div class="more-sheet-backdrop" id="mobileMoreBackdrop"></div>
-    <div class="more-sheet-panel">
+    <div class="more-sheet-panel" id="mobileMorePanel">
       <div class="more-sheet-handle"></div>
       <div class="more-sheet-hdr">
-        <span>More Sections</span>
-        <button type="button" class="more-sheet-close" id="mobileMoreClose" aria-label="Close">✕</button>
+        <span>More</span>
       </div>
       <div class="more-sheet-list">
         <button type="button" class="more-sheet-item" data-view="breaking">
@@ -394,6 +393,6 @@
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
 
-  <script src="assets/app.js?v=19"></script>
+  <script src="assets/app.js?v=22"></script>
 </body>
 </html>

@@ -3326,14 +3326,118 @@
       if (!e.target.closest(".search-wrap")) dd.classList.add("hidden");
     });
 
-    // Mobile Bottom Navigation & Slide-Up More Sheet
+    // Mobile Bottom Navigation & Swipe-Down Slide-Up More Sheet
     const moreSheet = $("mobileMoreSheet");
+    const morePanel = $("mobileMorePanel") || moreSheet?.querySelector(".more-sheet-panel");
+    const moreBackdrop = $("mobileMoreBackdrop");
     const openMoreSheet = () => {
       if (!moreSheet || !moreSheet.classList.contains("hidden")) return;
+      if (morePanel) {
+        morePanel.style.transition = "none";
+        morePanel.style.transform = "translateY(100%)";
+      }
+      if (moreBackdrop) moreBackdrop.style.opacity = "0";
       moreSheet.classList.remove("hidden");
+      requestAnimationFrame(() => {
+        if (morePanel) {
+          morePanel.style.transition = "transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)";
+          morePanel.style.transform = "translateY(0)";
+        }
+        if (moreBackdrop) {
+          moreBackdrop.style.transition = "opacity 0.2s ease";
+          moreBackdrop.style.opacity = "1";
+        }
+      });
       try { history.pushState({ ...currentHistoryState(), overlay: "more" }, "", location.href); } catch {}
     };
-    const closeMoreSheet = () => moreSheet?.classList.add("hidden");
+    const closeMoreSheet = (immediate = false) => {
+      if (!moreSheet || moreSheet.classList.contains("hidden")) return;
+      if (immediate || !morePanel) {
+        moreSheet.classList.add("hidden");
+        if (morePanel) morePanel.style.transform = "";
+        if (moreBackdrop) moreBackdrop.style.opacity = "";
+        return;
+      }
+      morePanel.style.transition = "transform 0.18s ease-in";
+      morePanel.style.transform = "translateY(100%)";
+      if (moreBackdrop) {
+        moreBackdrop.style.transition = "opacity 0.18s ease";
+        moreBackdrop.style.opacity = "0";
+      }
+      setTimeout(() => {
+        moreSheet.classList.add("hidden");
+        morePanel.style.transform = "";
+        if (moreBackdrop) moreBackdrop.style.opacity = "";
+      }, 185);
+    };
+
+    // Native swipe-down-to-dismiss gesture on More sheet (touch & pointer)
+    if (morePanel) {
+      let sheetStartY = 0;
+      let sheetStartT = 0;
+      let sheetDy = 0;
+      let sheetDragging = false;
+
+      const onDragStart = (y) => {
+        sheetDragging = true;
+        sheetStartY = y;
+        sheetStartT = performance.now();
+        sheetDy = 0;
+        morePanel.style.transition = "none";
+        if (moreBackdrop) moreBackdrop.style.transition = "none";
+      };
+      const onDragMove = (y) => {
+        if (!sheetDragging) return;
+        const dy = Math.max(0, y - sheetStartY);
+        sheetDy = dy;
+        morePanel.style.transform = `translateY(${dy}px)`;
+        if (moreBackdrop) moreBackdrop.style.opacity = String(Math.max(0.15, 1 - dy / 300));
+      };
+      const onDragEnd = () => {
+        if (!sheetDragging) return;
+        sheetDragging = false;
+        const dt = Math.max(1, performance.now() - sheetStartT);
+        const velocity = sheetDy / dt;
+        if (sheetDy > 60 || (sheetDy > 24 && velocity > 0.42)) {
+          closeMoreSheet(false);
+        } else {
+          morePanel.style.transition = "transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)";
+          morePanel.style.transform = "translateY(0)";
+          if (moreBackdrop) {
+            moreBackdrop.style.transition = "opacity 0.2s ease";
+            moreBackdrop.style.opacity = "1";
+          }
+        }
+      };
+
+      morePanel.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 1) onDragStart(e.touches[0].clientY);
+      }, { passive: true });
+      morePanel.addEventListener("touchmove", (e) => {
+        if (sheetDragging && e.touches.length === 1) {
+          const dy = e.touches[0].clientY - sheetStartY;
+          if (dy > 4) e.preventDefault();
+          onDragMove(e.touches[0].clientY);
+        }
+      }, { passive: false });
+      morePanel.addEventListener("touchend", onDragEnd, { passive: true });
+      morePanel.addEventListener("touchcancel", onDragEnd, { passive: true });
+
+      morePanel.addEventListener("pointerdown", (e) => {
+        if (e.pointerType === "touch") return;
+        if (e.target.closest(".more-sheet-item")) return;
+        onDragStart(e.clientY);
+        try { morePanel.setPointerCapture(e.pointerId); } catch {}
+      });
+      morePanel.addEventListener("pointermove", (e) => {
+        if (e.pointerType === "touch" || !sheetDragging) return;
+        onDragMove(e.clientY);
+      });
+      morePanel.addEventListener("pointerup", (e) => {
+        if (e.pointerType === "touch") return;
+        onDragEnd();
+      });
+    }
 
     // Native Phone Back Button & Browser Back/Forward Support
     window.addEventListener("popstate", (ev) => {
