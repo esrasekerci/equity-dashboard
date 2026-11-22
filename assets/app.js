@@ -3569,16 +3569,16 @@
       e.stopPropagation();
       hideTip();
     });
+    tipEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      hideTip();
+    });
 
     const showTip = (target, clientX, clientY, fromClick = false) => {
       const raw = target.getAttribute("data-tip");
       if (!raw) return;
       const [title, body] = raw.includes("|") ? raw.split("|", 2) : ["Definition", raw];
-      tipEl.innerHTML = `<button type="button" class="tip-close-btn" aria-label="Close">✕</button><strong>${esc(title)}</strong><span>${esc(body)}</span>`;
-      const closeBtn = tipEl.querySelector(".tip-close-btn");
-      if (closeBtn) {
-        closeBtn.onclick = (e) => { e.stopPropagation(); hideTip(); };
-      }
+      tipEl.innerHTML = `<strong>${esc(title)}</strong><span>${esc(body)}</span>`;
 
       if (isMobileScreen() && fromClick) {
         tipEl.style.left = "";
@@ -3619,7 +3619,7 @@
       if (e.target.closest("[data-tip]")) hideTip();
     });
     document.addEventListener("click", (e) => {
-      if (e.target.closest(".floating-tooltip")) return;
+      if (e.target.closest(".floating-tooltip")) { hideTip(); return; }
       const el = e.target.closest("[data-tip]");
       const isDirectTipTrigger =
         el &&
