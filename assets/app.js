@@ -3237,7 +3237,7 @@
   // ---- EVENTS ----
   function wireEvents() {
     $("brandHome").onclick = () => setView("overview");
-    $("backToOverview").onclick = () => closeStockTab();
+    if ($("backToOverview")) $("backToOverview").onclick = () => closeStockTab();
     $("viewAllScreenerBtn").onclick = () => setView("screener");
 
     document.querySelectorAll("#mainNav .nav-tab").forEach((btn) => {
@@ -3526,14 +3526,84 @@
       scrollTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
     }
 
-    const stepTicker = (delta) => {
-      const list = (state.summary?.tickers || []).map((x) => x.symbol);
-      const idx = list.indexOf(state.activeTicker);
-      if (idx === -1 || !list.length) return;
-      openStock(list[(idx + delta + list.length) % list.length]);
-    };
-    $("prevTickerBtn").onclick = () => stepTicker(-1);
-    $("nextTickerBtn").onclick = () => stepTicker(1);
+    // Slide-down-to-close on Stock Detail View (pull down from top of page or drag handle)
+    const stockViewEl = $("view-stock");
+    const stockDragZone = $("stockDragZone");
+    if (stockViewEl) {
+      let sStartY = 0, sStartT = 0, sDy = 0, sDragging = false;
+      const beginSlide = (y) => {
+        sDragging = true;
+        sStartY = y;
+        sStartT = performance.now();
+        sDy = 0;
+        stockViewEl.style.transition = "none";
+      };
+      const moveSlide = (y) => {
+        if (!sDragging) return;
+        const dy = Math.max(0, y - sStartY);
+        sDy = dy;
+        stockViewEl.style.transform = `translateY(${dy}px)`;
+        stockViewEl.style.opacity = String(Math.max(0.25, 1 - dy / 380));
+      };
+      const endSlide = () => {
+        if (!sDragging) return;
+        sDragging = false;
+        const dt = Math.max(1, performance.now() - sStartT);
+        const vel = sDy / dt;
+        if (sDy > 72 || (sDy > 28 && vel > 0.48)) {
+          stockViewEl.style.transition = "transform 0.18s ease-in, opacity 0.18s ease";
+          stockViewEl.style.transform = "translateY(120px)";
+          stockViewEl.style.opacity = "0";
+          setTimeout(() => {
+            stockViewEl.style.transition = "";
+            stockViewEl.style.transform = "";
+            stockViewEl.style.opacity = "";
+            closeStockTab();
+          }, 175);
+        } else {
+          stockViewEl.style.transition = "transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease";
+          stockViewEl.style.transform = "";
+          stockViewEl.style.opacity = "";
+        }
+      };
+
+      stockViewEl.addEventListener("touchstart", (e) => {
+        if (e.touches.length !== 1) return;
+        if (e.target.closest("#tvChart, .bubble-stage, .cselect-menu")) return;
+        const onHandle = Boolean(e.target.closest("#stockDragZone, .pro-hero"));
+        if (window.scrollY <= 4 || onHandle) {
+          beginSlide(e.touches[0].clientY);
+        }
+      }, { passive: true });
+      stockViewEl.addEventListener("touchmove", (e) => {
+        if (!sDragging || e.touches.length !== 1) return;
+        const rawDy = e.touches[0].clientY - sStartY;
+        if (rawDy <= 0 && sDy === 0) {
+          sDragging = false;
+          return;
+        }
+        if (rawDy > 6) e.preventDefault();
+        moveSlide(e.touches[0].clientY);
+      }, { passive: false });
+      stockViewEl.addEventListener("touchend", endSlide, { passive: true });
+      stockViewEl.addEventListener("touchcancel", endSlide, { passive: true });
+
+      if (stockDragZone) {
+        stockDragZone.addEventListener("pointerdown", (e) => {
+          if (e.pointerType === "touch") return;
+          beginSlide(e.clientY);
+          try { stockDragZone.setPointerCapture(e.pointerId); } catch {}
+        });
+        stockDragZone.addEventListener("pointermove", (e) => {
+          if (e.pointerType === "touch" || !sDragging) return;
+          moveSlide(e.clientY);
+        });
+        stockDragZone.addEventListener("pointerup", (e) => {
+          if (e.pointerType === "touch") return;
+          endSlide();
+        });
+      }
+    }
 
     const closeModal = () => {
       closeInfoModal();

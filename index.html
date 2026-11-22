@@ -16,7 +16,7 @@
   <meta property="og:title" content="racenter" />
   <meta property="og:description" content="Live 100-stock quantitative intelligence, Gold &amp; Silver benchmarks, interactive charts, supply-chain value network, Institutional Flow, official legal authorities &amp; SEC filings." />
   <title>racenter</title>
-  <link rel="stylesheet" href="assets/app.css?v=25" />
+  <link rel="stylesheet" href="assets/app.css?v=26" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -318,12 +318,8 @@
 
     <!-- STOCK DEEP-DIVE VIEW -->
     <section id="view-stock" class="view hidden">
-      <div class="stock-topbar">
-        <button class="btn-secondary" id="backToOverview">← Back</button>
-        <div class="stock-pager">
-          <button class="btn-secondary" id="prevTickerBtn">← Prev</button>
-          <button class="btn-secondary" id="nextTickerBtn">Next →</button>
-        </div>
+      <div class="stock-drag-zone" id="stockDragZone" aria-label="Slide down to close">
+        <div class="stock-drag-handle"></div>
       </div>
       <div id="stockContent"></div>
     </section>
@@ -390,6 +386,6 @@
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
 
-  <script src="assets/app.js?v=25"></script>
+  <script src="assets/app.js?v=26"></script>
 </body>
 </html>

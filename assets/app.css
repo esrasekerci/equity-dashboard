@@ -2062,6 +2062,23 @@ body.no-scroll { overflow: hidden; }
 }
 
 /* Institutional Stock Tear-Sheet Redesign */
+.stock-drag-zone {
+  display: flex;
+  justify-content: center;
+  padding: 2px 0 10px;
+  cursor: grab;
+  touch-action: none;
+}
+.stock-drag-zone:active { cursor: grabbing; }
+.stock-drag-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border-strong);
+}
+#view-stock {
+  will-change: transform, opacity;
+}
 .pro-hero {
   background: var(--bg-card);
   border: 1px solid var(--border);
