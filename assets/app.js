@@ -120,6 +120,14 @@
       "SEC Form 4 (Insider Trades)|Official SEC filing required within 2 business days whenever a company executive or director buys or sells shares.",
     whale_13d:
       "SEC Schedule 13D / 13G|Official SEC filing required when a major fund or whale acquires more than 5% of a company.",
+    gk_vol:
+      "Garman-Klass Realized Volatility (20d / 60d)|OHLC range-based annualized volatility estimator (Garman & Klass, 1980) — 7.4x more statistically efficient than close-to-close standard deviation.",
+    capm_beta:
+      "CAPM Market Beta & Jensen's Alpha (60d)|OLS regression of daily log-returns against SPY over 60 trading days. Beta measures systematic market sensitivity; Alpha is annualized risk-adjusted excess return.",
+    sharpe_sortino:
+      "Sharpe & Sortino Ratio (1Y)|Annualized excess return (over 4.2% risk-free rate) divided by total volatility (Sharpe) or downside semi-deviation only (Sortino).",
+    var_cvar:
+      "Max Drawdown (1Y) & 1D Expected Shortfall / CVaR (95%)|Peak-to-trough 1-year drawdown and Basel III tail-risk Expected Shortfall (average daily loss across the worst 5% of sessions).",
   };
   const tipAttr = (key) => (GLOSSARY[key] ? `data-tip="${esc(GLOSSARY[key])}"` : "");
 
@@ -2545,6 +2553,7 @@
     const facts = tech.facts || {};
     const comp = tech.computed || {};
     const ind = comp.indicators || {};
+    const risk = comp.risk || {};
     const rs = comp.relative_strength || {};
     const lv = comp.levels || {};
     const patterns = comp.patterns || [];
@@ -2742,6 +2751,10 @@
             <div class="pro-kv-row" ${tipAttr("vol_ratio")}><span class="pro-kv-k">Session Dollar Turnover <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtCap(dollarVol)}</span></div>
             <div class="pro-kv-row" ${tipAttr("updown_vol")}><span class="pro-kv-k">20d Up/Down Volume <span class="tip-badge">?</span></span><span class="pro-kv-v ${ind.updown_volume_20d != null ? (ind.updown_volume_20d >= 1.2 ? "pos" : ind.updown_volume_20d <= 0.8 ? "neg" : "") : ""}">${fmtNum(ind.updown_volume_20d, 2)}x</span></div>
             <div class="pro-kv-row" ${tipAttr("short_float")}><span class="pro-kv-k">Short Interest (% Float) <span class="tip-badge">?</span></span><span class="pro-kv-v">${val.short_pct_float != null ? `${fmtNum(val.short_pct_float * 100, 1)}%` : "—"}</span></div>
+            ${risk.realized_vol_20d_pct != null ? `<div class="pro-kv-row" ${tipAttr("gk_vol")}><span class="pro-kv-k">Realized Vol (20d / 60d GK) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtNum(risk.realized_vol_20d_pct, 1)}% / ${fmtNum(risk.realized_vol_60d_pct, 1)}%</span></div>` : ""}
+            ${risk.capm_beta_60d != null ? `<div class="pro-kv-row" ${tipAttr("capm_beta")}><span class="pro-kv-k">CAPM Beta / Alpha (60d) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtNum(risk.capm_beta_60d, 2)}x <span class="${clsPct(risk.jensen_alpha_60d_pct)}">(${fmtPct(risk.jensen_alpha_60d_pct, 1)})</span></span></div>` : ""}
+            ${risk.sharpe_1y != null ? `<div class="pro-kv-row" ${tipAttr("sharpe_sortino")}><span class="pro-kv-k">Sharpe / Sortino (1Y) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtNum(risk.sharpe_1y, 2)} / ${fmtNum(risk.sortino_1y, 2)}</span></div>` : ""}
+            ${risk.max_drawdown_1y_pct != null ? `<div class="pro-kv-row" ${tipAttr("var_cvar")}><span class="pro-kv-k">Max DD (1Y) / 1D CVaR 95% <span class="tip-badge">?</span></span><span class="pro-kv-v neg">${fmtNum(risk.max_drawdown_1y_pct, 1)}% / ${fmtNum(risk.cvar_95_1d_pct, 2)}%</span></div>` : ""}
             <div class="pro-kv-row"><span class="pro-kv-k">Next Earnings</span><span class="pro-kv-v">${esc((cal.earnings_dates || [])[0] || "—")}</span></div>
           </div>
         </div>
