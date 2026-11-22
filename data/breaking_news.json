@@ -1,59 +1,39 @@
 {
-  "updated_at": "2026-11-22T15:27:04+00:00",
+  "updated_at": "2026-11-22T21:54:00+00:00",
   "min_importance": 60.0,
   "max_age_hours": 3.0,
   "items": [
     {
-      "key": "11eefeff85d535e8",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "GPU prices are rising for Nvidia's older chips even as the stock keeps going down: Chart of the Day",
-      "url": "https://finance.yahoo.com/markets/article/gpu-prices-are-rising-for-nvidias-older-chips-even-as-the-stock-keeps-going-down-chart-of-the-day-123721121.html",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-22T12:37:21+00:00",
-      "importance": 87.0,
+      "key": "5d21317ba0b61fdf",
+      "symbol": "GS",
+      "name": "Goldman Sachs",
+      "title": "Goldman Traders See Entry Point in US Stocks But Warn of Risks",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/goldman-traders-see-entry-point-190502514.html",
+      "source": "Bloomberg",
+      "source_tier": 1,
+      "published": "2026-11-22T19:05:02+00:00",
+      "importance": 75.5,
       "categories": [
-        "earnings_guidance",
-        "product_tech"
+        "analyst"
       ],
-      "age_hours": 2.83,
-      "detected_at": "2026-11-22T15:27:04+00:00"
+      "age_hours": 2.82,
+      "detected_at": "2026-11-22T21:54:00+00:00"
     },
     {
-      "key": "371fbe6766102b09",
-      "symbol": "AVGO",
-      "name": "Broadcom",
-      "title": "Broadcom (AVGO) Faces Reported AI Chip Order Cut From A Major Customer",
-      "url": "https://finance.yahoo.com/technology/ai/articles/broadcom-avgo-faces-reported-ai-150805371.html?.tsrc=rss",
+      "key": "3de06dec46e13475",
+      "symbol": "PLTR",
+      "name": "Palantir Technologies",
+      "title": "Palantir Technologies (PLTR) Co Hosts Sovereign AI Defense Summit",
+      "url": "https://finance.yahoo.com/technology/ai/articles/palantir-technologies-pltr-co-hosts-210650181.html?.tsrc=rss",
       "source": "Yahoo Finance",
       "source_tier": 2,
-      "published": "2026-11-22T15:08:05+00:00",
-      "importance": 78.8,
+      "published": "2026-11-22T21:06:50+00:00",
+      "importance": 62.9,
       "categories": [
-        "contract_partnership",
-        "data_centers_ai",
-        "capex_expansion"
+        "contract_partnership"
       ],
-      "age_hours": 0.32,
-      "detected_at": "2026-11-22T15:27:04+00:00"
-    },
-    {
-      "key": "15c31799f5b63958",
-      "symbol": "AMD",
-      "name": "Advanced Micro Devices",
-      "title": "Advanced Micro Devices (AMD) Faces Firmware Allegations And Class Action Scrutiny",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/advanced-micro-devices-amd-faces-130605212.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-22T13:06:05+00:00",
-      "importance": 72.9,
-      "categories": [
-        "regulatory_legal",
-        "product_tech"
-      ],
-      "age_hours": 2.35,
-      "detected_at": "2026-11-22T15:27:04+00:00"
+      "age_hours": 0.79,
+      "detected_at": "2026-11-22T21:54:00+00:00"
     }
   ]
 }
