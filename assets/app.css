@@ -1664,6 +1664,29 @@ body.no-scroll { overflow: hidden; }
   overflow: hidden;
   background: var(--bg-card-2);
 }
+.legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+.legend-chip:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.legend-chip.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-2);
+}
 @media (max-width: 900px) {
   .sm-charts-grid { grid-template-columns: 1fr; }
 }

@@ -336,7 +336,7 @@
       <div class="modal-card-hdr">
         <div>
           <div class="modal-eyebrow">Sector Intelligence Explorer</div>
-          <h2 style="font-size:19px;text-transform:capitalize">${esc(fmtSector(sector))} (${members.length} Stocks)</h2>
+          <h2 style="font-size:19px;text-transform:capitalize">${esc(fmtSector(sector))}</h2>
           <div class="muted" style="margin-top:2px">
             Benchmark ETF: <strong>${esc(hmSec.etf || members[0]?.sector_etf || "—")}</strong>
             (${fmtPct(hmSec.etf_ret_1d, 2)} 1D) · Sector Equal-Weighted Avg 1D:
@@ -350,7 +350,7 @@
         <div class="control-group">
           <label for="modalSectorSelect" class="muted">Switch Sector</label>
           <select id="modalSectorSelect" class="select-control compact">
-            ${allSecs.map((sec) => `<option value="${esc(sec)}" ${sec === sector ? "selected" : ""}>${esc(fmtSector(sec))} (${secCounts[sec]})</option>`).join("")}
+            ${allSecs.map((sec) => `<option value="${esc(sec)}" ${sec === sector ? "selected" : ""}>${esc(fmtSector(sec))}</option>`).join("")}
           </select>
         </div>
         <button class="btn-secondary compact-hdr-btn" id="filterScreenerBySecBtn">Open in Screener Table →</button>
@@ -741,7 +741,7 @@
             <span class="heat-etf">${esc(sec.etf)}</span>
           </div>
           <div class="heat-ret ${clsPct(r)}">${fmtPct(r)}</div>
-          <div class="muted">${(sec.members || []).length} stocks · ETF ${fmtPct(sec.etf_ret_1d, 1)}</div>
+          <div class="muted">ETF ${fmtPct(sec.etf_ret_1d, 1)}</div>
         </div>
       `;
     }).join("");
@@ -821,8 +821,8 @@
       for (const t of s.tickers || []) counts[t.sector] = (counts[t.sector] || 0) + 1;
       const secs = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
       ssel.innerHTML = [
-        `<option value="">All Sectors (${(s.tickers || []).length})</option>`,
-        ...secs.map((sec) => `<option value="${esc(sec)}" ${state.activeSector === sec ? "selected" : ""}>${esc(fmtSector(sec))} (${counts[sec]})</option>`),
+        `<option value="">All Sectors</option>`,
+        ...secs.map((sec) => `<option value="${esc(sec)}" ${state.activeSector === sec ? "selected" : ""}>${esc(fmtSector(sec))}</option>`),
       ].join("");
     }
 
@@ -1137,21 +1137,22 @@
                 ${allTickers.map((t) => `<option value="${esc(t.symbol)}" ${t.symbol === center.symbol ? "selected" : ""}>${esc(t.symbol)} (${fmtCap(t.market_cap)})</option>`).join("")}
               </select>
             </div>
-            <div class="control-group">
-              <label class="muted">Filter</label>
-              <select class="select-control compact" id="bubbleFilterSelect">
-                ${filterTabs.map(([k, lbl]) => `<option value="${k}" ${filterKey === k ? "selected" : ""}>${esc(lbl)} (${counts[k] || 0})</option>`).join("")}
-              </select>
-            </div>
           </div>
         </div>
 
-        <div class="bubble-legend">
-          <span><i class="legend-dot" style="background:#22c55e"></i>Supplier</span>
-          <span><i class="legend-dot" style="background:#a855f7"></i>Partner</span>
-          <span><i class="legend-dot" style="background:#3b82f6"></i>Customer</span>
-          <span><i class="legend-dot" style="background:#f43f5e"></i>Competitor</span>
-          <span><i class="legend-dot" style="background:#f59e0b"></i>Co-Mention</span>
+        <div class="bubble-legend" id="bubbleLegendFilter">
+          <button type="button" class="legend-chip ${filterKey === "all" ? "active" : ""}" data-rel-filter="all">All</button>
+          ${[
+            ["supplier", "Supplier", "#22c55e"],
+            ["partner", "Partner", "#a855f7"],
+            ["customer", "Customer", "#3b82f6"],
+            ["competitor", "Competitor", "#f43f5e"],
+            ["co_mention", "Co-Mention", "#f59e0b"],
+            ["peer", "Peer", "#64748b"],
+          ].filter(([k]) => counts[k] > 0).map(([k, lbl, col]) => `
+            <button type="button" class="legend-chip ${filterKey === k ? "active" : ""}" data-rel-filter="${k}">
+              <i class="legend-dot" style="background:${col}"></i>${lbl}
+            </button>`).join("")}
         </div>
 
         <div class="bubble-stage" id="bubbleStage">
@@ -1225,10 +1226,12 @@
     if (hubSel) {
       hubSel.onchange = () => onRecenter(hubSel.value, "all", null);
     }
-    const bfs = container.querySelector("#bubbleFilterSelect");
-    if (bfs) {
-      bfs.onchange = () => onRecenter(center.symbol, bfs.value, null);
-    }
+    container.querySelectorAll("#bubbleLegendFilter [data-rel-filter]").forEach((btn) => {
+      btn.onclick = () => {
+        const nextFilter = btn.dataset.relFilter === filterKey ? "all" : btn.dataset.relFilter;
+        onRecenter(center.symbol, nextFilter, null);
+      };
+    });
     container.querySelectorAll("[data-hop-sym]").forEach((b) => {
       b.onclick = () => onRecenter(b.dataset.hopSym, "all", null);
     });
