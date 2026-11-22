@@ -492,38 +492,44 @@ a:hover { text-decoration: underline; }
 .bubble-stage {
   position: relative;
   width: 100%;
-  height: 440px;
-  background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.08), transparent 72%), var(--bg-card-2);
+  height: 430px;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.028), transparent 70%), var(--bg-elev);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: pan-y;
+  cursor: default;
+}
+.bubble-stage.is-zoomed {
   touch-action: none;
   cursor: grab;
 }
-.bubble-stage:active { cursor: grabbing; }
+.bubble-stage.is-zoomed:active { cursor: grabbing; }
 .bubble-svg { width: 100%; height: 100%; display: block; }
 .bubble-node { cursor: pointer; }
 .bubble-zoom-bar {
   position: absolute;
-  top: 10px;
+  bottom: 10px;
   right: 10px;
+  top: auto;
   z-index: 6;
-  display: flex;
-  gap: 5px;
-  background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 4px;
-  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 2px;
+  border-radius: 8px;
   border: 1px solid var(--border);
 }
 .zoom-btn {
-  min-width: 32px;
-  height: 30px;
-  padding: 0 8px;
-  border-radius: 7px;
+  min-width: 28px;
+  height: 26px;
+  padding: 0 7px;
+  border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text);

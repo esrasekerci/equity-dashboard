@@ -1326,6 +1326,9 @@
       const vy = baseCY - vh / 2 + viewState.panY;
       svg.setAttribute("viewBox", `${vx.toFixed(1)} ${vy.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}`);
       if (resetBtn) resetBtn.textContent = `${Math.round(viewState.zoom * 100)}%`;
+      const isZoomed = viewState.zoom > 1.18;
+      stage.classList.toggle("is-zoomed", isZoomed);
+      stage.style.touchAction = isZoomed ? "none" : "pan-y";
       return { fitW, fitH, vw, vh, vx, vy, rect };
     };
 
@@ -1403,6 +1406,8 @@
     stage.style.cursor = "grab";
 
     stage.addEventListener("wheel", (e) => {
+      // Allow normal page vertical scrolling unless pinching (ctrlKey) or already zoomed in
+      if (!e.ctrlKey && !e.metaKey && viewState.zoom <= 1.05) return;
       e.preventDefault();
       const sens = e.ctrlKey ? 0.011 : 0.0024;
       const clampedDelta = Math.max(-140, Math.min(140, e.deltaY));
@@ -1422,7 +1427,8 @@
 
     stage.addEventListener("pointerdown", (e) => {
       if (e.target.closest(".bubble-zoom-bar")) return;
-      if (e.pointerType === "touch" && pinchState) return;
+      // On touchscreens at default zoom, let 1-finger swipe scroll the page cleanly instead of dragging the graph
+      if (e.pointerType === "touch" && (pinchState || viewState.zoom <= 1.18)) return;
       cancelAnim();
       isDragging = true;
       activePointerId = e.pointerId;
@@ -1571,14 +1577,22 @@
         ? `https://news.google.com/search?q=${encodeURIComponent(`${center.symbol} ${item.symbol} stock`)}`
         : null;
       const topUrl = (arts[0] && arts[0].url) || (isHttpUrl(item.source) ? item.source.trim() : null) || fallbackNewsUrl;
+      const shownCount = arts.length;
+      const totalMentions = Math.max(Number(item.mentions || 0), shownCount);
+      const insScaleLabel = item.type === "co_mention" && totalMentions
+        ? `${totalMentions} News Co-Mention${totalMentions === 1 ? "" : "s"}`
+        : (item.scale || rc.label);
       const insScaleHtml = topUrl && item.type === "co_mention"
-        ? `<a class="news-edge-link" href="${esc(topUrl)}" target="_blank" rel="noopener">${esc(item.scale || rc.label)} ↗</a>`
-        : `<span style="color:var(--accent-2)">${esc(item.scale || rc.label)}</span>`;
+        ? `<a class="news-edge-link" href="${esc(shownCount > 1 ? fallbackNewsUrl : topUrl)}" target="_blank" rel="noopener">${esc(insScaleLabel)} ↗</a>`
+        : `<span style="color:var(--accent-2)">${esc(insScaleLabel)}</span>`;
+      const moreNewsLink = item.type === "co_mention" && fallbackNewsUrl && totalMentions > shownCount
+        ? `<a class="rel-article-link" href="${esc(fallbackNewsUrl)}" target="_blank" rel="noopener">Browse all ${esc(center.symbol)} &amp; ${esc(item.symbol)} co-mentioned news <span class="muted">(Google News ↗)</span></a>`
+        : "";
       const insArticlesHtml = arts.length
         ? `<div class="rel-articles-wrap" style="margin-top:8px">${arts.map((a) => `
             <a class="rel-article-link" href="${esc(a.url)}" target="_blank" rel="noopener">
               ${esc(a.title)} <span class="muted">(${esc(a.source || "News")}${a.published ? ` · ${esc(a.published)}` : ""}) ↗</span>
-            </a>`).join("")}</div>`
+            </a>`).join("")}${moreNewsLink}</div>`
         : (topUrl && item.type === "co_mention"
             ? `<div class="rel-articles-wrap" style="margin-top:8px"><a class="rel-article-link" href="${esc(topUrl)}" target="_blank" rel="noopener">${esc(item.note || `Co-mentioned news: ${center.symbol} & ${item.symbol}`)} <span class="muted">(Open News ↗)</span></a></div>`
             : "");
@@ -1650,11 +1664,8 @@
         const idx = Number(nodeEl.dataset.idx);
         const targetItem = nodesPos[idx];
         if (nodeEl.classList.contains("edge-badge") && targetItem?.type === "co_mention") {
-          const isHttp = (u) => typeof u === "string" && /^https?:\/\//i.test(u.trim());
-          const url = (targetItem.articles || []).find((a) => a && isHttp(a.url))?.url
-            || (isHttp(targetItem.source) ? targetItem.source.trim() : null)
-            || `https://news.google.com/search?q=${encodeURIComponent(`${center.symbol} ${targetItem.symbol} stock`)}`;
-          window.open(url, "_blank", "noopener");
+          inspectItem(idx, false);
+          inspector?.scrollIntoView({ behavior: "smooth", block: "nearest" });
           return;
         }
         if (idx === selectedIdx && nodeEl.classList.contains("orbit-bubble")) {
