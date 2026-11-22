@@ -181,8 +181,24 @@
       $(`view-${v}`)?.classList.toggle("hidden", v !== view);
     }
     document.querySelectorAll("#mainNav .nav-tab").forEach((btn) => {
+      const isAct = btn.dataset.view === view;
+      btn.classList.toggle("active", isAct);
+      if (isAct && btn.scrollIntoView) {
+        try { btn.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }); } catch {}
+      }
+    });
+    const moreViews = new Set(["breaking", "authorities", "macro", "formulas"]);
+    document.querySelectorAll("#mobileBottomNav .mnav-btn").forEach((btn) => {
+      if (btn.dataset.moreTrigger) {
+        btn.classList.toggle("active", moreViews.has(view));
+      } else {
+        btn.classList.toggle("active", btn.dataset.view === view);
+      }
+    });
+    document.querySelectorAll("#mobileMoreSheet .more-sheet-item").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.view === view);
     });
+    $("mobileMoreSheet")?.classList.add("hidden");
     const stockTab = $("stockNavTab");
     if (stockTab && state.activeTicker) {
       stockTab.classList.remove("hidden");
@@ -214,26 +230,12 @@
     setView(target);
   }
 
-  // ---- THEME ----
+  // ---- THEME (Dark-Only Minimalist Obsidian) ----
   function initTheme() {
-    const saved = localStorage.getItem("eqr_theme") || "dark";
-    applyTheme(saved);
-    $("themeToggle").addEventListener("click", () => {
-      const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-      localStorage.setItem("eqr_theme", next);
-      applyTheme(next);
-    });
-  }
-
-  function applyTheme(theme) {
-    document.documentElement.dataset.theme = theme;
-    $("themeToggle").textContent = theme === "dark" ? "☀️" : "🌙";
+    document.documentElement.dataset.theme = "dark";
+    try { localStorage.removeItem("eqr_theme"); } catch {}
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", theme === "dark" ? "#0b0e11" : "#ffffff");
-    if (state.view === "stock" && state.activeTicker && state.chartTab === "interactive") {
-      const t = state.tickerCache[`${state.date}:${state.activeTicker}`];
-      if (t) mountInteractiveChart(t);
-    }
+    if (meta) meta.setAttribute("content", "#050608");
   }
 
   // ---- LOAD DATA ----
@@ -242,10 +244,14 @@
       const b = await fetchJson("data/breaking_news.json");
       state.breaking = Array.isArray(b.items) ? b.items : [];
       $("breakingCount").textContent = String(state.breaking.length);
+      if ($("moreBreakingCount")) $("moreBreakingCount").textContent = String(state.breaking.length);
+      if ($("mobileMoreDot")) $("mobileMoreDot").classList.toggle("hidden", state.breaking.length === 0);
       if (b.updated_at) $("breakingUpdated").textContent = `Updated ${b.updated_at.replace("T", " ").replace("Z", " UTC")} · Auto-checked every hour (24/7)`;
     } catch {
       state.breaking = [];
       $("breakingCount").textContent = "0";
+      if ($("moreBreakingCount")) $("moreBreakingCount").textContent = "0";
+      if ($("mobileMoreDot")) $("mobileMoreDot").classList.add("hidden");
     }
     renderBreaking();
   }
@@ -273,6 +279,7 @@
     }));
     const items = state.authorities.length ? state.authorities : fallback;
     $("authoritiesCount").textContent = String(items.length);
+    if ($("moreAuthoritiesCount")) $("moreAuthoritiesCount").textContent = String(items.length);
 
     const bar = $("authorityAgencyBar");
     const el = $("authoritiesList");
@@ -3002,14 +3009,24 @@
 
     const inp = $("quickSearch");
     const dd = $("searchDropdown");
-    inp.addEventListener("input", () => {
-      const q = inp.value.trim().toLowerCase();
-      if (!q || !state.summary) { dd.classList.add("hidden"); return; }
-      const hits = (state.summary.tickers || []).filter((t) =>
-        t.symbol.toLowerCase().includes(q) || (t.name || "").toLowerCase().includes(q)
-      ).slice(0, 8);
+    let searchActiveIdx = -1;
+
+    const renderSearchHits = (q) => {
+      if (!state.summary) { dd.classList.add("hidden"); return; }
+      const tickers = state.summary.tickers || [];
+      let hits;
+      let header = "";
+      if (!q) {
+        hits = [...tickers].sort((a, b) => (b.notable_score || 0) - (a.notable_score || 0)).slice(0, 6);
+        header = `<div class="search-dd-hdr">Top Active Movers</div>`;
+      } else {
+        hits = tickers.filter((t) =>
+          t.symbol.toLowerCase().includes(q) || (t.name || "").toLowerCase().includes(q)
+        ).slice(0, 8);
+      }
       if (!hits.length) { dd.classList.add("hidden"); return; }
-      dd.innerHTML = hits.map((h) => `
+      searchActiveIdx = -1;
+      dd.innerHTML = header + hits.map((h) => `
         <div class="search-item" data-sym="${esc(h.symbol)}">
           <span><strong>${esc(h.symbol)}</strong> <span class="muted">${esc(h.name)}</span></span>
           <span class="price-pill ${clsPct(h.change_1d_pct)}" style="font-size:12px">${fmtPct(h.change_1d_pct, 1)}</span>
@@ -3017,18 +3034,81 @@
       `).join("");
       dd.classList.remove("hidden");
       dd.querySelectorAll(".search-item").forEach((el) => {
-        el.onclick = () => { inp.value = ""; dd.classList.add("hidden"); openStock(el.dataset.sym); };
+        el.onclick = () => { inp.value = ""; dd.classList.add("hidden"); inp.blur(); openStock(el.dataset.sym); };
       });
-    });
+    };
+
+    inp.addEventListener("focus", () => renderSearchHits(inp.value.trim().toLowerCase()));
+    inp.addEventListener("input", () => renderSearchHits(inp.value.trim().toLowerCase()));
     inp.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        const first = dd.querySelector(".search-item");
-        if (first) first.click();
+      const items = [...dd.querySelectorAll(".search-item")];
+      if (e.key === "ArrowDown" && items.length) {
+        e.preventDefault();
+        searchActiveIdx = (searchActiveIdx + 1) % items.length;
+        items.forEach((el, i) => el.classList.toggle("active", i === searchActiveIdx));
+        items[searchActiveIdx].scrollIntoView({ block: "nearest" });
+      } else if (e.key === "ArrowUp" && items.length) {
+        e.preventDefault();
+        searchActiveIdx = (searchActiveIdx - 1 + items.length) % items.length;
+        items.forEach((el, i) => el.classList.toggle("active", i === searchActiveIdx));
+        items[searchActiveIdx].scrollIntoView({ block: "nearest" });
+      } else if (e.key === "Enter") {
+        const pick = (searchActiveIdx >= 0 ? items[searchActiveIdx] : items[0]);
+        if (pick) { e.preventDefault(); pick.click(); }
+      } else if (e.key === "Escape") {
+        dd.classList.add("hidden");
+        inp.blur();
       }
     });
     document.addEventListener("click", (e) => {
       if (!e.target.closest(".search-wrap")) dd.classList.add("hidden");
     });
+
+    // Mobile Bottom Navigation & Slide-Up More Sheet
+    const moreSheet = $("mobileMoreSheet");
+    const openMoreSheet = () => moreSheet?.classList.remove("hidden");
+    const closeMoreSheet = () => moreSheet?.classList.add("hidden");
+    document.querySelectorAll("#mobileBottomNav .mnav-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (btn.dataset.moreTrigger) {
+          if (moreSheet?.classList.contains("hidden")) openMoreSheet();
+          else closeMoreSheet();
+        } else if (btn.dataset.view) {
+          setView(btn.dataset.view);
+        }
+      });
+    });
+    $("mobileMoreBackdrop")?.addEventListener("click", closeMoreSheet);
+    $("mobileMoreClose")?.addEventListener("click", closeMoreSheet);
+    document.querySelectorAll("#mobileMoreSheet .more-sheet-item[data-view]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        closeMoreSheet();
+        setView(btn.dataset.view);
+      });
+    });
+
+    // Quick-Jump Section Bar on Overview
+    document.querySelectorAll("#overviewJumpBar .jump-pill[data-jump]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = $(btn.dataset.jump);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    // Floating Back-to-Top Button
+    const scrollTopBtn = $("scrollTopBtn");
+    if (scrollTopBtn) {
+      let ticking = false;
+      window.addEventListener("scroll", () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          scrollTopBtn.classList.toggle("hidden", window.scrollY < 360);
+          ticking = false;
+        });
+      }, { passive: true });
+      scrollTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+    }
 
     const stepTicker = (delta) => {
       const list = (state.summary?.tickers || []).map((x) => x.symbol);
@@ -3044,7 +3124,27 @@
     };
     if ($("modalCloseBtn")) $("modalCloseBtn").onclick = closeModal;
     if ($("modalCloseBg")) $("modalCloseBg").onclick = closeModal;
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+    document.addEventListener("keydown", (e) => {
+      const tag = (e.target && e.target.tagName || "").toLowerCase();
+      const inInput = tag === "input" || tag === "textarea" || tag === "select";
+      if (e.key === "/" && !inInput && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        inp.focus();
+        inp.select();
+        return;
+      }
+      if (e.key === "Escape") {
+        if (moreSheet && !moreSheet.classList.contains("hidden")) {
+          closeMoreSheet();
+        } else if ($("infoModal") && !$("infoModal").classList.contains("hidden")) {
+          closeModal();
+        } else if (!dd.classList.contains("hidden")) {
+          dd.classList.add("hidden");
+        } else if (state.view === "stock") {
+          closeStockTab();
+        }
+      }
+    });
   }
 
   // ---- HOVER & TOUCH TOOLTIPS FOR SCORES & TECHNICAL TERMS (Viewport-Safe on iOS, Android & Desktop) ----
