@@ -245,13 +245,11 @@
       state.breaking = Array.isArray(b.items) ? b.items : [];
       $("breakingCount").textContent = String(state.breaking.length);
       if ($("moreBreakingCount")) $("moreBreakingCount").textContent = String(state.breaking.length);
-      if ($("mobileMoreDot")) $("mobileMoreDot").classList.toggle("hidden", state.breaking.length === 0);
       if (b.updated_at) $("breakingUpdated").textContent = `Updated ${b.updated_at.replace("T", " ").replace("Z", " UTC")} · Auto-checked every hour (24/7)`;
     } catch {
       state.breaking = [];
       $("breakingCount").textContent = "0";
       if ($("moreBreakingCount")) $("moreBreakingCount").textContent = "0";
-      if ($("mobileMoreDot")) $("mobileMoreDot").classList.add("hidden");
     }
     renderBreaking();
   }
@@ -681,39 +679,32 @@
     ];
     $("alertsSection").innerHTML = alertsHtml.map((c) => {
       const extra = Math.max(0, c.items.length - INITIAL_SHOW);
-      const countBadge = extra > 0
-        ? `<span class="alert-count alert-count-toggle" data-count="${c.count}" title="Click to show all ${c.count}">${c.count} ▾</span>`
-        : `<span class="alert-count">${c.count}</span>`;
       return `
       <div class="alert-card${extra > 0 ? " has-more" : ""}" data-expanded="false">
-        <div class="alert-title"${extra > 0 ? ' role="button" tabindex="0" style="cursor:pointer"' : ""}><span>${esc(c.title)}</span>${countBadge}</div>
+        <div class="alert-title"><span>${esc(c.title)}</span><span class="alert-count">${c.count}</span></div>
         <div class="alert-pills">${c.items.length ? c.items.join("") : `<span class="muted">${c.empty}</span>`}</div>
       </div>
     `;
     }).join("");
     const toggleAlertCard = (card) => {
       if (!card || !card.classList.contains("has-more")) return;
-      const expanded = card.dataset.expanded === "true";
-      const nextExpanded = !expanded;
+      const nextExpanded = card.dataset.expanded !== "true";
       card.dataset.expanded = String(nextExpanded);
       card.querySelectorAll(".alert-extra-pill").forEach((p) => {
         p.classList.toggle("hidden", !nextExpanded);
         p.style.display = nextExpanded ? "inline-flex" : "none";
       });
-      const badge = card.querySelector(".alert-count-toggle");
-      if (badge) {
-        badge.textContent = `${badge.dataset.count} ${nextExpanded ? "▴" : "▾"}`;
-      }
     };
     $("alertsSection").onclick = (ev) => {
-      const titleEl = ev.target.closest(".alert-card.has-more .alert-title");
-      if (titleEl) {
-        toggleAlertCard(titleEl.closest(".alert-card"));
-        return;
-      }
+      if (ev.target.closest("a.ticker-pill")) return;
       const pill = ev.target.closest(".ticker-pill[data-sym]");
       if (pill) {
         openStock(pill.dataset.sym);
+        return;
+      }
+      const card = ev.target.closest(".alert-card.has-more");
+      if (card) {
+        toggleAlertCard(card);
       }
     };
 
@@ -1302,12 +1293,65 @@
       } else {
         fitW = fitH * stageAR;
       }
+      const maxPanX = fitW * 0.55;
+      const maxPanY = fitH * 0.55;
+      viewState.panX = Math.max(-maxPanX, Math.min(maxPanX, viewState.panX));
+      viewState.panY = Math.max(-maxPanY, Math.min(maxPanY, viewState.panY));
       const vw = fitW / viewState.zoom;
       const vh = fitH / viewState.zoom;
       const vx = baseCX - vw / 2 + viewState.panX;
       const vy = baseCY - vh / 2 + viewState.panY;
       svg.setAttribute("viewBox", `${vx.toFixed(1)} ${vy.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}`);
       if (resetBtn) resetBtn.textContent = `${Math.round(viewState.zoom * 100)}%`;
+      return { fitW, fitH, vw, vh, vx, vy, rect };
+    };
+
+    const MIN_Z = 0.6;
+    const MAX_Z = 4.0;
+    const defaultZoom = () => (window.innerWidth <= 640 ? 1.12 : 1.0);
+    let animFrame = null;
+    const cancelAnim = () => { if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; } };
+
+    const animateTo = (targetZoom, targetPanX, targetPanY, ms = 180) => {
+      cancelAnim();
+      const tz = Math.max(MIN_Z, Math.min(MAX_Z, targetZoom));
+      const sz = viewState.zoom, sx = viewState.panX, sy = viewState.panY;
+      const t0 = performance.now();
+      const step = (now) => {
+        const p = Math.min(1, (now - t0) / ms);
+        const ease = 1 - Math.pow(1 - p, 3);
+        viewState.zoom = sz + (tz - sz) * ease;
+        viewState.panX = sx + (targetPanX - sx) * ease;
+        viewState.panY = sy + (targetPanY - sy) * ease;
+        updateViewBox();
+        if (p < 1) animFrame = requestAnimationFrame(step);
+        else animFrame = null;
+      };
+      animFrame = requestAnimationFrame(step);
+    };
+
+    // Focal-point zoom: keeps the SVG point under (clientX, clientY) anchored
+    const zoomAt = (clientX, clientY, targetZoom, animate = false) => {
+      const box = updateViewBox();
+      if (!box || box.rect.width < 20) return;
+      const newZ = Math.max(MIN_Z, Math.min(MAX_Z, targetZoom));
+      const relX = (clientX - box.rect.left) / box.rect.width;
+      const relY = (clientY - box.rect.top) / box.rect.height;
+      const worldX = box.vx + relX * box.vw;
+      const worldY = box.vy + relY * box.vh;
+      const newVW = box.fitW / newZ;
+      const newVH = box.fitH / newZ;
+      const nextPanX = (worldX - relX * newVW) - (baseCX - newVW / 2);
+      const nextPanY = (worldY - relY * newVH) - (baseCY - newVH / 2);
+      if (animate) {
+        animateTo(newZ, nextPanX, nextPanY);
+      } else {
+        cancelAnim();
+        viewState.zoom = newZ;
+        viewState.panX = nextPanX;
+        viewState.panY = nextPanY;
+        updateViewBox();
+      }
     };
 
     updateViewBox();
@@ -1315,81 +1359,127 @@
 
     container.querySelector("#bZoomInBtn").onclick = (e) => {
       e.stopPropagation();
-      viewState.zoom = Math.min(3.8, viewState.zoom * 1.3);
-      updateViewBox();
+      animateTo(viewState.zoom * 1.32, viewState.panX, viewState.panY);
     };
     container.querySelector("#bZoomOutBtn").onclick = (e) => {
       e.stopPropagation();
-      viewState.zoom = Math.max(0.65, viewState.zoom / 1.3);
-      updateViewBox();
+      animateTo(viewState.zoom / 1.32, viewState.panX, viewState.panY);
     };
     resetBtn.onclick = (e) => {
       e.stopPropagation();
-      viewState.zoom = window.innerWidth <= 640 ? 1.12 : 1.0;
-      viewState.panX = 0;
-      viewState.panY = 0;
-      updateViewBox();
+      animateTo(defaultZoom(), 0, 0, 220);
     };
 
-    // Mouse / 1-finger drag pan & 2-finger pinch-to-zoom on stage
+    // Smooth focal wheel/trackpad zoom, pointer-capture pan, double-click zoom, & 2-finger pinch+pan
     let isDragging = false;
+    let activePointerId = null;
     let dragMoved = 0;
     let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
-    let pinchStartDist = null;
-    let pinchStartZoom = 1;
+    let pinchState = null;
+
+    stage.style.cursor = "grab";
 
     stage.addEventListener("wheel", (e) => {
       e.preventDefault();
-      const factor = e.deltaY < 0 ? 1.14 : 0.88;
-      viewState.zoom = Math.max(0.65, Math.min(3.8, viewState.zoom * factor));
-      updateViewBox();
+      const sens = e.ctrlKey ? 0.011 : 0.0024;
+      const clampedDelta = Math.max(-140, Math.min(140, e.deltaY));
+      const factor = Math.exp(-clampedDelta * sens);
+      zoomAt(e.clientX, e.clientY, viewState.zoom * factor, false);
     }, { passive: false });
+
+    stage.addEventListener("dblclick", (e) => {
+      if (e.target.closest(".bubble-zoom-bar, .orbit-bubble, .center-bubble, .edge-badge")) return;
+      e.preventDefault();
+      if (viewState.zoom >= 1.9) {
+        animateTo(defaultZoom(), 0, 0, 220);
+      } else {
+        zoomAt(e.clientX, e.clientY, viewState.zoom * 1.65, true);
+      }
+    });
 
     stage.addEventListener("pointerdown", (e) => {
       if (e.target.closest(".bubble-zoom-bar")) return;
+      if (e.pointerType === "touch" && pinchState) return;
+      cancelAnim();
       isDragging = true;
+      activePointerId = e.pointerId;
       dragMoved = 0;
       startX = e.clientX;
       startY = e.clientY;
       startPanX = viewState.panX;
       startPanY = viewState.panY;
+      stage.style.cursor = "grabbing";
+      try { stage.setPointerCapture(e.pointerId); } catch {}
     });
-    window.addEventListener("pointermove", (e) => {
-      if (!isDragging || pinchStartDist != null) return;
+    stage.addEventListener("pointermove", (e) => {
+      if (!isDragging || e.pointerId !== activePointerId || pinchState) return;
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
       dragMoved = Math.max(dragMoved, Math.hypot(dx, dy));
-      if (dragMoved > 4) {
-        const rect = stage.getBoundingClientRect();
-        const scale = (baseW / viewState.zoom) / Math.max(200, rect.width);
-        viewState.panX = startPanX - dx * scale;
-        viewState.panY = startPanY - dy * scale;
+      if (dragMoved > 3) {
+        const box = updateViewBox();
+        if (!box) return;
+        const scaleX = box.vw / Math.max(120, box.rect.width);
+        const scaleY = box.vh / Math.max(120, box.rect.height);
+        viewState.panX = startPanX - dx * scaleX;
+        viewState.panY = startPanY - dy * scaleY;
         updateViewBox();
       }
     });
-    window.addEventListener("pointerup", () => { isDragging = false; });
+    const endDrag = (e) => {
+      if (e.pointerId !== activePointerId) return;
+      isDragging = false;
+      activePointerId = null;
+      stage.style.cursor = "grab";
+      try { stage.releasePointerCapture(e.pointerId); } catch {}
+    };
+    stage.addEventListener("pointerup", endDrag);
+    stage.addEventListener("pointercancel", endDrag);
 
     stage.addEventListener("touchstart", (e) => {
       if (e.touches.length === 2) {
-        pinchStartDist = Math.hypot(
-          e.touches[1].clientX - e.touches[0].clientX,
-          e.touches[1].clientY - e.touches[0].clientY
-        );
-        pinchStartZoom = viewState.zoom;
+        cancelAnim();
+        isDragging = false;
+        const t0 = e.touches[0], t1 = e.touches[1];
+        const midX = (t0.clientX + t1.clientX) / 2;
+        const midY = (t0.clientY + t1.clientY) / 2;
+        const dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+        const box = updateViewBox();
+        if (!box || dist < 10) return;
+        const relX = (midX - box.rect.left) / box.rect.width;
+        const relY = (midY - box.rect.top) / box.rect.height;
+        pinchState = {
+          startDist: dist,
+          startZoom: viewState.zoom,
+          worldX: box.vx + relX * box.vw,
+          worldY: box.vy + relY * box.vh,
+          fitW: box.fitW,
+          fitH: box.fitH,
+          rect: box.rect,
+        };
       }
     }, { passive: true });
     stage.addEventListener("touchmove", (e) => {
-      if (e.touches.length === 2 && pinchStartDist > 10) {
+      if (e.touches.length === 2 && pinchState) {
         e.preventDefault();
-        const dist = Math.hypot(
-          e.touches[1].clientX - e.touches[0].clientX,
-          e.touches[1].clientY - e.touches[0].clientY
-        );
-        viewState.zoom = Math.max(0.65, Math.min(3.8, pinchStartZoom * (dist / pinchStartDist)));
+        const t0 = e.touches[0], t1 = e.touches[1];
+        const midX = (t0.clientX + t1.clientX) / 2;
+        const midY = (t0.clientY + t1.clientY) / 2;
+        const dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+        const newZ = Math.max(MIN_Z, Math.min(MAX_Z, pinchState.startZoom * (dist / pinchState.startDist)));
+        const relX = (midX - pinchState.rect.left) / pinchState.rect.width;
+        const relY = (midY - pinchState.rect.top) / pinchState.rect.height;
+        const newVW = pinchState.fitW / newZ;
+        const newVH = pinchState.fitH / newZ;
+        viewState.zoom = newZ;
+        viewState.panX = (pinchState.worldX - relX * newVW) - (baseCX - newVW / 2);
+        viewState.panY = (pinchState.worldY - relY * newVH) - (baseCY - newVH / 2);
         updateViewBox();
       }
     }, { passive: false });
-    stage.addEventListener("touchend", () => { pinchStartDist = null; }, { passive: true });
+    stage.addEventListener("touchend", (e) => {
+      if (e.touches.length < 2) pinchState = null;
+    }, { passive: true });
 
     // Selected Bubble & Relationship Inspector Drawer (touch names directly to navigate — zero duplicate buttons)
     const inspector = container.querySelector("#bubbleInspectorCard");
@@ -1537,11 +1627,12 @@
         const idx = Number(nodeEl.dataset.idx);
         const targetItem = nodesPos[idx];
         if (nodeEl.classList.contains("edge-badge") && targetItem?.type === "co_mention") {
-          const url = targetItem.source || targetItem.articles?.[0]?.url;
-          if (url) {
-            window.open(url, "_blank", "noopener");
-            return;
-          }
+          const isHttp = (u) => typeof u === "string" && /^https?:\/\//i.test(u.trim());
+          const url = (targetItem.articles || []).find((a) => a && isHttp(a.url))?.url
+            || (isHttp(targetItem.source) ? targetItem.source.trim() : null)
+            || `https://news.google.com/search?q=${encodeURIComponent(`${center.symbol} ${targetItem.symbol} stock`)}`;
+          window.open(url, "_blank", "noopener");
+          return;
         }
         if (idx === selectedIdx && nodeEl.classList.contains("orbit-bubble")) {
           recenterOnItem(targetItem);
@@ -1731,11 +1822,91 @@
           }).join("")
         : `<div class="muted">No short interest data available.</div>`;
 
+      // 5. Sector Capital Rotation (All 39 stocks: Signed Dollar Flow & Avg 20d U/D)
+      const secMap = new Map();
+      for (const t of allTickers) {
+        const sec = t.sector || "other";
+        if (!secMap.has(sec)) secMap.set(sec, { sector: sec, signedUsd: 0, totalUsd: 0, udList: [], upCnt: 0, dnCnt: 0 });
+        const b = secMap.get(sec);
+        const dv = Number(t.dollar_volume_usd || 0);
+        const chg = Number(t.change_1d_pct || 0);
+        b.totalUsd += dv;
+        b.signedUsd += chg >= 0 ? dv : -dv;
+        if (chg >= 0) b.upCnt++; else b.dnCnt++;
+        if (t.updown_vol_20d != null && Number.isFinite(Number(t.updown_vol_20d))) {
+          b.udList.push(Number(t.updown_vol_20d));
+        }
+      }
+      const secFlows = [...secMap.values()]
+        .map((b) => ({ ...b, avgUd: calcMean(b.udList) }))
+        .sort((a, b) => b.signedUsd - a.signedUsd);
+      const maxSecAbs = Math.max(1, ...secFlows.map((x) => Math.abs(x.signedUsd)));
+      const secLeader = secFlows[0];
+      const secLaggard = secFlows[secFlows.length - 1];
+      const secBarsHtml = secFlows.map((x) => {
+        const isPos = x.signedUsd >= 0;
+        const pct = Math.min(100, (Math.abs(x.signedUsd) / maxSecAbs) * 100);
+        return `
+          <div class="sm-bar-row" data-sector-open="${esc(x.sector)}">
+            <span class="sm-bar-sym" style="width:110px;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(fmtSector(x.sector))}</span>
+            <div class="sm-bar-track">
+              <div class="sm-bar-fill ${isPos ? "up" : "dn"}" style="width:${pct.toFixed(1)}%"></div>
+            </div>
+            <span class="sm-bar-val ${isPos ? "pos" : "neg"}">${isPos ? "+" : "-"}${fmtCap(Math.abs(x.signedUsd))}</span>
+          </div>`;
+      }).join("");
+
+      // 6. 20-Day Quiet Accumulation vs Silent Distribution Leaders (All 39 stocks)
+      const withUd = allTickers
+        .filter((t) => t.updown_vol_20d != null && Number.isFinite(Number(t.updown_vol_20d)))
+        .sort((a, b) => Number(b.updown_vol_20d) - Number(a.updown_vol_20d));
+      const topAcc20 = withUd.slice(0, 5);
+      const topDist20 = [...withUd].reverse().slice(0, 5);
+      const renderUdMini = (list, cls) => list.map((t) => `
+        <div class="flow-mini-row" data-sym="${esc(t.symbol)}">
+          <span><strong>${esc(t.symbol)}</strong> <span class="muted">${fmtPct(t.change_1d_pct, 1)}</span></span>
+          <span class="${cls}" style="font-weight:700;font-variant-numeric:tabular-nums">${fmtNum(t.updown_vol_20d, 2)}x</span>
+        </div>`).join("");
+
+      // Executive Flow KPI Strip (4 high-signal cards)
+      const kpiEl = $("flowKpiStrip");
+      if (kpiEl) {
+        const topBuyer = insBuys[0];
+        const regimeWord = udMed == null ? "Neutral" : udMed >= 1.15 ? "Accumulation" : udMed <= 0.85 ? "Distribution" : "Balanced";
+        const regimeCls = udMed == null ? "" : udMed >= 1.15 ? "pos" : udMed <= 0.85 ? "neg" : "warn";
+        kpiEl.innerHTML = `
+          <div class="kpi-card">
+            <div class="kpi-label">Session Net Surge Flow</div>
+            <div class="kpi-val ${clsPct(netFlow)}">${netFlow >= 0 ? "+" : "-"}${fmtCap(Math.abs(netFlow))}</div>
+            <div class="kpi-sub">${accPct}% inflow / ${distPct}% outflow (${vf.length} surges)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">20d Tape Regime</div>
+            <div class="kpi-val ${regimeCls}">${regimeWord}</div>
+            <div class="kpi-sub">Median U/D ${fmtNum(udMed, 2)} · ${udAcc} acc / ${udDist} dist</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Sector Capital Rotation</div>
+            <div class="kpi-val" style="font-size:15px;line-height:1.35">
+              ${secLeader ? `<span class="pos">${esc(fmtSector(secLeader.sector))}</span>` : "—"}
+              <span class="muted"> / </span>
+              ${secLaggard ? `<span class="neg">${esc(fmtSector(secLaggard.sector))}</span>` : "—"}
+            </div>
+            <div class="kpi-sub">Strongest inflow vs heaviest outflow</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">90d Form 4 Insiders</div>
+            <div class="kpi-val" style="font-size:16px"><span class="pos">${fmtCap(insBuyUsd)}</span> <span class="muted">/</span> <span class="neg">${fmtCap(insSellUsd)}</span></div>
+            <div class="kpi-sub">${insBuys.length} buys vs ${insSells.length} sells${topBuyer ? ` · Top buy: ${esc(topBuyer.symbol)}` : ""}</div>
+          </div>
+        `;
+      }
+
       chartsEl.innerHTML = `
         <div class="sm-chart-card">
           <div class="sm-chart-hdr">
             <span class="sm-chart-title">1. Session Institutional Dollar Flow</span>
-            <span class="muted">n = ${vf.length} / ${allTickers.length} stocks (&ge;1.35x vol)</span>
+            <span class="muted">n = ${vf.length} / ${allTickers.length} (&ge;1.35x vol)</span>
           </div>
           <div class="sm-donut-wrap">
             <svg class="sm-donut-svg" viewBox="0 0 100 100">
@@ -1750,8 +1921,8 @@
               <text x="50" y="61" text-anchor="middle" fill="var(--muted)" font-size="8" font-weight="700">${centerLblTxt}</text>
             </svg>
             <div class="sm-donut-legend">
-              <div class="sm-dl-row"><span class="pos">● Accumulation (${accCnt})</span><strong>${fmtCap(accUsd)} (${accPct}%)</strong></div>
-              <div class="sm-dl-row"><span class="neg">● Distribution (${distCnt})</span><strong>${fmtCap(distUsd)} (${distPct}%)</strong></div>
+              <div class="sm-dl-row"><span class="pos">Accumulation (${accCnt})</span><strong>${fmtCap(accUsd)} (${accPct}%)</strong></div>
+              <div class="sm-dl-row"><span class="neg">Distribution (${distCnt})</span><strong>${fmtCap(distUsd)} (${distPct}%)</strong></div>
               <div class="sm-dl-row"><span class="muted">Net Imbalance</span><strong class="${clsPct(netFlow)}">${netFlow >= 0 ? "+" : "-"}${fmtCap(Math.abs(netFlow))}</strong></div>
               <div class="sm-dl-row" style="padding-top:5px;border-top:1px solid var(--border)">
                 <span class="muted">90d Form 4 Buys / Sells</span>
@@ -1765,7 +1936,7 @@
         <div class="sm-chart-card">
           <div class="sm-chart-hdr">
             <span class="sm-chart-title">2. 20-Day Accumulation vs Distribution Regime</span>
-            <span class="muted">All n = ${udVals.length} stocks (O'Neil U/D Ratio)</span>
+            <span class="muted">All n = ${udVals.length} (O'Neil U/D)</span>
           </div>
           <div class="sm-stat-strip">
             <div class="sm-stat-cell"><span class="sm-stat-k">Median U/D</span><span class="sm-stat-v ${udMed >= 1.2 ? "pos" : udMed <= 0.8 ? "neg" : ""}">${fmtNum(udMed, 2)}</span></div>
@@ -1778,16 +1949,43 @@
             <div style="width:${udDistPct}%;background:var(--red)"></div>
           </div>
           <div class="sm-dl-row" style="font-size:11.5px">
-            <span class="pos">● Acc (&ge;1.2): ${udAcc} (${udAccPct}%)</span>
-            <span class="muted">● Neutral: ${udNeu} (${udNeuPct}%)</span>
-            <span class="neg">● Dist (&le;0.8): ${udDist} (${udDistPct}%)</span>
+            <span class="pos">Acc (&ge;1.2): ${udAcc} (${udAccPct}%)</span>
+            <span class="muted">Neutral: ${udNeu} (${udNeuPct}%)</span>
+            <span class="neg">Dist (&le;0.8): ${udDist} (${udDistPct}%)</span>
           </div>
           <div class="sm-note-box">${esc(udTakeaway)}</div>
         </div>
 
         <div class="sm-chart-card">
           <div class="sm-chart-hdr">
-            <span class="sm-chart-title">3. Abnormal Volume Surges (RVOL vs 20d Avg)</span>
+            <span class="sm-chart-title">3. Sector Capital Rotation (Session Dollar Flow)</span>
+            <span class="muted">Signed turnover across all sectors</span>
+          </div>
+          <div class="sm-bar-list">${secBarsHtml}</div>
+          <div class="sm-note-box">Green bars indicate net inflow (advancing turnover); red bars indicate net outflow. Tap any sector to inspect its constituents.</div>
+        </div>
+
+        <div class="sm-chart-card">
+          <div class="sm-chart-hdr">
+            <span class="sm-chart-title">4. 20-Day Quiet Accumulation vs Distribution Leaders</span>
+            <span class="muted">Persistent multi-week tape pressure</span>
+          </div>
+          <div class="flow-dual-grid">
+            <div>
+              <div class="flow-dual-hdr pos">Top Accumulation (U/D)</div>
+              ${renderUdMini(topAcc20, "pos")}
+            </div>
+            <div>
+              <div class="flow-dual-hdr neg">Top Distribution (U/D)</div>
+              ${renderUdMini(topDist20, "neg")}
+            </div>
+          </div>
+          <div class="sm-note-box">Catches stealth institutional buying (&ge;1.2x) and silent distribution (&le;0.8x) over the past 20 trading days even without a 1-day spike.</div>
+        </div>
+
+        <div class="sm-chart-card">
+          <div class="sm-chart-hdr">
+            <span class="sm-chart-title">5. Abnormal Volume Surges (RVOL vs 20d Avg)</span>
             <span class="muted">Top ${Math.min(8, vf.length)} of ${vf.length}</span>
           </div>
           <div class="sm-stat-strip">
@@ -1801,48 +1999,76 @@
 
         <div class="sm-chart-card">
           <div class="sm-chart-hdr">
-            <span class="sm-chart-title">4. Short Interest Crowding (% of Float)</span>
+            <span class="sm-chart-title">6. Short Interest Crowding (% of Float)</span>
             <span class="muted">Top ${Math.min(8, si.length)} of ${si.length} tracked</span>
           </div>
           <div class="sm-stat-strip">
             <div class="sm-stat-cell"><span class="sm-stat-k">Median Short</span><span class="sm-stat-v warn">${fmtNum(siMed, 1)}%</span></div>
-            <div class="sm-stat-cell"><span class="sm-stat-k">&ge;10% Float</span><span class="sm-stat-v neg">${siGt10} stocks</span></div>
-            <div class="sm-stat-cell"><span class="sm-stat-k">&ge;20% Extreme</span><span class="sm-stat-v neg">${siGt20} stocks</span></div>
+            <div class="sm-stat-cell"><span class="sm-stat-k">&ge;10% Float</span><span class="sm-stat-v neg">${siGt10}</span></div>
+            <div class="sm-stat-cell"><span class="sm-stat-k">&ge;20% Extreme</span><span class="sm-stat-v neg">${siGt20}</span></div>
           </div>
           <div class="sm-bar-list">${siBarsHtml}</div>
           <div class="sm-axis-labels"><span>0%</span><span>10%</span><span>20%</span><span>${Math.round(maxSi)}%</span></div>
         </div>
       `;
 
-      chartsEl.querySelectorAll(".sm-bar-row[data-sym]").forEach((row) => {
+      chartsEl.querySelectorAll(".sm-bar-row[data-sym], .flow-mini-row[data-sym]").forEach((row) => {
         row.onclick = () => openStock(row.dataset.sym);
       });
+      chartsEl.querySelectorAll(".sm-bar-row[data-sector-open]").forEach((row) => {
+        row.onclick = () => openSectorModal(row.dataset.sectorOpen);
+      });
 
-      if ($("vfCountBadge")) $("vfCountBadge").textContent = `(${vf.length} stocks)`;
+      if ($("vfCountBadge")) $("vfCountBadge").textContent = `(${vf.length})`;
       if ($("insBuyMeta")) $("insBuyMeta").textContent = `(n = ${insBuys.length} · ${fmtCap(insBuyUsd)})`;
       if ($("insSellMeta")) $("insSellMeta").textContent = `(n = ${insSells.length} · ${fmtCap(insSellUsd)})`;
       if ($("siMeta")) $("siMeta").textContent = `(Median ${fmtNum(siMed, 1)}%)`;
     }
 
-    $("volumeFlowGrid").innerHTML = vf.length ? vf.map((x) => `
-      <div class="notable-card" data-sym="${esc(x.symbol)}">
-        <div class="notable-top">
-          <div>
-            <div class="notable-sym">${esc(x.symbol)} <span class="tag ${x.flow === "Accumulation" ? "bull" : "bear"}">${esc(x.flow)}</span></div>
-            <div class="notable-name">${esc(x.name || "")}</div>
+    const renderSurgeCards = (filterVal) => {
+      const list = filterVal === "all" ? vf : vf.filter((x) => x.flow === filterVal);
+      $("volumeFlowGrid").innerHTML = list.length ? list.map((x) => {
+        const isAcc = x.flow === "Accumulation";
+        const ud = Number(x.updown_vol_20d || 0);
+        const rvol = Number(x.vol_ratio_20d || 0);
+        const signal = isAcc
+          ? (ud >= 1.2 && rvol >= 1.8 ? "High-Conviction Accumulation" : ud >= 1.1 ? "Confirming Inflow" : "Counter-Trend Bounce")
+          : (ud <= 0.8 && rvol >= 1.8 ? "Climax Distribution" : ud <= 0.9 ? "Confirming Outflow" : "Profit-Taking Spike");
+        return `
+        <div class="notable-card" data-sym="${esc(x.symbol)}">
+          <div class="notable-top">
+            <div>
+              <div class="notable-sym">${esc(x.symbol)} <span class="tag ${isAcc ? "bull" : "bear"}">${esc(x.flow)}</span></div>
+              <div class="notable-name">${esc(x.name || "")}</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price-pill ${clsPct(x.change_1d_pct)}">${fmtPct(x.change_1d_pct, 1)}</div>
+              <div style="margin-top:4px"><span class="score-badge">${fmtNum(rvol, 2)}x vol</span></div>
+            </div>
           </div>
-          <div style="text-align:right">
-            <div class="price-pill ${clsPct(x.change_1d_pct)}">${fmtPct(x.change_1d_pct, 1)}</div>
-            <div style="margin-top:4px"><span class="score-badge">${fmtNum(x.vol_ratio_20d, 2)}x vol</span></div>
+          <div class="muted" style="margin-top:6px">
+            Turnover: <strong>${fmtCap(x.dollar_volume_usd)}</strong> · 20d U/D: <strong class="${ud >= 1.2 ? "pos" : ud <= 0.8 ? "neg" : ""}">${fmtNum(ud, 2)}x</strong>
           </div>
+          <div class="muted" style="margin-top:3px;font-size:11.5px">${esc(signal)}</div>
         </div>
-        <div class="muted" style="margin-top:6px">
-          Dollar flow: <strong>${fmtCap(x.dollar_volume_usd)}</strong> · 20d Up/Down vol: <strong>${fmtNum(x.updown_vol_20d, 2)}</strong>
-        </div>
-      </div>
-    `).join("") : `<div class="panel muted">No unusual volume surges (&ge; 1.35x) on this session.</div>`;
-    $("volumeFlowGrid").querySelectorAll(".notable-card").forEach((el) => {
-      el.onclick = () => openStock(el.dataset.sym);
+      `;
+      }).join("") : `<div class="panel muted">No ${filterVal === "all" ? "" : filterVal.toLowerCase() + " "}volume surges (&ge; 1.35x) on this session.</div>`;
+      $("volumeFlowGrid").querySelectorAll(".notable-card").forEach((el) => {
+        el.onclick = () => openStock(el.dataset.sym);
+      });
+    };
+
+    let activeFlowFilter = "all";
+    renderSurgeCards(activeFlowFilter);
+    document.querySelectorAll("#flowSurgeFilters [data-flow-filter]").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.flowFilter === activeFlowFilter);
+      btn.onclick = () => {
+        activeFlowFilter = btn.dataset.flowFilter;
+        document.querySelectorAll("#flowSurgeFilters [data-flow-filter]").forEach((b) => {
+          b.classList.toggle("active", b.dataset.flowFilter === activeFlowFilter);
+        });
+        renderSurgeCards(activeFlowFilter);
+      };
     });
 
     const renderInsList = (id, items, emptyTxt, badgeCls) => {
@@ -1863,6 +2089,9 @@
     renderInsList("smInsiderSells", sm.insider_sells, "No open-market Form 4 insider sells in the 90-day window.", "bear");
 
     const wf = sm.whale_filings || [];
+    if ($("smWhalePanel")) {
+      $("smWhalePanel").classList.toggle("hidden", wf.length === 0);
+    }
     $("smWhaleFilings").innerHTML = wf.length ? wf.map((f) => `
       <div class="feed-item">
         <div class="feed-meta">
@@ -1870,23 +2099,30 @@
           <span class="tag amber">${esc(f.form)}</span>
           <span>${esc((f.published || "").slice(0, 10))}</span>
         </div>
-        <a class="feed-title" href="${esc(f.url || "#")}" target="_blank" rel="noopener">${esc(f.title)}</a>
+        <a class="feed-title" href="${esc(secHtmlUrl(f.url || "#"))}" target="_blank" rel="noopener">${esc(f.title)}</a>
       </div>
-    `).join("") : `<div class="muted">No recent SC 13D / 13G (&gt;5% stake) filings in the 90-day window.</div>`;
+    `).join("") : "";
     $("smWhaleFilings").querySelectorAll(".ticker-pill").forEach((p) => { p.onclick = () => openStock(p.dataset.sym); });
 
-    $("smShortInterest").innerHTML = si.length ? si.map((x) => `
+    $("smShortInterest").innerHTML = si.length ? si.map((x) => {
+      const squeezeTag = x.short_pct_float >= 10 && Number(x.change_1d_pct || 0) >= 2
+        ? `<span class="tag bull" style="margin-left:5px">Squeeze</span>`
+        : x.short_pct_float >= 20
+          ? `<span class="tag bear" style="margin-left:5px">Extreme</span>`
+          : "";
+      return `
       <div class="level-row" data-sym="${esc(x.symbol)}" style="cursor:pointer">
         <div>
           <strong>${esc(x.symbol)}</strong>
-          <span class="muted" style="margin-left:6px">${esc(x.name || "")}</span>
+          <span class="muted" style="margin-left:6px">${esc(x.name || "")}</span>${squeezeTag}
         </div>
         <div style="text-align:right">
           <span class="tag ${x.short_pct_float >= 10 ? "bear" : "amber"}">${fmtNum(x.short_pct_float, 1)}% float</span>
           <span class="${clsPct(x.change_1d_pct)}" style="margin-left:6px;font-size:12px;font-weight:700">${fmtPct(x.change_1d_pct, 1)}</span>
         </div>
       </div>
-    `).join("") : `<div class="muted">Short interest unavailable.</div>`;
+    `;
+    }).join("") : `<div class="muted">Short interest unavailable.</div>`;
     $("smShortInterest").querySelectorAll(".level-row").forEach((r) => { r.onclick = () => openStock(r.dataset.sym); });
   }
 
@@ -3091,8 +3327,8 @@
       });
     });
 
-    // Quick-Jump Section Bar on Overview
-    document.querySelectorAll("#overviewJumpBar .jump-pill[data-jump]").forEach((btn) => {
+    // Quick-Jump Section Bars (Overview & Flow)
+    document.querySelectorAll(".quick-jump-bar .jump-pill[data-jump]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const target = $(btn.dataset.jump);
         if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });

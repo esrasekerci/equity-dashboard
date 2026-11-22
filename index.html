@@ -16,7 +16,7 @@
   <meta property="og:title" content="racenter" />
   <meta property="og:description" content="Live 39-stock quantitative intelligence, interactive charts, supply-chain value network, Smart Money flow, official legal authorities &amp; SEC filings." />
   <title>racenter</title>
-  <link rel="stylesheet" href="assets/app.css?v=16" />
+  <link rel="stylesheet" href="assets/app.css?v=17" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -182,38 +182,53 @@
     <section id="view-smartmoney" class="view hidden">
       <div class="section-header">
         <div>
-          <h2>Smart Money &amp; Institutional Flow</h2>
-          <p class="section-sub" id="smartMoneyRegimeSub">Cross-sectional institutional volume, Form 4 insider flow &amp; short-interest positioning (n = 39)</p>
+          <h2>Institutional Flow &amp; Positioning</h2>
+          <p class="section-sub" id="smartMoneyRegimeSub">Cross-sectional capital rotation, 20-day accumulation/distribution, Form 4 insider conviction &amp; short crowding</p>
         </div>
       </div>
 
+      <div id="flowKpiStrip" class="kpi-grid flow-kpi-grid"></div>
+
+      <div class="quick-jump-bar" id="flowJumpBar" aria-label="Jump to flow section">
+        <button type="button" class="jump-pill" data-jump="flow-sec-charts">Flow Analytics</button>
+        <button type="button" class="jump-pill" data-jump="flow-sec-surges">Volume Surges</button>
+        <button type="button" class="jump-pill" data-jump="flow-sec-insiders">Form 4 Insiders</button>
+        <button type="button" class="jump-pill" data-jump="flow-sec-shorts">Short Interest</button>
+      </div>
+
+      <div id="flow-sec-charts"></div>
       <div id="smartMoneyCharts" class="sm-charts-grid"></div>
 
-      <div class="section-header" style="margin-top:18px">
+      <div class="section-header" id="flow-sec-surges" style="margin-top:20px">
         <div>
           <h2>Unusual Volume Surges (&ge; 1.35x 20d Avg) <span class="muted" id="vfCountBadge"></span></h2>
-          <p class="section-sub">Sessions with abnormal relative volume (RVOL &ge; 1.35x). Green = Accumulation (close up); Red = Distribution (close down).</p>
+          <p class="section-sub">Abnormal relative volume sessions with dollar turnover, 20d U/D confirmation &amp; conviction classification.</p>
+        </div>
+        <div class="flow-filter-pills" id="flowSurgeFilters">
+          <button type="button" class="jump-pill active" data-flow-filter="all">All</button>
+          <button type="button" class="jump-pill" data-flow-filter="Accumulation">Accumulation</button>
+          <button type="button" class="jump-pill" data-flow-filter="Distribution">Distribution</button>
         </div>
       </div>
       <div id="volumeFlowGrid" class="notable-grid"></div>
 
-      <div class="two-col" style="margin-top:16px">
+      <div class="two-col" id="flow-sec-insiders" style="margin-top:16px">
         <div class="panel">
           <h3>SEC Form 4 Open-Market Insider Buys (90d) <span class="muted" id="insBuyMeta"></span></h3>
-          <p class="section-sub" style="margin-bottom:10px">Discretionary open-market purchases (Code P) by executives &amp; directors — empirically higher conviction than scheduled sells.</p>
+          <p class="section-sub" style="margin-bottom:10px">Discretionary open-market purchases (Code P) by executives &amp; directors — higher conviction than scheduled sells.</p>
           <div id="smInsiderBuys" class="feed-list"></div>
         </div>
         <div class="panel">
           <h3>Largest SEC Form 4 Insider Sells (90d) <span class="muted" id="insSellMeta"></span></h3>
-          <p class="section-sub" style="margin-bottom:10px">Open-market sales (Code S) ranked by USD notional value. Often includes pre-scheduled Rule 10b5-1 diversification plans.</p>
+          <p class="section-sub" style="margin-bottom:10px">Open-market sales (Code S) ranked by USD notional value. Often includes pre-scheduled Rule 10b5-1 plans.</p>
           <div id="smInsiderSells" class="feed-list"></div>
         </div>
       </div>
 
-      <div class="two-col">
+      <div class="two-col" id="flow-sec-shorts">
         <div class="panel">
           <h3>Highest Short Interest (% of Float) <span class="muted" id="siMeta"></span></h3>
-          <p class="section-sub" style="margin-bottom:10px">Shorted shares divided by tradable float. &ge;10% indicates elevated bearish crowding; &ge;20% signals high short-squeeze convexity.</p>
+          <p class="section-sub" style="margin-bottom:10px">Shorted shares divided by float. &ge;10% signals elevated bearish crowding; &ge;20% signals high squeeze convexity.</p>
           <div id="smShortInterest" class="level-list"></div>
         </div>
         <div class="panel" id="smWhalePanel">
@@ -341,7 +356,6 @@
     <button type="button" class="mnav-btn" id="mobileMoreBtn" data-more-trigger="1">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
       <span>More</span>
-      <span class="mnav-dot hidden" id="mobileMoreDot"></span>
     </button>
   </nav>
 
@@ -357,7 +371,7 @@
       <div class="more-sheet-list">
         <button type="button" class="more-sheet-item" data-view="breaking">
           <span>Breaking News</span>
-          <span class="badge-pill hot" id="moreBreakingCount">0</span>
+          <span class="badge-pill" id="moreBreakingCount">0</span>
         </button>
         <button type="button" class="more-sheet-item" data-view="authorities">
           <span>Official Authorities</span>
@@ -375,9 +389,11 @@
     </div>
   </div>
 
-  <!-- Floating Back-to-Top Button -->
-  <button type="button" id="scrollTopBtn" class="scroll-top-btn hidden" aria-label="Back to top" title="Back to top">↑</button>
+  <!-- Minimalist Back-to-Top Button -->
+  <button type="button" id="scrollTopBtn" class="scroll-top-btn hidden" aria-label="Back to top" title="Back to top">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
 
-  <script src="assets/app.js?v=16"></script>
+  <script src="assets/app.js?v=17"></script>
 </body>
 </html>
