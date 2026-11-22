@@ -1,17 +1,17 @@
 {
   "latest": "2026-11-22",
-  "updated_at": "2026-11-22T12:05:25Z",
+  "updated_at": "2026-11-22T16:27:55Z",
   "dates": [
     {
       "date": "2026-11-22",
       "last_bar": "2026-11-20",
-      "n_tickers": 39,
+      "n_tickers": 60,
       "spy_ret_1d": -3.64,
-      "avg_ret_1d": -9.31,
+      "avg_ret_1d": -7.53,
       "top": [
         "NVDA",
-        "MU",
-        "ANET"
+        "AVGO",
+        "GS"
       ]
     },
     {
