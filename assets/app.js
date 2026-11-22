@@ -638,20 +638,21 @@
       ...(al.breakouts || []).map((x) => ({ ...x, dir: "bull" })),
       ...(al.breakdowns || []).map((x) => ({ ...x, dir: "bear" })),
     ];
+    const INITIAL_SHOW = 6;
     const alertsHtml = [
       {
         title: "Patterns & Breakouts",
         count: patternsAll.length,
-        items: patternsAll.slice(0, 8).map((p) => `<span class="ticker-pill" data-sym="${esc(p.symbol)}"><strong>${esc(p.symbol)}</strong><span class="${p.dir === "bull" ? "pos" : "neg"}">${esc(p.kind)}</span></span>`),
+        items: patternsAll.map((p, idx) => `<span class="ticker-pill${idx >= INITIAL_SHOW ? " alert-extra-pill hidden" : ""}" data-sym="${esc(p.symbol)}"><strong>${esc(p.symbol)}</strong><span class="${p.dir === "bull" ? "pos" : "neg"}">${esc(p.kind)}</span></span>`),
         empty: "No active pattern signals",
       },
       {
         title: "Earnings Window (±10d)",
         count: (al.earnings_soon || []).length,
-        items: (al.earnings_soon || []).slice(0, 8).map((e) => {
+        items: (al.earnings_soon || []).map((e, idx) => {
           const row = (s.tickers || []).find((t) => t.symbol === e.symbol) || {};
           const eUrl = secHtmlUrl(row.earnings_url || `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(e.symbol)}`);
-          return `<a class="ticker-pill" href="${esc(eUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><strong>${esc(e.symbol)}</strong><span class="warn">${e.days >= 0 ? `in ${e.days}d` : `${Math.abs(e.days)}d ago`} ↗</span></a>`;
+          return `<a class="ticker-pill${idx >= INITIAL_SHOW ? " alert-extra-pill hidden" : ""}" href="${esc(eUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><strong>${esc(e.symbol)}</strong><span class="warn">${e.days >= 0 ? `in ${e.days}d` : `${Math.abs(e.days)}d ago`} ↗</span></a>`;
         }),
         empty: "No watchlist earnings within ±10d",
       },
@@ -659,26 +660,41 @@
         title: "Extreme RSI (<30 / >70)",
         count: (al.oversold || []).length + (al.overbought || []).length,
         items: [
-          ...(al.oversold || []).slice(0, 5).map((x) => `<span class="ticker-pill" data-sym="${esc(x.symbol)}"><strong>${esc(x.symbol)}</strong><span class="neg">${x.rsi14}</span></span>`),
-          ...(al.overbought || []).slice(0, 5).map((x) => `<span class="ticker-pill" data-sym="${esc(x.symbol)}"><strong>${esc(x.symbol)}</strong><span class="pos">${x.rsi14}</span></span>`),
-        ],
+          ...(al.oversold || []).map((x) => ({ symbol: x.symbol, rsi14: x.rsi14, cls: "neg" })),
+          ...(al.overbought || []).map((x) => ({ symbol: x.symbol, rsi14: x.rsi14, cls: "pos" })),
+        ].map((x, idx) => `<span class="ticker-pill${idx >= INITIAL_SHOW ? " alert-extra-pill hidden" : ""}" data-sym="${esc(x.symbol)}"><strong>${esc(x.symbol)}</strong><span class="${x.cls}">${x.rsi14}</span></span>`),
         empty: "All tickers neutral (30–70)",
       },
       {
         title: "Form 4 Insider Buys",
         count: (al.insider_buys || []).length,
-        items: (al.insider_buys || []).slice(0, 8).map((x) => `<span class="ticker-pill" data-sym="${esc(x.symbol)}"><strong>${esc(x.symbol)}</strong><span class="pos">${x.buys} buy${x.buys > 1 ? "s" : ""}</span></span>`),
+        items: (al.insider_buys || []).map((x, idx) => `<span class="ticker-pill${idx >= INITIAL_SHOW ? " alert-extra-pill hidden" : ""}" data-sym="${esc(x.symbol)}"><strong>${esc(x.symbol)}</strong><span class="pos">${x.buys} buy${x.buys > 1 ? "s" : ""}</span></span>`),
         empty: "No open-market Form 4 buys",
       },
     ];
-    $("alertsSection").innerHTML = alertsHtml.map((c) => `
+    $("alertsSection").innerHTML = alertsHtml.map((c) => {
+      const extra = Math.max(0, c.items.length - INITIAL_SHOW);
+      const moreBtn = extra > 0
+        ? `<button type="button" class="ticker-pill alert-more-btn" data-more="${extra}" aria-expanded="false">+${extra} more ▾</button>`
+        : "";
+      return `
       <div class="alert-card">
         <div class="alert-title"><span>${esc(c.title)}</span><span class="alert-count">${c.count}</span></div>
-        <div class="alert-pills">${c.items.length ? c.items.join("") : `<span class="muted">${c.empty}</span>`}</div>
+        <div class="alert-pills">${c.items.length ? c.items.join("") + moreBtn : `<span class="muted">${c.empty}</span>`}</div>
       </div>
-    `).join("");
+    `;
+    }).join("");
     $("alertsSection").querySelectorAll(".ticker-pill[data-sym]").forEach((el) => {
       el.onclick = () => openStock(el.dataset.sym);
+    });
+    $("alertsSection").querySelectorAll(".alert-more-btn").forEach((btn) => {
+      btn.onclick = () => {
+        const container = btn.closest(".alert-pills");
+        const expanded = btn.getAttribute("aria-expanded") === "true";
+        container.querySelectorAll(".alert-extra-pill").forEach((p) => p.classList.toggle("hidden", expanded));
+        btn.setAttribute("aria-expanded", String(!expanded));
+        btn.textContent = expanded ? `+${btn.dataset.more} more ▾` : "Show less ▴";
+      };
     });
 
     // Earnings Calendar (Upcoming & Recently Reported across all 39 stocks)
