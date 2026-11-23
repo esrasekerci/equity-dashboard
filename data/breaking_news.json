@@ -1,39 +1,40 @@
 {
-  "updated_at": "2026-11-22T21:54:00+00:00",
+  "updated_at": "2026-11-23T02:53:40+00:00",
   "min_importance": 60.0,
   "max_age_hours": 3.0,
   "items": [
     {
-      "key": "5d21317ba0b61fdf",
-      "symbol": "GS",
-      "name": "Goldman Sachs",
-      "title": "Goldman Traders See Entry Point in US Stocks But Warn of Risks",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/goldman-traders-see-entry-point-190502514.html",
-      "source": "Bloomberg",
+      "key": "c3a89e15c66ac3c7",
+      "symbol": "TREASURY / OFAC",
+      "name": "Treasury / OFAC",
+      "title": "Notice of OFAC Sanctions Action",
+      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23785/notice-of-ofac-sanctions-action",
+      "source": "Federal Register (Treasury Department, Foreign Assets Control Office)",
       "source_tier": 1,
-      "published": "2026-11-22T19:05:02+00:00",
-      "importance": 75.5,
+      "published": "2026-11-23T00:00:00+00:00",
+      "importance": 88.0,
       "categories": [
-        "analyst"
+        "official_authority"
       ],
-      "age_hours": 2.82,
-      "detected_at": "2026-11-22T21:54:00+00:00"
+      "age_hours": 2.89,
+      "detected_at": "2026-11-23T02:53:40+00:00"
     },
     {
-      "key": "3de06dec46e13475",
-      "symbol": "PLTR",
-      "name": "Palantir Technologies",
-      "title": "Palantir Technologies (PLTR) Co Hosts Sovereign AI Defense Summit",
-      "url": "https://finance.yahoo.com/technology/ai/articles/palantir-technologies-pltr-co-hosts-210650181.html?.tsrc=rss",
-      "source": "Yahoo Finance",
+      "key": "7b42fb7a0a4b6169",
+      "symbol": "AI / DATA CENTERS",
+      "name": "AI / DATA CENTERS",
+      "title": "Energy Watchdog Forecasts Data Center Revolution: Gas, Solar, Coal In",
+      "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOS2lDTVRPaklZTGF1ZU40c0J6RHFsckRLZlAyRkVJdXQtbGdKdFF2WFFpNTNmNVdzbzZzTHNJSkxzd1MwRUFVY3UyQU1JVU41UUE1SFBVaV9rSXFsNkRkUEx6V3k1VG1iLVdoMUJyemhPdDRlcENKR0pVenZ4LU5IclJsZjF1TzF2RE9BUzFTNlhuQ2xmMXVSeXFLbHVoZTh2dVpTLXdvZHp0R1IwdUpvc2lKcFNDb2xC?oc=5",
+      "source": "Forbes",
       "source_tier": 2,
-      "published": "2026-11-22T21:06:50+00:00",
-      "importance": 62.9,
+      "published": "2026-11-23T02:40:15+00:00",
+      "importance": 68.6,
       "categories": [
-        "contract_partnership"
+        "data_centers_ai",
+        "capex_expansion"
       ],
-      "age_hours": 0.79,
-      "detected_at": "2026-11-22T21:54:00+00:00"
+      "age_hours": 0.22,
+      "detected_at": "2026-11-23T02:53:40+00:00"
     }
   ]
 }
