@@ -1,40 +1,107 @@
 {
-  "updated_at": "2026-11-23T02:53:40+00:00",
+  "updated_at": "2026-11-23T13:04:33+00:00",
   "min_importance": 60.0,
   "max_age_hours": 3.0,
   "items": [
     {
-      "key": "c3a89e15c66ac3c7",
-      "symbol": "TREASURY / OFAC",
-      "name": "Treasury / OFAC",
-      "title": "Notice of OFAC Sanctions Action",
-      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23785/notice-of-ofac-sanctions-action",
-      "source": "Federal Register (Treasury Department, Foreign Assets Control Office)",
+      "key": "a25be15c8b2e2885",
+      "symbol": "CRWD",
+      "name": "CrowdStrike",
+      "title": "CrowdStrike to Buy Zscaler in $44 Billion All-Stock Deal. Why They’re Better Off Together.",
+      "url": "https://www.barrons.com/articles/crowdstrike-stock-zscaler-ai-acquisition-89065203?siteid=yhoof2&yptr=yahoo",
+      "source": "Barrons.com",
       "source_tier": 1,
-      "published": "2026-11-23T00:00:00+00:00",
-      "importance": 88.0,
+      "published": "2026-11-23T12:04:00+00:00",
+      "importance": 93.0,
       "categories": [
-        "official_authority"
+        "m_and_a",
+        "contract_partnership"
       ],
-      "age_hours": 2.89,
-      "detected_at": "2026-11-23T02:53:40+00:00"
+      "age_hours": 1.01,
+      "detected_at": "2026-11-23T13:04:33+00:00"
     },
     {
-      "key": "7b42fb7a0a4b6169",
-      "symbol": "AI / DATA CENTERS",
-      "name": "AI / DATA CENTERS",
-      "title": "Energy Watchdog Forecasts Data Center Revolution: Gas, Solar, Coal In",
-      "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOS2lDTVRPaklZTGF1ZU40c0J6RHFsckRLZlAyRkVJdXQtbGdKdFF2WFFpNTNmNVdzbzZzTHNJSkxzd1MwRUFVY3UyQU1JVU41UUE1SFBVaV9rSXFsNkRkUEx6V3k1VG1iLVdoMUJyemhPdDRlcENKR0pVenZ4LU5IclJsZjF1TzF2RE9BUzFTNlhuQ2xmMXVSeXFLbHVoZTh2dVpTLXdvZHp0R1IwdUpvc2lKcFNDb2xC?oc=5",
-      "source": "Forbes",
-      "source_tier": 2,
-      "published": "2026-11-23T02:40:15+00:00",
-      "importance": 68.6,
+      "key": "bba2c0d4b8435d7f",
+      "symbol": "JPM",
+      "name": "JPMorgan Chase",
+      "title": "JPMorgan Traders Drop Bullish View on Stocks After Selloff",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/jpmorgan-traders-drop-bullish-view-114704931.html",
+      "source": "Bloomberg",
+      "source_tier": 1,
+      "published": "2026-11-23T11:47:04+00:00",
+      "importance": 85.0,
       "categories": [
-        "data_centers_ai",
-        "capex_expansion"
+        "analyst",
+        "market_move"
       ],
-      "age_hours": 0.22,
-      "detected_at": "2026-11-23T02:53:40+00:00"
+      "age_hours": 1.29,
+      "detected_at": "2026-11-23T13:04:33+00:00"
+    },
+    {
+      "key": "5a906a3db80c5885",
+      "symbol": "CRWD",
+      "name": "CrowdStrike",
+      "title": "CrowdStrike to Buy Zscaler in $44 Billion Stock Swap",
+      "url": "https://www.wsj.com/business/deals/crowdstrike-to-buy-zscaler-in-43-9-billion-stock-swap-4c926031?siteid=yhoof2&yptr=yahoo",
+      "source": "The Wall Street Journal",
+      "source_tier": 1,
+      "published": "2026-11-23T11:36:00+00:00",
+      "importance": 77.2,
+      "categories": [
+        "m_and_a"
+      ],
+      "age_hours": 1.48,
+      "detected_at": "2026-11-23T13:04:33+00:00"
+    },
+    {
+      "key": "ed21fef5255889fd",
+      "symbol": "MS",
+      "name": "Morgan Stanley",
+      "title": "Morgan Stanley’s Wilson calls market capitulation a rare opportunity to buy stocks",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/morgan-stanley-wilson-calls-market-125009984.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-23T12:50:09+00:00",
+      "importance": 85.4,
+      "categories": [
+        "m_and_a",
+        "analyst"
+      ],
+      "age_hours": 0.24,
+      "detected_at": "2026-11-23T13:04:33+00:00"
+    },
+    {
+      "key": "eb10852704d6e3a3",
+      "symbol": "CRWD",
+      "name": "CrowdStrike",
+      "title": "CrowdStrike to Acquire Zscaler, Bringing Network Security and Zero Trust to the Falcon Platform",
+      "url": "https://finance.yahoo.com/technology/ai/articles/crowdstrike-acquire-zscaler-bringing-network-103200828.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-23T10:32:00+00:00",
+      "importance": 80.0,
+      "categories": [
+        "m_and_a",
+        "contract_partnership"
+      ],
+      "age_hours": 2.54,
+      "detected_at": "2026-11-23T13:04:33+00:00"
+    },
+    {
+      "key": "657167e3e5cd9982",
+      "symbol": "ISRG",
+      "name": "Intuitive Surgical",
+      "title": "The Zacks Analyst Blog Highlights Intuitive Surgical, STERIS and Pulse Biosciences",
+      "url": "https://finance.yahoo.com/healthcare/articles/zacks-analyst-blog-highlights-intuitive-114700302.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-23T11:47:00+00:00",
+      "importance": 79.6,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 1.29,
+      "detected_at": "2026-11-23T13:04:33+00:00"
     }
   ]
 }
