@@ -1,8 +1,275 @@
 {
-  "updated_at": "2026-11-24T11:04:22+00:00",
-  "min_importance": 60.0,
-  "max_age_hours": 3.0,
+  "updated_at": "2026-11-24T13:23:53+00:00",
+  "min_importance": 42.0,
+  "max_age_hours": 6.0,
   "items": [
+    {
+      "key": "shock_ADI_2026-11-24_drop",
+      "symbol": "ADI",
+      "name": "Analog Devices",
+      "title": "Analog Devices (ADI) drops -11.55% to $335.00 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/ADI",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-24T13:23:53+00:00",
+      "importance": 96.0,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "shock_MU_2026-11-24_drop",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "Micron Technology (MU) drops -6.95% to $658.48 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/MU",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-24T13:23:53+00:00",
+      "importance": 85.4,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "shock_DELL_2026-11-24_drop",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell Technologies (DELL) drops -6.69% to $312.50 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/DELL",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-24T13:23:53+00:00",
+      "importance": 84.7,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "shock_INTC_2026-11-24_drop",
+      "symbol": "INTC",
+      "name": "Intel",
+      "title": "Intel (INTC) drops -6.20% to $55.96 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/INTC",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-24T13:23:53+00:00",
+      "importance": 83.5,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "0cf5ae573c8505d4",
+      "symbol": "UBER",
+      "name": "Uber Technologies",
+      "title": "Nuro and Uber launch driverless testing in San Francisco",
+      "url": "https://www.axios.com/2026/11/24/robotaxi-nuro-uber-lucid-testing-san-francisco#utm_source=yahoo_finance&utm_medium=partner&utm_campaign=subs-partner-yahoo-finance-AI?.tsrc=rss",
+      "source": "axios.com",
+      "source_tier": 1,
+      "published": "2026-11-24T13:01:08+00:00",
+      "importance": 67.8,
+      "categories": [
+        "product_tech"
+      ],
+      "age_hours": 0.38,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "0daad81271f00131",
+      "symbol": "ASML",
+      "name": "ASML Holding",
+      "title": "ASML Stock What Changed After Nvidia CEO Return",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/asml-stock-changed-nvidia-ceo-121558672.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T12:15:58+00:00",
+      "importance": 100.0,
+      "categories": [
+        "earnings_guidance",
+        "supply_chain_producers",
+        "contract_partnership"
+      ],
+      "age_hours": 1.13,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "0c760abdb047d9be",
+      "symbol": "CRWD",
+      "name": "CrowdStrike",
+      "title": "CRWD Q3 Earnings Beat Estimates on Strong ARR & Falcon Flex Adoption",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/crwd-q3-earnings-beat-estimates-120100191.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T12:01:00+00:00",
+      "importance": 100.0,
+      "categories": [
+        "earnings_guidance",
+        "analyst"
+      ],
+      "age_hours": 1.38,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "32a28ab2399ff7ed",
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "title": "Cloud AI Update - Audi Integrates Cutting-Edge AI for In-Car Microsoft Access",
+      "url": "https://finance.yahoo.com/technology/ai/articles/cloud-ai-audi-integrates-cutting-123730181.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T12:37:30+00:00",
+      "importance": 84.7,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 0.77,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "f1665e7748c4d497",
+      "symbol": "CRWD",
+      "name": "CrowdStrike",
+      "title": "Wall Street Stays Bullish on CrowdStrike Despite Zscaler Price Tag",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/wall-street-stays-bullish-crowdstrike-122238753.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T12:22:38+00:00",
+      "importance": 84.3,
+      "categories": [
+        "analyst",
+        "market_move"
+      ],
+      "age_hours": 1.02,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "684470b3e1ba2ae8",
+      "symbol": "ADI",
+      "name": "Analog Devices",
+      "title": "Analog Devices Reports Record Fourth Quarter and Fiscal 2026 Financial Results",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/analog-devices-reports-record-fourth-120100362.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T12:01:00+00:00",
+      "importance": 83.8,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 1.38,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "df3d7819a741549d",
+      "symbol": "APLD",
+      "name": "Applied Digital",
+      "title": "Applied Digital Achieves Initial 25 MW Ready for Service in Harwood, North Dakota, for Hyperscaler, Completes Base-Build Commissioning of First 75 MW",
+      "url": "https://finance.yahoo.com/technology/ai/articles/applied-digital-achieves-initial-25-130000311.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T13:00:00+00:00",
+      "importance": 83.0,
+      "categories": [
+        "contract_partnership",
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 0.4,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "8b4c573547bfaa34",
+      "symbol": "META",
+      "name": "Meta Platforms",
+      "title": "Meta's $60 Billion AI Funding Plan Faces Delay Amid Shareholder Lawsuit",
+      "url": "https://finance.yahoo.com/technology/ai/articles/metas-60-billion-ai-funding-121008904.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T12:10:08+00:00",
+      "importance": 81.8,
+      "categories": [
+        "regulatory_legal",
+        "incident"
+      ],
+      "age_hours": 1.23,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "3905649bea0bc458",
+      "symbol": "GS",
+      "name": "Goldman Sachs",
+      "title": "Ryder CEO John Diez to Address Goldman Sachs Industrials and Materials Conference",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/ryder-ceo-john-diez-address-115500617.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T11:55:00+00:00",
+      "importance": 80.4,
+      "categories": [
+        "analyst",
+        "management"
+      ],
+      "age_hours": 1.48,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "6abe06253f5960da",
+      "symbol": "TSM",
+      "name": "Taiwan Semiconductor",
+      "title": "TSMC Weighs $22.6 Billion Texas Chip Plant, Seeks Tax Breaks",
+      "url": "https://finance.yahoo.com/technology/articles/tsmc-weighs-22-6-billion-114656874.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T11:46:56+00:00",
+      "importance": 79.2,
+      "categories": [
+        "supply_chain_producers",
+        "capex_expansion"
+      ],
+      "age_hours": 1.62,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "406e5420808b2c6b",
+      "symbol": "COIN",
+      "name": "Coinbase Global",
+      "title": "Coinbase Global (COIN) Could Be 56% Below Fair Value On Its Crypto Adoption Narrative",
+      "url": "https://finance.yahoo.com/markets/crypto/articles/coinbase-global-coin-could-56-120940064.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T12:09:40+00:00",
+      "importance": 78.6,
+      "categories": [
+        "regulatory_legal",
+        "product_tech"
+      ],
+      "age_hours": 1.24,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
+    {
+      "key": "81339acde164c624",
+      "symbol": "TSM",
+      "name": "Taiwan Semiconductor",
+      "title": "TSMC and SK Hynix Stocks Jump After Nvidia Reinstates Jensen Huang as CEO",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/tsmc-sk-hynix-stocks-jump-120300756.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T12:03:00+00:00",
+      "importance": 78.5,
+      "categories": [
+        "supply_chain_producers",
+        "management"
+      ],
+      "age_hours": 1.35,
+      "detected_at": "2026-11-24T13:23:53+00:00"
+    },
     {
       "key": "bd1ab32539383ebc",
       "symbol": "JPM",
