@@ -2585,6 +2585,49 @@
     });
   }
 
+  function syncTickerBundleWithLiveRow(t) {
+    if (!t || !state.summary) return t;
+    const liveRow = (state.summary.tickers || []).find((x) => x.symbol === t.symbol);
+    if (!liveRow || liveRow.close == null) return t;
+    const liveClose = Number(liveRow.close);
+    const liveChg = liveRow.change_1d_pct != null ? Number(liveRow.change_1d_pct) : null;
+    if (!Number.isFinite(liveClose) || liveClose <= 0) return t;
+
+    const tech = (t.technical ||= {});
+    const facts = (tech.facts ||= {});
+    facts.last_close = liveClose;
+    if (liveChg != null && Number.isFinite(liveChg)) {
+      facts.change_1d_pct = liveChg;
+    }
+
+    // Keep interactive chart's latest candle synchronized with the Hero price
+    if (Array.isArray(tech.series) && tech.series.length > 0) {
+      const lastBar = tech.series[tech.series.length - 1];
+      lastBar.c = liveClose;
+      if (lastBar.h == null || liveClose > lastBar.h) lastBar.h = liveClose;
+      if (lastBar.l == null || liveClose < lastBar.l) lastBar.l = liveClose;
+    }
+    if (Array.isArray(tech.series_all) && tech.series_all.length > 0) {
+      const lastAll = tech.series_all[tech.series_all.length - 1];
+      lastAll.c = liveClose;
+      if (lastAll.h == null || liveClose > lastAll.h) lastAll.h = liveClose;
+      if (lastAll.l == null || liveClose < lastAll.l) lastAll.l = liveClose;
+    }
+
+    // Recompute Support & Resistance % distance from the synchronized live price
+    const lv = tech.computed?.levels;
+    if (lv) {
+      for (const side of [lv.support || [], lv.resistance || []]) {
+        for (const item of side) {
+          if (item && item.price > 0) {
+            item.distance_pct = Number((((item.price - liveClose) / liveClose) * 100).toFixed(2));
+          }
+        }
+      }
+    }
+    return t;
+  }
+
   // ---- STOCK DEEP DIVE ----
   async function openStock(sym, opts = {}) {
     state.activeTicker = sym;
@@ -2595,6 +2638,7 @@
       if (!state.tickerCache[cacheKey]) {
         state.tickerCache[cacheKey] = await fetchJson(`data/${state.date}/tickers/${sym}.json`);
       }
+      syncTickerBundleWithLiveRow(state.tickerCache[cacheKey]);
       renderStock(state.tickerCache[cacheKey]);
       refreshSingleStockRealtime(sym);
     } catch (err) {
@@ -4165,9 +4209,8 @@
           row.dollar_volume_usd = Number(q.dollar_volume_usd);
         }
         const cached = state.tickerCache[`${state.date}:${row.symbol}`];
-        if (cached?.technical?.facts) {
-          cached.technical.facts.last_close = newClose;
-          cached.technical.facts.change_1d_pct = newChg;
+        if (cached) {
+          syncTickerBundleWithLiveRow(cached);
         }
       }
       if (row.change_1d_pct != null) {
@@ -4177,6 +4220,28 @@
         else if (c < 0) dec++;
         (secRets[row.sector || "other"] ||= []).push(c);
       }
+    }
+
+    // Keep Network nodes/links and Smart Money flow items 100% synchronized with live ticker prices
+    const bySymLive = Object.fromEntries(tList.map((r) => [r.symbol, r]));
+    for (const n of state.summary.network?.nodes || []) {
+      const lr = bySymLive[n.symbol];
+      if (lr) { n.close = lr.close; n.change_1d_pct = lr.change_1d_pct; }
+    }
+    const lbs = state.summary.network?.links_by_symbol || {};
+    for (const lst of Object.values(lbs)) {
+      for (const link of lst || []) {
+        const lr = bySymLive[link.symbol];
+        if (lr) { link.close = lr.close; link.change_1d_pct = lr.change_1d_pct; }
+      }
+    }
+    for (const vfItem of state.summary.smart_money?.volume_flow || []) {
+      const lr = bySymLive[vfItem.symbol];
+      if (lr) { vfItem.close = lr.close; vfItem.change_1d_pct = lr.change_1d_pct; }
+    }
+    for (const siItem of state.summary.smart_money?.short_interest || []) {
+      const lr = bySymLive[siItem.symbol];
+      if (lr) { siItem.change_1d_pct = lr.change_1d_pct; }
     }
 
     if (rets.length && state.summary.breadth) {
@@ -4242,13 +4307,24 @@
       if (r) {
         const sp = document.querySelector("#stockContent .stock-price");
         const pp = document.querySelector("#stockContent .pro-price-sub .price-pill");
+        const lc = document.querySelector("#stockContent .level-current");
         if (sp) sp.textContent = `$${fmtNum(r.close)}`;
         if (pp) {
           pp.className = `price-pill ${clsPct(r.change_1d_pct)}`;
           pp.textContent = fmtPct(r.change_1d_pct);
         }
+        if (lc) lc.textContent = `Last Close · $${fmtNum(r.close)}`;
       }
     }
+    document.querySelectorAll("#volumeFlowGrid .notable-card[data-sym]").forEach((card) => {
+      const r = tList.find((x) => x.symbol === card.dataset.sym);
+      if (!r) return;
+      const pill = card.querySelector(".price-pill");
+      if (pill) {
+        pill.className = `price-pill ${clsPct(r.change_1d_pct)}`;
+        pill.textContent = fmtPct(r.change_1d_pct, 1);
+      }
+    });
   }
 
   async function refreshSingleStockRealtime(sym) {
@@ -4266,6 +4342,8 @@
           const prev = Number(meta.chartPreviousClose || meta.previousClose || meta.regularMarketPrice || livePrice);
           const chgPct = prev > 0 ? ((livePrice / prev) - 1) * 100 : 0;
           const vol = Number(meta.regularMarketVolume || 0);
+          const cacheKey = `${state.date}:${sym}`;
+          const prevRendered = state.tickerCache[cacheKey]?.technical?.facts?.last_close;
           applyLiveQuotesMap({
             [sym]: {
               close: livePrice,
@@ -4274,6 +4352,13 @@
               dollar_volume_usd: livePrice * vol,
             },
           });
+          // If the live price differed from the cached bundle, re-sync and refresh the whole Stock view (chart, S/R ladder, network)
+          if (state.view === "stock" && state.activeTicker === sym && state.tickerCache[cacheKey] && Math.abs((prevRendered || 0) - Number(livePrice.toFixed(2))) >= 0.01) {
+            const sy = window.scrollY;
+            syncTickerBundleWithLiveRow(state.tickerCache[cacheKey]);
+            renderStock(state.tickerCache[cacheKey]);
+            window.scrollTo({ top: sy, behavior: "instant" });
+          }
         }
       }
     } catch {}
