@@ -27,9 +27,15 @@
     deferredInstallPrompt: null,
     stockTab: "news",
     chartTab: "interactive",
-    chartRange: "6M",
+    chartRange: "1D",
+    chartFullscreen: false,
     chartOverlays: { sma20: true, sma50: true, sma200: false, sr: true, weekends: false },
     tvChart: null,
+    tvCandles: null,
+    tvVol: null,
+    tvUpdateLegend: null,
+    tvIsIntraday: false,
+    tvBarCount: 0,
     tvResizeObs: null,
   };
 
@@ -201,6 +207,7 @@
       state.prevView = state.view;
     }
     if (view !== "stock") {
+      if (state.chartFullscreen) setChartFullscreen(false);
       destroyInteractiveChart();
     }
     state.view = view;
@@ -241,6 +248,7 @@
   }
 
   function closeStockTab() {
+    if (state.chartFullscreen) setChartFullscreen(false);
     destroyInteractiveChart();
     state.activeTicker = null;
     const stockTab = $("stockNavTab");
@@ -2598,19 +2606,42 @@
     if (liveChg != null && Number.isFinite(liveChg)) {
       facts.change_1d_pct = liveChg;
     }
+    if (liveRow.last_bar) {
+      facts.last_bar = liveRow.last_bar;
+    }
 
-    // Keep interactive chart's latest candle synchronized with the Hero price
+    // Keep interactive chart's latest daily candle synchronized with the Hero price
     if (Array.isArray(tech.series) && tech.series.length > 0) {
       const lastBar = tech.series[tech.series.length - 1];
-      lastBar.c = liveClose;
-      if (lastBar.h == null || liveClose > lastBar.h) lastBar.h = liveClose;
-      if (lastBar.l == null || liveClose < lastBar.l) lastBar.l = liveClose;
+      if (liveRow.last_bar && liveRow.last_bar > String(lastBar.t || "")) {
+        tech.series.push({
+          t: liveRow.last_bar,
+          o: liveRow.open || liveClose,
+          h: Math.max(liveRow.high || liveClose, liveClose),
+          l: Math.min(liveRow.low || liveClose, liveClose),
+          c: liveClose,
+          v: liveRow.volume || lastBar.v || 0,
+          s20: lastBar.s20,
+          s50: lastBar.s50,
+          s200: lastBar.s200,
+        });
+      } else {
+        lastBar.c = liveClose;
+        if (lastBar.h == null || liveClose > lastBar.h) lastBar.h = liveClose;
+        if (lastBar.l == null || liveClose < lastBar.l) lastBar.l = liveClose;
+      }
     }
     if (Array.isArray(tech.series_all) && tech.series_all.length > 0) {
       const lastAll = tech.series_all[tech.series_all.length - 1];
       lastAll.c = liveClose;
       if (lastAll.h == null || liveClose > lastAll.h) lastAll.h = liveClose;
       if (lastAll.l == null || liveClose < lastAll.l) lastAll.l = liveClose;
+    }
+    if (Array.isArray(tech.series_1d) && tech.series_1d.length > 0) {
+      const last1d = tech.series_1d[tech.series_1d.length - 1];
+      last1d.c = liveClose;
+      if (last1d.h == null || liveClose > last1d.h) last1d.h = liveClose;
+      if (last1d.l == null || liveClose < last1d.l) last1d.l = liveClose;
     }
 
     // Recompute Support & Resistance % distance from the synchronized live price
@@ -2881,21 +2912,37 @@
       const body = $("chartBody");
       if (!body) return;
       destroyInteractiveChart();
+      const card = $("stk-chart");
+      if (card) card.classList.toggle("is-fullscreen", state.chartFullscreen);
       const ov = state.chartOverlays;
       const is1M = state.chartRange === "1M";
       const hasAll = Array.isArray(tech.series_all) && tech.series_all.length > 5;
-      const ranges = hasAll ? ["1M", "3M", "6M", "1Y", "5Y", "ALL"] : ["1M", "3M", "6M", "1Y"];
+      const ranges = hasAll ? ["1D", "1M", "3M", "6M", "1Y", "5Y", "ALL"] : ["1D", "1M", "3M", "6M", "1Y"];
+      if (!ranges.includes(state.chartRange)) state.chartRange = "1D";
       const at = tech.all_time_stats || null;
       const athBanner = (state.chartRange === "ALL" || state.chartRange === "5Y") && at
         ? `<div class="muted" style="font-size:11.5px;margin-bottom:6px">Since ${esc(at.ipo_date)} · ATH <strong>$${fmtNum(at.ath)}</strong> (${esc(at.ath_date)}, <span class="${clsPct(at.pct_from_ath)}">${fmtPct(at.pct_from_ath, 1)}</span>) · ATL <strong>$${fmtNum(at.atl)}</strong></div>`
         : "";
       body.innerHTML = `
+        <div class="chart-fs-bar">
+          <div class="chart-fs-title">
+            <strong>${esc(t.symbol)}</strong>
+            <span class="muted">${esc(t.name)}</span>
+          </div>
+          <div class="chart-fs-quote">
+            <strong id="chartFsPrice">$${fmtNum(facts.last_close)}</strong>
+            <span class="price-pill ${clsPct(facts.change_1d_pct)}" id="chartFsPill">${fmtPct(facts.change_1d_pct)}</span>
+            <span class="chart-live-tag"><span class="live-dot"></span>REAL-TIME</span>
+          </div>
+        </div>
         <div class="tv-toolbar-pro">
           <div class="tv-range-strip" id="rangeBar">
             ${ranges.map((r) => `<button type="button" class="tv-rbtn ${state.chartRange === r ? "active" : ""}" data-range="${r}">${r}</button>`).join("")}
             <button type="button" class="tv-rbtn tv-fit-btn" id="resetChartFitBtn" title="Reset zoom" aria-label="Reset zoom">⟲</button>
+            <button type="button" class="tv-rbtn tv-fs-btn ${state.chartFullscreen ? "active" : ""}" id="toggleChartFsBtn" title="${state.chartFullscreen ? "Exit full screen (Esc)" : "Full screen chart"}" aria-label="Toggle full screen">${state.chartFullscreen ? "⤡" : "⛶"}</button>
           </div>
           <div class="tv-ind-strip" id="overlayBar">
+            <span class="chart-live-tag"><span class="live-dot"></span>LIVE</span>
             <button type="button" class="tv-ibtn ${ov.sma20 ? "active" : ""}" data-ov="sma20">MA20</button>
             <button type="button" class="tv-ibtn ${ov.sma50 ? "active" : ""}" data-ov="sma50">MA50</button>
             <button type="button" class="tv-ibtn ${ov.sma200 ? "active" : ""}" data-ov="sma200">MA200</button>
@@ -2912,9 +2959,13 @@
       $("rangeBar").querySelectorAll("button[data-range]").forEach((b) => {
         b.onclick = () => { state.chartRange = b.dataset.range; renderChartBody(); };
       });
-      $("overlayBar").querySelectorAll("button").forEach((b) => {
+      $("overlayBar").querySelectorAll("button[data-ov]").forEach((b) => {
         b.onclick = () => { state.chartOverlays[b.dataset.ov] = !state.chartOverlays[b.dataset.ov]; renderChartBody(); };
       });
+      const fsBtn = $("toggleChartFsBtn");
+      if (fsBtn) {
+        fsBtn.onclick = () => setChartFullscreen(!state.chartFullscreen);
+      }
       mountInteractiveChart(t);
     };
 
@@ -3039,9 +3090,57 @@
   }
 
   // ---- INTERACTIVE CANDLESTICK CHART (TradingView Lightweight Charts) ----
+  function setChartFullscreen(on) {
+    state.chartFullscreen = Boolean(on);
+    const card = $("stk-chart");
+    if (card) card.classList.toggle("is-fullscreen", state.chartFullscreen);
+    document.body.classList.toggle("no-scroll", state.chartFullscreen);
+    const fsBtn = $("toggleChartFsBtn");
+    if (fsBtn) {
+      fsBtn.classList.toggle("active", state.chartFullscreen);
+      fsBtn.textContent = state.chartFullscreen ? "⤡" : "⛶";
+      fsBtn.title = state.chartFullscreen ? "Exit full screen (Esc)" : "Full screen chart";
+    }
+    const resizeNow = () => {
+      const box = $("tvChart");
+      if (!box || !state.tvChart) return;
+      state.tvChart.applyOptions({ width: box.clientWidth, height: box.clientHeight });
+      state.tvChart.timeScale().fitContent();
+    };
+    requestAnimationFrame(resizeNow);
+    setTimeout(resizeNow, 75);
+  }
+
   function destroyInteractiveChart() {
     if (state.tvResizeObs) { state.tvResizeObs.disconnect(); state.tvResizeObs = null; }
     if (state.tvChart) { try { state.tvChart.remove(); } catch {} state.tvChart = null; }
+    state.tvCandles = null;
+    state.tvVol = null;
+    state.tvUpdateLegend = null;
+  }
+
+  function formatEtIntradayTime(tsSec, withDate = false) {
+    try {
+      const dt = new Date(Number(tsSec) * 1000);
+      if (withDate) {
+        return dt.toLocaleString("en-US", {
+          timeZone: "America/New_York",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }) + " ET";
+      }
+      return dt.toLocaleTimeString("en-US", {
+        timeZone: "America/New_York",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+    } catch {
+      return String(tsSec);
+    }
   }
 
   function mountInteractiveChart(t) {
@@ -3055,23 +3154,57 @@
     destroyInteractiveChart();
     box.innerHTML = "";
 
+    const is1D = state.chartRange === "1D";
+    const has1D = Array.isArray(t.technical?.series_1d) && t.technical.series_1d.length >= 2;
+    const useIntraday = is1D && has1D;
+    state.tvIsIntraday = useIntraday;
+
     const isLongRange = state.chartRange === "5Y" || state.chartRange === "ALL";
-    const rawAll = isLongRange && Array.isArray(t.technical?.series_all) && t.technical.series_all.length
-      ? t.technical.series_all
-      : (t.technical?.series || []);
-    if (!rawAll.length) { box.innerHTML = `<div class="muted">No price history available.</div>`; return; }
+    let data = [];
+    let basePrevC = null;
 
-    // Precompute exact Close-to-Previous-Close % change on every bar
-    const all = rawAll.map((d, i) => {
-      const prevC = i > 0 ? rawAll[i - 1].c : d.o;
-      const chg1d = prevC ? ((d.c - prevC) / prevC) * 100 : 0;
-      return { ...d, prevC, chg1d };
-    });
+    if (useIntraday) {
+      const seenTs = new Set();
+      const clean1d = [];
+      for (const b of t.technical.series_1d) {
+        const tsNum = Number(b.t);
+        if (!Number.isFinite(tsNum) || seenTs.has(tsNum) || !b.c || b.c <= 0) continue;
+        seenTs.add(tsNum);
+        clean1d.push({ ...b, t: tsNum });
+      }
+      clean1d.sort((a, b) => a.t - b.t);
+      const dailySer = t.technical?.series || [];
+      basePrevC = Number(t.technical?.prev_close_1d) || (dailySer.length >= 2 ? dailySer[dailySer.length - 2].c : (clean1d[0]?.o || clean1d[0]?.c || 0));
+      // Compute rolling 20-bar (100m) and 50-bar intraday moving averages so MA20/MA50 work in 1D mode
+      data = clean1d.map((d, i) => {
+        const slice20 = clean1d.slice(Math.max(0, i - 19), i + 1);
+        const slice50 = clean1d.slice(Math.max(0, i - 49), i + 1);
+        const s20 = slice20.reduce((acc, x) => acc + x.c, 0) / slice20.length;
+        const s50 = slice50.length >= 10 ? slice50.reduce((acc, x) => acc + x.c, 0) / slice50.length : null;
+        const prevC = basePrevC || (i > 0 ? clean1d[i - 1].c : d.o);
+        const chg1d = prevC ? ((d.c - prevC) / prevC) * 100 : 0;
+        return { ...d, s20: Number(s20.toFixed(2)), s50: s50 ? Number(s50.toFixed(2)) : null, prevC, chg1d, isIntraday: true };
+      });
+    } else {
+      const rawAll = isLongRange && Array.isArray(t.technical?.series_all) && t.technical.series_all.length
+        ? t.technical.series_all
+        : (t.technical?.series || []);
+      if (!rawAll.length) { box.innerHTML = `<div class="muted">No price history available.</div>`; return; }
 
-    const n = state.chartRange === "ALL"
-      ? all.length
-      : ({ "1M": 22, "3M": 66, "6M": 132, "1Y": 260, "5Y": 260 }[state.chartRange] || 132);
-    const data = all.slice(-n);
+      // Precompute exact Close-to-Previous-Close % change on every bar
+      const all = rawAll.map((d, i) => {
+        const prevC = i > 0 ? rawAll[i - 1].c : d.o;
+        const chg1d = prevC ? ((d.c - prevC) / prevC) * 100 : 0;
+        return { ...d, prevC, chg1d, isIntraday: false };
+      });
+
+      const n = state.chartRange === "ALL"
+        ? all.length
+        : ({ "1D": 22, "1M": 22, "3M": 66, "6M": 132, "1Y": 260, "5Y": 260 }[state.chartRange] || 132);
+      data = all.slice(-n);
+    }
+
+    state.tvBarCount = data.length;
     const is1M = state.chartRange === "1M";
 
     const dark = document.documentElement.dataset.theme !== "light";
@@ -3083,12 +3216,13 @@
     const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const dayOfWeek = (iso) => {
+      if (typeof iso !== "string") return new Date(Number(iso) * 1000).getUTCDay();
       const [y, m, d] = iso.split("-").map(Number);
       return new Date(Date.UTC(y, (m || 1) - 1, d || 1)).getUTCDay();
     };
     const daysBetween = (isoA, isoB) => {
-      const [y1, m1, d1] = isoA.split("-").map(Number);
-      const [y2, m2, d2] = isoB.split("-").map(Number);
+      const [y1, m1, d1] = String(isoA).split("-").map(Number);
+      const [y2, m2, d2] = String(isoB).split("-").map(Number);
       return Math.round((Date.UTC(y2, m2 - 1, d2) - Date.UTC(y1, m1 - 1, d1)) / 86400000);
     };
 
@@ -3112,12 +3246,16 @@
       timeScale: {
         borderColor: gridCol,
         visible: !is1M,
-        timeVisible: false,
+        timeVisible: useIntraday,
+        secondsVisible: false,
         rightOffset: 0,
         minBarSpacing: 0.1,
         fixLeftEdge: true,
         fixRightEdge: true,
         tickMarkFormatter: (time) => {
+          if (typeof time === "number") {
+            return formatEtIntradayTime(time, false);
+          }
           const s = typeof time === "string" ? time : `${time.year}-${String(time.month).padStart(2, "0")}-${String(time.day).padStart(2, "0")}`;
           const [y, m, d] = s.split("-").map(Number);
           if (state.chartRange === "ALL") {
@@ -3126,7 +3264,7 @@
           if (state.chartRange === "5Y") {
             return `${MONTHS[(m || 1) - 1]} '${String(y).slice(2)}`;
           }
-          if (state.chartRange === "1M" || state.chartRange === "3M") {
+          if (state.chartRange === "1M" || state.chartRange === "3M" || state.chartRange === "1D") {
             return `${MONTHS[(m || 1) - 1]} ${d}`;
           }
           return d <= 7 ? `${MONTHS[(m || 1) - 1]} '${String(y).slice(2)}` : `${MONTHS[(m || 1) - 1]} ${d}`;
@@ -3157,6 +3295,7 @@
       wickVisible: true,
     });
     candles.setData(timelinePoints.map((d) => (d.isClosed ? { time: d.t } : { time: d.t, open: d.o, high: d.h, low: d.l, close: d.c })));
+    state.tvCandles = candles;
 
     // Volume histogram at bottom — hide right-axis value badge so volume never collides with dollar prices
     const vol = chart.addHistogramSeries({
@@ -3167,6 +3306,18 @@
     });
     chart.priceScale("vol").applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
     vol.setData(timelinePoints.map((d) => (d.isClosed ? { time: d.t } : { time: d.t, value: d.v, color: d.c >= d.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)" })));
+    state.tvVol = vol;
+
+    if (useIntraday && basePrevC && basePrevC > 0) {
+      candles.createPriceLine({
+        price: basePrevC,
+        color: "rgba(148, 163, 184, 0.55)",
+        lineWidth: 1,
+        lineStyle: LC.LineStyle.Dashed,
+        axisLabelVisible: true,
+        title: "Prev Close",
+      });
+    }
     const lineDefs = [
       ["sma20", "s20", "#f59e0b"],
       ["sma50", "s50", "#3b82f6"],
@@ -3336,21 +3487,26 @@
         return;
       }
       const chg = d.chg1d ?? 0;
-      const wd = d.wdLabel || WEEKDAYS[dayOfWeek(d.t)];
+      const timeLabel = typeof d.t === "number"
+        ? formatEtIntradayTime(d.t, true)
+        : `${d.t} (${d.wdLabel || WEEKDAYS[dayOfWeek(d.t)]})`;
       legend.innerHTML = `
-        <span><strong>${esc(d.t)} (${esc(wd)})</strong></span>
+        <span><strong>${esc(timeLabel)}</strong></span>
         <span>O ${fmtNum(d.o)}</span><span>H ${fmtNum(d.h)}</span><span>L ${fmtNum(d.l)}</span>
         <span>C <strong class="${clsPct(chg)}">${fmtNum(d.c)}</strong></span>
         <span class="${clsPct(chg)}" title="Close vs previous trading day's close (${fmtNum(d.prevC)})"><strong>${fmtPct(chg)}</strong> (1D)</span>
         <span class="muted">Vol ${Number(d.v || 0).toLocaleString()}</span>`;
-      highlightDay(d.t);
+      if (typeof d.t === "string") highlightDay(d.t);
     };
+    state.tvUpdateLegend = setLegend;
     const byTime = Object.fromEntries(timelinePoints.map((d) => [d.t, d]));
 
     setLegend(data[data.length - 1]);
     chart.subscribeCrosshairMove((p) => {
       if (!p || !p.time) { setLegend(data[data.length - 1]); return; }
-      const key = typeof p.time === "string" ? p.time : `${p.time.year}-${String(p.time.month).padStart(2, "0")}-${String(p.time.day).padStart(2, "0")}`;
+      const key = typeof p.time === "number" || typeof p.time === "string"
+        ? p.time
+        : `${p.time.year}-${String(p.time.month).padStart(2, "0")}-${String(p.time.day).padStart(2, "0")}`;
       setLegend(byTime[key] || data[data.length - 1]);
     });
 
@@ -3620,11 +3776,31 @@
       });
     }
 
+    // Escape key exits full-screen chart or open modals
+    window.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape") {
+        if (state.chartFullscreen) {
+          setChartFullscreen(false);
+          return;
+        }
+        if (searchOverlay && !searchOverlay.classList.contains("hidden")) {
+          closeSearchOverlay();
+          return;
+        }
+        if ($("infoModal") && !$("infoModal").classList.contains("hidden")) {
+          closeInfoModal();
+        }
+      }
+    });
+
     // Native Phone Back Button & Browser Back/Forward Support
     window.addEventListener("popstate", (ev) => {
       state.isPopping = true;
       try {
         // Close open overlays first
+        if (state.chartFullscreen) {
+          setChartFullscreen(false);
+        }
         if (searchOverlay && !searchOverlay.classList.contains("hidden")) {
           closeSearchOverlay();
         }
@@ -3734,7 +3910,7 @@
       };
 
       stockViewEl.addEventListener("touchstart", (e) => {
-        if (e.touches.length !== 1) return;
+        if (state.chartFullscreen || e.touches.length !== 1) return;
         const t = e.touches[0];
         // Preserve iOS left-edge swipe-back & horizontal pill/chart/network gestures
         if (t.clientX < 24) return;
@@ -4204,6 +4380,11 @@
         if (row.close !== newClose || row.change_1d_pct !== newChg) changed = true;
         row.close = newClose;
         row.change_1d_pct = newChg;
+        if (q.last_bar) row.last_bar = q.last_bar;
+        if (q.open) row.open = Number(q.open);
+        if (q.high) row.high = Number(q.high);
+        if (q.low) row.low = Number(q.low);
+        if (q.volume) row.volume = Number(q.volume);
         if (q.dollar_volume_usd && Number(q.dollar_volume_usd) > 0) {
           row.dollar_volume_usd = Number(q.dollar_volume_usd);
         }
@@ -4307,12 +4488,20 @@
         const sp = document.querySelector("#stockContent .stock-price");
         const pp = document.querySelector("#stockContent .pro-price-sub .price-pill");
         const lc = document.querySelector("#stockContent .level-current");
+        const fsp = $("chartFsPrice");
+        const fspill = $("chartFsPill");
         if (sp) sp.textContent = `$${fmtNum(r.close)}`;
         if (pp) {
           pp.className = `price-pill ${clsPct(r.change_1d_pct)}`;
           pp.textContent = fmtPct(r.change_1d_pct);
         }
         if (lc) lc.textContent = `Last Close · $${fmtNum(r.close)}`;
+        if (fsp) fsp.textContent = `$${fmtNum(r.close)}`;
+        if (fspill) {
+          fspill.className = `price-pill ${clsPct(r.change_1d_pct)}`;
+          fspill.textContent = fmtPct(r.change_1d_pct);
+        }
+        streamLiveChartTick(state.activeTicker);
       }
     }
     document.querySelectorAll("#volumeFlowGrid .notable-card[data-sym]").forEach((card) => {
@@ -4326,6 +4515,60 @@
     });
   }
 
+  function streamLiveChartTick(sym) {
+    if (state.view !== "stock" || state.activeTicker !== sym) return;
+    const cached = state.tickerCache[`${state.date}:${sym}`];
+    if (!cached || !state.tvCandles) return;
+    const tech = cached.technical || {};
+
+    if (state.chartRange === "1D") {
+      const ser1d = tech.series_1d;
+      if (Array.isArray(ser1d) && ser1d.length >= 2) {
+        if (!state.tvIsIntraday || ser1d.length !== state.tvBarCount) {
+          mountInteractiveChart(cached);
+          return;
+        }
+        const last = ser1d[ser1d.length - 1];
+        const prevC = Number(tech.prev_close_1d) || last.o;
+        const chg1d = prevC ? ((last.c - prevC) / prevC) * 100 : 0;
+        try {
+          state.tvCandles.update({ time: Number(last.t), open: last.o, high: last.h, low: last.l, close: last.c });
+          if (state.tvVol && last.v != null) {
+            state.tvVol.update({
+              time: Number(last.t),
+              value: last.v,
+              color: last.c >= last.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)",
+            });
+          }
+          if (state.tvUpdateLegend) {
+            state.tvUpdateLegend({ ...last, t: Number(last.t), prevC, chg1d });
+          }
+        } catch {}
+        return;
+      }
+    }
+
+    const isLong = state.chartRange === "5Y" || state.chartRange === "ALL";
+    const ser = isLong && Array.isArray(tech.series_all) && tech.series_all.length ? tech.series_all : (tech.series || []);
+    if (!ser.length) return;
+    const last = ser[ser.length - 1];
+    const prevC = ser.length >= 2 ? ser[ser.length - 2].c : last.o;
+    const chg1d = prevC ? ((last.c - prevC) / prevC) * 100 : 0;
+    try {
+      state.tvCandles.update({ time: last.t, open: last.o, high: last.h, low: last.l, close: last.c });
+      if (state.tvVol && last.v != null) {
+        state.tvVol.update({
+          time: last.t,
+          value: last.v,
+          color: last.c >= last.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)",
+        });
+      }
+      if (state.tvUpdateLegend) {
+        state.tvUpdateLegend({ ...last, prevC, chg1d });
+      }
+    } catch {}
+  }
+
   async function refreshSingleStockRealtime(sym) {
     if (!sym) return;
     try {
@@ -4335,28 +4578,71 @@
         const data = JSON.parse(raw);
         const res0 = data?.chart?.result?.[0];
         const meta = res0?.meta;
-        const lastBarClose = lastValidNum(res0?.indicators?.quote?.[0]?.close);
+        const tsArr = res0?.timestamp || [];
+        const q0 = res0?.indicators?.quote?.[0] || {};
+        const lastBarClose = lastValidNum(q0.close);
         const livePrice = Number(meta?.postMarketPrice || meta?.preMarketPrice || lastBarClose || meta?.regularMarketPrice || 0);
         if (meta && livePrice > 0) {
           const prev = Number(meta.chartPreviousClose || meta.previousClose || meta.regularMarketPrice || livePrice);
           const chgPct = prev > 0 ? ((livePrice / prev) - 1) * 100 : 0;
           const vol = Number(meta.regularMarketVolume || 0);
           const cacheKey = `${state.date}:${sym}`;
-          const prevRendered = state.tickerCache[cacheKey]?.technical?.facts?.last_close;
+          const cached = state.tickerCache[cacheKey];
+
+          // Build 1D 5-minute intraday series (including Pre-Market & After-Hours)
+          const series1d = [];
+          const seenTs = new Set();
+          let dayOpen = null, dayHigh = livePrice, dayLow = livePrice, lastBarIso = null;
+          for (let i = 0; i < tsArr.length; i++) {
+            const tsSec = Number(tsArr[i]);
+            const cVal = Number(q0.close?.[i]);
+            if (!Number.isFinite(tsSec) || seenTs.has(tsSec) || !Number.isFinite(cVal) || cVal <= 0) continue;
+            seenTs.add(tsSec);
+            const oVal = Number.isFinite(Number(q0.open?.[i])) && Number(q0.open[i]) > 0 ? Number(q0.open[i]) : cVal;
+            const hVal = Number.isFinite(Number(q0.high?.[i])) && Number(q0.high[i]) > 0 ? Number(q0.high[i]) : cVal;
+            const lVal = Number.isFinite(Number(q0.low?.[i])) && Number(q0.low[i]) > 0 ? Number(q0.low[i]) : cVal;
+            const vVal = Number.isFinite(Number(q0.volume?.[i])) ? Math.max(0, Math.round(Number(q0.volume[i]))) : 0;
+            if (dayOpen == null) dayOpen = oVal;
+            if (hVal > dayHigh) dayHigh = hVal;
+            if (lVal < dayLow) dayLow = lVal;
+            lastBarIso = new Date(tsSec * 1000).toISOString().slice(0, 10);
+            series1d.push({
+              t: tsSec,
+              o: Number(oVal.toFixed(2)),
+              h: Number(hVal.toFixed(2)),
+              l: Number(lVal.toFixed(2)),
+              c: Number(cVal.toFixed(2)),
+              v: vVal,
+            });
+          }
+          if (series1d.length) {
+            const last1d = series1d[series1d.length - 1];
+            last1d.c = Number(livePrice.toFixed(2));
+            if (last1d.c > last1d.h) last1d.h = last1d.c;
+            if (last1d.c < last1d.l) last1d.l = last1d.c;
+          }
+          if (cached) {
+            const tech = (cached.technical ||= {});
+            if (series1d.length >= 2) {
+              tech.series_1d = series1d;
+              tech.prev_close_1d = Number(prev.toFixed(2));
+            }
+          }
+
           applyLiveQuotesMap({
             [sym]: {
               close: livePrice,
+              open: dayOpen || livePrice,
+              high: dayHigh,
+              low: dayLow,
+              last_bar: lastBarIso,
               change_1d_pct: chgPct,
               volume: vol,
               dollar_volume_usd: livePrice * vol,
             },
           });
-          // If the live price differed from the cached bundle, re-sync and refresh the whole Stock view (chart, S/R ladder, network)
-          if (state.view === "stock" && state.activeTicker === sym && state.tickerCache[cacheKey] && Math.abs((prevRendered || 0) - Number(livePrice.toFixed(2))) >= 0.01) {
-            const sy = window.scrollY;
-            syncTickerBundleWithLiveRow(state.tickerCache[cacheKey]);
-            renderStock(state.tickerCache[cacheKey]);
-            window.scrollTo({ top: sy, behavior: "instant" });
+          if (state.view === "stock" && state.activeTicker === sym) {
+            streamLiveChartTick(sym);
           }
         }
       }
