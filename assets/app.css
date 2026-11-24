@@ -2398,3 +2398,127 @@ body.no-scroll { overflow: hidden; }
   .tv-fit-btn { flex: 0 0 auto; padding: 5px 8px; }
   .tv-ind-strip { width: 100%; justify-content: flex-start; gap: 12px; }
 }
+
+/* Enhanced Minimalist Screener UI */
+.scr-filter-bar .chip {
+  padding: 5px 11px;
+  font-size: 12px;
+  border-radius: 7px;
+}
+.screener-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg-elev);
+}
+.scr-card-pro {
+  padding: 11px 12px 0;
+  overflow: hidden;
+  border-radius: 10px;
+  gap: 0;
+}
+.scr-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.scr-sym-line {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+}
+.scr-sym {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.scr-name {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.scr-sub-line {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+.scr-sector {
+  color: var(--text-soft);
+  font-weight: 600;
+  cursor: pointer;
+}
+.scr-price-col {
+  text-align: right;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+.scr-price {
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.scr-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 9px;
+  padding: 8px 0 9px;
+  border-top: 1px solid var(--border);
+}
+.scr-m {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.scr-mk {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+.scr-mv {
+  font-size: 12.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.scr-prob-edge {
+  display: flex;
+  height: 3px;
+  margin: 0 -12px;
+  background: var(--bg-card-2);
+}
+
+/* Expandable Earnings Panels & Real-Time Live Pulse */
+.earn-extra-row.hidden { display: none !important; }
+.earn-panel.has-more {
+  cursor: pointer;
+  transition: border-color 0.14s ease;
+}
+.earn-panel.has-more:hover {
+  border-color: var(--border-strong);
+}
+.live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 5px;
+  vertical-align: middle;
+  box-shadow: 0 0 6px var(--green);
+}

@@ -16,7 +16,7 @@
   <meta property="og:title" content="racenter" />
   <meta property="og:description" content="Live 100-stock quantitative intelligence, Gold &amp; Silver benchmarks, interactive charts, supply-chain value network, Institutional Flow, official legal authorities &amp; SEC filings." />
   <title>racenter</title>
-  <link rel="stylesheet" href="assets/app.css?v=32" />
+  <link rel="stylesheet" href="assets/app.css?v=34" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -107,22 +107,21 @@
     <section id="view-screener" class="view hidden">
       <div class="section-header screener-head">
         <div>
-          <h2>Watchlist Screener <span class="muted" id="screenerCount"></span></h2>
+          <h2>Screener <span class="muted" id="screenerCount"></span></h2>
+          <p class="section-sub" id="screenerCohortMeta"></p>
         </div>
         <div class="screener-controls">
           <div class="control-group">
-            <label for="sectorSelect" class="muted">Sector</label>
-            <select id="sectorSelect" class="select-control compact"></select>
+            <select id="sectorSelect" class="select-control compact" aria-label="Sector"></select>
           </div>
           <div class="control-group">
-            <label for="mobileSortSelect" class="muted">Sort</label>
-            <select id="mobileSortSelect" class="select-control compact">
-              <option value="notable_score:-1">Notable Score (High)</option>
-              <option value="change_1d_pct:-1">1D Change (Best)</option>
-              <option value="change_1d_pct:1">1D Change (Worst)</option>
-              <option value="rsi14:1">RSI-14 (Oversold)</option>
-              <option value="rsi14:-1">RSI-14 (Overbought)</option>
-              <option value="rs_spy_21d:-1">vs SPY 21d (Strongest)</option>
+            <select id="mobileSortSelect" class="select-control compact" aria-label="Sort">
+              <option value="notable_score:-1">Score (High)</option>
+              <option value="change_1d_pct:-1">1D Gain (Best)</option>
+              <option value="change_1d_pct:1">1D Loss (Worst)</option>
+              <option value="rsi14:1">RSI (Oversold)</option>
+              <option value="rsi14:-1">RSI (Overbought)</option>
+              <option value="rs_spy_21d:-1">vs SPY 21d</option>
               <option value="symbol:1">Ticker (A–Z)</option>
             </select>
           </div>
@@ -130,15 +129,15 @@
       </div>
 
       <div class="filter-bar-scroll">
-        <div class="filter-bar" id="filterBar">
-          <button class="chip active" data-filter="all">All Signals</button>
-          <button class="chip" data-filter="core">★ Core 10</button>
+        <div class="filter-bar scr-filter-bar" id="filterBar">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="core">Core</button>
           <button class="chip" data-filter="signals">Patterns</button>
-          <button class="chip" data-filter="earnings">Earnings ±10d</button>
+          <button class="chip" data-filter="earnings">Earnings</button>
           <button class="chip" data-filter="oversold">RSI &lt; 30</button>
           <button class="chip" data-filter="overbought">RSI &gt; 70</button>
-          <button class="chip" data-filter="bullish">Bullish Bias</button>
-          <button class="chip" data-filter="bearish">Bearish Bias</button>
+          <button class="chip" data-filter="bullish">Bullish</button>
+          <button class="chip" data-filter="bearish">Bearish</button>
           <button class="chip chip-sector hidden" id="clearSectorChip">Sector: <span id="activeSectorLabel"></span></button>
         </div>
       </div>
@@ -394,6 +393,6 @@
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
 
-  <script src="assets/app.js?v=32"></script>
+  <script src="assets/app.js?v=34"></script>
 </body>
 </html>

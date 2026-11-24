@@ -742,14 +742,16 @@
         .filter((t) => t.earnings_date && t.earnings_days != null && t.earnings_days < 0 && t.earnings_days >= -14)
         .sort((a, b) => b.earnings_days - a.earnings_days);
 
-      const renderEarnRow = (t) => {
+      const EARN_SHOW = 6;
+      const renderEarnRow = (t, idx) => {
         const d = t.earnings_days;
         const badgeTxt = d === 0 ? "TODAY" : d === 1 ? "Tomorrow" : d > 1 ? `in ${d}d` : `${Math.abs(d)}d ago`;
         const badgeCls = d >= 0 && d <= 7 ? "amber" : "";
         const officialUrl = secHtmlUrl(t.earnings_url || `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(t.symbol)}`);
         const srcLabel = t.earnings_source || "Official";
+        const extraCls = idx >= EARN_SHOW ? " earn-extra-row hidden" : "";
         return `
-          <a class="level-row" href="${esc(officialUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+          <a class="level-row${extraCls}" href="${esc(officialUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
             <div>
               <strong>${esc(t.symbol)}</strong>
               <span class="muted" style="margin-left:6px">${esc(t.name)}</span>
@@ -763,19 +765,30 @@
       };
 
       ecGrid.innerHTML = `
-        <div class="panel">
-          <h3>Upcoming Quarterly Earnings (${upcoming.length})</h3>
+        <div class="panel earn-panel${upcoming.length > EARN_SHOW ? " has-more" : ""}" data-expanded="false">
+          <div class="alert-title" style="margin-bottom:10px"><span>Upcoming Quarterly Earnings</span><span class="alert-count">${upcoming.length}</span></div>
           <div class="level-list">
-            ${upcoming.length ? upcoming.slice(0, 10).map(renderEarnRow).join("") : `<div class="muted">No upcoming earnings dates scheduled yet.</div>`}
+            ${upcoming.length ? upcoming.map(renderEarnRow).join("") : `<div class="muted">No upcoming earnings dates scheduled yet.</div>`}
           </div>
         </div>
-        <div class="panel">
-          <h3>Recently Reported (Last 14 Days · ${recent.length})</h3>
+        <div class="panel earn-panel${recent.length > EARN_SHOW ? " has-more" : ""}" data-expanded="false">
+          <div class="alert-title" style="margin-bottom:10px"><span>Recently Reported (Last 14 Days)</span><span class="alert-count">${recent.length}</span></div>
           <div class="level-list">
-            ${recent.length ? recent.slice(0, 10).map(renderEarnRow).join("") : `<div class="muted">No earnings reported in the last 14 days.</div>`}
+            ${recent.length ? recent.map(renderEarnRow).join("") : `<div class="muted">No earnings reported in the last 14 days.</div>`}
           </div>
         </div>
       `;
+      ecGrid.onclick = (ev) => {
+        if (ev.target.closest("a.level-row")) return;
+        const panel = ev.target.closest(".earn-panel.has-more");
+        if (!panel) return;
+        const nextExpanded = panel.dataset.expanded !== "true";
+        panel.dataset.expanded = String(nextExpanded);
+        panel.querySelectorAll(".earn-extra-row").forEach((r) => {
+          r.classList.toggle("hidden", !nextExpanded);
+          r.style.display = nextExpanded ? "flex" : "none";
+        });
+      };
     }
 
     // Sector Heatmap (clicking any sector opens the clean Sector Explorer modal)
@@ -877,7 +890,16 @@
     }
 
     const rows = getFilteredRows();
-    $("screenerCount").textContent = `(${rows.length}/${(s.tickers || []).length})`;
+    $("screenerCount").textContent = `${rows.length}`;
+    if ($("screenerCohortMeta")) {
+      const upCnt = rows.filter((r) => (r.change_1d_pct ?? 0) > 0).length;
+      const dnCnt = rows.filter((r) => (r.change_1d_pct ?? 0) < 0).length;
+      const rets = rows.map((r) => r.change_1d_pct).filter((v) => v != null && Number.isFinite(Number(v)));
+      const avgRet = rets.length ? rets.reduce((a, b) => a + b, 0) / rets.length : null;
+      $("screenerCohortMeta").innerHTML = rows.length
+        ? `<span class="pos">${upCnt} adv</span> · <span class="neg">${dnCnt} dec</span>${avgRet != null ? ` · Avg <strong class="${clsPct(avgRet)}">${fmtPct(avgRet, 2)}</strong>` : ""}`
+        : "No matches";
+    }
 
     document.querySelectorAll("#screenerTable th[data-sort]").forEach((th) => {
       th.classList.toggle("sorted", th.dataset.sort === state.sortKey);
@@ -895,7 +917,7 @@
       return `
         <tr data-sym="${esc(r.symbol)}">
           <td>
-            <strong>${esc(r.symbol)}</strong>${r.is_core ? ' <span class="core-star">★</span>' : ""}
+            <strong>${esc(r.symbol)}</strong>
             <div class="muted">${esc(r.name)}</div>
           </td>
           <td><span class="tag sector-link" data-sector="${esc(r.sector)}">${esc(fmtSector(r.sector))}</span></td>
@@ -933,41 +955,35 @@
       const s1r1 = `${r.s1 ? `S1 ${fmtPct(r.s1.distance_pct, 1)}` : ""} ${r.r1 ? `· R1 ${fmtPct(r.r1.distance_pct, 1)}` : ""}`.trim();
 
       return `
-        <div class="stock-card" data-sym="${esc(r.symbol)}">
-          <div class="sc-top">
+        <div class="stock-card scr-card-pro" data-sym="${esc(r.symbol)}">
+          <div class="scr-top">
             <div style="min-width:0">
-              <div class="sc-sym-row">
-                <span class="sc-sym">${esc(r.symbol)}</span>
-                ${r.is_core ? '<span class="core-star">★</span>' : ""}
-                <span class="tag sector-link" data-sector="${esc(r.sector)}">${esc(fmtSector(r.sector))}</span>
+              <div class="scr-sym-line">
+                <span class="scr-sym">${esc(r.symbol)}</span>
+                <span class="scr-name">${esc(r.name)}</span>
               </div>
-              <div class="muted" style="margin-top:2px">${esc(r.name)}</div>
+              <div class="scr-sub-line">
+                <span class="scr-sector sector-link" data-sector="${esc(r.sector)}">${esc(fmtSector(r.sector))}</span>
+                ${earnChip ? `<span>·</span>${earnChip}` : (s1r1 ? `<span class="muted">· ${esc(s1r1)}</span>` : "")}
+              </div>
             </div>
-            <div class="sc-price-col">
-              <div class="sc-price">$${fmtNum(r.close)}</div>
-              <span class="price-pill ${clsPct(r.change_1d_pct)}" style="margin-top:3px;font-size:12px">${fmtPct(r.change_1d_pct)}</span>
+            <div class="scr-price-col">
+              <div class="scr-price">$${fmtNum(r.close)}</div>
+              <span class="price-pill ${clsPct(r.change_1d_pct)}" style="font-size:11.5px;padding:2px 6px">${fmtPct(r.change_1d_pct)}</span>
             </div>
           </div>
 
-          <div class="sc-metrics">
-            <div><div class="sc-m-k" ${notableScoreTipAttr(r)}>Score ?</div><div class="sc-m-v">${fmtNum(r.notable_score, 0)}</div></div>
-            <div><div class="sc-m-k" ${tipAttr("rsi14")}>RSI-14 ?</div><div class="sc-m-v ${r.rsi14 < 30 ? "neg" : r.rsi14 > 70 ? "pos" : ""}">${fmtNum(r.rsi14, 1)}</div></div>
-            <div><div class="sc-m-k" ${tipAttr("rs_spy")}>vs SPY ?</div><div class="sc-m-v ${clsPct(r.rs_spy_21d)}">${fmtPct(r.rs_spy_21d, 1)}</div></div>
-            <div><div class="sc-m-k" ${tipAttr("sma")}>Trend ?</div><div class="sc-m-v"><div class="sma-dots">${sma}</div></div></div>
+          <div class="scr-metrics-row">
+            <div class="scr-m"><span class="scr-mk" ${notableScoreTipAttr(r)}>Score</span><span class="scr-mv">${fmtNum(r.notable_score, 0)}</span></div>
+            <div class="scr-m"><span class="scr-mk" ${tipAttr("rsi14")}>RSI</span><span class="scr-mv ${r.rsi14 < 30 ? "neg" : r.rsi14 > 70 ? "pos" : ""}">${fmtNum(r.rsi14, 1)}</span></div>
+            <div class="scr-m"><span class="scr-mk" ${tipAttr("rs_spy")}>vs SPY</span><span class="scr-mv ${clsPct(r.rs_spy_21d)}">${fmtPct(r.rs_spy_21d, 1)}</span></div>
+            <div class="scr-m"><span class="scr-mk" ${tipAttr("sma")}>SMA</span><span class="scr-mv"><div class="sma-dots">${sma}</div></span></div>
           </div>
 
-          <div class="sc-bottom">
-            <div ${techScenarioTipAttr(r.tech_score, r.tech_components, sc)}>
-              <div class="prob-bar">
-                <div class="prob-bull" style="width:${sc.bullish}%"></div>
-                <div class="prob-base" style="width:${sc.base}%"></div>
-                <div class="prob-bear" style="width:${sc.bearish}%"></div>
-              </div>
-              <div class="prob-labels">Bull ${sc.bullish}% · Base ${sc.base}% · Bear ${sc.bearish}%</div>
-            </div>
-            <div style="text-align:right">
-              ${earnChip || `<span class="muted" ${tipAttr("sr_levels")}>${esc(s1r1)}</span>`}
-            </div>
+          <div class="scr-prob-edge" ${techScenarioTipAttr(r.tech_score, r.tech_components, sc)} title="Bull ${sc.bullish}% · Base ${sc.base}% · Bear ${sc.bearish}%">
+            <div class="prob-bull" style="width:${sc.bullish}%"></div>
+            <div class="prob-base" style="width:${sc.base}%"></div>
+            <div class="prob-bear" style="width:${sc.bearish}%"></div>
           </div>
         </div>
       `;
@@ -2554,6 +2570,7 @@
         state.tickerCache[cacheKey] = await fetchJson(`data/${state.date}/tickers/${sym}.json`);
       }
       renderStock(state.tickerCache[cacheKey]);
+      refreshSingleStockRealtime(sym);
     } catch (err) {
       $("stockContent").innerHTML = `<div class="error-box">Could not load ${esc(sym)}: ${esc(err.message)}</div>`;
     }
@@ -4046,6 +4063,256 @@
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && openMenu) closeAll(); });
   }
 
+  // ---- REAL-TIME PRICE & NEWS ENGINE (Dual-Layer: Cloud Snapshot + Browser Direct Stream) ----
+  const CORS_GATEWAYS = [
+    (u) => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+    (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  ];
+
+  async function fetchViaCors(targetUrl, timeoutMs = 5500) {
+    for (const buildUrl of CORS_GATEWAYS) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+      try {
+        const res = await fetch(buildUrl(targetUrl), { signal: ctrl.signal, cache: "no-store" });
+        clearTimeout(timer);
+        if (res.ok) return await res.text();
+      } catch {
+        clearTimeout(timer);
+      }
+    }
+    return null;
+  }
+
+  function applyLiveQuotesMap(quotes, tsLabel = null) {
+    if (!quotes || !state.summary) return;
+    const tList = state.summary.tickers || [];
+    let changed = false;
+    let adv = 0, dec = 0;
+    const rets = [];
+    const secRets = {};
+
+    for (const row of tList) {
+      const q = quotes[row.symbol];
+      if (q && q.close != null && Number.isFinite(Number(q.close)) && Number(q.close) > 0) {
+        const newClose = Number(Number(q.close).toFixed(2));
+        const newChg = q.change_1d_pct != null && Number.isFinite(Number(q.change_1d_pct))
+          ? Number(Number(q.change_1d_pct).toFixed(2))
+          : row.change_1d_pct;
+        if (row.close !== newClose || row.change_1d_pct !== newChg) changed = true;
+        row.close = newClose;
+        row.change_1d_pct = newChg;
+        if (q.dollar_volume_usd && Number(q.dollar_volume_usd) > 0) {
+          row.dollar_volume_usd = Number(q.dollar_volume_usd);
+        }
+        const cached = state.tickerCache[`${state.date}:${row.symbol}`];
+        if (cached?.technical?.facts) {
+          cached.technical.facts.last_close = newClose;
+          cached.technical.facts.change_1d_pct = newChg;
+        }
+      }
+      if (row.change_1d_pct != null) {
+        const c = Number(row.change_1d_pct);
+        rets.push(c);
+        if (c > 0) adv++;
+        else if (c < 0) dec++;
+        (secRets[row.sector || "other"] ||= []).push(c);
+      }
+    }
+
+    if (rets.length && state.summary.breadth) {
+      state.summary.breadth.advancers = adv;
+      state.summary.breadth.decliners = dec;
+      state.summary.breadth.unchanged = Math.max(0, tList.length - adv - dec);
+      state.summary.breadth.avg_ret_1d = Number((rets.reduce((a, b) => a + b, 0) / rets.length).toFixed(2));
+    }
+
+    const hm = state.summary.heatmap || {};
+    if (quotes.SPY && quotes.SPY.change_1d_pct != null) {
+      hm.spy_ret_1d = Number(Number(quotes.SPY.change_1d_pct).toFixed(2));
+      changed = true;
+    }
+    for (const tile of hm.sectors || []) {
+      const sr = secRets[tile.sector];
+      if (sr && sr.length) {
+        tile.avg_ret_1d = Number((sr.reduce((a, b) => a + b, 0) / sr.length).toFixed(2));
+      }
+    }
+
+    const nowStr = tsLabel || new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    if ($("marketCloseBadge")) {
+      $("marketCloseBadge").innerHTML = `<span class="live-dot"></span>LIVE · ${esc(nowStr)}`;
+    }
+
+    if (!changed) return;
+
+    // Patch visible DOM in place without losing scroll position or expanded states
+    document.querySelectorAll("#screenerBody tr[data-sym]").forEach((tr) => {
+      const r = tList.find((x) => x.symbol === tr.dataset.sym);
+      if (!r) return;
+      const cells = tr.querySelectorAll("td");
+      if (cells[2]) cells[2].innerHTML = `<strong>$${fmtNum(r.close)}</strong>`;
+      if (cells[3]) {
+        cells[3].className = `num ${clsPct(r.change_1d_pct)}`;
+        cells[3].innerHTML = `<strong>${fmtPct(r.change_1d_pct)}</strong>`;
+      }
+    });
+    document.querySelectorAll("#screenerCards .stock-card[data-sym]").forEach((card) => {
+      const r = tList.find((x) => x.symbol === card.dataset.sym);
+      if (!r) return;
+      const pEl = card.querySelector(".scr-price, .sc-price");
+      const cEl = card.querySelector(".price-pill");
+      if (pEl) pEl.textContent = `$${fmtNum(r.close)}`;
+      if (cEl) {
+        cEl.className = `price-pill ${clsPct(r.change_1d_pct)}`;
+        cEl.textContent = fmtPct(r.change_1d_pct);
+      }
+    });
+    document.querySelectorAll("#notableGrid .notable-card[data-sym]").forEach((card) => {
+      const r = tList.find((x) => x.symbol === card.dataset.sym);
+      if (!r) return;
+      const pill = card.querySelector(".price-pill");
+      if (pill) {
+        pill.className = `price-pill ${clsPct(r.change_1d_pct)}`;
+        pill.textContent = `$${fmtNum(r.close)} · ${fmtPct(r.change_1d_pct)}`;
+      }
+    });
+    if (state.view === "stock" && state.activeTicker) {
+      const r = tList.find((x) => x.symbol === state.activeTicker);
+      if (r) {
+        const sp = document.querySelector("#stockContent .stock-price");
+        const pp = document.querySelector("#stockContent .pro-price-sub .price-pill");
+        if (sp) sp.textContent = `$${fmtNum(r.close)}`;
+        if (pp) {
+          pp.className = `price-pill ${clsPct(r.change_1d_pct)}`;
+          pp.textContent = fmtPct(r.change_1d_pct);
+        }
+      }
+    }
+  }
+
+  async function refreshSingleStockRealtime(sym) {
+    if (!sym) return;
+    try {
+      const chartUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1d&interval=5m`;
+      const raw = await fetchViaCors(chartUrl, 4500);
+      if (raw) {
+        const data = JSON.parse(raw);
+        const meta = data?.chart?.result?.[0]?.meta;
+        if (meta && meta.regularMarketPrice > 0) {
+          const price = Number(meta.regularMarketPrice);
+          const prev = Number(meta.chartPreviousClose || meta.previousClose || price);
+          const chgPct = prev > 0 ? ((price / prev) - 1) * 100 : 0;
+          const vol = Number(meta.regularMarketVolume || 0);
+          applyLiveQuotesMap({
+            [sym]: {
+              close: price,
+              change_1d_pct: chgPct,
+              volume: vol,
+              dollar_volume_usd: price * vol,
+            },
+          });
+        }
+      }
+    } catch {}
+
+    // Also pull live Google News RSS for the active stock so brand-new headlines appear immediately
+    try {
+      const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(sym + " stock when:1d")}&hl=en-US&gl=US&ceid=US:en`;
+      const xmlTxt = await fetchViaCors(rssUrl, 5000);
+      if (!xmlTxt || !xmlTxt.includes("<item>")) return;
+      const doc = new DOMParser().parseFromString(xmlTxt, "text/xml");
+      const items = [...doc.querySelectorAll("item")].slice(0, 6);
+      const cacheKey = `${state.date}:${sym}`;
+      const cached = state.tickerCache[cacheKey];
+      if (!cached) return;
+      const curNews = cached.news || [];
+      const seenTitles = new Set(curNews.map((n) => (n.title || "").toLowerCase().slice(0, 45)));
+      const fresh = [];
+      for (const it of items) {
+        const rawTitle = (it.querySelector("title")?.textContent || "").trim();
+        const link = (it.querySelector("link")?.textContent || "").trim();
+        const pub = (it.querySelector("pubDate")?.textContent || "").trim();
+        const src = (it.querySelector("source")?.textContent || "Live News").trim();
+        const cleanTitle = rawTitle.replace(/\s+-\s+[^-]+$/, "").trim() || rawTitle;
+        const key = cleanTitle.toLowerCase().slice(0, 45);
+        if (!cleanTitle || !link || seenTitles.has(key)) continue;
+        seenTitles.add(key);
+        const pubIso = pub ? new Date(pub).toISOString() : new Date().toISOString();
+        fresh.push({
+          id: "LIVE",
+          kind: "news",
+          title: cleanTitle,
+          url: link,
+          published: pubIso,
+          source: src,
+          categories: ["general"],
+        });
+      }
+      if (fresh.length) {
+        cached.news = [...fresh, ...curNews];
+        if (state.view === "stock" && state.activeTicker === sym && state.stockTab === "news") {
+          const tabBtn = document.querySelector('#stockSubTabs button[data-stab="news"]');
+          if (tabBtn) tabBtn.click();
+        }
+      }
+    } catch {}
+  }
+
+  let rtCursor = 0;
+  async function pollRealtimeTick() {
+    if (document.hidden || !state.summary) return;
+    // 1. Check cloud-synced live_quotes.json & breaking_news.json
+    try {
+      const lq = await fetchJson(`data/live_quotes.json?t=${Date.now()}`);
+      if (lq && lq.quotes) applyLiveQuotesMap(lq.quotes);
+    } catch {}
+    try {
+      await loadBreaking();
+    } catch {}
+
+    // 2. If user is viewing a specific stock, refresh that stock directly
+    if (state.view === "stock" && state.activeTicker) {
+      await refreshSingleStockRealtime(state.activeTicker);
+    }
+
+    // 3. Batch-refresh 20 watchlist tickers + SPY directly from Yahoo Finance Spark
+    try {
+      const allSyms = (state.summary.tickers || []).map((t) => t.symbol);
+      if (!allSyms.length) return;
+      const chunk = allSyms.slice(rtCursor, rtCursor + 18);
+      rtCursor = (rtCursor + 18) >= allSyms.length ? 0 : (rtCursor + 18);
+      const batchSyms = [...new Set(["SPY", ...chunk])].join(",");
+      const sparkUrl = `https://query1.finance.yahoo.com/v7/finance/spark?symbols=${encodeURIComponent(batchSyms)}&range=1d&interval=5m`;
+      const raw = await fetchViaCors(sparkUrl, 5000);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      const results = parsed?.spark?.result || [];
+      const map = {};
+      for (const r of results) {
+        const sym = r?.symbol;
+        const resp = r?.response?.[0];
+        const meta = resp?.meta;
+        if (sym && meta && meta.regularMarketPrice > 0) {
+          const price = Number(meta.regularMarketPrice);
+          const prev = Number(meta.chartPreviousClose || meta.previousClose || price);
+          const chg = prev > 0 ? ((price / prev) - 1) * 100 : 0;
+          map[sym] = { close: price, change_1d_pct: chg };
+        }
+      }
+      if (Object.keys(map).length) applyLiveQuotesMap(map);
+    } catch {}
+  }
+
+  function initRealtimeEngine() {
+    setTimeout(pollRealtimeTick, 1800);
+    setInterval(pollRealtimeTick, 25000);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) pollRealtimeTick();
+    });
+  }
+
   async function boot() {
     initTheme();
     initTooltips();
@@ -4069,6 +4336,7 @@
       await loadBreaking();
       await loadAuthorities();
       await loadDate(targetDate, wantedTicker);
+      initRealtimeEngine();
     } catch (err) {
       $("loadingState").classList.add("hidden");
       $("errorState").textContent = `Failed to load dashboard index: ${err.message}`;
