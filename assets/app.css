@@ -2522,3 +2522,41 @@ body.no-scroll { overflow: hidden; }
   vertical-align: middle;
   box-shadow: 0 0 6px var(--green);
 }
+
+/* Pinned Top Earnings Today Banner on Overview */
+.today-earnings-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.te-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.te-tag {
+  display: inline-block;
+  background: var(--accent);
+  color: #050608;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.te-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.te-pill {
+  border-color: rgba(240, 185, 11, 0.35);
+}

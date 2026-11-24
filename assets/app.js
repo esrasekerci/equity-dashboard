@@ -610,6 +610,32 @@
     const br = s.breadth || {};
     const mp = (s.alerts && s.alerts.macro_pulse) || {};
 
+    // Pinned Top Banner when any stock reports Earnings TODAY
+    const todayEarnEl = $("todayEarningsBanner");
+    if (todayEarnEl) {
+      const nowIsoDate = new Date().toISOString().slice(0, 10);
+      const earnToday = (s.tickers || []).filter(
+        (t) => t.earnings_date && (t.earnings_days === 0 || t.earnings_date === nowIsoDate)
+      );
+      if (earnToday.length > 0) {
+        todayEarnEl.innerHTML = `
+          <div class="te-head">
+            <span class="te-tag">Earnings Today</span>
+            <span class="muted">${earnToday.length} scheduled announcement${earnToday.length === 1 ? "" : "s"}</span>
+          </div>
+          <div class="te-pills">
+            ${earnToday.map((t) => {
+              const officialUrl = secHtmlUrl(t.earnings_url || `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(t.symbol)}`);
+              return `<a class="ticker-pill te-pill" href="${esc(officialUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><strong>${esc(t.symbol)}</strong><span class="muted">${esc(t.name)}</span><span class="warn">${esc(t.earnings_source || "Official")} ↗</span></a>`;
+            }).join("")}
+          </div>
+        `;
+        todayEarnEl.classList.remove("hidden");
+      } else {
+        todayEarnEl.classList.add("hidden");
+      }
+    }
+
     // Breaking news banner
     const banner = $("breakingBanner");
     if (state.breaking.length > 0) {
