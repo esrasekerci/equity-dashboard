@@ -1,8 +1,325 @@
 {
-  "updated_at": "2026-11-24T13:23:53+00:00",
+  "updated_at": "2026-11-24T22:46:35+00:00",
   "min_importance": 42.0,
   "max_age_hours": 6.0,
   "items": [
+    {
+      "key": "shock_AXTI_2026-11-24_drop",
+      "symbol": "AXTI",
+      "name": "AXT Inc",
+      "title": "AXT Inc (AXTI) drops -15.97% to $31.95 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/AXTI",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-24T22:46:35+00:00",
+      "importance": 96.0,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "shock_CRWV_2026-11-24_drop",
+      "symbol": "CRWV",
+      "name": "CoreWeave",
+      "title": "CoreWeave (CRWV) drops -11.32% to $42.86 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/CRWV",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-24T22:46:35+00:00",
+      "importance": 96.0,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "shock_IREN_2026-11-24_drop",
+      "symbol": "IREN",
+      "name": "IREN Limited",
+      "title": "IREN Limited (IREN) drops -11.31% to $12.98 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/IREN",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-24T22:46:35+00:00",
+      "importance": 96.0,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "shock_APLD_2026-11-24_drop",
+      "symbol": "APLD",
+      "name": "Applied Digital",
+      "title": "Applied Digital (APLD) drops -11.07% to $12.29 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/APLD",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-24T22:46:35+00:00",
+      "importance": 95.7,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "19ffef19b95ca0fd",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Jensen Huang Apologized to Nvidia Staff in Company Meeting",
+      "url": "https://www.wsj.com/business/jensen-huang-apologized-to-nvidia-staff-in-company-meeting-c798dfba?siteid=yhoof2&yptr=yahoo",
+      "source": "The Wall Street Journal",
+      "source_tier": 1,
+      "published": "2026-11-24T22:32:00+00:00",
+      "importance": 99.7,
+      "categories": [
+        "policy_geopolitics",
+        "regulatory_legal"
+      ],
+      "age_hours": 0.24,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "fdb32108a6ac3311",
+      "symbol": "ADI",
+      "name": "Analog Devices",
+      "title": "8-K filed 2026-11-24 - Item 2.02: Results of operations (earnings release)",
+      "url": "https://www.sec.gov/Archives/edgar/data/6281/000000628126000087/adi-20261124.htm",
+      "source": "SEC EDGAR 8-K",
+      "source_tier": 1,
+      "published": "2026-11-24T00:00:00+00:00",
+      "importance": 90.0,
+      "categories": [
+        "sec_8k"
+      ],
+      "age_hours": 22.78,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "1ed0fb82749614ab",
+      "symbol": "ASML",
+      "name": "ASML Holding",
+      "title": "Dutch lawmakers urge government to resist US MATCH bill targeting ASML",
+      "url": "https://finance.yahoo.com/economy/policy/articles/dutch-lawmakers-urge-government-resist-212114317.html",
+      "source": "Reuters",
+      "source_tier": 1,
+      "published": "2026-11-24T21:21:14+00:00",
+      "importance": 64.4,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.42,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "de4cc8f17b1fa1cf",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell Technologies Smashes Q3 Estimates, Guides Above Views",
+      "url": "https://www.investors.com/news/technology/dell-stock-fiscal-q3-2027-earnings/?src=A00220&yptr=yahoo",
+      "source": "Investor's Business Daily",
+      "source_tier": 2,
+      "published": "2026-11-24T22:02:29+00:00",
+      "importance": 100.0,
+      "categories": [
+        "earnings_guidance",
+        "analyst"
+      ],
+      "age_hours": 0.74,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "cb0248ee15ce4d1c",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell raises annual revenue forecast as AI server demand surges, shares rally",
+      "url": "https://finance.yahoo.com/technology/ai/articles/dell-raises-annual-revenue-forecast-214621448.html",
+      "source": "Investing.com",
+      "source_tier": 2,
+      "published": "2026-11-24T21:46:21+00:00",
+      "importance": 100.0,
+      "categories": [
+        "earnings_guidance",
+        "analyst",
+        "market_move"
+      ],
+      "age_hours": 1.0,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "ebe5542072da762a",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell handily tops estimates, lifts sales and profit guidance",
+      "url": "https://finance.yahoo.com/technology/ai/article/dell-handily-tops-estimates-lifts-sales-and-profit-guidance-212145887.html",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T21:21:45+00:00",
+      "importance": 100.0,
+      "categories": [
+        "earnings_guidance",
+        "analyst"
+      ],
+      "age_hours": 1.41,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "5351568c592092a1",
+      "symbol": "META",
+      "name": "Meta Platforms",
+      "title": "David Abrams’ Meta Platforms, Inc. (META) Bet Is Backed by Strong Cash Flow and AI Growth",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/david-abrams-meta-platforms-inc-190633349.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T19:06:33+00:00",
+      "importance": 97.2,
+      "categories": [
+        "earnings_guidance",
+        "analyst"
+      ],
+      "age_hours": 3.67,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "f2b039e61498d02c",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "The Biggest Earnings Winners Grind Dell And Sandisk Into The Dust",
+      "url": "https://finance.yahoo.com/m/e45ffa23-8286-379b-b6e0-081e46a83f75/the-biggest-earnings-winners.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T21:03:14+00:00",
+      "importance": 96.1,
+      "categories": [
+        "earnings_guidance",
+        "market_move"
+      ],
+      "age_hours": 1.72,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "dd616f0f701cdc0b",
+      "symbol": "QCOM",
+      "name": "Qualcomm",
+      "title": "Should Softer Guidance Require Action From Qualcomm Stock Investors",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/softer-guidance-require-action-qualcomm-171618113.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T17:16:18+00:00",
+      "importance": 94.3,
+      "categories": [
+        "earnings_guidance",
+        "policy_geopolitics",
+        "regulatory_legal"
+      ],
+      "age_hours": 5.5,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "250e3c3f9471659f",
+      "symbol": "GOOGL",
+      "name": "Alphabet",
+      "title": "Broadcom Stocks Fall 3.98% as Google TPU Order Report Clouds AI Outlook",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/broadcom-stocks-fall-3-98-165405396.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T16:54:05+00:00",
+      "importance": 91.7,
+      "categories": [
+        "earnings_guidance",
+        "contract_partnership"
+      ],
+      "age_hours": 5.88,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "5f548a0dbb4b7e64",
+      "symbol": "WMT",
+      "name": "Walmart",
+      "title": "Stock Market Today: Nasdaq Dives As Jensen Huang Tells Nvidia Staff This; Walmart Tests Entry",
+      "url": "https://finance.yahoo.com/m/4aa4ff31-269f-346e-80c4-e681510af7ae/stock-market-today%3A-nasdaq.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T21:51:27+00:00",
+      "importance": 87.7,
+      "categories": [
+        "policy_geopolitics",
+        "regulatory_legal"
+      ],
+      "age_hours": 0.92,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "ec842860ddb7370b",
+      "symbol": "SNPS",
+      "name": "Synopsys",
+      "title": "Synopsys’ $1 Billion-Plus Silicon Deal Offers a Different Route Into AI Spending",
+      "url": "https://finance.yahoo.com/technology/ai/articles/synopsys-1-billion-plus-silicon-205416700.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T20:54:16+00:00",
+      "importance": 87.3,
+      "categories": [
+        "m_and_a",
+        "analyst"
+      ],
+      "age_hours": 1.87,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "aaae0e7d966262e9",
+      "symbol": "BAC",
+      "name": "Bank of America",
+      "title": "BankAmeriDeals: How Bank of America customers can stack extra cash back on everyday buys",
+      "url": "https://finance.yahoo.com/personal-finance/credit-cards/article/bankamerideals-guide-205828052.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T20:58:28+00:00",
+      "importance": 85.3,
+      "categories": [
+        "analyst",
+        "contract_partnership"
+      ],
+      "age_hours": 1.8,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "92ae6d1d5a641e49",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell Raises AI Server Outlook as Backlog Hits Record $132 Billion | Closing Bell",
+      "url": "https://finance.yahoo.com/video/dell-raises-ai-server-outlook-212415534.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T21:24:15+00:00",
+      "importance": 83.8,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 1.37,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
+    {
+      "key": "9a9d7d4e76cf319d",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell Technologies Delivers Third Quarter Fiscal 2027 Financial Results",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/dell-technologies-delivers-third-quarter-210500797.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T21:05:00+00:00",
+      "importance": 83.3,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 1.69,
+      "detected_at": "2026-11-24T22:46:35+00:00"
+    },
     {
       "key": "shock_ADI_2026-11-24_drop",
       "symbol": "ADI",
