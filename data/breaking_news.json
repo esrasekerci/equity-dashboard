@@ -1,108 +1,109 @@
 {
-  "updated_at": "2026-11-24T01:00:03+00:00",
+  "updated_at": "2026-11-24T11:04:22+00:00",
   "min_importance": 60.0,
   "max_age_hours": 3.0,
   "items": [
     {
-      "key": "6e8506989bda7f33",
-      "symbol": "MU",
-      "name": "Micron Technology",
-      "title": "Micron Stock Jumps 19%. Why the Rally Has Legs.",
-      "url": "https://www.barrons.com/articles/micron-stock-tech-rally-selloff-c647c4c4?siteid=yhoof2&yptr=yahoo",
-      "source": "Barrons.com",
-      "source_tier": 1,
-      "published": "2026-11-23T22:17:00+00:00",
-      "importance": 71.4,
-      "categories": [
-        "contract_partnership"
-      ],
-      "age_hours": 2.72,
-      "detected_at": "2026-11-24T01:00:03+00:00"
-    },
-    {
-      "key": "74a83c13c439fc31",
-      "symbol": "ADI",
-      "name": "Analog Devices",
-      "title": "Why Analog Devices Stock Is In Focus Ahead Of Results",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/why-analog-devices-stock-focus-001820584.html?.tsrc=rss",
+      "key": "bd1ab32539383ebc",
+      "symbol": "JPM",
+      "name": "JPMorgan Chase",
+      "title": "JPMorgan Chase (JPM) Stock Still Looks Like A Bargain On Its 122% Run",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/jpmorgan-chase-jpm-stock-still-091521471.html?.tsrc=rss",
       "source": "Yahoo Finance",
       "source_tier": 2,
-      "published": "2026-11-24T00:18:20+00:00",
-      "importance": 95.6,
-      "categories": [
-        "earnings_guidance",
-        "contract_partnership"
-      ],
-      "age_hours": 0.7,
-      "detected_at": "2026-11-24T01:00:03+00:00"
-    },
-    {
-      "key": "bdfbc4892f3e0509",
-      "symbol": "MRVL",
-      "name": "Marvell Technology",
-      "title": "Marvell (MRVL) Stock Looks Reasonable Following Its 161% Three Year Run",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/marvell-mrvl-stock-looks-reasonable-232050664.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-23T23:20:50+00:00",
-      "importance": 94.1,
-      "categories": [
-        "earnings_guidance",
-        "contract_partnership",
-        "data_centers_ai"
-      ],
-      "age_hours": 1.65,
-      "detected_at": "2026-11-24T01:00:03+00:00"
-    },
-    {
-      "key": "f139dd0c0003feec",
-      "symbol": "MSFT",
-      "name": "Microsoft",
-      "title": "What Microsoft (MSFT)'s Enterprise AI Partnerships Mean For Shareholders",
-      "url": "https://finance.yahoo.com/technology/ai/articles/microsoft-msft-enterprise-ai-partnerships-001743463.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T00:17:43+00:00",
-      "importance": 80.4,
-      "categories": [
-        "supply_chain_producers",
-        "contract_partnership"
-      ],
-      "age_hours": 0.71,
-      "detected_at": "2026-11-24T01:00:03+00:00"
-    },
-    {
-      "key": "66cc203f994bb9e7",
-      "symbol": "WPM",
-      "name": "Wheaton Precious Metals",
-      "title": "Wheaton Precious Metals (TSX:WPM) Stock Could Be Overvalued Following Its 231% Run",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/wheaton-precious-metals-tsx-wpm-232205044.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-23T23:22:05+00:00",
-      "importance": 79.1,
-      "categories": [
-        "earnings_guidance"
-      ],
-      "age_hours": 1.63,
-      "detected_at": "2026-11-24T01:00:03+00:00"
-    },
-    {
-      "key": "731740d82f55c215",
-      "symbol": "AMD",
-      "name": "Advanced Micro Devices",
-      "title": "AMD Stock Rallies Nearly 8% as a Bernstein Analyst Remains Bullish Despite the Hunterbrook Short Report",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/amd-stock-rallies-nearly-8-235832362.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-23T23:58:32+00:00",
-      "importance": 74.6,
+      "published": "2026-11-24T09:15:21+00:00",
+      "importance": 82.1,
       "categories": [
         "analyst",
-        "market_move"
+        "regulatory_legal",
+        "incident"
       ],
-      "age_hours": 1.03,
-      "detected_at": "2026-11-24T01:00:03+00:00"
+      "age_hours": 1.82,
+      "detected_at": "2026-11-24T11:04:22+00:00"
+    },
+    {
+      "key": "3164b4cc44a4f1e9",
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices",
+      "title": "What Advanced Micro Devices Holders Got Right Before A 111% Run",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/advanced-micro-devices-holders-got-090947609.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T09:09:47+00:00",
+      "importance": 74.5,
+      "categories": [
+        "data_centers_ai",
+        "capital_markets",
+        "capex_expansion"
+      ],
+      "age_hours": 1.91,
+      "detected_at": "2026-11-24T11:04:22+00:00"
+    },
+    {
+      "key": "3014e2a5f11900f1",
+      "symbol": "SNOW",
+      "name": "Snowflake",
+      "title": "Snowflake Stock In Focus As New AI Connectors Reach Its Marketplace",
+      "url": "https://finance.yahoo.com/technology/ai/articles/snowflake-stock-focus-ai-connectors-101138090.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T10:11:38+00:00",
+      "importance": 72.6,
+      "categories": [
+        "contract_partnership",
+        "product_tech"
+      ],
+      "age_hours": 0.88,
+      "detected_at": "2026-11-24T11:04:22+00:00"
+    },
+    {
+      "key": "3ff760dda3b0ea50",
+      "symbol": "CORZ",
+      "name": "Core Scientific",
+      "title": "Core Scientific (CORZ) Stock Fair Value Moves Lower As Analysts Cut Margin Assumptions",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/core-scientific-corz-stock-fair-101158373.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T10:11:58+00:00",
+      "importance": 67.2,
+      "categories": [
+        "analyst"
+      ],
+      "age_hours": 0.87,
+      "detected_at": "2026-11-24T11:04:22+00:00"
+    },
+    {
+      "key": "387ce21641bb4677",
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "title": "Atos delivers a structured journey to digital sovereignty, leveraging Microsoft technology",
+      "url": "https://finance.yahoo.com/technology/ai/articles/atos-delivers-structured-journey-digital-090000268.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T09:00:00+00:00",
+      "importance": 61.6,
+      "categories": [
+        "contract_partnership"
+      ],
+      "age_hours": 2.07,
+      "detected_at": "2026-11-24T11:04:22+00:00"
+    },
+    {
+      "key": "ebe17982e6442601",
+      "symbol": "AI / DATA CENTERS",
+      "name": "AI / DATA CENTERS",
+      "title": "AI Data Centers Are Devouring the Power American Factories Need",
+      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOdVBqTzNycFRfcDN6N0tYVWw3YktURWU1Q1BuRXpPVHd3LXpiWXhjUHNrSnJPS1MzYkJmM0FaYWFQU2RPV3JVV0cxZnQxMkpoOElWeTZzRVI4dzBXMVVFQVFjRTZvci03UmNSYmFaWE8ycnVVNS04N1FhOWl3Rldmc0YwOE1nbGRGZHMxcmxBY0NiNGp1ZVY4cUpmSXlIeHhZV00xcktSMA?oc=5",
+      "source": "Bloomberg.com",
+      "source_tier": 1,
+      "published": "2026-11-24T10:00:12+00:00",
+      "importance": 100.0,
+      "categories": [
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 1.07,
+      "detected_at": "2026-11-24T11:04:22+00:00"
     }
   ]
 }

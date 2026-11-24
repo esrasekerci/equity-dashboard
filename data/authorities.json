@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-24T01:00:03+00:00",
+  "updated_at": "2026-11-24T11:04:22+00:00",
   "items": [
     {
       "agency": "SEC",
@@ -82,8 +82,34 @@
     {
       "agency": "Treasury / OFAC",
       "title": "Notice of OFAC Sanctions Action",
-      "url": "https://www.federalregister.gov/documents/2026/11/18/2026-23456/notice-of-ofac-sanctions-action",
-      "published": "2026-11-18T00:00:00+00:00",
+      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23785/notice-of-ofac-sanctions-action",
+      "published": "2026-11-23T00:00:00+00:00",
+      "source": "Treasury / OFAC",
+      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the name of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject t",
+      "categories": [
+        "OFAC Sanctions",
+        "energy"
+      ],
+      "sector": "energy"
+    },
+    {
+      "agency": "Treasury / OFAC",
+      "title": "Notice of OFAC Sanctions Action",
+      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23772/notice-of-ofac-sanctions-action",
+      "published": "2026-11-23T00:00:00+00:00",
+      "source": "Treasury / OFAC",
+      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the names of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject ",
+      "categories": [
+        "OFAC Sanctions",
+        "energy"
+      ],
+      "sector": "energy"
+    },
+    {
+      "agency": "Treasury / OFAC",
+      "title": "Notice of OFAC Sanctions Action",
+      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23908/notice-of-ofac-sanctions-action",
+      "published": "2026-11-24T00:00:00+00:00",
       "source": "Treasury / OFAC",
       "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the names of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject ",
       "categories": [
@@ -158,6 +184,19 @@
       "sector": "clean_energy"
     },
     {
+      "agency": "FERC",
+      "title": "Denial of Rehearing Requests by Operation of Law Under the Commission's Rules of Practice and Procedure",
+      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23884/denial-of-rehearing-requests-by-operation-of-law-under-the-commissions-rules-of-practice-and",
+      "published": "2026-11-24T00:00:00+00:00",
+      "source": "FERC",
+      "summary": "The Federal Energy Regulatory Commission (Commission) is revising its regulations addressing the circumstances under which a request for rehearing is denied absent Commission action within a particular time frame. Currently, the Commission's regulations provide that unless the Commission acts upon a request for rehearing within 30 days after the request is f",
+      "categories": [
+        "FERC Power Grid",
+        "power_utilities"
+      ],
+      "sector": "power_utilities"
+    },
+    {
       "agency": "Commerce / BIS",
       "title": "Addressing Remote Access to Advanced Semiconductors",
       "url": "https://www.federalregister.gov/documents/2026/11/19/2026-23529/addressing-remote-access-to-advanced-semiconductors",
@@ -171,25 +210,12 @@
       "sector": "macro_policy"
     },
     {
-      "agency": "US ITC",
-      "title": "Certain Transformers and Components Thereof; Notice of a Commission Determination Not To Review an Initial Determination Granting Joint Motion To Terminate the Investigation Based on Settlement; Termination of the Investigation in Its Entirety",
-      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23813/certain-transformers-and-components-thereof-notice-of-a-commission-determination-not-to-review-an",
-      "published": "2026-11-23T00:00:00+00:00",
-      "source": "Federal Register (International Trade Commission)",
-      "summary": "Notice is hereby given that the U.S. International Trade Commission has determined not to review the presiding administrative law judge's (\"ALJ\") initial determination (\"ID\") (Order No. 10), granting a joint motion to terminate the investigation based on settlement. The investigation is terminated in its entirety.",
-      "categories": [
-        "Tariffs & trade",
-        "Notice"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "US ITC",
-      "title": "Magnesia Carbon Bricks From China and Mexico; Scheduling of Expedited Five-Year Reviews",
-      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23810/magnesia-carbon-bricks-from-china-and-mexico-scheduling-of-expedited-five-year-reviews",
-      "published": "2026-11-23T00:00:00+00:00",
-      "source": "Federal Register (International Trade Commission)",
-      "summary": "The Commission hereby gives notice of the scheduling of expedited reviews pursuant to the Tariff Act of 1930 (\"the Act\") to determine whether revocation of the countervailing duty order on magnesia carbon bricks from China and the antidumping duty orders on magnesia carbon bricks from China and Mexico would be likely to lead to continuation or recurrence of material injury within a reasonably fore",
+      "agency": "Commerce / ITA",
+      "title": "Certain Corrosion-Resistant Steel Products From the Socialist Republic of Vietnam: Preliminary Negative Determination of Circumvention of the Antidumping Duty and Countervailing Duty Orders",
+      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23944/certain-corrosion-resistant-steel-products-from-the-socialist-republic-of-vietnam-preliminary",
+      "published": "2026-11-24T00:00:00+00:00",
+      "source": "Federal Register (Commerce Department, International Trade Administration)",
+      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines on a country-wide basis that imports of certain corrosion- resistant steel products (CORE) completed in Indonesia using cold- rolled steel (CRS) manufactured in the Socialist Republic of Vietnam (Vietnam) are not circumventing the antidumping duty (AD) and countervailing duty (CVD) orders on CORE from Vietnam. The period of inquir",
       "categories": [
         "Tariffs & trade",
         "Notice"
@@ -198,11 +224,11 @@
     },
     {
       "agency": "Commerce / ITA",
-      "title": "Certain Cold-Rolled Steel Flat Products From the Republic of Korea: Preliminary Results and Rescission, in Part of Countervailing Duty Administrative Review; 2024",
-      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23802/certain-cold-rolled-steel-flat-products-from-the-republic-of-korea-preliminary-results-and",
-      "published": "2026-11-23T00:00:00+00:00",
+      "title": "Certain Steel Wheels from the People's Republic of China: Preliminary Affirmative Determination of Circumvention of the Antidumping Duty and Countervailing Duty Orders",
+      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23943/certain-steel-wheels-from-the-peoples-republic-of-china-preliminary-affirmative-determination-of",
+      "published": "2026-11-24T00:00:00+00:00",
       "source": "Federal Register (Commerce Department, International Trade Administration)",
-      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies were provided to Hyundai Steel Company (Hyundai Steel) and POSCO for the production of certain cold-rolled steel flat products (cold-rolled steel) from the Republic of Korea (Korea). The period of review (POR) is January 1, 2024, through December 31, 2024. In addition, Commerce is rescinding this rev",
+      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that imports of certain steel wheels (steel wheels), completed in the Socialist Republic of Vietnam (Vietnam) using hot- rolled steel (HRS) produced in the People's Republic of China (China), are circumventing the antidumping duty (AD) and countervailing duty (CVD) orders on steel wheels from China. Interested parties are invited ",
       "categories": [
         "Tariffs & trade",
         "Notice"
@@ -210,12 +236,25 @@
       "sector": "macro_policy"
     },
     {
-      "agency": "State Dept",
-      "title": "Notice of Department of State Sanctions Actions",
-      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23793/notice-of-department-of-state-sanctions-actions",
-      "published": "2026-11-23T00:00:00+00:00",
-      "source": "Federal Register (State Department)",
-      "summary": "The U.S. Department of State (State) is publishing the names of persons who have been added to the Department of the Treasury's List of Specially Designated Nationals and Blocked Persons (SDN List), administered by the Office of Foreign Assets Control (OFAC).",
+      "agency": "Commerce / ITA",
+      "title": "Certain Corrosion-Resistant Steel Products From the People's Republic of China: Preliminary Negative Determination of Circumvention of the Antidumping Duty and Countervailing Duty Orders",
+      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23942/certain-corrosion-resistant-steel-products-from-the-peoples-republic-of-china-preliminary-negative",
+      "published": "2026-11-24T00:00:00+00:00",
+      "source": "Federal Register (Commerce Department, International Trade Administration)",
+      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines on a country-wide basis that imports of certain corrosion- resistant steel products (CORE) completed in Indonesia using hot-rolled steel (HRS) or cold-rolled steel (CRS) manufactured in the People's Republic of China (China) are not circumventing the antidumping duty (AD) and countervailing duty (CVD) orders on CORE from China. Th",
+      "categories": [
+        "Tariffs & trade",
+        "Notice"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "Commerce / ITA",
+      "title": "Hydrofluorocarbon Blends From the People's Republic of China: Final Results of Antidumping Duty Administrative Review; 2024-2025",
+      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23941/hydrofluorocarbon-blends-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
+      "published": "2026-11-24T00:00:00+00:00",
+      "source": "Federal Register (Commerce Department, International Trade Administration)",
+      "summary": "The U.S. Department of Commerce (Commerce) determines that producers/exporters subject to this review made sales of subject merchandise at less than normal value during the period of review (POR) August 1, 2024, through July 31, 2025.",
       "categories": [
         "Sanctions",
         "Notice"
@@ -223,12 +262,12 @@
       "sector": "macro_policy"
     },
     {
-      "agency": "Treasury / OFAC",
-      "title": "Notice of OFAC Sanctions Action",
-      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23785/notice-of-ofac-sanctions-action",
-      "published": "2026-11-23T00:00:00+00:00",
-      "source": "Federal Register (Treasury Department, Foreign Assets Control Office)",
-      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the name of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject to U.S. jurisdiction of these persons are",
+      "agency": "Commerce / ITA",
+      "title": "Light-Walled Rectangular Pipe and Tube From the People's Republic of China: Final Results of Countervailing Duty Administrative Review; 2024",
+      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23940/light-walled-rectangular-pipe-and-tube-from-the-peoples-republic-of-china-final-results-of",
+      "published": "2026-11-24T00:00:00+00:00",
+      "source": "Federal Register (Commerce Department, International Trade Administration)",
+      "summary": "The U.S. Department of Commerce (Commerce) determines that countervailable subsidies were not provided to Hangzhou Ailong Metal Products Co., Ltd. (Hangzhou Ailong), a producer and exporter of light- walled rectangular pipe and tube (LWR pipe and tube) from People's Republic of China (China). The period of review (POR) is January 1, 2024, through December 31, 2024.",
       "categories": [
         "Sanctions",
         "Notice"
@@ -236,12 +275,12 @@
       "sector": "macro_policy"
     },
     {
-      "agency": "Treasury / OFAC",
-      "title": "Notice of OFAC Sanctions Action",
-      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23772/notice-of-ofac-sanctions-action",
-      "published": "2026-11-23T00:00:00+00:00",
-      "source": "Federal Register (Treasury Department, Foreign Assets Control Office)",
-      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the names of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject to U.S. jurisdiction of these persons ar",
+      "agency": "Commerce / ITA",
+      "title": "Certain Passenger Vehicle and Light Truck Tires From the People's Republic of China: Final Results of Antidumping Duty Administrative Review; 2024-2025",
+      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23939/certain-passenger-vehicle-and-light-truck-tires-from-the-peoples-republic-of-china-final-results-of",
+      "published": "2026-11-24T00:00:00+00:00",
+      "source": "Federal Register (Commerce Department, International Trade Administration)",
+      "summary": "The U.S. Department of Commerce (Commerce) determines that producers/exporters subject to this review made sales of subject merchandise at less than normal value during the period of review (POR) August 1, 2024, through July 31, 2025.",
       "categories": [
         "Sanctions",
         "Notice"
