@@ -4085,6 +4085,38 @@
     return null;
   }
 
+  function usMarketSessionLabel() {
+    try {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/New_York",
+        weekday: "short",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: false,
+      }).formatToParts(new Date());
+      const map = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+      if (map.weekday === "Sat" || map.weekday === "Sun") return "OFF-MARKET";
+      const h = Number(map.hour || 0) % 24;
+      const m = Number(map.minute || 0);
+      const mins = h * 60 + m;
+      if (mins >= 240 && mins < 570) return "PRE-MARKET";
+      if (mins >= 570 && mins < 960) return "MARKET OPEN";
+      if (mins >= 960 && mins < 1200) return "AFTER-HOURS";
+      return "OVERNIGHT";
+    } catch {
+      return "LIVE";
+    }
+  }
+
+  function lastValidNum(arr) {
+    if (!Array.isArray(arr)) return null;
+    for (let i = arr.length - 1; i >= 0; i--) {
+      const v = Number(arr[i]);
+      if (arr[i] != null && Number.isFinite(v) && v > 0) return v;
+    }
+    return null;
+  }
+
   function applyLiveQuotesMap(quotes, tsLabel = null) {
     if (!quotes || !state.summary) return;
     const tList = state.summary.tickers || [];
@@ -4140,9 +4172,10 @@
       }
     }
 
+    const sessLbl = usMarketSessionLabel();
     const nowStr = tsLabel || new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
     if ($("marketCloseBadge")) {
-      $("marketCloseBadge").innerHTML = `<span class="live-dot"></span>LIVE · ${esc(nowStr)}`;
+      $("marketCloseBadge").innerHTML = `<span class="live-dot"></span>${esc(sessLbl)} · ${esc(nowStr)}`;
     }
 
     if (!changed) return;
@@ -4195,22 +4228,24 @@
   async function refreshSingleStockRealtime(sym) {
     if (!sym) return;
     try {
-      const chartUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1d&interval=5m`;
+      const chartUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1d&interval=5m&includePrePost=true`;
       const raw = await fetchViaCors(chartUrl, 4500);
       if (raw) {
         const data = JSON.parse(raw);
-        const meta = data?.chart?.result?.[0]?.meta;
-        if (meta && meta.regularMarketPrice > 0) {
-          const price = Number(meta.regularMarketPrice);
-          const prev = Number(meta.chartPreviousClose || meta.previousClose || price);
-          const chgPct = prev > 0 ? ((price / prev) - 1) * 100 : 0;
+        const res0 = data?.chart?.result?.[0];
+        const meta = res0?.meta;
+        const lastBarClose = lastValidNum(res0?.indicators?.quote?.[0]?.close);
+        const livePrice = Number(meta?.postMarketPrice || meta?.preMarketPrice || lastBarClose || meta?.regularMarketPrice || 0);
+        if (meta && livePrice > 0) {
+          const prev = Number(meta.chartPreviousClose || meta.previousClose || meta.regularMarketPrice || livePrice);
+          const chgPct = prev > 0 ? ((livePrice / prev) - 1) * 100 : 0;
           const vol = Number(meta.regularMarketVolume || 0);
           applyLiveQuotesMap({
             [sym]: {
-              close: price,
+              close: livePrice,
               change_1d_pct: chgPct,
               volume: vol,
-              dollar_volume_usd: price * vol,
+              dollar_volume_usd: livePrice * vol,
             },
           });
         }
@@ -4277,14 +4312,14 @@
       await refreshSingleStockRealtime(state.activeTicker);
     }
 
-    // 3. Batch-refresh 20 watchlist tickers + SPY directly from Yahoo Finance Spark
+    // 3. Batch-refresh 20 watchlist tickers + SPY directly from Yahoo Finance Spark (with Pre-Market & After-Hours enabled)
     try {
       const allSyms = (state.summary.tickers || []).map((t) => t.symbol);
       if (!allSyms.length) return;
       const chunk = allSyms.slice(rtCursor, rtCursor + 18);
       rtCursor = (rtCursor + 18) >= allSyms.length ? 0 : (rtCursor + 18);
       const batchSyms = [...new Set(["SPY", ...chunk])].join(",");
-      const sparkUrl = `https://query1.finance.yahoo.com/v7/finance/spark?symbols=${encodeURIComponent(batchSyms)}&range=1d&interval=5m`;
+      const sparkUrl = `https://query1.finance.yahoo.com/v7/finance/spark?symbols=${encodeURIComponent(batchSyms)}&range=1d&interval=5m&includePrePost=true`;
       const raw = await fetchViaCors(sparkUrl, 5000);
       if (!raw) return;
       const parsed = JSON.parse(raw);
@@ -4294,9 +4329,10 @@
         const sym = r?.symbol;
         const resp = r?.response?.[0];
         const meta = resp?.meta;
-        if (sym && meta && meta.regularMarketPrice > 0) {
-          const price = Number(meta.regularMarketPrice);
-          const prev = Number(meta.chartPreviousClose || meta.previousClose || price);
+        const lastBar = lastValidNum(resp?.indicators?.quote?.[0]?.close);
+        const price = Number(meta?.postMarketPrice || meta?.preMarketPrice || lastBar || meta?.regularMarketPrice || 0);
+        if (sym && meta && price > 0) {
+          const prev = Number(meta.chartPreviousClose || meta.previousClose || meta.regularMarketPrice || price);
           const chg = prev > 0 ? ((price / prev) - 1) * 100 : 0;
           map[sym] = { close: price, change_1d_pct: chg };
         }
