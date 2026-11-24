@@ -2921,7 +2921,7 @@
       if (!ranges.includes(state.chartRange)) state.chartRange = "1D";
       const at = tech.all_time_stats || null;
       const athBanner = (state.chartRange === "ALL" || state.chartRange === "5Y") && at
-        ? `<div class="muted" style="font-size:11.5px;margin-bottom:6px">Since ${esc(at.ipo_date)} · ATH <strong>$${fmtNum(at.ath)}</strong> (${esc(at.ath_date)}, <span class="${clsPct(at.pct_from_ath)}">${fmtPct(at.pct_from_ath, 1)}</span>) · ATL <strong>$${fmtNum(at.atl)}</strong></div>`
+        ? `<div class="muted tv-ath-banner" style="font-size:11.5px;margin-bottom:6px">Since ${esc(at.ipo_date)} · ATH <strong>$${fmtNum(at.ath)}</strong> (${esc(at.ath_date)}, <span class="${clsPct(at.pct_from_ath)}">${fmtPct(at.pct_from_ath, 1)}</span>) · ATL <strong>$${fmtNum(at.atl)}</strong></div>`
         : "";
       body.innerHTML = `
         <div class="chart-fs-bar">
@@ -2932,7 +2932,7 @@
           <div class="chart-fs-quote">
             <strong id="chartFsPrice">$${fmtNum(facts.last_close)}</strong>
             <span class="price-pill ${clsPct(facts.change_1d_pct)}" id="chartFsPill">${fmtPct(facts.change_1d_pct)}</span>
-            <span class="chart-live-tag"><span class="live-dot"></span>REAL-TIME</span>
+            <button type="button" class="chart-fs-exit-btn" id="exitChartFsTopBtn" aria-label="Exit full screen">⤡ Exit</button>
           </div>
         </div>
         <div class="tv-toolbar-pro">
@@ -2965,6 +2965,10 @@
       const fsBtn = $("toggleChartFsBtn");
       if (fsBtn) {
         fsBtn.onclick = () => setChartFullscreen(!state.chartFullscreen);
+      }
+      const exitFsTopBtn = $("exitChartFsTopBtn");
+      if (exitFsTopBtn) {
+        exitFsTopBtn.onclick = () => setChartFullscreen(false);
       }
       mountInteractiveChart(t);
     };
@@ -3091,24 +3095,63 @@
 
   // ---- INTERACTIVE CANDLESTICK CHART (TradingView Lightweight Charts) ----
   function setChartFullscreen(on) {
-    state.chartFullscreen = Boolean(on);
+    const next = Boolean(on);
+    const prev = state.chartFullscreen;
+    state.chartFullscreen = next;
     const card = $("stk-chart");
-    if (card) card.classList.toggle("is-fullscreen", state.chartFullscreen);
-    document.body.classList.toggle("no-scroll", state.chartFullscreen);
+    if (card) card.classList.toggle("is-fullscreen", next);
+    document.body.classList.toggle("no-scroll", next);
+    document.body.classList.toggle("chart-fs-open", next);
+    if (next && !prev && !state.isPopping) {
+      try { history.pushState({ ...currentHistoryState(), overlay: "chart-fs" }, "", location.href); } catch {}
+    }
     const fsBtn = $("toggleChartFsBtn");
     if (fsBtn) {
-      fsBtn.classList.toggle("active", state.chartFullscreen);
-      fsBtn.textContent = state.chartFullscreen ? "⤡" : "⛶";
-      fsBtn.title = state.chartFullscreen ? "Exit full screen (Esc)" : "Full screen chart";
+      fsBtn.classList.toggle("active", next);
+      fsBtn.textContent = next ? "⤡" : "⛶";
+      fsBtn.title = next ? "Exit full screen (Esc)" : "Full screen chart";
     }
-    const resizeNow = () => {
-      const box = $("tvChart");
-      if (!box || !state.tvChart) return;
-      state.tvChart.applyOptions({ width: box.clientWidth, height: box.clientHeight });
-      state.tvChart.timeScale().fitContent();
-    };
-    requestAnimationFrame(resizeNow);
-    setTimeout(resizeNow, 75);
+    // Re-render chart body when toggling full-screen so adaptive bar density and exact flex height are recalculated cleanly
+    const cached = state.activeTicker ? state.tickerCache[`${state.date}:${state.activeTicker}`] : null;
+    if (cached && $("tvChart")) {
+      requestAnimationFrame(() => {
+        if ($("tvChart")) mountInteractiveChart(cached);
+      });
+    }
+  }
+
+  function downsampleOhlcvBars(bars, maxBars) {
+    if (!Array.isArray(bars) || bars.length <= maxBars || maxBars < 20) return bars;
+    const step = Math.ceil(bars.length / maxBars);
+    const out = [];
+    for (let i = 0; i < bars.length; i += step) {
+      const chunk = bars.slice(i, Math.min(bars.length, i + step));
+      if (!chunk.length) continue;
+      const first = chunk[0];
+      const last = chunk[chunk.length - 1];
+      let high = first.h;
+      let low = first.l;
+      let volSum = 0;
+      for (const b of chunk) {
+        if (b.h > high) high = b.h;
+        if (b.l < low) low = b.l;
+        volSum += Number(b.v || 0);
+      }
+      const prevC = out.length > 0 ? out[out.length - 1].c : first.o;
+      const chg1d = prevC ? ((last.c - prevC) / prevC) * 100 : 0;
+      out.push({
+        ...last,
+        t: last.t,
+        o: first.o,
+        h: high,
+        l: low,
+        c: last.c,
+        v: volSum,
+        prevC,
+        chg1d,
+      });
+    }
+    return out;
   }
 
   function destroyInteractiveChart() {
@@ -3201,7 +3244,13 @@
       const n = state.chartRange === "ALL"
         ? all.length
         : ({ "1D": 22, "1M": 22, "3M": 66, "6M": 132, "1Y": 260, "5Y": 260 }[state.chartRange] || 132);
-      data = all.slice(-n);
+      const sliced = all.slice(-n);
+      // Adapt bar density to mobile/desktop viewport width so ALL / 5Y / 1Y graphs always fit 100% edge-to-edge on iOS & Android
+      const availPlotW = Math.max(240, (box.clientWidth || window.innerWidth || 360) - 56);
+      const maxReadableBars = state.chartRange === "1M"
+        ? 30
+        : Math.max(95, Math.min(340, Math.floor(availPlotW / 1.85)));
+      data = sliced.length > maxReadableBars ? downsampleOhlcvBars(sliced, maxReadableBars) : sliced;
     }
 
     state.tvBarCount = data.length;
@@ -3233,9 +3282,11 @@
     });
 
     const LC = window.LightweightCharts;
+    const initW = Math.max(220, box.clientWidth || 320);
+    const initH = Math.max(180, box.clientHeight || 300);
     const chart = LC.createChart(box, {
-      width: box.clientWidth,
-      height: box.clientHeight,
+      width: initW,
+      height: initH,
       layout: { background: { type: "solid", color: "transparent" }, textColor: textCol, fontSize: 11 },
       grid: {
         vertLines: { color: gridCol, visible: !is1M },
@@ -3249,7 +3300,7 @@
         timeVisible: useIntraday,
         secondsVisible: false,
         rightOffset: 0,
-        minBarSpacing: 0.1,
+        minBarSpacing: 0.04,
         fixLeftEdge: true,
         fixRightEdge: true,
         tickMarkFormatter: (time) => {
@@ -3259,7 +3310,7 @@
           const s = typeof time === "string" ? time : `${time.year}-${String(time.month).padStart(2, "0")}-${String(time.day).padStart(2, "0")}`;
           const [y, m, d] = s.split("-").map(Number);
           if (state.chartRange === "ALL") {
-            return m === 1 ? String(y) : `${MONTHS[(m || 1) - 1]} '${String(y).slice(2)}`;
+            return String(y);
           }
           if (state.chartRange === "5Y") {
             return `${MONTHS[(m || 1) - 1]} '${String(y).slice(2)}`;
@@ -3284,6 +3335,7 @@
     });
     state.tvChart = chart;
 
+    const denseBars = timelinePoints.length > 110;
     const candles = chart.addCandlestickSeries({
       upColor: upCol,
       downColor: dnCol,
@@ -3291,7 +3343,7 @@
       borderDownColor: dnCol,
       wickUpColor: upCol,
       wickDownColor: dnCol,
-      borderVisible: true,
+      borderVisible: !denseBars,
       wickVisible: true,
     });
     candles.setData(timelinePoints.map((d) => (d.isClosed ? { time: d.t } : { time: d.t, open: d.o, high: d.h, low: d.l, close: d.c })));
@@ -3363,6 +3415,7 @@
       const rightAxisW = state.tvChart.priceScale("right")?.width?.() || 58;
       const plotW = Math.max(100, box.clientWidth - rightAxisW);
       dayOverlay.style.right = `${rightAxisW}px`;
+      dayOverlay.style.height = `${box.clientHeight}px`;
       dayAxis.style.paddingRight = `${rightAxisW}px`;
 
       const coords = timelinePoints.map((d) => {
@@ -3449,7 +3502,16 @@
 
     const fitAllBars = () => {
       if (!state.tvChart) return;
-      state.tvChart.timeScale().fitContent();
+      if (box.clientWidth && box.clientHeight) {
+        state.tvChart.applyOptions({ width: box.clientWidth, height: box.clientHeight });
+      }
+      const ts = state.tvChart.timeScale();
+      ts.fitContent();
+      if (timelinePoints.length > 1) {
+        try {
+          ts.setVisibleLogicalRange({ from: -0.4, to: timelinePoints.length - 0.6 });
+        } catch {}
+      }
       if (is1M) sync1MDayColumns();
     };
 
@@ -3512,15 +3574,18 @@
 
     if (window.ResizeObserver) {
       let lastW = box.clientWidth;
+      let lastH = box.clientHeight;
       state.tvResizeObs = new ResizeObserver(() => {
-        if (state.tvChart && box.clientWidth) {
-          const widthChanged = Math.abs(box.clientWidth - lastW) > 2;
+        if (state.tvChart && box.clientWidth && box.clientHeight) {
+          const sizeChanged = Math.abs(box.clientWidth - lastW) > 2 || Math.abs(box.clientHeight - lastH) > 2;
           lastW = box.clientWidth;
+          lastH = box.clientHeight;
           state.tvChart.applyOptions({ width: box.clientWidth, height: box.clientHeight });
-          if (widthChanged) {
-            state.tvChart.timeScale().fitContent();
+          if (sizeChanged) {
+            fitAllBars();
+          } else if (is1M) {
+            sync1MDayColumns();
           }
-          if (is1M) sync1MDayColumns();
         }
       });
       state.tvResizeObs.observe(box);
@@ -3800,6 +3865,7 @@
         // Close open overlays first
         if (state.chartFullscreen) {
           setChartFullscreen(false);
+          return;
         }
         if (searchOverlay && !searchOverlay.classList.contains("hidden")) {
           closeSearchOverlay();
