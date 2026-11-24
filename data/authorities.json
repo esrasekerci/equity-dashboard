@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-23T13:04:33+00:00",
+  "updated_at": "2026-11-24T01:00:03+00:00",
   "items": [
     {
       "agency": "SEC",
@@ -67,19 +67,6 @@
       "sector": "markets_enforcement"
     },
     {
-      "agency": "Commerce / BIS",
-      "title": "Extension of the Suspension of Expansion of End-User Controls for Affiliates of Certain Listed Entities",
-      "url": "https://www.federalregister.gov/documents/2026/11/09/2026-22793/extension-of-the-suspension-of-expansion-of-end-user-controls-for-affiliates-of-certain-listed",
-      "published": "2026-11-09T00:00:00+00:00",
-      "source": "Commerce / BIS",
-      "summary": "The Bureau of Industry and Security (BIS) is extending the suspension of the interim final rule (IFR), \"Expansion of End-User Controls to Cover Affiliates of Certain Listed Entities.\" The suspension was set to end November 9, 2026. This final rule extends the suspension through January 10, 2027.",
-      "categories": [
-        "BIS Export Controls",
-        "semiconductors"
-      ],
-      "sector": "semiconductors"
-    },
-    {
       "agency": "White House",
       "title": "Presidential Determination Pursuant to Section 1245(d)(4)(B) and (C) of the National Defense Authorization Act for Fiscal Year 2012",
       "url": "https://www.federalregister.gov/documents/2026/11/13/2026-23233/presidential-determination-pursuant-to-section-1245d4b-and-c-of-the-national-defense-authorization",
@@ -119,23 +106,10 @@
       "sector": "antitrust_tech"
     },
     {
-      "agency": "DOJ",
-      "title": "Senior Leader of the Sinaloa Cartel and One of FBI’s Ten Most Wanted Fugitives Arrested in Mexico Following a Homeland Security Task Force Investigation",
-      "url": "https://www.justice.gov/opa/pr/senior-leader-sinaloa-cartel-and-one-fbis-ten-most-wanted-fugitives-arrested-mexico",
-      "published": "2026-11-21T12:00:00+00:00",
-      "source": "DOJ Official",
-      "summary": "Fausto Isidro Meza Flores , also known as “Chapo Isidro,” an alleged leader of the Sinaloa Cartel, has been captured by the Mexican military following a Homeland Security Task Force Investigation.",
-      "categories": [
-        "DOJ Declaration",
-        "antitrust_legal"
-      ],
-      "sector": "antitrust_legal"
-    },
-    {
       "agency": "NHTSA",
       "title": "NHTSA Recall 25V359000 (Tesla Model Y): VISIBILITY:WINDSHIELD WIPER/WASHER:LINKAGES",
       "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V359000",
-      "published": "2026-11-23T00:00:00+00:00",
+      "published": "2026-11-24T00:00:00+00:00",
       "source": "NHTSA Official",
       "summary": "30/05/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model Y vehicles. The hose connector may block the windshield washer nozzles, preventing washer fluid from reaching the windshield. As such, these vehicles fail to comply with the requirements of Federal Motor Vehicle Safety Standard (FMVSS) number 104, \"Windshield Wiping and Washing Systems.\"",
       "categories": [
@@ -148,7 +122,7 @@
       "agency": "NHTSA",
       "title": "NHTSA Recall 25V410000 (Tesla Model Y): SEATS:CRITICAL FASTENERS",
       "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V410000",
-      "published": "2026-11-23T00:00:00+00:00",
+      "published": "2026-11-24T00:00:00+00:00",
       "source": "NHTSA Official",
       "summary": "18/06/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model 3 and Model Y vehicles. The fasteners attaching the seat back to the seat bottom may have been improperly tightened.",
       "categories": [
@@ -161,7 +135,7 @@
       "agency": "NHTSA",
       "title": "NHTSA Recall 25V490000 (Tesla Model Y): ELECTRICAL SYSTEM:HORN",
       "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V490000",
-      "published": "2026-11-23T00:00:00+00:00",
+      "published": "2026-11-24T00:00:00+00:00",
       "source": "NHTSA Official",
       "summary": "28/07/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model Y vehicles. The ring terminal of the horn ground wire may be improperly secured, allowing the circuit to open and preventing the horn from sounding.",
       "categories": [

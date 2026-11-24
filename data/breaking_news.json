@@ -1,107 +1,108 @@
 {
-  "updated_at": "2026-11-23T13:04:33+00:00",
+  "updated_at": "2026-11-24T01:00:03+00:00",
   "min_importance": 60.0,
   "max_age_hours": 3.0,
   "items": [
     {
-      "key": "a25be15c8b2e2885",
-      "symbol": "CRWD",
-      "name": "CrowdStrike",
-      "title": "CrowdStrike to Buy Zscaler in $44 Billion All-Stock Deal. Why They’re Better Off Together.",
-      "url": "https://www.barrons.com/articles/crowdstrike-stock-zscaler-ai-acquisition-89065203?siteid=yhoof2&yptr=yahoo",
+      "key": "6e8506989bda7f33",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "Micron Stock Jumps 19%. Why the Rally Has Legs.",
+      "url": "https://www.barrons.com/articles/micron-stock-tech-rally-selloff-c647c4c4?siteid=yhoof2&yptr=yahoo",
       "source": "Barrons.com",
       "source_tier": 1,
-      "published": "2026-11-23T12:04:00+00:00",
-      "importance": 93.0,
+      "published": "2026-11-23T22:17:00+00:00",
+      "importance": 71.4,
       "categories": [
-        "m_and_a",
         "contract_partnership"
       ],
-      "age_hours": 1.01,
-      "detected_at": "2026-11-23T13:04:33+00:00"
+      "age_hours": 2.72,
+      "detected_at": "2026-11-24T01:00:03+00:00"
     },
     {
-      "key": "bba2c0d4b8435d7f",
-      "symbol": "JPM",
-      "name": "JPMorgan Chase",
-      "title": "JPMorgan Traders Drop Bullish View on Stocks After Selloff",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/jpmorgan-traders-drop-bullish-view-114704931.html",
-      "source": "Bloomberg",
-      "source_tier": 1,
-      "published": "2026-11-23T11:47:04+00:00",
-      "importance": 85.0,
+      "key": "74a83c13c439fc31",
+      "symbol": "ADI",
+      "name": "Analog Devices",
+      "title": "Why Analog Devices Stock Is In Focus Ahead Of Results",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/why-analog-devices-stock-focus-001820584.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T00:18:20+00:00",
+      "importance": 95.6,
+      "categories": [
+        "earnings_guidance",
+        "contract_partnership"
+      ],
+      "age_hours": 0.7,
+      "detected_at": "2026-11-24T01:00:03+00:00"
+    },
+    {
+      "key": "bdfbc4892f3e0509",
+      "symbol": "MRVL",
+      "name": "Marvell Technology",
+      "title": "Marvell (MRVL) Stock Looks Reasonable Following Its 161% Three Year Run",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/marvell-mrvl-stock-looks-reasonable-232050664.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-23T23:20:50+00:00",
+      "importance": 94.1,
+      "categories": [
+        "earnings_guidance",
+        "contract_partnership",
+        "data_centers_ai"
+      ],
+      "age_hours": 1.65,
+      "detected_at": "2026-11-24T01:00:03+00:00"
+    },
+    {
+      "key": "f139dd0c0003feec",
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "title": "What Microsoft (MSFT)'s Enterprise AI Partnerships Mean For Shareholders",
+      "url": "https://finance.yahoo.com/technology/ai/articles/microsoft-msft-enterprise-ai-partnerships-001743463.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T00:17:43+00:00",
+      "importance": 80.4,
+      "categories": [
+        "supply_chain_producers",
+        "contract_partnership"
+      ],
+      "age_hours": 0.71,
+      "detected_at": "2026-11-24T01:00:03+00:00"
+    },
+    {
+      "key": "66cc203f994bb9e7",
+      "symbol": "WPM",
+      "name": "Wheaton Precious Metals",
+      "title": "Wheaton Precious Metals (TSX:WPM) Stock Could Be Overvalued Following Its 231% Run",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/wheaton-precious-metals-tsx-wpm-232205044.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-23T23:22:05+00:00",
+      "importance": 79.1,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 1.63,
+      "detected_at": "2026-11-24T01:00:03+00:00"
+    },
+    {
+      "key": "731740d82f55c215",
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices",
+      "title": "AMD Stock Rallies Nearly 8% as a Bernstein Analyst Remains Bullish Despite the Hunterbrook Short Report",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/amd-stock-rallies-nearly-8-235832362.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-23T23:58:32+00:00",
+      "importance": 74.6,
       "categories": [
         "analyst",
         "market_move"
       ],
-      "age_hours": 1.29,
-      "detected_at": "2026-11-23T13:04:33+00:00"
-    },
-    {
-      "key": "5a906a3db80c5885",
-      "symbol": "CRWD",
-      "name": "CrowdStrike",
-      "title": "CrowdStrike to Buy Zscaler in $44 Billion Stock Swap",
-      "url": "https://www.wsj.com/business/deals/crowdstrike-to-buy-zscaler-in-43-9-billion-stock-swap-4c926031?siteid=yhoof2&yptr=yahoo",
-      "source": "The Wall Street Journal",
-      "source_tier": 1,
-      "published": "2026-11-23T11:36:00+00:00",
-      "importance": 77.2,
-      "categories": [
-        "m_and_a"
-      ],
-      "age_hours": 1.48,
-      "detected_at": "2026-11-23T13:04:33+00:00"
-    },
-    {
-      "key": "ed21fef5255889fd",
-      "symbol": "MS",
-      "name": "Morgan Stanley",
-      "title": "Morgan Stanley’s Wilson calls market capitulation a rare opportunity to buy stocks",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/morgan-stanley-wilson-calls-market-125009984.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-23T12:50:09+00:00",
-      "importance": 85.4,
-      "categories": [
-        "m_and_a",
-        "analyst"
-      ],
-      "age_hours": 0.24,
-      "detected_at": "2026-11-23T13:04:33+00:00"
-    },
-    {
-      "key": "eb10852704d6e3a3",
-      "symbol": "CRWD",
-      "name": "CrowdStrike",
-      "title": "CrowdStrike to Acquire Zscaler, Bringing Network Security and Zero Trust to the Falcon Platform",
-      "url": "https://finance.yahoo.com/technology/ai/articles/crowdstrike-acquire-zscaler-bringing-network-103200828.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-23T10:32:00+00:00",
-      "importance": 80.0,
-      "categories": [
-        "m_and_a",
-        "contract_partnership"
-      ],
-      "age_hours": 2.54,
-      "detected_at": "2026-11-23T13:04:33+00:00"
-    },
-    {
-      "key": "657167e3e5cd9982",
-      "symbol": "ISRG",
-      "name": "Intuitive Surgical",
-      "title": "The Zacks Analyst Blog Highlights Intuitive Surgical, STERIS and Pulse Biosciences",
-      "url": "https://finance.yahoo.com/healthcare/articles/zacks-analyst-blog-highlights-intuitive-114700302.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-23T11:47:00+00:00",
-      "importance": 79.6,
-      "categories": [
-        "earnings_guidance"
-      ],
-      "age_hours": 1.29,
-      "detected_at": "2026-11-23T13:04:33+00:00"
+      "age_hours": 1.03,
+      "detected_at": "2026-11-24T01:00:03+00:00"
     }
   ]
 }
