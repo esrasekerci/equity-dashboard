@@ -621,7 +621,6 @@
         todayEarnEl.innerHTML = `
           <div class="te-head">
             <span class="te-tag">Earnings Today</span>
-            <span class="muted">${earnToday.length} scheduled announcement${earnToday.length === 1 ? "" : "s"}</span>
           </div>
           <div class="te-pills">
             ${earnToday.map((t) => {
