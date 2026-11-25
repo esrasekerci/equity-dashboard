@@ -30,7 +30,17 @@
     chartRange: "1D",
     chartInterval: "auto",
     chartFullscreen: false,
-    chartOverlays: { sma20: true, sma50: true, sma200: false, sr: true, weekends: false },
+    chartOverlays: (() => {
+      const def = { sma20: false, sma50: false, sma200: false, sr: false, weekends: false };
+      try {
+        const raw = localStorage.getItem("eq_chart_overlays_v1");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") return { ...def, ...parsed };
+        }
+      } catch {}
+      return def;
+    })(),
     tvChart: null,
     tvCandles: null,
     tvVol: null,
@@ -2717,9 +2727,9 @@
           l: Math.min(liveRow.low || liveClose, liveClose),
           c: liveClose,
           v: liveRow.volume || lastBar.v || 0,
-          s20: lastBar.s20,
-          s50: lastBar.s50,
-          s200: lastBar.s200,
+          s20: null,
+          s50: null,
+          s200: null,
         });
       } else {
         lastBar.c = liveClose;
@@ -2728,6 +2738,16 @@
         if (lastBar.h == null || liveClose > lastBar.h) lastBar.h = liveClose;
         if (lastBar.l == null || liveClose < lastBar.l) lastBar.l = liveClose;
       }
+      const nSer = tech.series.length;
+      const tailAvg = (win) => {
+        if (nSer < Math.min(win, 10)) return null;
+        const sl = tech.series.slice(-win);
+        return Number((sl.reduce((acc, b) => acc + Number(b.c || 0), 0) / sl.length).toFixed(2));
+      };
+      const curLast = tech.series[nSer - 1];
+      curLast.s20 = tailAvg(20) ?? curLast.s20;
+      curLast.s50 = nSer >= 50 ? tailAvg(50) : curLast.s50;
+      curLast.s200 = nSer >= 200 ? tailAvg(200) : curLast.s200;
     }
     if (Array.isArray(tech.series_all) && tech.series_all.length > 0) {
       const lastAll = tech.series_all[tech.series_all.length - 1];
@@ -3010,6 +3030,8 @@
       const effIv = resolveEffectiveInterval(state.chartRange, "auto", hasAll);
       state.tvEffInterval = effIv;
 
+      const ov = state.chartOverlays;
+      const anyMa = Boolean(ov.sma20 || ov.sma50 || ov.sma200);
       body.innerHTML = `
         <div class="chart-fs-bar">
           <div class="chart-fs-title">
@@ -3029,7 +3051,14 @@
           </div>
           ${!state.chartFullscreen ? `<button type="button" class="tv-act-btn tv-fs-trigger" id="toggleChartFsBtn" title="Full screen" aria-label="Full screen">⛶</button>` : ""}
         </div>
+        <div class="tv-overlay-bar" id="chartOverlayBar" role="group" aria-label="Chart indicators">
+          <button type="button" class="tv-ov-pill ${ov.sr ? "active sr-on" : ""}" data-ov="sr"><span class="ov-dot sr-dot"></span>S/R</button>
+          <button type="button" class="tv-ov-pill ${ov.sma20 ? "active ma20-on" : ""}" data-ov="sma20"><span class="ov-dot ma20"></span>MA 20</button>
+          <button type="button" class="tv-ov-pill ${ov.sma50 ? "active ma50-on" : ""}" data-ov="sma50"><span class="ov-dot ma50"></span>MA 50</button>
+          <button type="button" class="tv-ov-pill ${ov.sma200 ? "active ma200-on" : ""}" data-ov="sma200"><span class="ov-dot ma200"></span>MA 200</button>
+        </div>
         <div class="tv-legend" id="tvLegend"></div>
+        <div class="tv-ma-legend ${anyMa ? "" : "hidden"}" id="tvMaLegend"></div>
         <div class="tv-chart-wrap" id="tvChartWrap">
           <div class="tv-chart-box" id="tvChart"></div>
           <button type="button" class="tv-floating-latest hidden" id="chartFloatingLatestBtn" title="Return to latest">Latest ▶</button>
@@ -3040,6 +3069,24 @@
           state.chartRange = b.dataset.range;
           state.chartInterval = "auto";
           renderChartBody();
+        };
+      });
+      $("chartOverlayBar").querySelectorAll("button[data-ov]").forEach((b) => {
+        b.onclick = () => {
+          const k = b.dataset.ov;
+          const prevRange = state.tvChart?.timeScale?.()?.getVisibleLogicalRange?.() || null;
+          state.chartOverlays[k] = !state.chartOverlays[k];
+          try { localStorage.setItem("eq_chart_overlays_v1", JSON.stringify(state.chartOverlays)); } catch {}
+          b.classList.toggle("active", Boolean(state.chartOverlays[k]));
+          if (k === "sr") b.classList.toggle("sr-on", Boolean(state.chartOverlays[k]));
+          if (k === "sma20") b.classList.toggle("ma20-on", Boolean(state.chartOverlays[k]));
+          if (k === "sma50") b.classList.toggle("ma50-on", Boolean(state.chartOverlays[k]));
+          if (k === "sma200") b.classList.toggle("ma200-on", Boolean(state.chartOverlays[k]));
+          const maLeg = $("tvMaLegend");
+          if (maLeg) {
+            maLeg.classList.toggle("hidden", !(state.chartOverlays.sma20 || state.chartOverlays.sma50 || state.chartOverlays.sma200));
+          }
+          mountInteractiveChart(t, { preserveRange: prevRange });
         };
       });
       const fsBtn = $("toggleChartFsBtn");
@@ -3529,7 +3576,7 @@
     return barEtInfo(barT).iso;
   }
 
-  function mountInteractiveChart(t) {
+  function mountInteractiveChart(t, opts = {}) {
     const box = $("tvChart");
     if (!box) return;
     if (!window.LightweightCharts) {
@@ -3738,6 +3785,8 @@
 
     const extUpCol = "#94a3b8";
     const extDnCol = "#64748b";
+    const lv = tech.computed?.levels || {};
+    const allSrLevels = [...(lv.support || []), ...(lv.resistance || [])].filter((x) => x && x.price != null && x.price > 0);
     const candles = chart.addCandlestickSeries({
       upColor: upCol,
       downColor: dnCol,
@@ -3747,6 +3796,18 @@
       wickDownColor: dnCol,
       borderVisible: true,
       wickVisible: true,
+      autoscaleInfoProvider: ov.sr && !useIntraday ? (original) => {
+        const res = original();
+        if (!res || !res.priceRange || !allSrLevels.length) return res;
+        let minV = res.priceRange.minValue;
+        let maxV = res.priceRange.maxValue;
+        // Gently include nearest S1/R1 if within 16% of visible candles so toggling S/R immediately frames nearby levels
+        for (const x of allSrLevels) {
+          if (x.role === "support" && x.price < minV && x.price >= minV * 0.84) minV = x.price * 0.992;
+          if (x.role === "resistance" && x.price > maxV && x.price <= maxV * 1.16) maxV = x.price * 1.008;
+        }
+        return { ...res, priceRange: { minValue: minV, maxValue: maxV } };
+      } : undefined,
     });
     candles.setData(timelinePoints.map((d) => {
       if (useIntraday && d.isExt) {
@@ -3795,34 +3856,80 @@
       });
     }
     const lineDefs = [
-      ["sma20", "s20", "#f59e0b"],
-      ["sma50", "s50", "#3b82f6"],
-      ["sma200", "s200", "#a855f7"],
+      ["sma20", "s20", "#f59e0b", "MA20"],
+      ["sma50", "s50", "#3b82f6", "MA50"],
+      ["sma200", "s200", "#a855f7", "MA200"],
     ];
-    for (const [key, field, color] of lineDefs) {
+    for (const [key, field, color, title] of lineDefs) {
       if (!ov[key]) continue;
       const pts = timelinePoints.filter((d) => d[field] != null).map((d) => ({ time: d.t, value: d[field] }));
       if (!pts.length) continue;
-      const s = chart.addLineSeries({ color, lineWidth: 1.6, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+      const s = chart.addLineSeries({
+        color,
+        lineWidth: 1.8,
+        priceLineVisible: false,
+        lastValueVisible: true,
+        crosshairMarkerVisible: true,
+        crosshairMarkerRadius: 3,
+        title,
+      });
       s.setData(pts);
     }
 
-    // Draw S/R levels around current price (±22%) so levels are visible as you navigate recent action
+    // Draw all structural S/R levels (S1–S3, R1–R3) + intraday session floor/ceiling on 1D/5D when structural levels are far away
     if (ov.sr) {
-      const refPrice = Number(tech.facts?.last_close || timelinePoints[timelinePoints.length - 1]?.c || 0);
-      const minP = refPrice * 0.76;
-      const maxP = refPrice * 1.24;
-      const lv = tech.computed?.levels || {};
-      for (const x of [...(lv.support || []), ...(lv.resistance || [])]) {
-        if (x.price == null || (refPrice > 0 && (x.price < minP || x.price > maxP))) continue;
+      for (const x of allSrLevels) {
         candles.createPriceLine({
           price: x.price,
           color: x.role === "support" ? upCol : dnCol,
           lineWidth: 1,
           lineStyle: LC.LineStyle.Dashed,
           axisLabelVisible: true,
-          title: x.label || "",
+          title: x.label || (x.role === "support" ? "Sup" : "Res"),
         });
+      }
+      if (useIntraday && timelinePoints.length >= 4) {
+        const refP = Number(timelinePoints[timelinePoints.length - 1]?.c || tech.facts?.last_close || 0);
+        const hasNearSup = allSrLevels.some((x) => x.role === "support" && refP > 0 && Math.abs(x.price - refP) / refP <= 0.03);
+        const hasNearRes = allSrLevels.some((x) => x.role === "resistance" && refP > 0 && Math.abs(x.price - refP) / refP <= 0.03);
+        const winPreview = (() => {
+          if (state.chartRange === "1D") {
+            const regIso = timelinePoints[timelinePoints.length - 1]?.latestRegIso || barToIsoDate(timelinePoints[timelinePoints.length - 1].t);
+            const idx = timelinePoints.findIndex((b) => !b.isExt && b.etIso === regIso);
+            return timelinePoints.slice(idx >= 0 ? idx : Math.max(0, timelinePoints.length - 78));
+          }
+          const cut = Number(timelinePoints[timelinePoints.length - 1].t) - 6 * 86400;
+          const idx = timelinePoints.findIndex((b) => Number(b.t) >= cut);
+          return timelinePoints.slice(idx >= 0 ? idx : Math.max(0, timelinePoints.length - 120));
+        })();
+        if (winPreview.length >= 2) {
+          let intraLow = Infinity, intraHigh = -Infinity;
+          for (const b of winPreview) {
+            if (b.l > 0 && b.l < intraLow) intraLow = b.l;
+            if (b.h > 0 && b.h > intraHigh) intraHigh = b.h;
+          }
+          const pfx = state.chartRange === "1D" ? "1D" : "5D";
+          if (!hasNearSup && Number.isFinite(intraLow) && intraLow > 0) {
+            candles.createPriceLine({
+              price: intraLow,
+              color: upCol,
+              lineWidth: 1,
+              lineStyle: LC.LineStyle.Dashed,
+              axisLabelVisible: true,
+              title: `${pfx} Sup`,
+            });
+          }
+          if (!hasNearRes && Number.isFinite(intraHigh) && intraHigh > 0) {
+            candles.createPriceLine({
+              price: intraHigh,
+              color: dnCol,
+              lineWidth: 1,
+              lineStyle: LC.LineStyle.Dashed,
+              axisLabelVisible: true,
+              title: `${pfx} Res`,
+            });
+          }
+        }
       }
     }
 
@@ -4015,7 +4122,8 @@
       if (is1M) sync1MDayColumns();
     };
 
-    const applyRangeWindow = () => {
+    let preservedApplied = false;
+    const applyRangeWindow = (usePreserved = false) => {
       if (!state.tvChart) return;
       const wNow = wrapEl.clientWidth || box.clientWidth;
       const hNow = wrapEl.clientHeight || box.clientHeight;
@@ -4023,9 +4131,12 @@
         state.tvChart.applyOptions({ width: wNow, height: hNow });
       }
       state.tvChart.priceScale("right").applyOptions({ autoScale: true });
-      const win = computeInitialWindow();
+      const win = (usePreserved && opts.preserveRange && Number.isFinite(opts.preserveRange.from) && Number.isFinite(opts.preserveRange.to))
+        ? opts.preserveRange
+        : computeInitialWindow();
       try {
         state.tvChart.timeScale().setVisibleLogicalRange(win);
+        if (usePreserved) preservedApplied = true;
       } catch {
         state.tvChart.timeScale().fitContent();
       }
@@ -4097,13 +4208,13 @@
       setLegend(timelinePoints[targetIdx]);
     };
 
-    state.tvControls = { zoomByFactor, panByFraction, jumpToLatest, jumpToDate, reset: applyRangeWindow };
+    state.tvControls = { zoomByFactor, panByFraction, jumpToLatest, jumpToDate, reset: () => applyRangeWindow(false) };
 
-    applyRangeWindow();
-    requestAnimationFrame(applyRangeWindow);
-    setTimeout(applyRangeWindow, 65);
+    applyRangeWindow(true);
+    requestAnimationFrame(() => applyRangeWindow(Boolean(opts.preserveRange && preservedApplied)));
+    setTimeout(() => applyRangeWindow(Boolean(opts.preserveRange && preservedApplied)), 65);
 
-    if ($("chartResetDockBtn")) $("chartResetDockBtn").onclick = applyRangeWindow;
+    if ($("chartResetDockBtn")) $("chartResetDockBtn").onclick = () => applyRangeWindow(false);
     if ($("chartZoomInBtn")) $("chartZoomInBtn").onclick = () => zoomByFactor(0.68);
     if ($("chartZoomOutBtn")) $("chartZoomOutBtn").onclick = () => zoomByFactor(1.45);
     if (floatingLatestBtn) floatingLatestBtn.onclick = jumpToLatest;
@@ -4135,6 +4246,7 @@
     });
 
     const legend = $("tvLegend");
+    const maLegend = $("tvMaLegend");
     const highlightDay = (dateStr) => {
       if (!is1M) return;
       dayAxis?.querySelectorAll(".tv-day-tick").forEach((el) => {
@@ -4156,6 +4268,14 @@
         <span>O ${fmtNum(d.o)}</span><span>H ${fmtNum(d.h)}</span><span>L ${fmtNum(d.l)}</span>
         <span>C <strong class="${clsPct(chg)}">${fmtNum(d.c)}</strong></span>
         <span class="${clsPct(chg)}"><strong>${fmtPct(chg)}</strong></span>`;
+      if (maLegend) {
+        const parts = [];
+        if (ov.sma20) parts.push(`<span class="ma-val ma20">MA20 ${fmtNum(d.s20)}</span>`);
+        if (ov.sma50) parts.push(`<span class="ma-val ma50">MA50 ${fmtNum(d.s50)}</span>`);
+        if (ov.sma200) parts.push(`<span class="ma-val ma200">MA200 ${fmtNum(d.s200)}</span>`);
+        maLegend.innerHTML = parts.join("");
+        maLegend.classList.toggle("hidden", parts.length === 0);
+      }
     };
     state.tvUpdateLegend = setLegend;
     const byTime = Object.fromEntries(timelinePoints.map((d) => [d.t, d]));
@@ -4169,7 +4289,7 @@
       setLegend(byTime[key] || timelinePoints[totalBars - 1]);
     });
 
-    box.ondblclick = () => applyRangeWindow();
+    box.ondblclick = () => applyRangeWindow(false);
 
     if (window.ResizeObserver) {
       let lastW = wrapEl.clientWidth;
@@ -4591,7 +4711,7 @@
         const t = e.touches[0];
         // Preserve iOS left-edge swipe-back & horizontal pill/chart/network gestures
         if (t.clientX < 24) return;
-        if (e.target.closest("#tvChart, .bubble-stage, .cselect-menu, .quick-jump-bar, .pro-subtabs, .filter-bar-scroll")) return;
+        if (e.target.closest("#tvChart, .tv-toolbar-pro, .tv-overlay-bar, .bubble-stage, .cselect-menu, .quick-jump-bar, .pro-subtabs, .filter-bar-scroll")) return;
         const onHandle = Boolean(e.target.closest("#stockDragZone, .pro-hero"));
         if (window.scrollY <= 4 || onHandle) {
           beginSlide(t.clientX, t.clientY);

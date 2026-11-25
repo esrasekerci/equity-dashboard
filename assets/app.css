@@ -2454,6 +2454,92 @@ body.no-scroll { overflow: hidden; }
   border-color: var(--accent);
   color: var(--accent);
 }
+.tv-overlay-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 4px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.tv-overlay-bar::-webkit-scrollbar { display: none; }
+.tv-ov-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  min-height: 25px;
+  border-radius: 6px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+.tv-ov-pill:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.tv-ov-pill .ov-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  opacity: 0.72;
+}
+.tv-ov-pill .ov-dot.sr-dot {
+  background: linear-gradient(135deg, var(--green) 50%, var(--red) 50%);
+}
+.tv-ov-pill .ov-dot.ma20 { background: #f59e0b; }
+.tv-ov-pill .ov-dot.ma50 { background: #3b82f6; }
+.tv-ov-pill .ov-dot.ma200 { background: #a855f7; }
+.tv-ov-pill.active .ov-dot { opacity: 1; }
+.tv-ov-pill.active.sr-on {
+  color: var(--text);
+  border-color: rgba(34, 197, 94, 0.55);
+  background: rgba(34, 197, 94, 0.1);
+}
+.tv-ov-pill.active.ma20-on {
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.55);
+  background: rgba(245, 158, 11, 0.11);
+}
+.tv-ov-pill.active.ma50-on {
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.55);
+  background: rgba(59, 130, 246, 0.12);
+}
+.tv-ov-pill.active.ma200-on {
+  color: #c084fc;
+  border-color: rgba(168, 85, 247, 0.55);
+  background: rgba(168, 85, 247, 0.12);
+}
+.tv-ma-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 18px;
+  line-height: 18px;
+  margin-top: -2px;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.tv-ma-legend .ma-val.ma20 { color: #fbbf24; }
+.tv-ma-legend .ma-val.ma50 { color: #60a5fa; }
+.tv-ma-legend .ma-val.ma200 { color: #c084fc; }
 .tv-floating-latest {
   position: absolute;
   right: 64px;
@@ -2892,7 +2978,9 @@ body.chart-fs-open #stockJumpBar {
   display: flex;
 }
 .chart-card.is-fullscreen .tv-toolbar-pro,
-.chart-card.is-fullscreen .tv-legend {
+.chart-card.is-fullscreen .tv-overlay-bar,
+.chart-card.is-fullscreen .tv-legend,
+.chart-card.is-fullscreen .tv-ma-legend {
   flex-shrink: 0;
 }
 .chart-card.is-fullscreen .tv-chart-wrap {
