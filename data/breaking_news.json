@@ -1,8 +1,348 @@
 {
-  "updated_at": "2026-11-25T15:36:03+00:00",
-  "min_importance": 42.0,
-  "max_age_hours": 6.0,
+  "updated_at": "2026-11-25T16:57:28+00:00",
+  "min_importance": 42,
+  "max_age_hours": 4,
   "items": [
+    {
+      "key": "shock_AMAT_2026-11-25_reg_drop_t3",
+      "symbol": "AMAT",
+      "name": "Applied Materials",
+      "title": "Applied Materials (AMAT) drops -9.88% to $291.77",
+      "url": "https://finance.yahoo.com/quote/AMAT",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_AMD_2026-11-25_reg_drop_t3",
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices",
+      "title": "Advanced Micro Devices (AMD) drops -9.16% to $375.43",
+      "url": "https://finance.yahoo.com/quote/AMD",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_AXTI_2026-11-25_reg_drop_t3",
+      "symbol": "AXTI",
+      "name": "AXT Inc",
+      "title": "AXT Inc (AXTI) drops -9.48% to $28.59",
+      "url": "https://finance.yahoo.com/quote/AXTI",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_CRWV_2026-11-25_reg_drop_t3",
+      "symbol": "CRWV",
+      "name": "CoreWeave",
+      "title": "CoreWeave (CRWV) drops -9.61% to $38.51",
+      "url": "https://finance.yahoo.com/quote/CRWV",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_DDOG_2026-11-25_reg_drop_t3",
+      "symbol": "DDOG",
+      "name": "Datadog",
+      "title": "Datadog (DDOG) drops -8.34% to $151.59",
+      "url": "https://finance.yahoo.com/quote/DDOG",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_INTC_2026-11-25_reg_drop_t3",
+      "symbol": "INTC",
+      "name": "Intel",
+      "title": "Intel (INTC) drops -9.02% to $49.86",
+      "url": "https://finance.yahoo.com/quote/INTC",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_IREN_2026-11-25_reg_drop_t3",
+      "symbol": "IREN",
+      "name": "IREN Limited",
+      "title": "IREN Limited (IREN) drops -8.80% to $11.81",
+      "url": "https://finance.yahoo.com/quote/IREN",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_LRCX_2026-11-25_reg_drop_t3",
+      "symbol": "LRCX",
+      "name": "Lam Research",
+      "title": "Lam Research (LRCX) drops -11.81% to $172.99",
+      "url": "https://finance.yahoo.com/quote/LRCX",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_MRVL_2026-11-25_reg_drop_t3",
+      "symbol": "MRVL",
+      "name": "Marvell Technology",
+      "title": "Marvell Technology (MRVL) drops -9.19% to $119.48",
+      "url": "https://finance.yahoo.com/quote/MRVL",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_MU_2026-11-25_reg_drop_t3",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "Micron Technology (MU) drops -12.48% to $551.19",
+      "url": "https://finance.yahoo.com/quote/MU",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_NBIS_2026-11-25_reg_drop_t3",
+      "symbol": "NBIS",
+      "name": "Nebius Group",
+      "title": "Nebius Group (NBIS) drops -11.73% to $77.07",
+      "url": "https://finance.yahoo.com/quote/NBIS",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_ORCL_2026-11-25_reg_drop_t3",
+      "symbol": "ORCL",
+      "name": "Oracle",
+      "title": "Oracle (ORCL) drops -8.02% to $100.72",
+      "url": "https://finance.yahoo.com/quote/ORCL",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_NVDA_2026-11-25_reg_drop_t3",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "NVIDIA (NVDA) drops -8.63% to $141.98",
+      "url": "https://finance.yahoo.com/quote/NVDA",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 94.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_TSM_2026-11-25_reg_drop_t3",
+      "symbol": "TSM",
+      "name": "Taiwan Semiconductor",
+      "title": "Taiwan Semiconductor (TSM) drops -7.15% to $324.23",
+      "url": "https://finance.yahoo.com/quote/TSM",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 94.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_VIX_2026-11-25_up",
+      "symbol": "VIX",
+      "name": "CBOE Volatility Index",
+      "title": "CBOE Volatility Index (VIX) surges +25.91% to 33.19",
+      "url": "https://www.cnbc.com/quotes/.VIX",
+      "source": "CBOE Live Index",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 90.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_GLD_2026-11-25_reg_drop_t2",
+      "symbol": "GLD",
+      "name": "SPDR Gold Shares",
+      "title": "SPDR Gold Shares (GLD) drops -2.59% to $317.03",
+      "url": "https://finance.yahoo.com/quote/GLD",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 88.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_QQQ_2026-11-25_reg_drop_t2",
+      "symbol": "QQQ",
+      "name": "QQQ",
+      "title": "QQQ (QQQ) drops -4.00% to $612.61",
+      "url": "https://finance.yahoo.com/quote/QQQ",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 88.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_SLV_2026-11-25_reg_drop_t2",
+      "symbol": "SLV",
+      "name": "iShares Silver Trust",
+      "title": "iShares Silver Trust (SLV) drops -4.83% to $35.06",
+      "url": "https://finance.yahoo.com/quote/SLV",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 88.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_SPY_2026-11-25_reg_drop_t2",
+      "symbol": "SPY",
+      "name": "SPY",
+      "title": "SPY (SPY) drops -2.56% to $700.40",
+      "url": "https://finance.yahoo.com/quote/SPY",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 88.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
+    {
+      "key": "shock_ANET_2026-11-25_reg_drop_t2",
+      "symbol": "ANET",
+      "name": "Arista Networks",
+      "title": "Arista Networks (ANET) drops -7.54% to $155.85",
+      "url": "https://finance.yahoo.com/quote/ANET",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T16:57:28+00:00",
+      "importance": 85.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-25T16:57:28+00:00"
+    },
     {
       "key": "shock_NBIS_2026-11-25_reg_drop",
       "symbol": "NBIS",
