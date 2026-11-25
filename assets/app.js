@@ -2253,12 +2253,19 @@
     general: "Market",
   };
 
+  function sigTierBadgeHtml(imp) {
+    const sc = Number(imp || 0);
+    if (sc >= 78) return `<span class="tag sig-crit">CRITICAL</span>`;
+    if (sc >= 58) return `<span class="tag sig-high">HIGH</span>`;
+    return `<span class="tag">NOTABLE</span>`;
+  }
+
   function renderBreaking() {
     const el = $("breakingList");
     const bar = $("breakingCategoryBar");
     if (!state.breaking.length) {
       if (bar) bar.innerHTML = "";
-      el.innerHTML = `<div class="panel muted">No breaking alerts yet. Important headlines are checked every 2 hours on weekdays and posted here &amp; to Telegram.</div>`;
+      el.innerHTML = `<div class="panel muted">Monitoring live market wires, SEC filings, and official authorities in real time.</div>`;
       return;
     }
 
@@ -2295,9 +2302,10 @@
       return `
       <div class="feed-item">
         <div class="feed-meta">
+          ${sigTierBadgeHtml(item.importance)}
           ${badge}
           ${(item.categories || []).slice(0, 2).map((c) => `<span class="tag">${esc(CAT_LABELS[c] || c.replace(/_/g, " "))}</span>`).join("")}
-          <span>${esc(item.source || "")} · ${esc((item.published || "").replace("T", " ").slice(0, 16))} UTC</span>
+          <span>${esc(item.source || "")}</span>
         </div>
         <a class="feed-title" href="${esc(item.url || "#")}" target="_blank" rel="noopener">${esc(item.title)}</a>
       </div>`;
@@ -3054,58 +3062,47 @@
           </div>
         </div>
         <div class="tv-toolbar-pro">
-          <div class="tv-range-row">
-            <div class="tv-range-strip" id="rangeBar" role="tablist" aria-label="Timeframe range">
-              ${ranges.map((r) => `<button type="button" class="tv-rbtn ${state.chartRange === r && state.chartInterval === "auto" ? "active" : (state.chartRange === r ? "sub-active" : "")}" data-range="${r}">${r}</button>`).join("")}
-            </div>
-            <div class="tv-quick-actions">
-              <button type="button" class="tv-act-btn" id="chartZoomOutTopBtn" title="Zoom out (−)" aria-label="Zoom out">−</button>
-              <button type="button" class="tv-act-btn" id="chartZoomInTopBtn" title="Zoom in (+)" aria-label="Zoom in">+</button>
-              <button type="button" class="tv-act-btn" id="resetChartFitBtn" title="Reset view" aria-label="Reset view">⟲</button>
-              <button type="button" class="tv-act-btn tv-fs-trigger ${state.chartFullscreen ? "active" : ""}" id="toggleChartFsBtn" title="${state.chartFullscreen ? "Exit full screen (Esc)" : "Full screen chart"}" aria-label="Toggle full screen">${state.chartFullscreen ? "⤡" : "⛶"}</button>
-            </div>
+          <div class="tv-range-strip" id="rangeBar" role="tablist" aria-label="Timeframe range">
+            ${ranges.map((r) => `<button type="button" class="tv-rbtn ${state.chartRange === r ? "active" : ""}" data-range="${r}">${r}</button>`).join("")}
           </div>
-          <div class="tv-subbar-row">
-            <div class="tv-iv-strip" id="intervalBar" aria-label="Candle interval">
-              <span class="tv-iv-lbl">Candle</span>
-              ${intervals.map((iv) => `<button type="button" class="tv-ivbtn ${effIv === iv.id ? "active" : ""}" data-iv="${iv.id}">${iv.label}</button>`).join("")}
+          <div class="tv-right-controls">
+            <div class="tv-iv-dropdown" id="ivDropdownWrap">
+              <button type="button" class="tv-iv-pill ${state.chartInterval !== "auto" ? "manual" : ""}" id="ivMenuBtn" title="Candle resolution (${effIv})">
+                <span>${esc(effIv)}</span><span class="tv-caret">▾</span>
+              </button>
+              <div class="tv-iv-menu hidden" id="ivDropdownMenu">
+                <button type="button" class="tv-iv-opt ${state.chartInterval === "auto" ? "active" : ""}" data-iv="auto">Auto (${esc(resolveEffectiveInterval(state.chartRange, "auto", hasAll))})</button>
+                ${intervals.map((iv) => `<button type="button" class="tv-iv-opt ${state.chartInterval === iv.id ? "active" : ""}" data-iv="${iv.id}">${iv.label} candles</button>`).join("")}
+              </div>
             </div>
             <div class="tv-ind-strip" id="overlayBar">
-              <span class="chart-live-tag"><span class="live-dot"></span>LIVE</span>
               <button type="button" class="tv-ibtn ${ov.sma20 ? "active" : ""}" data-ov="sma20">MA20</button>
               <button type="button" class="tv-ibtn ${ov.sma50 ? "active" : ""}" data-ov="sma50">MA50</button>
               <button type="button" class="tv-ibtn ${ov.sma200 ? "active" : ""}" data-ov="sma200">MA200</button>
               <button type="button" class="tv-ibtn ${ov.sr ? "active" : ""}" data-ov="sr">S/R</button>
             </div>
+            ${!state.chartFullscreen ? `<button type="button" class="tv-act-btn tv-fs-trigger" id="toggleChartFsBtn" title="Full screen chart" aria-label="Full screen chart">⛶</button>` : ""}
           </div>
         </div>
         ${athBanner}
         <div class="tv-legend" id="tvLegend"></div>
         <div class="tv-chart-wrap ${is1M ? "is-1m" : ""}" id="tvChartWrap">
           <div class="tv-chart-box" id="tvChart"></div>
+          <button type="button" class="tv-floating-latest hidden" id="chartFloatingLatestBtn" title="Jump back to latest live candle">Latest ▶</button>
           <div class="tv-day-overlay ${is1M ? "" : "hidden"}" id="tvDayOverlay"></div>
           <div class="tv-day-axis ${is1M ? "" : "hidden"}" id="tvDayAxis"></div>
         </div>
         <div class="tv-nav-dock" id="chartNavDock">
-          <div class="tv-dock-scrubber-row">
-            <span class="tv-span-badge" id="chartVisibleSpan">—</span>
-            <input type="range" class="tv-scrubber" id="chartTimeScrubber" min="0" max="1000" value="1000" aria-label="Scroll through historical dates" />
-            <label class="tv-date-jump-lbl" title="Jump to specific date">
-              <span>Date</span>
-              <input type="date" id="chartDateJump" class="tv-date-input" aria-label="Jump to date" />
-            </label>
-          </div>
-          <div class="tv-dock-btns-row">
-            <div class="tv-dock-group">
-              <button type="button" class="tv-dock-btn" id="chartPanLeftBtn" title="Earlier dates">◀ Earlier</button>
-              <button type="button" class="tv-dock-btn" id="chartPanRightBtn" title="Later dates">Later ▶</button>
-              <button type="button" class="tv-dock-btn" id="chartJumpLatestBtn" title="Jump to latest real-time candle">Latest ▶|</button>
-            </div>
-            <div class="tv-dock-group">
-              <button type="button" class="tv-dock-btn" id="chartZoomOutBtn" title="Zoom out">− Zoom Out</button>
-              <button type="button" class="tv-dock-btn" id="chartZoomInBtn" title="Zoom in">+ Zoom In</button>
-              <button type="button" class="tv-dock-btn" id="chartResetDockBtn" title="Fit range">⟲ Fit</button>
-            </div>
+          <span class="tv-span-badge" id="chartVisibleSpan">—</span>
+          <input type="range" class="tv-scrubber" id="chartTimeScrubber" min="0" max="1000" value="1000" aria-label="Scroll through historical dates" />
+          <label class="tv-date-jump-lbl" title="Jump to specific date">
+            <span>Date</span>
+            <input type="date" id="chartDateJump" class="tv-date-input" aria-label="Jump to date" />
+          </label>
+          <div class="tv-fs-zoom-trio">
+            <button type="button" class="tv-act-btn" id="chartZoomOutBtn" title="Zoom out" aria-label="Zoom out">−</button>
+            <button type="button" class="tv-act-btn" id="chartZoomInBtn" title="Zoom in" aria-label="Zoom in">+</button>
+            <button type="button" class="tv-act-btn" id="chartResetDockBtn" title="Reset view" aria-label="Fit range">⟲</button>
           </div>
         </div>`;
       $("rangeBar").querySelectorAll("button[data-range]").forEach((b) => {
@@ -3115,12 +3112,26 @@
           renderChartBody();
         };
       });
-      $("intervalBar").querySelectorAll("button[data-iv]").forEach((b) => {
-        b.onclick = () => {
-          state.chartInterval = b.dataset.iv;
-          renderChartBody();
+      const ivBtn = $("ivMenuBtn");
+      const ivMenu = $("ivDropdownMenu");
+      if (ivBtn && ivMenu) {
+        ivBtn.onclick = (ev) => {
+          ev.stopPropagation();
+          ivMenu.classList.toggle("hidden");
         };
-      });
+        ivMenu.querySelectorAll("button[data-iv]").forEach((b) => {
+          b.onclick = (ev) => {
+            ev.stopPropagation();
+            const chosen = b.dataset.iv;
+            state.chartInterval = chosen;
+            if (chosen !== "auto") {
+              state.chartRange = alignRangeForManualInterval(state.chartRange, chosen, hasAll);
+            }
+            ivMenu.classList.add("hidden");
+            renderChartBody();
+          };
+        });
+      }
       $("overlayBar").querySelectorAll("button[data-ov]").forEach((b) => {
         b.onclick = () => { state.chartOverlays[b.dataset.ov] = !state.chartOverlays[b.dataset.ov]; renderChartBody(); };
       });
@@ -3133,7 +3144,7 @@
         exitFsTopBtn.onclick = () => setChartFullscreen(false);
       }
       // Auto-scroll active range button into center of strip on narrow screens
-      const actR = $("rangeBar")?.querySelector(".tv-rbtn.active, .tv-rbtn.sub-active");
+      const actR = $("rangeBar")?.querySelector(".tv-rbtn.active");
       if (actR?.scrollIntoView) {
         try { actR.scrollIntoView({ inline: "center", block: "nearest", behavior: "instant" }); } catch {}
       }
@@ -3199,16 +3210,23 @@
           : `<div class="muted">No regulatory or legal items found.</div>`;
       } else if (state.stockTab === "peers") {
         const peers = t.sector_context?.peers || [];
+        const liveMap = Object.fromEntries((state.summary?.tickers || []).map((x) => [x.symbol, x]));
         box.innerHTML = peers.length
           ? `<div class="table-wrap"><table class="data-table">
-              <thead><tr><th>Peer</th><th class="num">1D</th><th class="num">21D</th><th class="num">63D</th></tr></thead>
-              <tbody>${peers.map((p) => `
+              <thead><tr><th>Peer</th><th class="num">Price</th><th class="num">1D</th><th class="num">21D</th><th class="num">63D</th></tr></thead>
+              <tbody>${peers.map((p) => {
+                const lr = liveMap[p.symbol];
+                const r1d = lr?.change_1d_pct != null ? lr.change_1d_pct : p.ret_1d;
+                const pClose = lr?.close != null ? `$${fmtNum(lr.close)}` : "—";
+                return `
                 <tr data-sym="${esc(p.symbol)}" style="cursor:pointer">
                   <td><strong>${esc(p.symbol)}</strong></td>
-                  <td class="num ${clsPct(p.ret_1d)}">${fmtPct(p.ret_1d, 1)}</td>
+                  <td class="num">${pClose}</td>
+                  <td class="num ${clsPct(r1d)}">${fmtPct(r1d, 2)}</td>
                   <td class="num ${clsPct(p.ret_21d)}">${fmtPct(p.ret_21d, 1)}</td>
                   <td class="num ${clsPct(p.ret_63d)}">${fmtPct(p.ret_63d, 1)}</td>
-                </tr>`).join("")}</tbody></table></div>`
+                </tr>`;
+              }).join("")}</tbody></table></div>`
           : `<div class="muted">No peer comparison data.</div>`;
         box.querySelectorAll("tr[data-sym]").forEach((tr) => {
           tr.onclick = () => openStock(tr.dataset.sym);
@@ -3269,6 +3287,38 @@
     if (range === "3Y" || range === "5Y") return hasAll ? "1W" : "1D";
     if (range === "ALL") return hasAll ? "1W" : "1D";
     return "1D";
+  }
+
+  function alignRangeForManualInterval(curRange, ivKey, hasAll = true) {
+    if (ivKey === "1m") return ["1D", "5D"].includes(curRange) ? curRange : "1D";
+    if (ivKey === "5m") return ["1D", "5D", "1W"].includes(curRange) ? curRange : "1D";
+    if (ivKey === "15m") return ["1D", "5D", "1W", "1M"].includes(curRange) ? curRange : "5D";
+    if (ivKey === "1H") {
+      if (curRange === "1D") return "5D";
+      return ["5D", "1W", "1M", "3M"].includes(curRange) ? curRange : "1M";
+    }
+    if (ivKey === "1D") return ["1D", "5D"].includes(curRange) ? "3M" : curRange;
+    if (ivKey === "1W") return ["1D", "5D", "1W", "1M", "3M"].includes(curRange) ? "1Y" : curRange;
+    if (ivKey === "1Mo") return ["3Y", "5Y", "ALL"].includes(curRange) ? curRange : (hasAll ? "ALL" : "1Y");
+    return curRange;
+  }
+
+  function aggregateBarsBySec(bars, aggSec) {
+    if (!Array.isArray(bars) || !bars.length) return [];
+    const byBucket = new Map();
+    for (const b of bars) {
+      const bkt = Math.floor(Number(b.t) / aggSec) * aggSec;
+      const cur = byBucket.get(bkt);
+      if (!cur) {
+        byBucket.set(bkt, { ...b, t: bkt });
+      } else {
+        if (b.h > cur.h) cur.h = b.h;
+        if (b.l < cur.l) cur.l = b.l;
+        cur.c = b.c;
+        cur.v = (cur.v || 0) + (b.v || 0);
+      }
+    }
+    return [...byBucket.values()];
   }
 
   function setChartFullscreen(on) {
@@ -3526,8 +3576,11 @@
         cache[ivKey] = { ts: Date.now(), bars, prevClose };
         if (ivKey === "5m") {
           tech.series_1d = bars.slice(-260);
+          if (!cache["15m"]?.bars?.length) {
+            cache["15m"] = { ts: Date.now(), bars: aggregateBarsBySec(bars, 900), prevClose };
+          }
         }
-        if (state.view === "stock" && state.activeTicker === sym && state.tvEffInterval === ivKey && $("tvChart")) {
+        if (state.view === "stock" && state.activeTicker === sym && (state.tvEffInterval === ivKey || (ivKey === "5m" && state.tvEffInterval === "15m")) && $("tvChart")) {
           mountInteractiveChart(t);
         }
       }
@@ -3597,59 +3650,62 @@
 
     if (isIntradayIv) {
       const ivEntry = tech._ivCache?.[effIv];
-      const fallback1d = (effIv === "5m" || effIv === "1m" || effIv === "15m") && Array.isArray(tech.series_1d) && tech.series_1d.length >= 2
-        ? tech.series_1d
-        : null;
-      const rawIntra = ivEntry?.bars?.length >= 2 ? ivEntry.bars : fallback1d;
-      // Kick off background fetch for multi-day intraday bars if not yet cached
+      let rawIntra = ivEntry?.bars?.length >= 2 ? ivEntry.bars : null;
+      if (!rawIntra && effIv === "5m" && Array.isArray(tech.series_1d) && tech.series_1d.length >= 2) {
+        rawIntra = tech.series_1d;
+      } else if (!rawIntra && effIv === "15m" && Array.isArray(tech.series_1d) && tech.series_1d.length >= 4) {
+        rawIntra = aggregateBarsBySec(tech.series_1d, 900);
+      }
       if (!ivEntry?.bars?.length) {
         fetchLiveIntradaySeries(t, effIv);
       }
-      if (rawIntra && rawIntra.length >= 2) {
-        useIntraday = true;
-        const seenTs = new Set();
-        const clean = [];
-        for (const b of rawIntra) {
-          const tsNum = Number(b.t);
-          if (!Number.isFinite(tsNum) || seenTs.has(tsNum) || !b.c || b.c <= 0) continue;
-          seenTs.add(tsNum);
-          clean.push({ ...b, t: tsNum });
+      if (!rawIntra || rawIntra.length < 2) {
+        box.innerHTML = `<div class="loading-box" style="padding:48px 0"><div class="spinner"></div><p>Loading ${esc(effIv)} real-time bars…</p></div>`;
+        return;
+      }
+      useIntraday = true;
+      const seenTs = new Set();
+      const clean = [];
+      for (const b of rawIntra) {
+        const tsNum = Number(b.t);
+        if (!Number.isFinite(tsNum) || seenTs.has(tsNum) || !b.c || b.c <= 0) continue;
+        seenTs.add(tsNum);
+        clean.push({ ...b, t: tsNum });
+      }
+      clean.sort((a, b) => a.t - b.t);
+      const withEt = clean.map((b) => {
+        const et = barEtInfo(b.t, b.ext);
+        return { ...b, etIso: et.iso, isExt: et.isExt };
+      });
+      // Find the latest Regular US session date (09:30–16:00 ET) and the prior day's Regular Close
+      let latestRegIso = "";
+      for (let i = withEt.length - 1; i >= 0; i--) {
+        if (!withEt[i].isExt && withEt[i].etIso) {
+          latestRegIso = withEt[i].etIso;
+          break;
         }
-        clean.sort((a, b) => a.t - b.t);
-        const withEt = clean.map((b) => {
-          const et = barEtInfo(b.t, b.ext);
-          return { ...b, etIso: et.iso, isExt: et.isExt };
-        });
-        // Find the latest Regular US session date (09:30–16:00 ET) and the prior day's Regular Close
-        let latestRegIso = "";
+      }
+      let priorRegClose = 0;
+      if (latestRegIso) {
         for (let i = withEt.length - 1; i >= 0; i--) {
-          if (!withEt[i].isExt && withEt[i].etIso) {
-            latestRegIso = withEt[i].etIso;
+          if (!withEt[i].isExt && withEt[i].etIso && withEt[i].etIso < latestRegIso) {
+            priorRegClose = withEt[i].c;
             break;
           }
         }
-        let priorRegClose = 0;
-        if (latestRegIso) {
-          for (let i = withEt.length - 1; i >= 0; i--) {
-            if (!withEt[i].isExt && withEt[i].etIso && withEt[i].etIso < latestRegIso) {
-              priorRegClose = withEt[i].c;
-              break;
-            }
-          }
-        }
-        const dailySer = tech.series || [];
-        const factsRegClose = Number(tech.facts?.last_close || 0);
-        const factsRegPct = Number(tech.facts?.change_1d_pct || 0);
-        const derivedPrev = factsRegClose > 0 && Math.abs(100 + factsRegPct) > 1e-6
-          ? Number((factsRegClose / (1 + factsRegPct / 100)).toFixed(2))
-          : 0;
-        basePrevC = priorRegClose || derivedPrev || Number(ivEntry?.prevClose || tech.prev_close_1d) || (dailySer.length >= 2 ? dailySer[dailySer.length - 2].c : (withEt[0]?.o || withEt[0]?.c || 0));
-        data = withRollingSma(withEt).map((d, i) => {
-          const prevC = state.chartRange === "1D" && basePrevC ? basePrevC : (i > 0 ? withEt[i - 1].c : d.o);
-          const chg1d = prevC ? ((d.c - prevC) / prevC) * 100 : 0;
-          return { ...d, prevC, chg1d, isIntraday: true, latestRegIso };
-        });
       }
+      const dailySer = tech.series || [];
+      const factsRegClose = Number(tech.facts?.last_close || 0);
+      const factsRegPct = Number(tech.facts?.change_1d_pct || 0);
+      const derivedPrev = factsRegClose > 0 && Math.abs(100 + factsRegPct) > 1e-6
+        ? Number((factsRegClose / (1 + factsRegPct / 100)).toFixed(2))
+        : 0;
+      basePrevC = priorRegClose || derivedPrev || Number(ivEntry?.prevClose || tech.prev_close_1d) || (dailySer.length >= 2 ? dailySer[dailySer.length - 2].c : (withEt[0]?.o || withEt[0]?.c || 0));
+      data = withRollingSma(withEt).map((d, i) => {
+        const prevC = state.chartRange === "1D" && basePrevC ? basePrevC : (i > 0 ? withEt[i - 1].c : d.o);
+        const chg1d = prevC ? ((d.c - prevC) / prevC) * 100 : 0;
+        return { ...d, prevC, chg1d, isIntraday: true, latestRegIso };
+      });
     }
 
     if (!data.length) {
@@ -3983,10 +4039,11 @@
           const fb = effIv === "1m" ? 390 : effIv === "5m" ? 105 : effIv === "15m" ? 40 : 18;
           return { from: Math.max(-0.5, totalBars - fb), to: totalBars + 2 };
         }
-        const dayMap = { "5D": 5, "1W": 7, "1M": 31, "3M": 92, "6M": 183, "YTD": 300, "1Y": 365 };
-        const cutoffSec = lastTs - (dayMap[rng] || 5) * 86400;
-        const idx = timelinePoints.findIndex((b) => Number(b.t) >= cutoffSec);
-        return { from: Math.max(-0.5, (idx >= 0 ? idx : 0) - 0.5), to: totalBars + 1.5 };
+        const dayMap = { "5D": 6, "1W": 8, "1M": 32, "3M": 93, "6M": 185, "YTD": 300, "1Y": 365, "3Y": 1095, "5Y": 1825 };
+        const cutoffSec = lastTs - (dayMap[rng] || 6) * 86400;
+        let idx = timelinePoints.findIndex((b) => Number(b.t) >= cutoffSec);
+        if (idx < 0 || (totalBars - idx) < 8) idx = Math.max(0, totalBars - Math.min(totalBars, 24));
+        return { from: Math.max(-0.5, idx - 0.5), to: totalBars + 1.5 };
       }
 
       const lastIso = barToIsoDate(timelinePoints[totalBars - 1].t);
@@ -4018,6 +4075,7 @@
     const scrubberEl = $("chartTimeScrubber");
     const spanBadgeEl = $("chartVisibleSpan");
     const dateJumpEl = $("chartDateJump");
+    const floatingLatestBtn = $("chartFloatingLatestBtn");
     if (dateJumpEl && timelinePoints.length) {
       dateJumpEl.min = barToIsoDate(timelinePoints[0].t);
       dateJumpEl.max = barToIsoDate(timelinePoints[totalBars - 1].t);
@@ -4037,6 +4095,9 @@
         const lblA = useIntraday ? formatEtIntradayTime(bStart.t, true).replace(" ET", "") : bStart.t;
         const lblB = useIntraday ? formatEtIntradayTime(bEnd.t, true) : bEnd.t;
         spanBadgeEl.textContent = `${lblA} → ${lblB}`;
+      }
+      if (floatingLatestBtn) {
+        floatingLatestBtn.classList.toggle("hidden", lr.to >= totalBars - 3);
       }
       if (scrubberEl && !syncingScrubber) {
         const span = Math.max(5, lr.to - lr.from);
@@ -4136,15 +4197,10 @@
     requestAnimationFrame(applyRangeWindow);
     setTimeout(applyRangeWindow, 65);
 
-    if ($("resetChartFitBtn")) $("resetChartFitBtn").onclick = applyRangeWindow;
     if ($("chartResetDockBtn")) $("chartResetDockBtn").onclick = applyRangeWindow;
-    if ($("chartZoomInTopBtn")) $("chartZoomInTopBtn").onclick = () => zoomByFactor(0.68);
-    if ($("chartZoomOutTopBtn")) $("chartZoomOutTopBtn").onclick = () => zoomByFactor(1.45);
     if ($("chartZoomInBtn")) $("chartZoomInBtn").onclick = () => zoomByFactor(0.68);
     if ($("chartZoomOutBtn")) $("chartZoomOutBtn").onclick = () => zoomByFactor(1.45);
-    if ($("chartPanLeftBtn")) $("chartPanLeftBtn").onclick = () => panByFraction(-0.42);
-    if ($("chartPanRightBtn")) $("chartPanRightBtn").onclick = () => panByFraction(0.42);
-    if ($("chartJumpLatestBtn")) $("chartJumpLatestBtn").onclick = jumpToLatest;
+    if (floatingLatestBtn) floatingLatestBtn.onclick = jumpToLatest;
     if (scrubberEl) {
       scrubberEl.oninput = () => {
         if (!state.tvChart || totalBars < 3) return;
@@ -5512,7 +5568,77 @@
     if (ivc["1H"]?.bars) updateBars(ivc["1H"].bars, 3600);
   }
 
-  // Primary zero-delay 115-symbol real-time stream (CNBC Last NASDAQ LS / CTA, Access-Control-Allow-Origin: *, every 5s)
+  function applyLiveMacroQuotes(macroMap) {
+    if (!macroMap || !state.summary) return;
+    const mc = (state.summary.macro ||= {});
+    const mp = (mc.pillars ||= {});
+    const ser = mc.series || [];
+    const todayEt = barEtInfo(Math.floor(Date.now() / 1000)).iso;
+
+    const patchSeriesRow = (fredId, val, chg) => {
+      if (val == null || !Number.isFinite(val)) return;
+      for (const r of ser) {
+        if (r.id === fredId) {
+          r.latest = Number(val.toFixed(2));
+          r.available = true;
+          r.stale = false;
+          if (todayEt) r.latest_date = todayEt;
+          if (chg != null && Number.isFinite(chg) && r.change_1w == null) r.change_1w = Number(chg.toFixed(2));
+        }
+      }
+    };
+
+    if (macroMap.US10Y) {
+      mp.dgs10 = { ...(mp.dgs10 || {}), latest: macroMap.US10Y.val, change_1d: macroMap.US10Y.chg };
+      patchSeriesRow("DGS10", macroMap.US10Y.val, macroMap.US10Y.chg);
+    }
+    if (macroMap.US2Y) {
+      patchSeriesRow("DGS2", macroMap.US2Y.val, macroMap.US2Y.chg);
+    }
+    if (macroMap[".VIX"]) {
+      mp.vix = { ...(mp.vix || {}), latest: macroMap[".VIX"].val, change_1d: macroMap[".VIX"].chg, change_pct: macroMap[".VIX"].pct };
+      patchSeriesRow("VIXCLS", macroMap[".VIX"].val, macroMap[".VIX"].chg);
+    }
+    if (macroMap["@CL.1"]) {
+      mp.wti = { ...(mp.wti || {}), latest: macroMap["@CL.1"].val, change_1d: macroMap["@CL.1"].chg, change_pct: macroMap["@CL.1"].pct };
+      patchSeriesRow("DCOILWTICO", macroMap["@CL.1"].val, macroMap["@CL.1"].chg);
+    }
+    if (macroMap[".DXY"]) {
+      patchSeriesRow("DTWEXBGS", macroMap[".DXY"].val, macroMap[".DXY"].chg);
+    }
+
+    // Patch Overview KPI cards (US 10Y = index 2, VIX = index 3, WTI Oil = index 4) in place
+    const kpiCards = document.querySelectorAll("#kpiStrip .kpi-card");
+    if (kpiCards.length >= 5) {
+      if (macroMap.US10Y) {
+        const vEl = kpiCards[2].querySelector(".kpi-val");
+        const sEl = kpiCards[2].querySelector(".kpi-sub");
+        if (vEl) vEl.textContent = `${fmtNum(macroMap.US10Y.val, 2)}%`;
+        if (sEl && macroMap.US10Y.chg != null) sEl.textContent = `1D: ${fmtSignedDelta(macroMap.US10Y.chg)}pp`;
+      }
+      if (macroMap[".VIX"]) {
+        const vEl = kpiCards[3].querySelector(".kpi-val");
+        const sEl = kpiCards[3].querySelector(".kpi-sub");
+        if (vEl) {
+          vEl.className = `kpi-val ${macroMap[".VIX"].val >= 20 ? "warn" : ""}`;
+          vEl.textContent = fmtNum(macroMap[".VIX"].val, 2);
+        }
+        if (sEl && macroMap[".VIX"].pct != null) sEl.textContent = `1D: ${fmtPct(macroMap[".VIX"].pct, 1)}`;
+      }
+      if (macroMap["@CL.1"]) {
+        const vEl = kpiCards[4].querySelector(".kpi-val");
+        const sEl = kpiCards[4].querySelector(".kpi-sub");
+        if (vEl) vEl.textContent = `$${fmtNum(macroMap["@CL.1"].val, 2)}`;
+        if (sEl && macroMap["@CL.1"].pct != null) sEl.textContent = `1D: ${fmtPct(macroMap["@CL.1"].pct, 1)}`;
+      }
+    }
+    if (state.view === "macro") {
+      renderMacro();
+    }
+  }
+
+  // Primary zero-delay 115-symbol + Macro real-time stream (CNBC Last NASDAQ LS / CTA, Access-Control-Allow-Origin: *, every 5s)
+  const LIVE_MACRO_SYMS = ["US10Y", "US2Y", ".VIX", "@CL.1", ".DXY"];
   let tvPollBusy = false;
   async function pollTradingViewDirect() {
     if (tvPollBusy || document.hidden || !state.summary) return;
@@ -5523,9 +5649,9 @@
         if (s.etf) allSyms.add(s.etf);
       }
 
-      // 1. Primary: CNBC real-time consolidated quote batch (zero Pre-Market/After-Hours delay, native CORS)
+      // 1. Primary: CNBC real-time consolidated quote batch (zero Pre-Market/After-Hours delay + live Macro, native CORS)
       try {
-        const cnbcList = [...allSyms].map((s) => s.replace("-", "."));
+        const cnbcList = [...[...allSyms].map((s) => s.replace("-", ".")), ...LIVE_MACRO_SYMS];
         const ctrlC = new AbortController();
         const tC = setTimeout(() => ctrlC.abort(), 4500);
         const cnbcUrl = `https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=${encodeURIComponent(cnbcList.join("|"))}&requestMethod=itv&noform=1&partnerId=2&fund=0&exthrs=1&output=json`;
@@ -5536,10 +5662,19 @@
           let fq = jsonC?.FormattedQuoteResult?.FormattedQuote || [];
           if (!Array.isArray(fq)) fq = fq ? [fq] : [];
           const mapC = {};
+          const macroC = {};
           for (const item of fq) {
             const rawSym = item?.symbol;
             const regClose = parseCleanNum(item?.last);
             if (!rawSym || regClose == null || regClose <= 0) continue;
+            if (LIVE_MACRO_SYMS.includes(rawSym)) {
+              macroC[rawSym] = {
+                val: regClose,
+                chg: parseCleanNum(item?.change),
+                pct: parseCleanNum(item?.change_pct),
+              };
+              continue;
+            }
             const sym = String(rawSym).replace(".", "-").toUpperCase();
             const regChgUsd = parseCleanNum(item?.change) ?? 0;
             const regChgPct = parseCleanNum(item?.change_pct) ?? 0;
@@ -5592,6 +5727,9 @@
               volume: vol,
               dollar_volume_usd: regClose * vol,
             };
+          }
+          if (Object.keys(macroC).length) {
+            applyLiveMacroQuotes(macroC);
           }
           if (Object.keys(mapC).length >= 50) {
             applyLiveQuotesMap(mapC);
@@ -5715,16 +5853,33 @@
     try {
       const cacheKey = `${state.date}:${sym}`;
       const cached = state.tickerCache[cacheKey];
-      // 2. Pull direct CORS-native 5-minute candles (Regular + After-Hours + Pre-Market) with zero proxy lag
-      const cnbcBars = await fetchCnbcIntradayBars(sym, "5m");
-      if (cached && cnbcBars && cnbcBars.length >= 2) {
+      // 2. Parallel prefetch of 5m (auto-derives 15m), 1m, and 1H from direct CORS-native CNBC CDN so all intervals switch in 0ms
+      const [bars5m, bars1m, bars1h] = await Promise.all([
+        fetchCnbcIntradayBars(sym, "5m"),
+        fetchCnbcIntradayBars(sym, "1m"),
+        fetchCnbcIntradayBars(sym, "1H"),
+      ]);
+      if (cached) {
         const tech = (cached.technical ||= {});
-        const had1d = Array.isArray(tech.series_1d) && tech.series_1d.length >= 2;
-        tech.series_1d = cnbcBars.slice(-260);
         tech._ivCache = tech._ivCache || {};
-        tech._ivCache["5m"] = { ts: Date.now(), bars: cnbcBars, prevClose: tech.prev_close_1d || 0 };
+        const prevC = tech.prev_close_1d || 0;
+        let updatedActive = false;
+        if (bars5m && bars5m.length >= 2) {
+          tech.series_1d = bars5m.slice(-260);
+          tech._ivCache["5m"] = { ts: Date.now(), bars: bars5m, prevClose: prevC };
+          tech._ivCache["15m"] = { ts: Date.now(), bars: aggregateBarsBySec(bars5m, 900), prevClose: prevC };
+          if (state.tvEffInterval === "5m" || state.tvEffInterval === "15m") updatedActive = true;
+        }
+        if (bars1m && bars1m.length >= 2) {
+          tech._ivCache["1m"] = { ts: Date.now(), bars: bars1m, prevClose: prevC };
+          if (state.tvEffInterval === "1m") updatedActive = true;
+        }
+        if (bars1h && bars1h.length >= 2) {
+          tech._ivCache["1H"] = { ts: Date.now(), bars: bars1h, prevClose: prevC };
+          if (state.tvEffInterval === "1H") updatedActive = true;
+        }
         if (state.view === "stock" && state.activeTicker === sym && $("tvChart")) {
-          if (!had1d || state.chartRange === "1D" || state.tvEffInterval === "5m") {
+          if (updatedActive) {
             mountInteractiveChart(cached);
           } else {
             streamLiveChartTick(sym);
@@ -5776,19 +5931,121 @@
     } catch {}
   }
 
+  // Direct CORS-native 30s real-time Breaking Wire stream (CNBC + Dow Jones / MarketWatch)
+  const DIRECT_WIRE_FEEDS = [
+    { url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664", src: "CNBC" },
+    { url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=19854910", src: "CNBC Tech" },
+    { url: "https://feeds.content.dowjones.io/public/rss/mw_realtimeheadlines", src: "MarketWatch" },
+  ];
+
+  async function pollLiveBrowserNews() {
+    if (document.hidden || !state.summary) return;
+    try {
+      const tList = state.summary.tickers || [];
+      const seenKeys = new Set((state.breaking || []).map((b) => String(b.title || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().slice(0, 48)));
+      const discovered = [];
+
+      await Promise.all(DIRECT_WIRE_FEEDS.map(async (feed) => {
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 5000);
+          const res = await fetch(feed.url, { signal: ctrl.signal, cache: "no-store" });
+          clearTimeout(timer);
+          if (!res.ok) return;
+          const xml = await res.text();
+          if (!xml.includes("<item>")) return;
+          const doc = new DOMParser().parseFromString(xml, "text/xml");
+          for (const it of [...doc.querySelectorAll("item")].slice(0, 18)) {
+            const title = (it.querySelector("title")?.textContent || "").trim();
+            const link = (it.querySelector("link")?.textContent || "").trim();
+            const pub = (it.querySelector("pubDate")?.textContent || "").trim();
+            if (!title || !link || title.endsWith("?")) continue;
+            const norm = title.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().slice(0, 48);
+            if (!norm || seenKeys.has(norm)) continue;
+            const pubMs = pub ? Date.parse(pub) : Date.now();
+            if (Number.isFinite(pubMs) && (Date.now() - pubMs) > 6 * 3600000) continue;
+
+            // Match watchlist ticker or major macro/AI/policy catalyst
+            let matchedSym = null;
+            let matchedName = null;
+            const tl = title.toLowerCase();
+            for (const row of tList) {
+              const symU = row.symbol;
+              const firstW = String(row.name || "").split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, "") || "";
+              if (
+                (symU.length >= 3 && new RegExp(`(?<![A-Za-z])${symU.replace("-", "\\-")}(?![A-Za-z])`).test(title)) ||
+                (firstW.length >= 5 && !["applied", "advanced", "first", "general", "united", "american", "constellation", "southern"].includes(firstW) && tl.includes(firstW))
+              ) {
+                matchedSym = symU;
+                matchedName = row.name;
+                break;
+              }
+            }
+            let cat = "general";
+            let imp = 62;
+            if (/\b(earnings|guidance|revenue|beats|misses|outlook|8-k|acquire|merger|tariff|federal reserve|fomc|powell|rate cut|sanction|antitrust|doj|sec )\b/i.test(title)) {
+              cat = /\b(tariff|federal reserve|fomc|powell|rate|sanction)\b/i.test(title) ? "policy_geopolitics" : "earnings_guidance";
+              imp = 82;
+            } else if (/\b(nvidia|apple|microsoft|alphabet|google|amazon|tesla|meta|tsmc|broadcom|amd|palantir|openai|blackwell|data center|ai chip)\b/i.test(title)) {
+              if (!matchedSym) {
+                if (tl.includes("nvidia") || tl.includes("blackwell")) matchedSym = "NVDA";
+                else if (tl.includes("apple") || tl.includes("iphone")) matchedSym = "AAPL";
+                else if (tl.includes("microsoft")) matchedSym = "MSFT";
+                else if (tl.includes("google") || tl.includes("alphabet")) matchedSym = "GOOGL";
+                else if (tl.includes("amazon") || tl.includes("aws")) matchedSym = "AMZN";
+                else if (tl.includes("tesla")) matchedSym = "TSLA";
+                else if (tl.includes("meta")) matchedSym = "META";
+                else if (tl.includes("tsmc")) matchedSym = "TSM";
+                else matchedSym = "AI";
+              }
+              cat = "data_centers_ai";
+              imp = 70;
+            }
+            if (!matchedSym && imp < 80) continue;
+            seenKeys.add(norm);
+            discovered.push({
+              key: norm.slice(0, 16),
+              symbol: matchedSym || "MACRO",
+              name: matchedName || matchedSym || "Macro Wire",
+              title,
+              url: link,
+              source: feed.src,
+              published: Number.isFinite(pubMs) ? new Date(pubMs).toISOString() : new Date().toISOString(),
+              importance: imp,
+              categories: [cat],
+            });
+          }
+        } catch {}
+      }));
+
+      if (discovered.length) {
+        discovered.sort((a, b) => (b.importance || 0) - (a.importance || 0));
+        state.breaking = [...discovered, ...(state.breaking || [])].slice(0, 80);
+        if ($("breakingCount")) $("breakingCount").textContent = String(state.breaking.length);
+        if (state.view === "breaking") renderBreaking();
+      }
+    } catch {}
+  }
+
   async function pollBackgroundFeeds() {
     if (document.hidden || !state.summary) return;
     await checkForNewerReport();
     try {
       await loadBreaking();
     } catch {}
+    pollLiveBrowserNews();
   }
 
   function initRealtimeEngine() {
-    // 1. Immediate real-time 115-symbol institutional tick stream every 5 seconds
+    // Close chart candle interval dropdown when clicking anywhere outside
+    document.addEventListener("click", () => {
+      $("ivDropdownMenu")?.classList.add("hidden");
+    });
+    // 1. Immediate real-time 115-symbol + Macro institutional tick stream every 5 seconds
     pollTradingViewDirect();
     setInterval(pollTradingViewDirect, 5000);
-    // 2. Background breaking-news & daily-report rollover check every 30 seconds
+    // 2. Direct live breaking-wire RSS + background report rollover check every 30 seconds
+    pollLiveBrowserNews();
     setInterval(pollBackgroundFeeds, 30000);
 
     document.addEventListener("visibilitychange", async () => {

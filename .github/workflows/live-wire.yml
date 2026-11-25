@@ -1,0 +1,37 @@
+name: live-wire-realtime
+on:
+  schedule:
+    # Public repo = 100% free unlimited GitHub Actions minutes forever; runs every 5 minutes 24/7
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+concurrency:
+  group: live-wire-realtime
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q requests
+      - name: Stream real-time quotes, wires, SEC 8-K & dispatch tiered Telegram alerts
+        run: python scripts/live_wire.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+      - name: Commit updated live feed & quotes
+        run: |
+          git config user.name "equity-research-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/
+          if ! git diff --cached --quiet; then
+            git commit -m "Live wire pulse $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase -X ours origin main || true
+            git push origin main
+          fi
