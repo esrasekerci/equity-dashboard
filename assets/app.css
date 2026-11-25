@@ -598,27 +598,35 @@ a:hover { text-decoration: underline; }
 }
 .news-ext-link:hover { color: var(--accent-2); text-decoration: none; }
 
-/* Smooth Dual Light-Up & Fade Pulse When Arriving from Overview Click */
+/* Smooth Direct-Landing Spotlight & Light-Up Pulse When Arriving from Overview Click */
+#view-breaking .news-card,
+#view-breaking .news-lead-card {
+  transition: opacity 0.35s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.2s ease;
+}
+#view-breaking.has-focus-pulse .news-card:not(.news-highlight-pulse),
+#view-breaking.has-focus-pulse .news-lead-card:not(.news-highlight-pulse) {
+  opacity: 0.45;
+}
 @keyframes newsHighlightPulse {
   0% {
-    border-color: var(--border);
+    border-color: var(--border-strong);
     background: var(--bg-card);
-    box-shadow: 0 0 0 0 rgba(240, 185, 11, 0);
+    box-shadow: 0 0 0 0 rgba(252, 213, 53, 0);
   }
-  18% {
+  16% {
     border-color: var(--accent-2);
-    background: rgba(240, 185, 11, 0.16);
-    box-shadow: 0 0 0 2px rgba(240, 185, 11, 0.42), 0 10px 28px rgba(240, 185, 11, 0.22);
+    background: rgba(252, 213, 53, 0.22);
+    box-shadow: 0 0 0 2.5px rgba(252, 213, 53, 0.55), 0 12px 34px rgba(240, 185, 11, 0.28);
   }
-  46% {
-    border-color: rgba(240, 185, 11, 0.28);
-    background: rgba(240, 185, 11, 0.03);
-    box-shadow: 0 0 0 0 rgba(240, 185, 11, 0);
+  44% {
+    border-color: rgba(252, 213, 53, 0.36);
+    background: rgba(252, 213, 53, 0.05);
+    box-shadow: 0 0 0 1px rgba(252, 213, 53, 0.16);
   }
-  70% {
+  68% {
     border-color: var(--accent-2);
-    background: rgba(240, 185, 11, 0.14);
-    box-shadow: 0 0 0 2px rgba(240, 185, 11, 0.34), 0 8px 22px rgba(240, 185, 11, 0.18);
+    background: rgba(252, 213, 53, 0.18);
+    box-shadow: 0 0 0 2px rgba(252, 213, 53, 0.44), 0 10px 26px rgba(240, 185, 11, 0.22);
   }
   100% {
     border-color: var(--border);
@@ -627,7 +635,10 @@ a:hover { text-decoration: underline; }
   }
 }
 .news-highlight-pulse {
-  animation: newsHighlightPulse 2.45s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+  position: relative;
+  z-index: 2;
+  opacity: 1 !important;
+  animation: newsHighlightPulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
   scroll-margin-top: 96px;
 }
 

@@ -19,6 +19,8 @@
     breakingSearch: "",
     ovNewsCurrentIds: [],
     ovBootRotated: false,
+    highlightUntilMs: 0,
+    highlightTimer: null,
     lastHiddenAt: 0,
     authorityAgency: "all",
     networkCenter: "NVDA",
@@ -280,11 +282,13 @@
     for (const v of ["overview", "screener", "network", "smartmoney", "breaking", "authorities", "macro", "formulas", "stock"]) {
       $(`view-${v}`)?.classList.toggle("hidden", v !== view);
     }
+    const navBar = $("mainNav");
     document.querySelectorAll("#mainNav .nav-tab").forEach((btn) => {
       const isAct = btn.dataset.view === view;
       btn.classList.toggle("active", isAct);
-      if (isAct && btn.scrollIntoView) {
-        try { btn.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }); } catch {}
+      if (isAct && navBar && navBar.scrollWidth > navBar.clientWidth) {
+        const targetLeft = btn.offsetLeft - (navBar.clientWidth - btn.offsetWidth) / 2;
+        try { navBar.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" }); } catch {}
       }
     });
     const moreViews = new Set(["breaking", "authorities", "macro", "formulas"]);
@@ -350,7 +354,7 @@
     }
     syncNewsBadgeCounts();
     renderOverviewNews({ advance: false });
-    if (state.view === "breaking") renderBreaking();
+    if (state.view === "breaking" && Date.now() >= (state.highlightUntilMs || 0)) renderBreaking();
     if (state.view === "stock" && state.refreshActiveStockNews) state.refreshActiveStockNews();
   }
 
@@ -2642,32 +2646,54 @@
       setView("breaking");
       return;
     }
-    // Clear filters if needed so the clicked news item is guaranteed visible on the News page
+    if (state.highlightTimer) {
+      clearTimeout(state.highlightTimer);
+      state.highlightTimer = null;
+    }
+    // Reset News filters so the clicked story from Overview is 100% guaranteed present on the News page
     state.breakingCategory = "all";
     state.breakingTier = "all";
     state.breakingSearch = "";
+    state.highlightUntilMs = Date.now() + 3400;
     if ($("newsSearchInput")) $("newsSearchInput").value = "";
     document.querySelectorAll("#newsTierBar .news-tier-btn").forEach((b) => {
       b.classList.toggle("active", b.dataset.ntier === "all");
     });
 
-    renderBreaking(uid);
+    renderBreaking(null);
     setView("breaking", { skipScrollTop: true, preserveHighlight: true });
 
-    requestAnimationFrame(() => {
-      const escId = window.CSS && CSS.escape ? CSS.escape(uid) : uid.replace(/"/g, "");
+    const escId = window.CSS && CSS.escape ? CSS.escape(uid) : uid.replace(/"/g, "");
+    const secEl = $("view-breaking");
+    const locateAndJump = () => {
       const target = document.querySelector(`#view-breaking [data-news-id="${escId}"]`);
       if (!target) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        return;
+        window.scrollTo(0, 0);
+        return null;
       }
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
-      target.classList.remove("news-highlight-pulse");
+      const topbarH = document.querySelector(".topbar")?.offsetHeight || 64;
+      const rect = target.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight || 700;
+      const desiredTop = Math.max(topbarH + 16, Math.min(topbarH + 88, (vh - rect.height) * 0.34));
+      const destY = Math.max(0, Math.round(window.scrollY + rect.top - desiredTop));
+      window.scrollTo({ top: destY, left: 0, behavior: "instant" in ScrollToOptions.prototype ? "instant" : "auto" });
+      window.scrollTo(0, destY);
+      return target;
+    };
+
+    locateAndJump();
+    requestAnimationFrame(() => {
+      const target = locateAndJump();
+      if (!target) return;
+      document.querySelectorAll("#view-breaking .news-highlight-pulse").forEach((el) => el.classList.remove("news-highlight-pulse"));
       void target.offsetWidth;
+      secEl?.classList.add("has-focus-pulse");
       target.classList.add("news-highlight-pulse");
-      setTimeout(() => {
+      state.highlightTimer = setTimeout(() => {
+        secEl?.classList.remove("has-focus-pulse");
         target.classList.remove("news-highlight-pulse");
-      }, 2800);
+        state.highlightTimer = null;
+      }, 2500);
     });
   }
 
@@ -2699,8 +2725,13 @@
       </article>
     `).join("");
 
+    grid.onclick = (e) => {
+      const card = e.target.closest(".ov-news-card[data-ov-news-id]");
+      if (!card) return;
+      e.preventDefault();
+      openNewsItemInBreaking(card.dataset.ovNewsId);
+    };
     grid.querySelectorAll(".ov-news-card[data-ov-news-id]").forEach((card) => {
-      card.onclick = () => openNewsItemInBreaking(card.dataset.ovNewsId);
       card.onkeydown = (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -6915,7 +6946,7 @@
         state.breaking = [...discovered, ...(state.breaking || [])].slice(0, 110);
         syncNewsBadgeCounts();
         renderOverviewNews({ advance: false });
-        if (state.view === "breaking") renderBreaking();
+        if (state.view === "breaking" && Date.now() >= (state.highlightUntilMs || 0)) renderBreaking();
         if (state.view === "stock" && state.refreshActiveStockNews) state.refreshActiveStockNews();
       }
     } catch {}
