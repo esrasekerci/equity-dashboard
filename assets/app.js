@@ -958,6 +958,11 @@
     });
 
     // Desktop table rows
+    const renderExtMini = (r) => {
+      if (r.ext_price == null || !r.ext_label) return "";
+      const tag = r.ext_label === "Pre-Market" ? "PM" : "AH";
+      return `<div class="ext-mini-line"><span class="muted">${tag} $${fmtNum(r.ext_price)}</span> <span class="${clsPct(r.ext_change_pct)}">${fmtPct(r.ext_change_pct, 2)}</span></div>`;
+    };
     $("screenerBody").innerHTML = rows.map((r) => {
       const sma = [[20, r.above_sma20], [50, r.above_sma50], [200, r.above_sma200]]
         .map(([p, up]) => `<span class="sma-dot ${up ? "up" : "dn"}">${p}</span>`).join("");
@@ -973,7 +978,7 @@
             <div class="muted">${esc(r.name)}</div>
           </td>
           <td><span class="tag sector-link" data-sector="${esc(r.sector)}">${esc(fmtSector(r.sector))}</span></td>
-          <td class="num"><strong>$${fmtNum(r.close)}</strong></td>
+          <td class="num"><strong>$${fmtNum(r.close)}</strong>${renderExtMini(r)}</td>
           <td class="num ${clsPct(r.change_1d_pct)}"><strong>${fmtPct(r.change_1d_pct)}</strong></td>
           <td class="num"><span class="score-badge" ${notableScoreTipAttr(r)}>${fmtNum(r.notable_score, 1)}</span></td>
           <td class="num ${r.rsi14 < 30 ? "neg" : r.rsi14 > 70 ? "pos" : ""}">${fmtNum(r.rsi14, 1)}</td>
@@ -1022,6 +1027,7 @@
             <div class="scr-price-col">
               <div class="scr-price">$${fmtNum(r.close)}</div>
               <span class="price-pill ${clsPct(r.change_1d_pct)}" style="font-size:11.5px;padding:2px 6px">${fmtPct(r.change_1d_pct)}</span>
+              ${renderExtMini(r)}
             </div>
           </div>
 
@@ -2625,11 +2631,14 @@
     if (liveChg != null && Number.isFinite(liveChg)) {
       facts.change_1d_pct = liveChg;
     }
+    facts.ext_price = liveRow.ext_price ?? null;
+    facts.ext_change_pct = liveRow.ext_change_pct ?? null;
+    facts.ext_label = liveRow.ext_label ?? null;
     if (liveRow.last_bar) {
       facts.last_bar = liveRow.last_bar;
     }
 
-    // Keep interactive chart's latest daily candle synchronized with the Hero price
+    // Keep interactive chart's latest daily candle synchronized with the Regular Hero price (never overnight wicks)
     if (Array.isArray(tech.series) && tech.series.length > 0) {
       const lastBar = tech.series[tech.series.length - 1];
       if (liveRow.last_bar && liveRow.last_bar > String(lastBar.t || "")) {
@@ -2646,6 +2655,8 @@
         });
       } else {
         lastBar.c = liveClose;
+        if (liveRow.high && liveRow.high > (lastBar.h || 0)) lastBar.h = liveRow.high;
+        if (liveRow.low && (lastBar.l == null || liveRow.low < lastBar.l)) lastBar.l = liveRow.low;
         if (lastBar.h == null || liveClose > lastBar.h) lastBar.h = liveClose;
         if (lastBar.l == null || liveClose < lastBar.l) lastBar.l = liveClose;
       }
@@ -2656,11 +2667,13 @@
       if (lastAll.h == null || liveClose > lastAll.h) lastAll.h = liveClose;
       if (lastAll.l == null || liveClose < lastAll.l) lastAll.l = liveClose;
     }
+    // For 1D intraday series (which includes Pre-Market & After-Hours), tick with active extended price when off-hours!
+    const activeTick = (liveRow.ext_price != null && liveRow.ext_price > 0) ? Number(liveRow.ext_price) : liveClose;
     if (Array.isArray(tech.series_1d) && tech.series_1d.length > 0) {
       const last1d = tech.series_1d[tech.series_1d.length - 1];
-      last1d.c = liveClose;
-      if (last1d.h == null || liveClose > last1d.h) last1d.h = liveClose;
-      if (last1d.l == null || liveClose < last1d.l) last1d.l = liveClose;
+      last1d.c = activeTick;
+      if (last1d.h == null || activeTick > last1d.h) last1d.h = activeTick;
+      if (last1d.l == null || activeTick < last1d.l) last1d.l = activeTick;
     }
 
     // Recompute Support & Resistance % distance from the synchronized live price
@@ -2793,6 +2806,9 @@
             <div class="stock-price">$${fmtNum(facts.last_close)}</div>
             <div class="pro-price-sub">
               <span class="price-pill ${clsPct(facts.change_1d_pct)}">${fmtPct(facts.change_1d_pct)}</span>
+            </div>
+            <div class="ext-quote-line ${facts.ext_price != null ? "" : "hidden"}" id="stockExtSub">
+              ${facts.ext_price != null ? `<span class="muted">${esc(facts.ext_label || "Ext")}</span> <strong>$${fmtNum(facts.ext_price)}</strong> <span class="${clsPct(facts.ext_change_pct)}">(${fmtPct(facts.ext_change_pct)})</span>` : ""}
             </div>
           </div>
         </div>
@@ -2971,6 +2987,7 @@
           <div class="chart-fs-quote">
             <strong id="chartFsPrice">$${fmtNum(facts.last_close)}</strong>
             <span class="price-pill ${clsPct(facts.change_1d_pct)}" id="chartFsPill">${fmtPct(facts.change_1d_pct)}</span>
+            <span class="ext-fs-inline ${facts.ext_price != null ? "" : "hidden"}" id="chartFsExt">${facts.ext_price != null ? `${esc(facts.ext_label === "Pre-Market" ? "PM" : "AH")} $${fmtNum(facts.ext_price)} (${fmtPct(facts.ext_change_pct)})` : ""}</span>
             <button type="button" class="chart-fs-exit-btn" id="exitChartFsTopBtn" aria-label="Exit full screen">⤡ Exit</button>
           </div>
         </div>
@@ -4821,7 +4838,88 @@
     return null;
   }
 
-  function applyLiveQuotesMap(quotes, tsLabel = null) {
+  // ---- CLIENT-SIDE REAL-TIME DATABASE (IndexedDB: MarketRealtimeDB) ----
+  const MarketRealtimeDB = (() => {
+    let dbPromise = null;
+    function open() {
+      if (dbPromise) return dbPromise;
+      if (typeof indexedDB === "undefined") return Promise.resolve(null);
+      dbPromise = new Promise((resolve) => {
+        try {
+          const req = indexedDB.open("MarketRealtimeDB", 1);
+          req.onupgradeneeded = () => {
+            const db = req.result;
+            if (!db.objectStoreNames.contains("snapshots")) db.createObjectStore("snapshots");
+            if (!db.objectStoreNames.contains("ticks")) db.createObjectStore("ticks");
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(null);
+        } catch {
+          resolve(null);
+        }
+      });
+      return dbPromise;
+    }
+    async function saveSnapshot(quotes) {
+      const db = await open();
+      if (!db) return;
+      try {
+        const tx = db.transaction("snapshots", "readwrite");
+        tx.objectStore("snapshots").put({ ts: Date.now(), quotes }, "latest");
+      } catch {}
+    }
+    async function loadSnapshot() {
+      const db = await open();
+      if (!db) return null;
+      return new Promise((resolve) => {
+        try {
+          const tx = db.transaction("snapshots", "readonly");
+          const req = tx.objectStore("snapshots").get("latest");
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => resolve(null);
+        } catch {
+          resolve(null);
+        }
+      });
+    }
+    return { saveSnapshot, loadSnapshot };
+  })();
+
+  // Exact primary exchange mapping for instant 1-request 115-symbol real-time batch streaming
+  const TV_EXCHANGE_MAP = {
+    AAPL: "NASDAQ:AAPL", ABBV: "NYSE:ABBV", ADBE: "NASDAQ:ADBE", ADI: "NASDAQ:ADI", AEM: "NYSE:AEM",
+    AG: "NYSE:AG", AIQ: "NASDAQ:AIQ", AMAT: "NASDAQ:AMAT", AMD: "NASDAQ:AMD", AMZN: "NASDAQ:AMZN",
+    ANET: "NYSE:ANET", APLD: "NASDAQ:APLD", APP: "NASDAQ:APP", ARM: "NASDAQ:ARM", ASML: "NASDAQ:ASML",
+    AVGO: "NASDAQ:AVGO", AXP: "NYSE:AXP", AXTI: "NASDAQ:AXTI", BA: "NYSE:BA", BAC: "NYSE:BAC",
+    BE: "NYSE:BE", BLK: "NYSE:BLK", "BRK-B": "NYSE:BRK.B", CAT: "NYSE:CAT", CCJ: "NYSE:CCJ",
+    CEG: "NASDAQ:CEG", CIFR: "NASDAQ:CIFR", COIN: "NASDAQ:COIN", CORZ: "NASDAQ:CORZ", COST: "NASDAQ:COST",
+    CRM: "NYSE:CRM", CRWD: "NASDAQ:CRWD", CRWV: "NASDAQ:CRWV", CVX: "NYSE:CVX", DDOG: "NASDAQ:DDOG",
+    DELL: "NYSE:DELL", ETN: "NYSE:ETN", FCX: "NYSE:FCX", FNV: "NYSE:FNV", FSLR: "NASDAQ:FSLR",
+    GD: "NYSE:GD", GDX: "AMEX:GDX", GEV: "NYSE:GEV", GLD: "AMEX:GLD", GOOGL: "NASDAQ:GOOGL",
+    GS: "NYSE:GS", HD: "NYSE:HD", HON: "NASDAQ:HON", ICLN: "NASDAQ:ICLN", IGV: "CBOE:IGV",
+    INTC: "NASDAQ:INTC", INTU: "NASDAQ:INTU", IREN: "NASDAQ:IREN", ISRG: "NASDAQ:ISRG", ITA: "CBOE:ITA",
+    JNJ: "NYSE:JNJ", JPM: "NYSE:JPM", KLAC: "NASDAQ:KLAC", KO: "NYSE:KO", LLY: "NYSE:LLY",
+    LMT: "NYSE:LMT", LRCX: "NASDAQ:LRCX", MA: "NYSE:MA", MCD: "NYSE:MCD", META: "NASDAQ:META",
+    MOD: "NYSE:MOD", MRK: "NYSE:MRK", MRVL: "NASDAQ:MRVL", MS: "NYSE:MS", MSFT: "NASDAQ:MSFT",
+    MU: "NASDAQ:MU", NBIS: "NASDAQ:NBIS", NEE: "NYSE:NEE", NEM: "NYSE:NEM", NFLX: "NASDAQ:NFLX",
+    NOC: "NYSE:NOC", NOW: "NYSE:NOW", NRG: "NYSE:NRG", NVDA: "NASDAQ:NVDA", NXPI: "NASDAQ:NXPI",
+    OKLO: "NYSE:OKLO", ORCL: "NYSE:ORCL", OXY: "NYSE:OXY", PAAS: "NYSE:PAAS", PANW: "NASDAQ:PANW",
+    PG: "NYSE:PG", PLTR: "NASDAQ:PLTR", QCOM: "NASDAQ:QCOM", QQQ: "NASDAQ:QQQ", RTX: "NYSE:RTX",
+    SCCO: "NYSE:SCCO", SHOP: "NASDAQ:SHOP", SLB: "NYSE:SLB", SLV: "AMEX:SLV", SMCI: "NASDAQ:SMCI",
+    SMH: "NASDAQ:SMH", SMR: "NYSE:SMR", SNOW: "NYSE:SNOW", SNPS: "NASDAQ:SNPS", SPOT: "NYSE:SPOT",
+    SPY: "AMEX:SPY", TSLA: "NASDAQ:TSLA", TSM: "NYSE:TSM", TXN: "NASDAQ:TXN", UBER: "NYSE:UBER",
+    UNH: "NYSE:UNH", V: "NYSE:V", VRT: "NYSE:VRT", VST: "NYSE:VST", WMT: "NASDAQ:WMT",
+    WPM: "NYSE:WPM", WULF: "NASDAQ:WULF", XLE: "AMEX:XLE", XLF: "AMEX:XLF", XLK: "AMEX:XLK",
+    XLP: "AMEX:XLP", XLU: "AMEX:XLU", XLV: "AMEX:XLV", XLY: "AMEX:XLY", XOM: "NYSE:XOM",
+  };
+
+  function renderExtMiniHtml(r) {
+    if (!r || r.ext_price == null || !r.ext_label) return "";
+    const tag = r.ext_label === "Pre-Market" ? "PM" : "AH";
+    return `<div class="ext-mini-line"><span class="muted">${tag} $${fmtNum(r.ext_price)}</span> <span class="${clsPct(r.ext_change_pct)}">${fmtPct(r.ext_change_pct, 2)}</span></div>`;
+  }
+
+  function applyLiveQuotesMap(quotes) {
     if (!quotes || !state.summary) return;
     const tList = state.summary.tickers || [];
     let changed = false;
@@ -4836,9 +4934,22 @@
         const newChg = q.change_1d_pct != null && Number.isFinite(Number(q.change_1d_pct))
           ? Number(Number(q.change_1d_pct).toFixed(2))
           : row.change_1d_pct;
-        if (row.close !== newClose || row.change_1d_pct !== newChg) changed = true;
+        const newExtP = q.ext_price != null && Number.isFinite(Number(q.ext_price)) && Number(q.ext_price) > 0
+          ? Number(Number(q.ext_price).toFixed(2))
+          : null;
+        const newExtC = q.ext_change_pct != null && Number.isFinite(Number(q.ext_change_pct))
+          ? Number(Number(q.ext_change_pct).toFixed(2))
+          : null;
+        const newExtL = newExtP != null ? (q.ext_label || null) : null;
+
+        if (row.close !== newClose || row.change_1d_pct !== newChg || row.ext_price !== newExtP || row.ext_change_pct !== newExtC) {
+          changed = true;
+        }
         row.close = newClose;
         row.change_1d_pct = newChg;
+        row.ext_price = newExtP;
+        row.ext_change_pct = newExtC;
+        row.ext_label = newExtL;
         if (q.last_bar) row.last_bar = q.last_bar;
         if (q.open) row.open = Number(q.open);
         if (q.high) row.high = Number(q.high);
@@ -4892,10 +5003,16 @@
 
     const hm = state.summary.heatmap || {};
     if (quotes.SPY && quotes.SPY.change_1d_pct != null) {
-      hm.spy_ret_1d = Number(Number(quotes.SPY.change_1d_pct).toFixed(2));
-      changed = true;
+      const spyNext = Number(Number(quotes.SPY.change_1d_pct).toFixed(2));
+      if (hm.spy_ret_1d !== spyNext) changed = true;
+      hm.spy_ret_1d = spyNext;
     }
     for (const tile of hm.sectors || []) {
+      if (tile.etf && quotes[tile.etf] && quotes[tile.etf].change_1d_pct != null) {
+        const etfNext = Number(Number(quotes[tile.etf].change_1d_pct).toFixed(2));
+        if (tile.etf_ret_1d !== etfNext) changed = true;
+        tile.etf_ret_1d = etfNext;
+      }
       const sr = secRets[tile.sector];
       if (sr && sr.length) {
         tile.avg_ret_1d = Number((sr.reduce((a, b) => a + b, 0) / sr.length).toFixed(2));
@@ -4904,49 +5021,114 @@
 
     if (!changed) return;
 
-    // Patch visible DOM in place without losing scroll position or expanded states
+    // 1. Patch Overview KPI cards (SPY 1D & Breadth) and Sector Heatmap tiles in place
+    const kpiCards = document.querySelectorAll("#kpiStrip .kpi-card");
+    if (kpiCards.length >= 2) {
+      const spyValEl = kpiCards[0].querySelector(".kpi-val");
+      if (spyValEl && hm.spy_ret_1d != null) {
+        spyValEl.className = `kpi-val ${clsPct(hm.spy_ret_1d)}`;
+        spyValEl.textContent = fmtPct(hm.spy_ret_1d);
+      }
+      const br = state.summary.breadth || {};
+      const brValEl = kpiCards[1].querySelector(".kpi-val");
+      const brSubEl = kpiCards[1].querySelector(".kpi-sub");
+      const brUpEl = kpiCards[1].querySelector(".breadth-up");
+      const brDnEl = kpiCards[1].querySelector(".breadth-dn");
+      if (brValEl) {
+        brValEl.className = `kpi-val ${clsPct(br.avg_ret_1d)}`;
+        brValEl.textContent = `${br.advancers ?? 0}↑ / ${br.decliners ?? 0}↓`;
+      }
+      if (brSubEl) brSubEl.textContent = `Avg 1D: ${fmtPct(br.avg_ret_1d)}`;
+      if (brUpEl && brDnEl) {
+        const tot = Math.max(1, (br.advancers ?? 0) + (br.decliners ?? 0));
+        const pct = Math.round(((br.advancers ?? 0) / tot) * 100);
+        brUpEl.style.width = `${pct}%`;
+        brDnEl.style.width = `${100 - pct}%`;
+      }
+    }
+    document.querySelectorAll("#sectorHeatmap .heat-tile[data-sector]").forEach((el) => {
+      const sec = (hm.sectors || []).find((s) => s.sector === el.dataset.sector);
+      if (!sec) return;
+      const r = sec.avg_ret_1d != null ? sec.avg_ret_1d : sec.etf_ret_1d;
+      const intensity = Math.min(0.28, Math.max(0.08, Math.abs(r || 0) / 28));
+      el.style.background = r > 0 ? `rgba(34, 197, 94, ${intensity})` : r < 0 ? `rgba(244, 63, 94, ${intensity})` : "var(--bg-card)";
+      const retEl = el.querySelector(".heat-ret");
+      const etfEl = el.querySelector(".muted");
+      if (retEl) {
+        retEl.className = `heat-ret ${clsPct(r)}`;
+        retEl.textContent = fmtPct(r);
+      }
+      if (etfEl && sec.etf_ret_1d != null) {
+        etfEl.textContent = `ETF ${fmtPct(sec.etf_ret_1d, 1)}`;
+      }
+    });
+
+    // 2. Patch Screener table, mobile cards & cohort meta in place
+    if ($("screenerCohortMeta")) {
+      const fRows = getFilteredRows();
+      const upCnt = fRows.filter((r) => (r.change_1d_pct ?? 0) > 0).length;
+      const dnCnt = fRows.filter((r) => (r.change_1d_pct ?? 0) < 0).length;
+      const fRets = fRows.map((r) => r.change_1d_pct).filter((v) => v != null && Number.isFinite(Number(v)));
+      const avgRet = fRets.length ? fRets.reduce((a, b) => a + b, 0) / fRets.length : null;
+      $("screenerCohortMeta").innerHTML = fRows.length
+        ? `<span class="pos">${upCnt} adv</span> · <span class="neg">${dnCnt} dec</span>${avgRet != null ? ` · Avg <strong class="${clsPct(avgRet)}">${fmtPct(avgRet, 2)}</strong>` : ""}`
+        : "No matches";
+    }
     document.querySelectorAll("#screenerBody tr[data-sym]").forEach((tr) => {
-      const r = tList.find((x) => x.symbol === tr.dataset.sym);
+      const r = bySymLive[tr.dataset.sym];
       if (!r) return;
       const cells = tr.querySelectorAll("td");
-      if (cells[2]) cells[2].innerHTML = `<strong>$${fmtNum(r.close)}</strong>`;
+      if (cells[2]) cells[2].innerHTML = `<strong>$${fmtNum(r.close)}</strong>${renderExtMiniHtml(r)}`;
       if (cells[3]) {
         cells[3].className = `num ${clsPct(r.change_1d_pct)}`;
         cells[3].innerHTML = `<strong>${fmtPct(r.change_1d_pct)}</strong>`;
       }
     });
     document.querySelectorAll("#screenerCards .stock-card[data-sym]").forEach((card) => {
-      const r = tList.find((x) => x.symbol === card.dataset.sym);
+      const r = bySymLive[card.dataset.sym];
       if (!r) return;
-      const pEl = card.querySelector(".scr-price, .sc-price");
-      const cEl = card.querySelector(".price-pill");
-      if (pEl) pEl.textContent = `$${fmtNum(r.close)}`;
-      if (cEl) {
-        cEl.className = `price-pill ${clsPct(r.change_1d_pct)}`;
-        cEl.textContent = fmtPct(r.change_1d_pct);
+      const pCol = card.querySelector(".scr-price-col");
+      if (pCol) {
+        pCol.innerHTML = `
+          <div class="scr-price">$${fmtNum(r.close)}</div>
+          <span class="price-pill ${clsPct(r.change_1d_pct)}" style="font-size:11.5px;padding:2px 6px">${fmtPct(r.change_1d_pct)}</span>
+          ${renderExtMiniHtml(r)}
+        `;
       }
     });
     document.querySelectorAll("#notableGrid .notable-card[data-sym]").forEach((card) => {
-      const r = tList.find((x) => x.symbol === card.dataset.sym);
+      const r = bySymLive[card.dataset.sym];
       if (!r) return;
       const pill = card.querySelector(".price-pill");
       if (pill) {
         pill.className = `price-pill ${clsPct(r.change_1d_pct)}`;
-        pill.textContent = `$${fmtNum(r.close)} · ${fmtPct(r.change_1d_pct)}`;
+        pill.textContent = `$${fmtNum(r.close)} · ${fmtPct(r.change_1d_pct, 1)}`;
       }
     });
+
+    // 3. Patch active Stock page (Hero price, Extended-Hours quote, S/R current badge, Full-Screen chart bar & live candle)
     if (state.view === "stock" && state.activeTicker) {
-      const r = tList.find((x) => x.symbol === state.activeTicker);
+      const r = bySymLive[state.activeTicker];
       if (r) {
         const sp = document.querySelector("#stockContent .stock-price");
         const pp = document.querySelector("#stockContent .pro-price-sub .price-pill");
+        const extSub = $("stockExtSub");
         const lc = document.querySelector("#stockContent .level-current");
         const fsp = $("chartFsPrice");
         const fspill = $("chartFsPill");
+        const fsExt = $("chartFsExt");
         if (sp) sp.textContent = `$${fmtNum(r.close)}`;
         if (pp) {
           pp.className = `price-pill ${clsPct(r.change_1d_pct)}`;
           pp.textContent = fmtPct(r.change_1d_pct);
+        }
+        if (extSub) {
+          if (r.ext_price != null && r.ext_label) {
+            extSub.classList.remove("hidden");
+            extSub.innerHTML = `<span class="muted">${esc(r.ext_label)}</span> <strong>$${fmtNum(r.ext_price)}</strong> <span class="${clsPct(r.ext_change_pct)}">(${fmtPct(r.ext_change_pct)})</span>`;
+          } else {
+            extSub.classList.add("hidden");
+          }
         }
         if (lc) lc.textContent = `Current · $${fmtNum(r.close)}`;
         if (fsp) fsp.textContent = `$${fmtNum(r.close)}`;
@@ -4954,11 +5136,19 @@
           fspill.className = `price-pill ${clsPct(r.change_1d_pct)}`;
           fspill.textContent = fmtPct(r.change_1d_pct);
         }
+        if (fsExt) {
+          if (r.ext_price != null && r.ext_label) {
+            fsExt.classList.remove("hidden");
+            fsExt.textContent = `${r.ext_label === "Pre-Market" ? "PM" : "AH"} $${fmtNum(r.ext_price)} (${fmtPct(r.ext_change_pct)})`;
+          } else {
+            fsExt.classList.add("hidden");
+          }
+        }
         streamLiveChartTick(state.activeTicker);
       }
     }
     document.querySelectorAll("#volumeFlowGrid .notable-card[data-sym]").forEach((card) => {
-      const r = tList.find((x) => x.symbol === card.dataset.sym);
+      const r = bySymLive[card.dataset.sym];
       if (!r) return;
       const pill = card.querySelector(".price-pill");
       if (pill) {
@@ -4979,8 +5169,9 @@
       const ser1d = ivEntry?.bars?.length ? ivEntry.bars : tech.series_1d;
       if (Array.isArray(ser1d) && ser1d.length >= 2) {
         const last = ser1d[ser1d.length - 1];
-        const liveC = Number(tech.facts?.last_close || last.c);
-        const updC = liveC > 0 ? liveC : last.c;
+        const facts = tech.facts || {};
+        const activeP = (facts.ext_price != null && facts.ext_price > 0) ? Number(facts.ext_price) : Number(facts.last_close || last.c);
+        const updC = activeP > 0 ? activeP : last.c;
         const updH = Math.max(last.h, updC);
         const updL = Math.min(last.l, updC);
         const prevC = Number(tech.prev_close_1d) || last.o;
@@ -5024,8 +5215,133 @@
     } catch {}
   }
 
+  // Direct CORS-native 115-symbol real-time institutional quote stream (every 5 seconds, 0 proxies, ~100ms)
+  let tvPollBusy = false;
+  async function pollTradingViewDirect() {
+    if (tvPollBusy || document.hidden || !state.summary) return;
+    tvPollBusy = true;
+    try {
+      const sessLbl = usMarketSessionLabel();
+      const allSyms = new Set(["SPY", ...(state.summary.tickers || []).map((t) => t.symbol)]);
+      for (const s of state.summary.heatmap?.sectors || []) {
+        if (s.etf) allSyms.add(s.etf);
+      }
+      const tvTickers = [];
+      for (const sym of allSyms) {
+        if (TV_EXCHANGE_MAP[sym]) {
+          tvTickers.push(TV_EXCHANGE_MAP[sym]);
+        } else {
+          const clean = sym.replace("-", ".");
+          tvTickers.push(`NASDAQ:${clean}`, `NYSE:${clean}`, `AMEX:${clean}`);
+        }
+      }
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 5000);
+      const res = await fetch("https://scanner.tradingview.com/america/scan", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({
+          symbols: { tickers: tvTickers, query: { types: [] } },
+          columns: [
+            "name", "open", "high", "low", "close", "change", "volume",
+            "premarket_close", "premarket_change", "premarket_time",
+            "postmarket_close", "postmarket_change", "postmarket_time",
+          ],
+        }),
+        signal: ctrl.signal,
+      });
+      clearTimeout(timer);
+      if (!res.ok) return;
+      const json = await res.json();
+      const rows = json?.data || [];
+      const map = {};
+      const isRegOpen = sessLbl === "MARKET OPEN";
+      const regTodayIso = isRegOpen
+        ? new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date())
+        : null;
+
+      for (const item of rows) {
+        const d = item?.d;
+        if (!Array.isArray(d) || d[4] == null) continue;
+        const sym = String(d[0]).replace(".", "-").toUpperCase();
+        const regClose = Number(d[4]);
+        if (!Number.isFinite(regClose) || regClose <= 0) continue;
+        const regChg = Number(d[5] || 0);
+        const regOpen = d[1] != null ? Number(d[1]) : regClose;
+        const regHigh = d[2] != null ? Number(d[2]) : regClose;
+        const regLow = d[3] != null ? Number(d[3]) : regClose;
+        const vol = Math.max(0, Math.round(Number(d[6] || 0)));
+
+        const pmP = d[7], pmChg = d[8], pmTs = Number(d[9] || 0);
+        const ahP = d[10], ahChg = d[11], ahTs = Number(d[12] || 0);
+        let extPrice = null, extChg = null, extLabel = null, extTs = 0;
+
+        if (!isRegOpen) {
+          if (sessLbl === "PRE-MARKET" && pmP != null && pmTs >= ahTs) {
+            extPrice = Number(pmP);
+            extChg = Number(pmChg || 0);
+            extLabel = "Pre-Market";
+            extTs = pmTs;
+          } else if (ahP != null && ahTs >= pmTs) {
+            extPrice = Number(ahP);
+            extChg = Number(ahChg || 0);
+            extLabel = "After-Hours";
+            extTs = ahTs;
+          } else if (pmP != null) {
+            extPrice = Number(pmP);
+            extChg = Number(pmChg || 0);
+            extLabel = "Pre-Market";
+            extTs = pmTs;
+          }
+        }
+
+        // Also append live 5m bucket into cached series_1d if viewing this stock
+        const cached = state.tickerCache[`${state.date}:${sym}`];
+        if (cached?.technical?.series_1d?.length) {
+          const ser1d = cached.technical.series_1d;
+          const liveTickPrice = extPrice != null && extPrice > 0 ? Number(extPrice.toFixed(2)) : Number(regClose.toFixed(2));
+          const tickEpoch = isRegOpen ? Math.floor(Date.now() / 1000) : (extTs || 0);
+          if (tickEpoch > 0) {
+            const bucket5m = Math.floor(tickEpoch / 300) * 300;
+            const last1d = ser1d[ser1d.length - 1];
+            if (bucket5m > Number(last1d.t)) {
+              ser1d.push({ t: bucket5m, o: liveTickPrice, h: liveTickPrice, l: liveTickPrice, c: liveTickPrice, v: 0 });
+            } else if (bucket5m === Number(last1d.t)) {
+              last1d.c = liveTickPrice;
+              if (liveTickPrice > last1d.h) last1d.h = liveTickPrice;
+              if (liveTickPrice < last1d.l) last1d.l = liveTickPrice;
+            }
+          }
+        }
+
+        map[sym] = {
+          close: regClose,
+          open: regOpen,
+          high: regHigh,
+          low: regLow,
+          last_bar: regTodayIso,
+          change_1d_pct: regChg,
+          ext_price: extPrice,
+          ext_change_pct: extChg,
+          ext_label: extLabel,
+          volume: vol,
+          dollar_volume_usd: regClose * vol,
+        };
+      }
+
+      if (Object.keys(map).length) {
+        applyLiveQuotesMap(map);
+        MarketRealtimeDB.saveSnapshot(map);
+      }
+    } catch {} finally {
+      tvPollBusy = false;
+    }
+  }
+
   async function refreshSingleStockRealtime(sym) {
     if (!sym) return;
+    // Trigger instant direct TradingView tick first
+    pollTradingViewDirect();
     try {
       const chartUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1d&interval=5m&includePrePost=true`;
       const raw = await fetchViaCors(chartUrl, 4500);
@@ -5035,68 +5351,40 @@
         const meta = res0?.meta;
         const tsArr = res0?.timestamp || [];
         const q0 = res0?.indicators?.quote?.[0] || {};
-        const lastBarClose = lastValidNum(q0.close);
-        const livePrice = Number(meta?.postMarketPrice || meta?.preMarketPrice || lastBarClose || meta?.regularMarketPrice || 0);
-        if (meta && livePrice > 0) {
-          const prev = Number(meta.chartPreviousClose || meta.previousClose || meta.regularMarketPrice || livePrice);
-          const chgPct = prev > 0 ? ((livePrice / prev) - 1) * 100 : 0;
-          const vol = Number(meta.regularMarketVolume || 0);
-          const cacheKey = `${state.date}:${sym}`;
-          const cached = state.tickerCache[cacheKey];
+        const regPrice = Number(meta?.regularMarketPrice || 0);
+        const prev = Number(meta?.chartPreviousClose || meta?.previousClose || regPrice);
+        const cacheKey = `${state.date}:${sym}`;
+        const cached = state.tickerCache[cacheKey];
 
-          // Build 1D 5-minute intraday series (including Pre-Market & After-Hours)
-          const series1d = [];
-          const seenTs = new Set();
-          let dayOpen = null, dayHigh = livePrice, dayLow = livePrice, lastBarIso = null;
-          for (let i = 0; i < tsArr.length; i++) {
-            const tsSec = Number(tsArr[i]);
-            const cVal = Number(q0.close?.[i]);
-            if (!Number.isFinite(tsSec) || seenTs.has(tsSec) || !Number.isFinite(cVal) || cVal <= 0) continue;
-            seenTs.add(tsSec);
-            const oVal = Number.isFinite(Number(q0.open?.[i])) && Number(q0.open[i]) > 0 ? Number(q0.open[i]) : cVal;
-            const hVal = Number.isFinite(Number(q0.high?.[i])) && Number(q0.high[i]) > 0 ? Number(q0.high[i]) : cVal;
-            const lVal = Number.isFinite(Number(q0.low?.[i])) && Number(q0.low[i]) > 0 ? Number(q0.low[i]) : cVal;
-            const vVal = Number.isFinite(Number(q0.volume?.[i])) ? Math.max(0, Math.round(Number(q0.volume[i]))) : 0;
-            if (dayOpen == null) dayOpen = oVal;
-            if (hVal > dayHigh) dayHigh = hVal;
-            if (lVal < dayLow) dayLow = lVal;
-            lastBarIso = new Date(tsSec * 1000).toISOString().slice(0, 10);
-            series1d.push({
-              t: tsSec,
-              o: Number(oVal.toFixed(2)),
-              h: Number(hVal.toFixed(2)),
-              l: Number(lVal.toFixed(2)),
-              c: Number(cVal.toFixed(2)),
-              v: vVal,
-            });
-          }
-          if (series1d.length) {
-            const last1d = series1d[series1d.length - 1];
-            last1d.c = Number(livePrice.toFixed(2));
-            if (last1d.c > last1d.h) last1d.h = last1d.c;
-            if (last1d.c < last1d.l) last1d.l = last1d.c;
-          }
-          if (cached) {
-            const tech = (cached.technical ||= {});
-            if (series1d.length >= 2) {
-              tech.series_1d = series1d;
-              tech.prev_close_1d = Number(prev.toFixed(2));
-            }
-          }
-
-          applyLiveQuotesMap({
-            [sym]: {
-              close: livePrice,
-              open: dayOpen || livePrice,
-              high: dayHigh,
-              low: dayLow,
-              last_bar: lastBarIso,
-              change_1d_pct: chgPct,
-              volume: vol,
-              dollar_volume_usd: livePrice * vol,
-            },
+        // Populate 1D 5-minute intraday series (never overwrite Regular close with After-Hours print!)
+        const series1d = [];
+        const seenTs = new Set();
+        for (let i = 0; i < tsArr.length; i++) {
+          const tsSec = Number(tsArr[i]);
+          const cVal = Number(q0.close?.[i]);
+          if (!Number.isFinite(tsSec) || seenTs.has(tsSec) || !Number.isFinite(cVal) || cVal <= 0) continue;
+          seenTs.add(tsSec);
+          const oVal = Number.isFinite(Number(q0.open?.[i])) && Number(q0.open[i]) > 0 ? Number(q0.open[i]) : cVal;
+          const hVal = Number.isFinite(Number(q0.high?.[i])) && Number(q0.high[i]) > 0 ? Number(q0.high[i]) : cVal;
+          const lVal = Number.isFinite(Number(q0.low?.[i])) && Number(q0.low[i]) > 0 ? Number(q0.low[i]) : cVal;
+          const vVal = Number.isFinite(Number(q0.volume?.[i])) ? Math.max(0, Math.round(Number(q0.volume[i]))) : 0;
+          series1d.push({
+            t: tsSec,
+            o: Number(oVal.toFixed(2)),
+            h: Number(hVal.toFixed(2)),
+            l: Number(lVal.toFixed(2)),
+            c: Number(cVal.toFixed(2)),
+            v: vVal,
           });
-          if (state.view === "stock" && state.activeTicker === sym) {
+        }
+        if (cached && series1d.length >= 2) {
+          const tech = (cached.technical ||= {});
+          const had1d = Array.isArray(tech.series_1d) && tech.series_1d.length >= 2;
+          tech.series_1d = series1d;
+          if (prev > 0) tech.prev_close_1d = Number(prev.toFixed(2));
+          if (!had1d && state.view === "stock" && state.activeTicker === sym && $("tvChart")) {
+            mountInteractiveChart(cached);
+          } else if (state.view === "stock" && state.activeTicker === sym) {
             streamLiveChartTick(sym);
           }
         }
@@ -5146,66 +5434,33 @@
     } catch {}
   }
 
-  let rtCursor = 0;
-  async function pollRealtimeTick() {
+  async function pollBackgroundFeeds() {
     if (document.hidden || !state.summary) return;
-    // 0. Switch to a newer daily report if one was published since the app opened
     await checkForNewerReport();
-    // 1. Check cloud-synced live_quotes.json & breaking_news.json
-    try {
-      const lq = await fetchJson("data/live_quotes.json");
-      if (lq && lq.quotes) applyLiveQuotesMap(lq.quotes);
-    } catch {}
     try {
       await loadBreaking();
-    } catch {}
-
-    // 2. If user is viewing a specific stock, refresh that stock directly
-    if (state.view === "stock" && state.activeTicker) {
-      await refreshSingleStockRealtime(state.activeTicker);
-    }
-
-    // 3. Batch-refresh 20 watchlist tickers + SPY directly from Yahoo Finance Spark (with Pre-Market & After-Hours enabled)
-    try {
-      const allSyms = (state.summary.tickers || []).map((t) => t.symbol);
-      if (!allSyms.length) return;
-      const chunk = allSyms.slice(rtCursor, rtCursor + 18);
-      rtCursor = (rtCursor + 18) >= allSyms.length ? 0 : (rtCursor + 18);
-      const batchSyms = [...new Set(["SPY", ...chunk])].join(",");
-      const sparkUrl = `https://query1.finance.yahoo.com/v7/finance/spark?symbols=${encodeURIComponent(batchSyms)}&range=1d&interval=5m&includePrePost=true`;
-      const raw = await fetchViaCors(sparkUrl, 5000);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
-      const results = parsed?.spark?.result || [];
-      const map = {};
-      for (const r of results) {
-        const sym = r?.symbol;
-        const resp = r?.response?.[0];
-        const meta = resp?.meta;
-        const lastBar = lastValidNum(resp?.indicators?.quote?.[0]?.close);
-        const price = Number(meta?.postMarketPrice || meta?.preMarketPrice || lastBar || meta?.regularMarketPrice || 0);
-        if (sym && meta && price > 0) {
-          const prev = Number(meta.chartPreviousClose || meta.previousClose || meta.regularMarketPrice || price);
-          const chg = prev > 0 ? ((price / prev) - 1) * 100 : 0;
-          map[sym] = { close: price, change_1d_pct: chg };
-        }
-      }
-      if (Object.keys(map).length) applyLiveQuotesMap(map);
     } catch {}
   }
 
   function initRealtimeEngine() {
-    setTimeout(pollRealtimeTick, 1800);
-    setInterval(pollRealtimeTick, 25000);
+    // 1. Immediate real-time 115-symbol institutional tick stream every 5 seconds
+    pollTradingViewDirect();
+    setInterval(pollTradingViewDirect, 5000);
+    // 2. Background breaking-news & daily-report rollover check every 30 seconds
+    setInterval(pollBackgroundFeeds, 30000);
+
     document.addEventListener("visibilitychange", async () => {
       if (!document.hidden) {
+        pollTradingViewDirect();
         await checkForNewerReport(true);
-        pollRealtimeTick();
+        pollBackgroundFeeds();
       }
     });
-    // iOS restores PWAs from the back-forward cache without re-running scripts; force a fresh check on resume
     window.addEventListener("pageshow", (ev) => {
-      if (ev.persisted) checkForNewerReport(true).then(() => pollRealtimeTick());
+      if (ev.persisted) {
+        pollTradingViewDirect();
+        checkForNewerReport(true);
+      }
     });
   }
 
@@ -5216,7 +5471,11 @@
     wireEvents();
     initAutoInstallPrompt();
     try {
-      state.index = await fetchJson("data/index.json");
+      const [idx, idbSnap] = await Promise.all([
+        fetchJson("data/index.json"),
+        MarketRealtimeDB.loadSnapshot(),
+      ]);
+      state.index = idx;
       const dates = state.index.dates || [];
       $("dateSelect").innerHTML = dates.map((d) =>
         `<option value="${esc(d.date)}">${esc(d.date)}</option>`
@@ -5231,6 +5490,10 @@
       await loadBreaking();
       await loadAuthorities();
       await loadDate(targetDate, wantedTicker);
+      // Hydrate recent IndexedDB real-time snapshot (< 10 min old) in < 5ms while live 5s stream fires immediately
+      if (idbSnap?.quotes && (Date.now() - (idbSnap.ts || 0)) < 600000) {
+        applyLiveQuotesMap(idbSnap.quotes);
+      }
       initRealtimeEngine();
     } catch (err) {
       $("loadingState").classList.add("hidden");
@@ -5242,11 +5505,9 @@
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
       navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then((reg) => {
-        // Pull the newest app version whenever the user comes back to the app
         document.addEventListener("visibilitychange", () => { if (!document.hidden) reg.update().catch(() => {}); });
       }).catch(() => {});
     });
-    // When a new version takes over, reload once so screens never stay on the old build
     let swReloaded = false;
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       if (swReloaded) return;
