@@ -1,8 +1,328 @@
 {
-  "updated_at": "2026-11-25T13:43:16+00:00",
-  "min_importance": 99.0,
+  "updated_at": "2026-11-25T15:36:03+00:00",
+  "min_importance": 42.0,
   "max_age_hours": 6.0,
   "items": [
+    {
+      "key": "shock_NBIS_2026-11-25_reg_drop",
+      "symbol": "NBIS",
+      "name": "Nebius Group",
+      "title": "Nebius Group (NBIS) drops -10.34% to $78.29",
+      "url": "https://finance.yahoo.com/quote/NBIS",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T15:36:03+00:00",
+      "importance": 93.8,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "shock_LRCX_2026-11-25_reg_drop",
+      "symbol": "LRCX",
+      "name": "Lam Research",
+      "title": "Lam Research (LRCX) drops -9.68% to $177.18",
+      "url": "https://finance.yahoo.com/quote/LRCX",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T15:36:03+00:00",
+      "importance": 92.2,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "shock_MU_2026-11-25_reg_drop",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "Micron Technology (MU) drops -9.45% to $570.30",
+      "url": "https://finance.yahoo.com/quote/MU",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T15:36:03+00:00",
+      "importance": 91.6,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "shock_CRWV_2026-11-25_reg_drop",
+      "symbol": "CRWV",
+      "name": "CoreWeave",
+      "title": "CoreWeave (CRWV) drops -8.45% to $39.01",
+      "url": "https://finance.yahoo.com/quote/CRWV",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-25T15:36:03+00:00",
+      "importance": 89.1,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "a44506a8a4a5abb5",
+      "symbol": "FTC",
+      "name": "FTC",
+      "title": "FTC Finalizes Order Resolving Antitrust Concerns Stemming from Beretta, Ruger Stock Purchase Deal",
+      "url": "https://www.ftc.gov/news-events/news/press-releases/2026/11/ftc-finalizes-order-resolving-antitrust-concerns-stemming-beretta-ruger-stock-purchase-deal",
+      "source": "FTC Official",
+      "source_tier": 1,
+      "published": "2026-11-25T12:00:00+00:00",
+      "importance": 88.0,
+      "categories": [
+        "official_authority"
+      ],
+      "age_hours": 3.6,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "82d4976cd832125d",
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "title": "‘Big Short’ investor snubs Tesla stock, echoes Buffett on $1,000 play",
+      "url": "https://www.thestreet.com/investing/steve-eisman-snubs-tesla-stock-buffett-1000-sp500",
+      "source": "TheStreet",
+      "source_tier": 2,
+      "published": "2026-11-25T15:07:00+00:00",
+      "importance": 100.0,
+      "categories": [
+        "earnings_guidance",
+        "analyst",
+        "ownership"
+      ],
+      "age_hours": 0.48,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "bec7d8d1b7c4bb3a",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell Revenue Soars 103%, Beating Wall Street Earnings Estimates",
+      "url": "https://finance.yahoo.com/technology/articles/dell-revenue-soars-103-beating-122032769.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T12:20:32+00:00",
+      "importance": 97.8,
+      "categories": [
+        "earnings_guidance",
+        "analyst",
+        "market_move"
+      ],
+      "age_hours": 3.26,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "8da347b9f6309911",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell stock tanks after blowout earnings. Wall Street just isn't impressed.",
+      "url": "https://finance.yahoo.com/markets/stocks/article/dell-stock-tanks-after-blowout-earnings-wall-street-just-isnt-impressed-103036530.html",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T10:30:36+00:00",
+      "importance": 94.9,
+      "categories": [
+        "earnings_guidance",
+        "analyst"
+      ],
+      "age_hours": 5.09,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "835976fa929092ad",
+      "symbol": "ARM",
+      "name": "Arm Holdings",
+      "title": "ARM Holdings near-term technical outlook: bearish setup with key levels to watch",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/arm-holdings-near-term-technical-130314923.html",
+      "source": "Investing.com",
+      "source_tier": 2,
+      "published": "2026-11-25T13:03:14+00:00",
+      "importance": 94.8,
+      "categories": [
+        "earnings_guidance",
+        "market_move"
+      ],
+      "age_hours": 2.55,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "e99b27786408bdae",
+      "symbol": "MS",
+      "name": "Morgan Stanley",
+      "title": "Ambarella downgraded by BofA, Morgan Stanley as memory squeeze hits demand",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/ambarella-downgraded-bofa-morgan-stanley-145119979.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T14:51:19+00:00",
+      "importance": 86.9,
+      "categories": [
+        "analyst",
+        "contract_partnership"
+      ],
+      "age_hours": 0.75,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "ef5546b8347245f7",
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "title": "Tesla Merger Could Fast-Track SpaceX Into S&P 500, JPMorgan Says",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/tesla-merger-could-fast-track-120611913.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T12:06:11+00:00",
+      "importance": 85.0,
+      "categories": [
+        "m_and_a",
+        "analyst"
+      ],
+      "age_hours": 3.5,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "dc3289a1fd8dc25c",
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "title": "Tesla and SpaceX $3.5 Trillion Merger Talks Take a Major Step Forward",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/tesla-spacex-3-5-trillion-111122235.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T11:11:22+00:00",
+      "importance": 83.7,
+      "categories": [
+        "m_and_a",
+        "analyst"
+      ],
+      "age_hours": 4.41,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "ebfb31e49fb3aa0f",
+      "symbol": "GOOGL",
+      "name": "Alphabet",
+      "title": "Alphabet, NVIDIA, Microsoft and AWS Lead the AI for Scientific Discovery Market as It Grows to USD 34.78 Billion by 2035",
+      "url": "https://finance.yahoo.com/technology/ai/articles/alphabet-nvidia-microsoft-aws-lead-150000464.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T15:00:00+00:00",
+      "importance": 81.6,
+      "categories": [
+        "analyst",
+        "management"
+      ],
+      "age_hours": 0.6,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "147e7fbfa6e20f34",
+      "symbol": "BA",
+      "name": "Boeing",
+      "title": "Boeing Gets 737, 787 Orders From China, Malaysia",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/boeing-gets-737-787-orders-110311118.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T11:03:11+00:00",
+      "importance": 81.5,
+      "categories": [
+        "m_and_a",
+        "contract_partnership"
+      ],
+      "age_hours": 4.55,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "b21a5e56cc5333ad",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell's $132 Billion AI Backlog Can't Stop a Share Slide",
+      "url": "https://finance.yahoo.com/technology/ai/articles/dells-132-billion-ai-backlog-123018958.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T12:30:18+00:00",
+      "importance": 81.4,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 3.1,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "e09022aa50b1da6f",
+      "symbol": "WMT",
+      "name": "Walmart",
+      "title": "Market Chatter: Walmart-Backed PhonePe Resumes IPO Process; Seeks Up to $15 Billion in Valuation",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/market-chatter-walmart-backed-phonepe-121130205.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T12:11:30+00:00",
+      "importance": 81.0,
+      "categories": [
+        "analyst",
+        "capital_markets"
+      ],
+      "age_hours": 3.41,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "41f1d11cc39d0aea",
+      "symbol": "CRWV",
+      "name": "CoreWeave",
+      "title": "Data Center Americas 2027 Announces Industry Leaders from AWS, Google, Microsoft, Oracle, CoreWeave and Applied Digital as Featured Speakers",
+      "url": "https://finance.yahoo.com/technology/ai/articles/data-center-americas-2027-announces-140000391.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T14:00:00+00:00",
+      "importance": 77.1,
+      "categories": [
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 1.6,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "20c8718494b99b66",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "Micron Reveals a Stunning 2,000% Surge in One CEO Expense",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/micron-reveals-stunning-2-000-144558413.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T14:45:58+00:00",
+      "importance": 74.8,
+      "categories": [
+        "market_move",
+        "ownership",
+        "management"
+      ],
+      "age_hours": 0.83,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
+    {
+      "key": "3f0fc633db229501",
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "title": "Microsoft Stock And 2 AI Software Leaders For Productivity Focused Investors",
+      "url": "https://finance.yahoo.com/technology/ai/articles/microsoft-stock-2-ai-software-121419292.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T12:14:19+00:00",
+      "importance": 74.8,
+      "categories": [
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 3.36,
+      "detected_at": "2026-11-25T15:36:03+00:00"
+    },
     {
       "key": "shock_CRWV_2026-11-25_pre-market_drop",
       "symbol": "CRWV",
@@ -680,325 +1000,6 @@
       ],
       "age_hours": 1.37,
       "detected_at": "2026-11-24T22:46:35+00:00"
-    },
-    {
-      "key": "9a9d7d4e76cf319d",
-      "symbol": "DELL",
-      "name": "Dell Technologies",
-      "title": "Dell Technologies Delivers Third Quarter Fiscal 2027 Financial Results",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/dell-technologies-delivers-third-quarter-210500797.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T21:05:00+00:00",
-      "importance": 83.3,
-      "categories": [
-        "earnings_guidance"
-      ],
-      "age_hours": 1.69,
-      "detected_at": "2026-11-24T22:46:35+00:00"
-    },
-    {
-      "key": "shock_ADI_2026-11-24_drop",
-      "symbol": "ADI",
-      "name": "Analog Devices",
-      "title": "Analog Devices (ADI) drops -11.55% to $335.00 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/ADI",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-24T13:23:53+00:00",
-      "importance": 96.0,
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.05,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "shock_MU_2026-11-24_drop",
-      "symbol": "MU",
-      "name": "Micron Technology",
-      "title": "Micron Technology (MU) drops -6.95% to $658.48 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/MU",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-24T13:23:53+00:00",
-      "importance": 85.4,
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.05,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "shock_DELL_2026-11-24_drop",
-      "symbol": "DELL",
-      "name": "Dell Technologies",
-      "title": "Dell Technologies (DELL) drops -6.69% to $312.50 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/DELL",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-24T13:23:53+00:00",
-      "importance": 84.7,
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.05,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "shock_INTC_2026-11-24_drop",
-      "symbol": "INTC",
-      "name": "Intel",
-      "title": "Intel (INTC) drops -6.20% to $55.96 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/INTC",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-24T13:23:53+00:00",
-      "importance": 83.5,
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.05,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "0cf5ae573c8505d4",
-      "symbol": "UBER",
-      "name": "Uber Technologies",
-      "title": "Nuro and Uber launch driverless testing in San Francisco",
-      "url": "https://www.axios.com/2026/11/24/robotaxi-nuro-uber-lucid-testing-san-francisco#utm_source=yahoo_finance&utm_medium=partner&utm_campaign=subs-partner-yahoo-finance-AI?.tsrc=rss",
-      "source": "axios.com",
-      "source_tier": 1,
-      "published": "2026-11-24T13:01:08+00:00",
-      "importance": 67.8,
-      "categories": [
-        "product_tech"
-      ],
-      "age_hours": 0.38,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "0daad81271f00131",
-      "symbol": "ASML",
-      "name": "ASML Holding",
-      "title": "ASML Stock What Changed After Nvidia CEO Return",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/asml-stock-changed-nvidia-ceo-121558672.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T12:15:58+00:00",
-      "importance": 100.0,
-      "categories": [
-        "earnings_guidance",
-        "supply_chain_producers",
-        "contract_partnership"
-      ],
-      "age_hours": 1.13,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "0c760abdb047d9be",
-      "symbol": "CRWD",
-      "name": "CrowdStrike",
-      "title": "CRWD Q3 Earnings Beat Estimates on Strong ARR & Falcon Flex Adoption",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/crwd-q3-earnings-beat-estimates-120100191.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T12:01:00+00:00",
-      "importance": 100.0,
-      "categories": [
-        "earnings_guidance",
-        "analyst"
-      ],
-      "age_hours": 1.38,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "32a28ab2399ff7ed",
-      "symbol": "MSFT",
-      "name": "Microsoft",
-      "title": "Cloud AI Update - Audi Integrates Cutting-Edge AI for In-Car Microsoft Access",
-      "url": "https://finance.yahoo.com/technology/ai/articles/cloud-ai-audi-integrates-cutting-123730181.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T12:37:30+00:00",
-      "importance": 84.7,
-      "categories": [
-        "earnings_guidance"
-      ],
-      "age_hours": 0.77,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "f1665e7748c4d497",
-      "symbol": "CRWD",
-      "name": "CrowdStrike",
-      "title": "Wall Street Stays Bullish on CrowdStrike Despite Zscaler Price Tag",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/wall-street-stays-bullish-crowdstrike-122238753.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T12:22:38+00:00",
-      "importance": 84.3,
-      "categories": [
-        "analyst",
-        "market_move"
-      ],
-      "age_hours": 1.02,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "684470b3e1ba2ae8",
-      "symbol": "ADI",
-      "name": "Analog Devices",
-      "title": "Analog Devices Reports Record Fourth Quarter and Fiscal 2026 Financial Results",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/analog-devices-reports-record-fourth-120100362.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T12:01:00+00:00",
-      "importance": 83.8,
-      "categories": [
-        "earnings_guidance"
-      ],
-      "age_hours": 1.38,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "df3d7819a741549d",
-      "symbol": "APLD",
-      "name": "Applied Digital",
-      "title": "Applied Digital Achieves Initial 25 MW Ready for Service in Harwood, North Dakota, for Hyperscaler, Completes Base-Build Commissioning of First 75 MW",
-      "url": "https://finance.yahoo.com/technology/ai/articles/applied-digital-achieves-initial-25-130000311.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T13:00:00+00:00",
-      "importance": 83.0,
-      "categories": [
-        "contract_partnership",
-        "data_centers_ai",
-        "capex_expansion"
-      ],
-      "age_hours": 0.4,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "8b4c573547bfaa34",
-      "symbol": "META",
-      "name": "Meta Platforms",
-      "title": "Meta's $60 Billion AI Funding Plan Faces Delay Amid Shareholder Lawsuit",
-      "url": "https://finance.yahoo.com/technology/ai/articles/metas-60-billion-ai-funding-121008904.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T12:10:08+00:00",
-      "importance": 81.8,
-      "categories": [
-        "regulatory_legal",
-        "incident"
-      ],
-      "age_hours": 1.23,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "3905649bea0bc458",
-      "symbol": "GS",
-      "name": "Goldman Sachs",
-      "title": "Ryder CEO John Diez to Address Goldman Sachs Industrials and Materials Conference",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/ryder-ceo-john-diez-address-115500617.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T11:55:00+00:00",
-      "importance": 80.4,
-      "categories": [
-        "analyst",
-        "management"
-      ],
-      "age_hours": 1.48,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "6abe06253f5960da",
-      "symbol": "TSM",
-      "name": "Taiwan Semiconductor",
-      "title": "TSMC Weighs $22.6 Billion Texas Chip Plant, Seeks Tax Breaks",
-      "url": "https://finance.yahoo.com/technology/articles/tsmc-weighs-22-6-billion-114656874.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T11:46:56+00:00",
-      "importance": 79.2,
-      "categories": [
-        "supply_chain_producers",
-        "capex_expansion"
-      ],
-      "age_hours": 1.62,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "406e5420808b2c6b",
-      "symbol": "COIN",
-      "name": "Coinbase Global",
-      "title": "Coinbase Global (COIN) Could Be 56% Below Fair Value On Its Crypto Adoption Narrative",
-      "url": "https://finance.yahoo.com/markets/crypto/articles/coinbase-global-coin-could-56-120940064.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T12:09:40+00:00",
-      "importance": 78.6,
-      "categories": [
-        "regulatory_legal",
-        "product_tech"
-      ],
-      "age_hours": 1.24,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "81339acde164c624",
-      "symbol": "TSM",
-      "name": "Taiwan Semiconductor",
-      "title": "TSMC and SK Hynix Stocks Jump After Nvidia Reinstates Jensen Huang as CEO",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/tsmc-sk-hynix-stocks-jump-120300756.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T12:03:00+00:00",
-      "importance": 78.5,
-      "categories": [
-        "supply_chain_producers",
-        "management"
-      ],
-      "age_hours": 1.35,
-      "detected_at": "2026-11-24T13:23:53+00:00"
-    },
-    {
-      "key": "bd1ab32539383ebc",
-      "symbol": "JPM",
-      "name": "JPMorgan Chase",
-      "title": "JPMorgan Chase (JPM) Stock Still Looks Like A Bargain On Its 122% Run",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/jpmorgan-chase-jpm-stock-still-091521471.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T09:15:21+00:00",
-      "importance": 82.1,
-      "categories": [
-        "analyst",
-        "regulatory_legal",
-        "incident"
-      ],
-      "age_hours": 1.82,
-      "detected_at": "2026-11-24T11:04:22+00:00"
-    },
-    {
-      "key": "3164b4cc44a4f1e9",
-      "symbol": "AMD",
-      "name": "Advanced Micro Devices",
-      "title": "What Advanced Micro Devices Holders Got Right Before A 111% Run",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/advanced-micro-devices-holders-got-090947609.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T09:09:47+00:00",
-      "importance": 74.5,
-      "categories": [
-        "data_centers_ai",
-        "capital_markets",
-        "capex_expansion"
-      ],
-      "age_hours": 1.91,
-      "detected_at": "2026-11-24T11:04:22+00:00"
     }
   ]
 }
