@@ -27,14 +27,18 @@
     deferredInstallPrompt: null,
     stockTab: "news",
     chartTab: "interactive",
-    chartRange: "1D",
+    chartRange: "3M",
+    chartInterval: "auto",
     chartFullscreen: false,
     chartOverlays: { sma20: true, sma50: true, sma200: false, sr: true, weekends: false },
     tvChart: null,
     tvCandles: null,
     tvVol: null,
     tvUpdateLegend: null,
+    tvRenderBody: null,
+    tvControls: null,
     tvIsIntraday: false,
+    tvEffInterval: "1D",
     tvBarCount: 0,
     tvResizeObs: null,
   };
@@ -2929,13 +2933,34 @@
       const card = $("stk-chart");
       if (card) card.classList.toggle("is-fullscreen", state.chartFullscreen);
       const ov = state.chartOverlays;
-      const is1M = state.chartRange === "1M";
       const hasAll = Array.isArray(tech.series_all) && tech.series_all.length > 5;
-      const ranges = hasAll ? ["1D", "1M", "3M", "6M", "1Y", "5Y", "ALL"] : ["1D", "1M", "3M", "6M", "1Y"];
-      if (!ranges.includes(state.chartRange)) state.chartRange = "1D";
+      const ranges = hasAll
+        ? ["1D", "5D", "1W", "1M", "3M", "6M", "YTD", "1Y", "3Y", "5Y", "ALL"]
+        : ["1D", "5D", "1W", "1M", "3M", "6M", "YTD", "1Y"];
+      if (!ranges.includes(state.chartRange)) state.chartRange = "3M";
+      const effIv = resolveEffectiveInterval(state.chartRange, state.chartInterval, hasAll);
+      state.tvEffInterval = effIv;
+      const intervals = hasAll
+        ? [
+            { id: "1m", label: "1m" },
+            { id: "5m", label: "5m" },
+            { id: "15m", label: "15m" },
+            { id: "1H", label: "1H" },
+            { id: "1D", label: "1D" },
+            { id: "1W", label: "1W" },
+            { id: "1Mo", label: "1Mo" },
+          ]
+        : [
+            { id: "1m", label: "1m" },
+            { id: "5m", label: "5m" },
+            { id: "15m", label: "15m" },
+            { id: "1H", label: "1H" },
+            { id: "1D", label: "1D" },
+          ];
+      const is1M = !state.chartFullscreen && state.chartRange === "1M" && effIv === "1D";
       const at = tech.all_time_stats || null;
-      const athBanner = (state.chartRange === "ALL" || state.chartRange === "5Y") && at
-        ? `<div class="muted tv-ath-banner" style="font-size:11.5px;margin-bottom:6px">Since ${esc(at.ipo_date)} · ATH <strong>$${fmtNum(at.ath)}</strong> (${esc(at.ath_date)}, <span class="${clsPct(at.pct_from_ath)}">${fmtPct(at.pct_from_ath, 1)}</span>) · ATL <strong>$${fmtNum(at.atl)}</strong></div>`
+      const athBanner = (state.chartRange === "ALL" || state.chartRange === "5Y" || state.chartRange === "3Y") && at
+        ? `<div class="muted tv-ath-banner" style="font-size:11.5px;margin-bottom:5px">Since ${esc(at.ipo_date)} · ATH <strong>$${fmtNum(at.ath)}</strong> (${esc(at.ath_date)}, <span class="${clsPct(at.pct_from_ath)}">${fmtPct(at.pct_from_ath, 1)}</span>) · ATL <strong>$${fmtNum(at.atl)}</strong></div>`
         : "";
       body.innerHTML = `
         <div class="chart-fs-bar">
@@ -2950,17 +2975,29 @@
           </div>
         </div>
         <div class="tv-toolbar-pro">
-          <div class="tv-range-strip" id="rangeBar">
-            ${ranges.map((r) => `<button type="button" class="tv-rbtn ${state.chartRange === r ? "active" : ""}" data-range="${r}">${r}</button>`).join("")}
-            <button type="button" class="tv-rbtn tv-fit-btn" id="resetChartFitBtn" title="Reset zoom" aria-label="Reset zoom">⟲</button>
-            <button type="button" class="tv-rbtn tv-fs-btn ${state.chartFullscreen ? "active" : ""}" id="toggleChartFsBtn" title="${state.chartFullscreen ? "Exit full screen (Esc)" : "Full screen chart"}" aria-label="Toggle full screen">${state.chartFullscreen ? "⤡" : "⛶"}</button>
+          <div class="tv-range-row">
+            <div class="tv-range-strip" id="rangeBar" role="tablist" aria-label="Timeframe range">
+              ${ranges.map((r) => `<button type="button" class="tv-rbtn ${state.chartRange === r && state.chartInterval === "auto" ? "active" : (state.chartRange === r ? "sub-active" : "")}" data-range="${r}">${r}</button>`).join("")}
+            </div>
+            <div class="tv-quick-actions">
+              <button type="button" class="tv-act-btn" id="chartZoomOutTopBtn" title="Zoom out (−)" aria-label="Zoom out">−</button>
+              <button type="button" class="tv-act-btn" id="chartZoomInTopBtn" title="Zoom in (+)" aria-label="Zoom in">+</button>
+              <button type="button" class="tv-act-btn" id="resetChartFitBtn" title="Reset view" aria-label="Reset view">⟲</button>
+              <button type="button" class="tv-act-btn tv-fs-trigger ${state.chartFullscreen ? "active" : ""}" id="toggleChartFsBtn" title="${state.chartFullscreen ? "Exit full screen (Esc)" : "Full screen chart"}" aria-label="Toggle full screen">${state.chartFullscreen ? "⤡" : "⛶"}</button>
+            </div>
           </div>
-          <div class="tv-ind-strip" id="overlayBar">
-            <span class="chart-live-tag"><span class="live-dot"></span>LIVE</span>
-            <button type="button" class="tv-ibtn ${ov.sma20 ? "active" : ""}" data-ov="sma20">MA20</button>
-            <button type="button" class="tv-ibtn ${ov.sma50 ? "active" : ""}" data-ov="sma50">MA50</button>
-            <button type="button" class="tv-ibtn ${ov.sma200 ? "active" : ""}" data-ov="sma200">MA200</button>
-            <button type="button" class="tv-ibtn ${ov.sr ? "active" : ""}" data-ov="sr">S/R</button>
+          <div class="tv-subbar-row">
+            <div class="tv-iv-strip" id="intervalBar" aria-label="Candle interval">
+              <span class="tv-iv-lbl">Candle</span>
+              ${intervals.map((iv) => `<button type="button" class="tv-ivbtn ${effIv === iv.id ? "active" : ""}" data-iv="${iv.id}">${iv.label}</button>`).join("")}
+            </div>
+            <div class="tv-ind-strip" id="overlayBar">
+              <span class="chart-live-tag"><span class="live-dot"></span>LIVE</span>
+              <button type="button" class="tv-ibtn ${ov.sma20 ? "active" : ""}" data-ov="sma20">MA20</button>
+              <button type="button" class="tv-ibtn ${ov.sma50 ? "active" : ""}" data-ov="sma50">MA50</button>
+              <button type="button" class="tv-ibtn ${ov.sma200 ? "active" : ""}" data-ov="sma200">MA200</button>
+              <button type="button" class="tv-ibtn ${ov.sr ? "active" : ""}" data-ov="sr">S/R</button>
+            </div>
           </div>
         </div>
         ${athBanner}
@@ -2969,9 +3006,41 @@
           <div class="tv-chart-box" id="tvChart"></div>
           <div class="tv-day-overlay ${is1M ? "" : "hidden"}" id="tvDayOverlay"></div>
           <div class="tv-day-axis ${is1M ? "" : "hidden"}" id="tvDayAxis"></div>
+        </div>
+        <div class="tv-nav-dock" id="chartNavDock">
+          <div class="tv-dock-scrubber-row">
+            <span class="tv-span-badge" id="chartVisibleSpan">—</span>
+            <input type="range" class="tv-scrubber" id="chartTimeScrubber" min="0" max="1000" value="1000" aria-label="Scroll through historical dates" />
+            <label class="tv-date-jump-lbl" title="Jump to specific date">
+              <span>Date</span>
+              <input type="date" id="chartDateJump" class="tv-date-input" aria-label="Jump to date" />
+            </label>
+          </div>
+          <div class="tv-dock-btns-row">
+            <div class="tv-dock-group">
+              <button type="button" class="tv-dock-btn" id="chartPanLeftBtn" title="Earlier dates">◀ Earlier</button>
+              <button type="button" class="tv-dock-btn" id="chartPanRightBtn" title="Later dates">Later ▶</button>
+              <button type="button" class="tv-dock-btn" id="chartJumpLatestBtn" title="Jump to latest real-time candle">Latest ▶|</button>
+            </div>
+            <div class="tv-dock-group">
+              <button type="button" class="tv-dock-btn" id="chartZoomOutBtn" title="Zoom out">− Zoom Out</button>
+              <button type="button" class="tv-dock-btn" id="chartZoomInBtn" title="Zoom in">+ Zoom In</button>
+              <button type="button" class="tv-dock-btn" id="chartResetDockBtn" title="Fit range">⟲ Fit</button>
+            </div>
+          </div>
         </div>`;
       $("rangeBar").querySelectorAll("button[data-range]").forEach((b) => {
-        b.onclick = () => { state.chartRange = b.dataset.range; renderChartBody(); };
+        b.onclick = () => {
+          state.chartRange = b.dataset.range;
+          state.chartInterval = "auto";
+          renderChartBody();
+        };
+      });
+      $("intervalBar").querySelectorAll("button[data-iv]").forEach((b) => {
+        b.onclick = () => {
+          state.chartInterval = b.dataset.iv;
+          renderChartBody();
+        };
       });
       $("overlayBar").querySelectorAll("button[data-ov]").forEach((b) => {
         b.onclick = () => { state.chartOverlays[b.dataset.ov] = !state.chartOverlays[b.dataset.ov]; renderChartBody(); };
@@ -2984,8 +3053,14 @@
       if (exitFsTopBtn) {
         exitFsTopBtn.onclick = () => setChartFullscreen(false);
       }
+      // Auto-scroll active range button into center of strip on narrow screens
+      const actR = $("rangeBar")?.querySelector(".tv-rbtn.active, .tv-rbtn.sub-active");
+      if (actR?.scrollIntoView) {
+        try { actR.scrollIntoView({ inline: "center", block: "nearest", behavior: "instant" }); } catch {}
+      }
       mountInteractiveChart(t);
     };
+    state.tvRenderBody = renderChartBody;
 
     if (hasSeries) renderChartBody();
 
@@ -3108,6 +3183,15 @@
   }
 
   // ---- INTERACTIVE CANDLESTICK CHART (TradingView Lightweight Charts) ----
+  function resolveEffectiveInterval(range, manualIv, hasAll = true) {
+    if (manualIv && manualIv !== "auto") return manualIv;
+    if (range === "1D") return "5m";
+    if (range === "5D") return "15m";
+    if (range === "3Y" || range === "5Y") return hasAll ? "1W" : "1D";
+    if (range === "ALL") return hasAll ? "1W" : "1D";
+    return "1D";
+  }
+
   function setChartFullscreen(on) {
     const next = Boolean(on);
     const prev = state.chartFullscreen;
@@ -3125,47 +3209,120 @@
       fsBtn.textContent = next ? "⤡" : "⛶";
       fsBtn.title = next ? "Exit full screen (Esc)" : "Full screen chart";
     }
-    // Re-render chart body when toggling full-screen so adaptive bar density and exact flex height are recalculated cleanly
-    const cached = state.activeTicker ? state.tickerCache[`${state.date}:${state.activeTicker}`] : null;
-    if (cached && $("tvChart")) {
+    if (state.tvRenderBody && $("chartBody")) {
       requestAnimationFrame(() => {
-        if ($("tvChart")) mountInteractiveChart(cached);
+        if ($("chartBody")) state.tvRenderBody();
       });
     }
   }
 
-  function downsampleOhlcvBars(bars, maxBars) {
-    if (!Array.isArray(bars) || bars.length <= maxBars || maxBars < 20) return bars;
-    const step = Math.ceil(bars.length / maxBars);
-    const out = [];
-    for (let i = 0; i < bars.length; i += step) {
-      const chunk = bars.slice(i, Math.min(bars.length, i + step));
-      if (!chunk.length) continue;
-      const first = chunk[0];
-      const last = chunk[chunk.length - 1];
-      let high = first.h;
-      let low = first.l;
-      let volSum = 0;
-      for (const b of chunk) {
-        if (b.h > high) high = b.h;
-        if (b.l < low) low = b.l;
-        volSum += Number(b.v || 0);
+  function withRollingSma(bars) {
+    if (!Array.isArray(bars) || !bars.length) return [];
+    let sum20 = 0, sum50 = 0, sum200 = 0;
+    return bars.map((d, i) => {
+      const c = Number(d.c || 0);
+      sum20 += c;
+      sum50 += c;
+      sum200 += c;
+      if (i >= 20) sum20 -= Number(bars[i - 20].c || 0);
+      if (i >= 50) sum50 -= Number(bars[i - 50].c || 0);
+      if (i >= 200) sum200 -= Number(bars[i - 200].c || 0);
+      const s20 = d.s20 != null ? d.s20 : Number((sum20 / Math.min(20, i + 1)).toFixed(2));
+      const s50 = d.s50 != null ? d.s50 : (i >= 9 ? Number((sum50 / Math.min(50, i + 1)).toFixed(2)) : null);
+      const s200 = d.s200 != null ? d.s200 : (i >= 39 ? Number((sum200 / Math.min(200, i + 1)).toFixed(2)) : null);
+      const prevC = d.prevC != null ? d.prevC : (i > 0 ? bars[i - 1].c : d.o);
+      const chg1d = prevC ? ((c - prevC) / prevC) * 100 : 0;
+      return { ...d, s20, s50, s200, prevC, chg1d };
+    });
+  }
+
+  function aggregateMonthlyBars(bars) {
+    if (!Array.isArray(bars) || !bars.length) return [];
+    const byMonth = new Map();
+    for (const b of bars) {
+      const iso = typeof b.t === "string" ? b.t : new Date(Number(b.t) * 1000).toISOString().slice(0, 10);
+      const ym = iso.slice(0, 7);
+      const cur = byMonth.get(ym);
+      if (!cur) {
+        byMonth.set(ym, {
+          t: iso,
+          o: b.o,
+          h: b.h,
+          l: b.l,
+          c: b.c,
+          v: Number(b.v || 0),
+        });
+      } else {
+        cur.t = iso;
+        if (b.h > cur.h) cur.h = b.h;
+        if (b.l < cur.l) cur.l = b.l;
+        cur.c = b.c;
+        cur.v += Number(b.v || 0);
       }
-      const prevC = out.length > 0 ? out[out.length - 1].c : first.o;
-      const chg1d = prevC ? ((last.c - prevC) / prevC) * 100 : 0;
-      out.push({
-        ...last,
-        t: last.t,
-        o: first.o,
-        h: high,
-        l: low,
-        c: last.c,
-        v: volSum,
-        prevC,
-        chg1d,
-      });
     }
-    return out;
+    return withRollingSma([...byMonth.values()]);
+  }
+
+  const _ivFetchBusy = {};
+  async function fetchLiveIntradaySeries(t, ivKey) {
+    const sym = t?.symbol;
+    if (!sym) return;
+    const tech = (t.technical ||= {});
+    const cache = (tech._ivCache ||= {});
+    const busyKey = `${sym}:${ivKey}`;
+    if (_ivFetchBusy[busyKey]) return;
+    if (cache[ivKey] && (Date.now() - (cache[ivKey].ts || 0)) < 45000) return;
+
+    const specMap = {
+      "1m": { range: "5d", interval: "1m" },
+      "5m": { range: "5d", interval: "5m" },
+      "15m": { range: "1mo", interval: "15m" },
+      "1H": { range: "6mo", interval: "60m" },
+    };
+    const spec = specMap[ivKey];
+    if (!spec) return;
+
+    _ivFetchBusy[busyKey] = true;
+    try {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=${spec.range}&interval=${spec.interval}&includePrePost=true`;
+      const raw = await fetchViaCors(url, 5500);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      const res0 = parsed?.chart?.result?.[0];
+      const tsArr = res0?.timestamp || [];
+      const q0 = res0?.indicators?.quote?.[0] || {};
+      const meta = res0?.meta || {};
+      const prevClose = Number(meta.chartPreviousClose || meta.previousClose || tech.prev_close_1d || 0);
+      const seen = new Set();
+      const bars = [];
+      for (let i = 0; i < tsArr.length; i++) {
+        const tsSec = Number(tsArr[i]);
+        const c = Number(q0.close?.[i]);
+        if (!Number.isFinite(tsSec) || seen.has(tsSec) || !Number.isFinite(c) || c <= 0) continue;
+        seen.add(tsSec);
+        const o = Number.isFinite(Number(q0.open?.[i])) && Number(q0.open[i]) > 0 ? Number(q0.open[i]) : c;
+        const h = Number.isFinite(Number(q0.high?.[i])) && Number(q0.high[i]) > 0 ? Number(q0.high[i]) : c;
+        const l = Number.isFinite(Number(q0.low?.[i])) && Number(q0.low[i]) > 0 ? Number(q0.low[i]) : c;
+        const v = Number.isFinite(Number(q0.volume?.[i])) ? Math.max(0, Math.round(Number(q0.volume[i]))) : 0;
+        bars.push({
+          t: tsSec,
+          o: Number(o.toFixed(2)),
+          h: Number(h.toFixed(2)),
+          l: Number(l.toFixed(2)),
+          c: Number(c.toFixed(2)),
+          v,
+        });
+      }
+      if (bars.length >= 2) {
+        bars.sort((a, b) => a.t - b.t);
+        cache[ivKey] = { ts: Date.now(), bars, prevClose };
+        if (state.view === "stock" && state.activeTicker === sym && state.tvEffInterval === ivKey && $("tvChart")) {
+          mountInteractiveChart(t);
+        }
+      }
+    } catch {} finally {
+      _ivFetchBusy[busyKey] = false;
+    }
   }
 
   function destroyInteractiveChart() {
@@ -3174,6 +3331,7 @@
     state.tvCandles = null;
     state.tvVol = null;
     state.tvUpdateLegend = null;
+    state.tvControls = null;
   }
 
   function formatEtIntradayTime(tsSec, withDate = false) {
@@ -3200,6 +3358,15 @@
     }
   }
 
+  function barToIsoDate(barT) {
+    if (typeof barT === "string") return barT.slice(0, 10);
+    try {
+      return new Date(Number(barT) * 1000).toISOString().slice(0, 10);
+    } catch {
+      return "";
+    }
+  }
+
   function mountInteractiveChart(t) {
     const box = $("tvChart");
     if (!box) return;
@@ -3211,64 +3378,80 @@
     destroyInteractiveChart();
     box.innerHTML = "";
 
-    const is1D = state.chartRange === "1D";
-    const has1D = Array.isArray(t.technical?.series_1d) && t.technical.series_1d.length >= 2;
-    const useIntraday = is1D && has1D;
-    state.tvIsIntraday = useIntraday;
+    const tech = t.technical || {};
+    const hasAll = Array.isArray(tech.series_all) && tech.series_all.length > 5;
+    const effIv = resolveEffectiveInterval(state.chartRange, state.chartInterval, hasAll);
+    state.tvEffInterval = effIv;
+    const isIntradayIv = effIv === "1m" || effIv === "5m" || effIv === "15m" || effIv === "1H";
 
-    const isLongRange = state.chartRange === "5Y" || state.chartRange === "ALL";
     let data = [];
     let basePrevC = null;
+    let useIntraday = false;
 
-    if (useIntraday) {
-      const seenTs = new Set();
-      const clean1d = [];
-      for (const b of t.technical.series_1d) {
-        const tsNum = Number(b.t);
-        if (!Number.isFinite(tsNum) || seenTs.has(tsNum) || !b.c || b.c <= 0) continue;
-        seenTs.add(tsNum);
-        clean1d.push({ ...b, t: tsNum });
+    if (isIntradayIv) {
+      const ivEntry = tech._ivCache?.[effIv];
+      const fallback1d = (effIv === "5m" || effIv === "1m" || effIv === "15m") && Array.isArray(tech.series_1d) && tech.series_1d.length >= 2
+        ? tech.series_1d
+        : null;
+      const rawIntra = ivEntry?.bars?.length >= 2 ? ivEntry.bars : fallback1d;
+      // Kick off background fetch for multi-day intraday bars if not yet cached
+      if (!ivEntry?.bars?.length) {
+        fetchLiveIntradaySeries(t, effIv);
       }
-      clean1d.sort((a, b) => a.t - b.t);
-      const dailySer = t.technical?.series || [];
-      basePrevC = Number(t.technical?.prev_close_1d) || (dailySer.length >= 2 ? dailySer[dailySer.length - 2].c : (clean1d[0]?.o || clean1d[0]?.c || 0));
-      // Compute rolling 20-bar (100m) and 50-bar intraday moving averages so MA20/MA50 work in 1D mode
-      data = clean1d.map((d, i) => {
-        const slice20 = clean1d.slice(Math.max(0, i - 19), i + 1);
-        const slice50 = clean1d.slice(Math.max(0, i - 49), i + 1);
-        const s20 = slice20.reduce((acc, x) => acc + x.c, 0) / slice20.length;
-        const s50 = slice50.length >= 10 ? slice50.reduce((acc, x) => acc + x.c, 0) / slice50.length : null;
-        const prevC = basePrevC || (i > 0 ? clean1d[i - 1].c : d.o);
-        const chg1d = prevC ? ((d.c - prevC) / prevC) * 100 : 0;
-        return { ...d, s20: Number(s20.toFixed(2)), s50: s50 ? Number(s50.toFixed(2)) : null, prevC, chg1d, isIntraday: true };
-      });
-    } else {
-      const rawAll = isLongRange && Array.isArray(t.technical?.series_all) && t.technical.series_all.length
-        ? t.technical.series_all
-        : (t.technical?.series || []);
-      if (!rawAll.length) { box.innerHTML = `<div class="muted">No price history available.</div>`; return; }
-
-      // Precompute exact Close-to-Previous-Close % change on every bar
-      const all = rawAll.map((d, i) => {
-        const prevC = i > 0 ? rawAll[i - 1].c : d.o;
-        const chg1d = prevC ? ((d.c - prevC) / prevC) * 100 : 0;
-        return { ...d, prevC, chg1d, isIntraday: false };
-      });
-
-      const n = state.chartRange === "ALL"
-        ? all.length
-        : ({ "1D": 22, "1M": 22, "3M": 66, "6M": 132, "1Y": 260, "5Y": 260 }[state.chartRange] || 132);
-      const sliced = all.slice(-n);
-      // Adapt bar density to mobile/desktop viewport width so ALL / 5Y / 1Y graphs always fit 100% edge-to-edge on iOS & Android
-      const availPlotW = Math.max(240, (box.clientWidth || window.innerWidth || 360) - 56);
-      const maxReadableBars = state.chartRange === "1M"
-        ? 30
-        : Math.max(95, Math.min(340, Math.floor(availPlotW / 1.85)));
-      data = sliced.length > maxReadableBars ? downsampleOhlcvBars(sliced, maxReadableBars) : sliced;
+      if (rawIntra && rawIntra.length >= 2) {
+        useIntraday = true;
+        const seenTs = new Set();
+        const clean = [];
+        for (const b of rawIntra) {
+          const tsNum = Number(b.t);
+          if (!Number.isFinite(tsNum) || seenTs.has(tsNum) || !b.c || b.c <= 0) continue;
+          seenTs.add(tsNum);
+          clean.push({ ...b, t: tsNum });
+        }
+        clean.sort((a, b) => a.t - b.t);
+        const dailySer = tech.series || [];
+        basePrevC = Number(ivEntry?.prevClose || tech.prev_close_1d) || (dailySer.length >= 2 ? dailySer[dailySer.length - 2].c : (clean[0]?.o || clean[0]?.c || 0));
+        data = withRollingSma(clean).map((d, i) => {
+          const prevC = state.chartRange === "1D" && basePrevC ? basePrevC : (i > 0 ? clean[i - 1].c : d.o);
+          const chg1d = prevC ? ((d.c - prevC) / prevC) * 100 : 0;
+          return { ...d, prevC, chg1d, isIntraday: true };
+        });
+      }
     }
 
+    if (!data.length) {
+      // Build full-history daily, weekly, or monthly series (never truncated so user can pan/zoom across all dates!)
+      useIntraday = false;
+      const dailyRaw = Array.isArray(tech.series) ? tech.series : [];
+      const weeklyRaw = Array.isArray(tech.series_all) ? tech.series_all : [];
+      let rawFull = [];
+      if (effIv === "1Mo" && weeklyRaw.length) {
+        rawFull = aggregateMonthlyBars(weeklyRaw);
+      } else if (effIv === "1W" && weeklyRaw.length) {
+        rawFull = withRollingSma(weeklyRaw);
+      } else if (dailyRaw.length && weeklyRaw.length) {
+        // Prepend historical bars older than dailyRaw[0] so scrolling left on 1D candles seamlessly reaches IPO!
+        const firstDailyIso = String(dailyRaw[0].t || "");
+        const older = weeklyRaw.filter((b) => String(b.t || "") < firstDailyIso);
+        rawFull = withRollingSma([...older, ...dailyRaw]);
+      } else {
+        rawFull = withRollingSma(dailyRaw.length ? dailyRaw : weeklyRaw);
+      }
+      // Deduplicate and sort ascending by YYYY-MM-DD
+      const byIso = new Map();
+      for (const b of rawFull) {
+        if (b && b.t && b.c > 0) byIso.set(String(b.t).slice(0, 10), { ...b, t: String(b.t).slice(0, 10), isIntraday: false });
+      }
+      data = [...byIso.values()].sort((a, b) => (a.t < b.t ? -1 : a.t > b.t ? 1 : 0));
+      if (!data.length) {
+        box.innerHTML = `<div class="muted">No price history available.</div>`;
+        return;
+      }
+    }
+
+    state.tvIsIntraday = useIntraday;
     state.tvBarCount = data.length;
-    const is1M = state.chartRange === "1M";
+    const is1M = !state.chartFullscreen && state.chartRange === "1M" && effIv === "1D";
 
     const dark = document.documentElement.dataset.theme !== "light";
     const css = getComputedStyle(document.documentElement);
@@ -3307,32 +3490,42 @@
         horzLines: { color: gridCol, visible: true },
       },
       crosshair: { mode: LC.CrosshairMode.Normal },
-      rightPriceScale: { borderColor: gridCol, scaleMargins: { top: 0.08, bottom: 0.23 }, autoScale: true },
+      kineticScroll: { touch: true, mouse: true },
+      rightPriceScale: { borderColor: gridCol, scaleMargins: { top: 0.08, bottom: 0.22 }, autoScale: true },
       timeScale: {
         borderColor: gridCol,
         visible: !is1M,
         timeVisible: useIntraday,
         secondsVisible: false,
-        rightOffset: 0,
-        minBarSpacing: 0.04,
+        rightOffset: 2,
+        minBarSpacing: 0.03,
         fixLeftEdge: true,
-        fixRightEdge: true,
+        fixRightEdge: false,
         tickMarkFormatter: (time) => {
           if (typeof time === "number") {
+            if (effIv === "15m" || effIv === "1H" || state.chartRange === "5D") {
+              try {
+                return new Date(time * 1000).toLocaleString("en-US", {
+                  timeZone: "America/New_York",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                });
+              } catch {}
+            }
             return formatEtIntradayTime(time, false);
           }
           const s = typeof time === "string" ? time : `${time.year}-${String(time.month).padStart(2, "0")}-${String(time.day).padStart(2, "0")}`;
           const [y, m, d] = s.split("-").map(Number);
-          if (state.chartRange === "ALL") {
-            return String(y);
+          if (effIv === "1Mo" || (state.chartRange === "ALL" && m === 1)) {
+            return m === 1 ? String(y) : `${MONTHS[(m || 1) - 1]} '${String(y).slice(2)}`;
           }
-          if (state.chartRange === "5Y") {
+          if (d <= 7 && (effIv === "1W" || state.chartRange === "5Y" || state.chartRange === "3Y")) {
             return `${MONTHS[(m || 1) - 1]} '${String(y).slice(2)}`;
           }
-          if (state.chartRange === "1M" || state.chartRange === "3M" || state.chartRange === "1D") {
-            return `${MONTHS[(m || 1) - 1]} ${d}`;
-          }
-          return d <= 7 ? `${MONTHS[(m || 1) - 1]} '${String(y).slice(2)}` : `${MONTHS[(m || 1) - 1]} ${d}`;
+          return `${MONTHS[(m || 1) - 1]} ${d} '${String(y).slice(2)}`;
         },
       },
       handleScroll: {
@@ -3342,14 +3535,14 @@
         vertTouchDrag: false,
       },
       handleScale: {
-        axisPressedMouseMove: true,
+        axisPressedMouseMove: { time: true, price: true },
+        axisDoubleClickReset: { time: true, price: true },
         mouseWheel: true,
         pinch: true,
       },
     });
     state.tvChart = chart;
 
-    const denseBars = timelinePoints.length > 110;
     const candles = chart.addCandlestickSeries({
       upColor: upCol,
       downColor: dnCol,
@@ -3357,10 +3550,10 @@
       borderDownColor: dnCol,
       wickUpColor: upCol,
       wickDownColor: dnCol,
-      borderVisible: !denseBars,
+      borderVisible: true,
       wickVisible: true,
     });
-    candles.setData(timelinePoints.map((d) => (d.isClosed ? { time: d.t } : { time: d.t, open: d.o, high: d.h, low: d.l, close: d.c })));
+    candles.setData(timelinePoints.map((d) => ({ time: d.t, open: d.o, high: d.h, low: d.l, close: d.c })));
     state.tvCandles = candles;
 
     // Volume histogram at bottom — hide right-axis value badge so volume never collides with dollar prices
@@ -3371,10 +3564,10 @@
       lastValueVisible: false,
     });
     chart.priceScale("vol").applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
-    vol.setData(timelinePoints.map((d) => (d.isClosed ? { time: d.t } : { time: d.t, value: d.v, color: d.c >= d.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)" })));
+    vol.setData(timelinePoints.map((d) => ({ time: d.t, value: d.v, color: d.c >= d.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)" })));
     state.tvVol = vol;
 
-    if (useIntraday && basePrevC && basePrevC > 0) {
+    if (useIntraday && state.chartRange === "1D" && basePrevC && basePrevC > 0) {
       candles.createPriceLine({
         price: basePrevC,
         color: "rgba(148, 163, 184, 0.55)",
@@ -3391,21 +3584,20 @@
     ];
     for (const [key, field, color] of lineDefs) {
       if (!ov[key]) continue;
-      const pts = data.filter((d) => d[field] != null).map((d) => ({ time: d.t, value: d[field] }));
+      const pts = timelinePoints.filter((d) => d[field] != null).map((d) => ({ time: d.t, value: d[field] }));
       if (!pts.length) continue;
       const s = chart.addLineSeries({ color, lineWidth: 1.6, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
       s.setData(pts);
     }
 
-    // Only draw S/R price lines within the visible price range (±12%) so distant S2/S3 labels never stack at the bottom of the axis
+    // Draw S/R levels around current price (±22%) so levels are visible as you navigate recent action
     if (ov.sr) {
-      const visLow = Math.min(...data.map((d) => d.l));
-      const visHigh = Math.max(...data.map((d) => d.h));
-      const minP = visLow * 0.88;
-      const maxP = visHigh * 1.12;
-      const lv = t.technical?.computed?.levels || {};
+      const refPrice = Number(tech.facts?.last_close || timelinePoints[timelinePoints.length - 1]?.c || 0);
+      const minP = refPrice * 0.76;
+      const maxP = refPrice * 1.24;
+      const lv = tech.computed?.levels || {};
       for (const x of [...(lv.support || []), ...(lv.resistance || [])]) {
-        if (x.price == null || x.price < minP || x.price > maxP) continue;
+        if (x.price == null || (refPrice > 0 && (x.price < minP || x.price > maxP))) continue;
         candles.createPriceLine({
           price: x.price,
           color: x.role === "support" ? upCol : dnCol,
@@ -3417,8 +3609,6 @@
       }
     }
 
-    // Day-by-day separation for 1M (Monthly Series): every single trading day has its own vertical column separator,
-    // its own bottom date tick centered under its candle, and its own separate daily card in the monthly strip.
     const dayOverlay = $("tvDayOverlay");
     const dayAxis = $("tvDayAxis");
     const dailyStrip = $("tvDailyStrip");
@@ -3432,14 +3622,17 @@
       dayOverlay.style.height = `${box.clientHeight}px`;
       dayAxis.style.paddingRight = `${rightAxisW}px`;
 
-      const coords = timelinePoints.map((d) => {
+      const lr = ts.getVisibleLogicalRange();
+      const i0 = Math.max(0, Math.floor((lr?.from ?? 0) - 1));
+      const i1 = Math.min(timelinePoints.length - 1, Math.ceil((lr?.to ?? timelinePoints.length - 1) + 1));
+      const visSlice = timelinePoints.slice(i0, i1 + 1);
+      const coords = visSlice.map((d) => {
         const x = ts.timeToCoordinate(d.t);
         return { d, x: x != null ? Number(x) : null };
       }).filter((item) => item.x != null && item.x >= 0 && item.x <= plotW);
 
       if (!coords.length) return;
 
-      // Vertical separator line between every single day + collision-free Weekend (Sat–Sun) markers
       const sepLines = [];
       let lastWkndPillX = -999;
       for (let i = 0; i < coords.length; i++) {
@@ -3464,7 +3657,6 @@
       }
       dayOverlay.innerHTML = sepLines.join("");
 
-      // Collision-free X-axis ticks: automatically adapts density to screen width & zoom level so labels NEVER overlap or clip
       const minGap = plotW < 440 ? 44 : 38;
       const edgePad = 20;
       const picked = [];
@@ -3473,7 +3665,7 @@
 
       for (let idx = 0; idx < coords.length; idx++) {
         const { d, x } = coords[idx];
-        const [, m, dayNum] = d.t.split("-").map(Number);
+        const [, m, dayNum] = String(d.t).split("-").map(Number);
         const isMonthStart = prevMonthSeen !== null && m !== prevMonthSeen;
         prevMonthSeen = m;
         const isFirst = idx === 0;
@@ -3487,7 +3679,6 @@
           if (clampedX - lastLabelX >= minGap) {
             picked.push({ d, x: clampedX, m, dayNum, showMonth: picked[picked.length - 1]?.m !== m });
           } else if (picked.length > 1 && clampedX - picked[picked.length - 2].x >= minGap) {
-            // Replace penultimate tick with the final bar's date so the latest trading day is always cleanly visible
             picked[picked.length - 1] = { d, x: clampedX, m, dayNum, showMonth: picked[picked.length - 2]?.m !== m };
           }
         } else if (clampedX - lastLabelX >= minGap) {
@@ -3495,7 +3686,6 @@
           picked.push({ d, x: clampedX, m, dayNum, showMonth: isMonthStart || lastM !== m });
           lastLabelX = clampedX;
         } else if (isMonthStart && picked.length > 1 && clampedX - picked[picked.length - 2].x >= minGap) {
-          // Prefer showing the first trading day of a new month over the immediately preceding tick
           picked[picked.length - 1] = { d, x: clampedX, m, dayNum, showMonth: true };
           lastLabelX = clampedX;
         }
@@ -3514,33 +3704,212 @@
       }).join("");
     };
 
-    const fitAllBars = () => {
+    // Compute initial logical window for the selected timeframe while keeping 100% of history scrollable!
+    const totalBars = timelinePoints.length;
+    const computeInitialWindow = () => {
+      if (totalBars <= 2) return { from: -0.5, to: totalBars - 0.2 };
+      const rng = state.chartRange;
+      if (rng === "ALL") return { from: -0.5, to: totalBars + 1 };
+
+      if (useIntraday) {
+        const lastTs = Number(timelinePoints[totalBars - 1].t);
+        const lastIso = barToIsoDate(lastTs);
+        if (rng === "1D") {
+          const sameDayIdx = timelinePoints.findIndex((b) => barToIsoDate(b.t) === lastIso);
+          if (sameDayIdx >= 0 && (totalBars - sameDayIdx) >= 6) {
+            return { from: Math.max(-0.5, sameDayIdx - 0.5), to: totalBars + 1.5 };
+          }
+          const fb = effIv === "1m" ? 390 : effIv === "5m" ? 84 : effIv === "15m" ? 32 : 16;
+          return { from: Math.max(-0.5, totalBars - fb), to: totalBars + 1.5 };
+        }
+        const dayMap = { "5D": 5, "1W": 7, "1M": 31, "3M": 92, "6M": 183, "YTD": 300, "1Y": 365 };
+        const cutoffSec = lastTs - (dayMap[rng] || 5) * 86400;
+        const idx = timelinePoints.findIndex((b) => Number(b.t) >= cutoffSec);
+        return { from: Math.max(-0.5, (idx >= 0 ? idx : 0) - 0.5), to: totalBars + 1.5 };
+      }
+
+      const lastIso = barToIsoDate(timelinePoints[totalBars - 1].t);
+      const [ly, lm, ld] = lastIso.split("-").map(Number);
+      const lastUtc = Date.UTC(ly || 2026, (lm || 1) - 1, ld || 1);
+      let cutoffIso = "";
+      if (rng === "YTD") {
+        cutoffIso = `${ly}-01-01`;
+      } else {
+        const calDays = {
+          "1D": 5,
+          "5D": 8,
+          "1W": 9,
+          "1M": 32,
+          "3M": 93,
+          "6M": 185,
+          "1Y": 366,
+          "3Y": 1096,
+          "5Y": 1827,
+        }[rng] || 93;
+        cutoffIso = new Date(lastUtc - calDays * 86400000).toISOString().slice(0, 10);
+      }
+      let firstIdx = timelinePoints.findIndex((b) => barToIsoDate(b.t) >= cutoffIso);
+      if (firstIdx < 0) firstIdx = Math.max(0, totalBars - 22);
+      if (totalBars - firstIdx < 5) firstIdx = Math.max(0, totalBars - Math.min(totalBars, 12));
+      return { from: Math.max(-0.5, firstIdx - 0.5), to: totalBars + 1.2 };
+    };
+
+    const scrubberEl = $("chartTimeScrubber");
+    const spanBadgeEl = $("chartVisibleSpan");
+    const dateJumpEl = $("chartDateJump");
+    if (dateJumpEl && timelinePoints.length) {
+      dateJumpEl.min = barToIsoDate(timelinePoints[0].t);
+      dateJumpEl.max = barToIsoDate(timelinePoints[totalBars - 1].t);
+      dateJumpEl.value = barToIsoDate(timelinePoints[totalBars - 1].t);
+    }
+
+    let syncingScrubber = false;
+    const syncNavDock = () => {
+      if (!state.tvChart || !timelinePoints.length) return;
+      const lr = state.tvChart.timeScale().getVisibleLogicalRange();
+      if (!lr) return;
+      const iStart = Math.max(0, Math.min(totalBars - 1, Math.round(lr.from)));
+      const iEnd = Math.max(0, Math.min(totalBars - 1, Math.round(lr.to)));
+      const bStart = timelinePoints[iStart];
+      const bEnd = timelinePoints[iEnd];
+      if (spanBadgeEl && bStart && bEnd) {
+        const lblA = useIntraday ? formatEtIntradayTime(bStart.t, true).replace(" ET", "") : bStart.t;
+        const lblB = useIntraday ? formatEtIntradayTime(bEnd.t, true) : bEnd.t;
+        spanBadgeEl.textContent = `${lblA} → ${lblB}`;
+      }
+      if (scrubberEl && !syncingScrubber) {
+        const span = Math.max(5, lr.to - lr.from);
+        const maxFrom = Math.max(0.01, totalBars - span * 0.6);
+        const ratio = Math.max(0, Math.min(1, (lr.from + 0.5) / maxFrom));
+        scrubberEl.value = String(Math.round(ratio * 1000));
+      }
+      // Automatically toggle crisp candle borders off when zoomed out past 150 visible bars so wide views stay sharp
+      const visCount = lr.to - lr.from;
+      candles.applyOptions({ borderVisible: visCount <= 145 });
+      if (is1M) sync1MDayColumns();
+    };
+
+    const applyRangeWindow = () => {
       if (!state.tvChart) return;
       if (box.clientWidth && box.clientHeight) {
         state.tvChart.applyOptions({ width: box.clientWidth, height: box.clientHeight });
       }
-      const ts = state.tvChart.timeScale();
-      ts.fitContent();
-      if (timelinePoints.length > 1) {
-        try {
-          ts.setVisibleLogicalRange({ from: -0.4, to: timelinePoints.length - 0.6 });
-        } catch {}
+      state.tvChart.priceScale("right").applyOptions({ autoScale: true });
+      const win = computeInitialWindow();
+      try {
+        state.tvChart.timeScale().setVisibleLogicalRange(win);
+      } catch {
+        state.tvChart.timeScale().fitContent();
       }
-      if (is1M) sync1MDayColumns();
+      syncNavDock();
     };
 
-    fitAllBars();
-    requestAnimationFrame(fitAllBars);
-    setTimeout(fitAllBars, 60);
+    const zoomByFactor = (factor) => {
+      if (!state.tvChart || totalBars < 3) return;
+      const ts = state.tvChart.timeScale();
+      const lr = ts.getVisibleLogicalRange() || computeInitialWindow();
+      const curSpan = Math.max(4, lr.to - lr.from);
+      const nextSpan = Math.max(6, Math.min(totalBars + 4, curSpan * factor));
+      // Anchor zoom near right-center of current viewport
+      const anchor = lr.from + curSpan * 0.72;
+      let nextFrom = anchor - nextSpan * 0.72;
+      let nextTo = nextFrom + nextSpan;
+      if (nextTo > totalBars + 3) {
+        nextTo = totalBars + 3;
+        nextFrom = nextTo - nextSpan;
+      }
+      if (nextFrom < -0.5) {
+        nextFrom = -0.5;
+        nextTo = Math.min(totalBars + 3, nextFrom + nextSpan);
+      }
+      try { ts.setVisibleLogicalRange({ from: nextFrom, to: nextTo }); } catch {}
+    };
 
-    const resetBtn = $("resetChartFitBtn");
-    if (resetBtn) resetBtn.onclick = fitAllBars;
+    const panByFraction = (frac) => {
+      if (!state.tvChart || totalBars < 3) return;
+      const ts = state.tvChart.timeScale();
+      const lr = ts.getVisibleLogicalRange() || computeInitialWindow();
+      const span = Math.max(5, lr.to - lr.from);
+      const delta = span * frac;
+      let nextFrom = lr.from + delta;
+      let nextTo = lr.to + delta;
+      if (nextFrom < -0.5) {
+        nextFrom = -0.5;
+        nextTo = nextFrom + span;
+      }
+      if (nextTo > totalBars + 3) {
+        nextTo = totalBars + 3;
+        nextFrom = Math.max(-0.5, nextTo - span);
+      }
+      try { ts.setVisibleLogicalRange({ from: nextFrom, to: nextTo }); } catch {}
+    };
 
-    if (is1M) {
-      chart.timeScale().subscribeVisibleLogicalRangeChange(() => {
-        requestAnimationFrame(sync1MDayColumns);
-      });
+    const jumpToLatest = () => {
+      if (!state.tvChart || totalBars < 2) return;
+      const ts = state.tvChart.timeScale();
+      const lr = ts.getVisibleLogicalRange() || computeInitialWindow();
+      const span = Math.max(8, Math.min(totalBars, lr.to - lr.from));
+      state.tvChart.priceScale("right").applyOptions({ autoScale: true });
+      try { ts.setVisibleLogicalRange({ from: Math.max(-0.5, totalBars - span + 1.2), to: totalBars + 1.2 }); } catch {}
+    };
+
+    const jumpToDate = (isoStr) => {
+      if (!state.tvChart || !isoStr || !timelinePoints.length) return;
+      let targetIdx = timelinePoints.findIndex((b) => barToIsoDate(b.t) >= isoStr);
+      if (targetIdx < 0) targetIdx = totalBars - 1;
+      const ts = state.tvChart.timeScale();
+      const lr = ts.getVisibleLogicalRange() || computeInitialWindow();
+      const span = Math.max(12, Math.min(totalBars, lr.to - lr.from));
+      let nextFrom = targetIdx - span * 0.5;
+      let nextTo = targetIdx + span * 0.5;
+      if (nextFrom < -0.5) { nextFrom = -0.5; nextTo = nextFrom + span; }
+      if (nextTo > totalBars + 2) { nextTo = totalBars + 2; nextFrom = Math.max(-0.5, nextTo - span); }
+      state.tvChart.priceScale("right").applyOptions({ autoScale: true });
+      try { ts.setVisibleLogicalRange({ from: nextFrom, to: nextTo }); } catch {}
+      setLegend(timelinePoints[targetIdx]);
+    };
+
+    state.tvControls = { zoomByFactor, panByFraction, jumpToLatest, jumpToDate, reset: applyRangeWindow };
+
+    applyRangeWindow();
+    requestAnimationFrame(applyRangeWindow);
+    setTimeout(applyRangeWindow, 65);
+
+    if ($("resetChartFitBtn")) $("resetChartFitBtn").onclick = applyRangeWindow;
+    if ($("chartResetDockBtn")) $("chartResetDockBtn").onclick = applyRangeWindow;
+    if ($("chartZoomInTopBtn")) $("chartZoomInTopBtn").onclick = () => zoomByFactor(0.68);
+    if ($("chartZoomOutTopBtn")) $("chartZoomOutTopBtn").onclick = () => zoomByFactor(1.45);
+    if ($("chartZoomInBtn")) $("chartZoomInBtn").onclick = () => zoomByFactor(0.68);
+    if ($("chartZoomOutBtn")) $("chartZoomOutBtn").onclick = () => zoomByFactor(1.45);
+    if ($("chartPanLeftBtn")) $("chartPanLeftBtn").onclick = () => panByFraction(-0.42);
+    if ($("chartPanRightBtn")) $("chartPanRightBtn").onclick = () => panByFraction(0.42);
+    if ($("chartJumpLatestBtn")) $("chartJumpLatestBtn").onclick = jumpToLatest;
+    if (scrubberEl) {
+      scrubberEl.oninput = () => {
+        if (!state.tvChart || totalBars < 3) return;
+        syncingScrubber = true;
+        try {
+          const ts = state.tvChart.timeScale();
+          const lr = ts.getVisibleLogicalRange() || computeInitialWindow();
+          const span = Math.max(6, Math.min(totalBars, lr.to - lr.from));
+          const maxFrom = Math.max(0, totalBars - span * 0.6);
+          const ratio = Number(scrubberEl.value) / 1000;
+          const nextFrom = -0.5 + ratio * maxFrom;
+          ts.setVisibleLogicalRange({ from: nextFrom, to: nextFrom + span });
+        } catch {} finally {
+          syncingScrubber = false;
+        }
+      };
     }
+    if (dateJumpEl) {
+      dateJumpEl.onchange = () => {
+        if (dateJumpEl.value) jumpToDate(dateJumpEl.value);
+      };
+    }
+
+    chart.timeScale().subscribeVisibleLogicalRangeChange(() => {
+      requestAnimationFrame(syncNavDock);
+    });
 
     const legend = $("tvLegend");
     const highlightDay = (dateStr) => {
@@ -3570,20 +3939,20 @@
         <span><strong>${esc(timeLabel)}</strong></span>
         <span>O ${fmtNum(d.o)}</span><span>H ${fmtNum(d.h)}</span><span>L ${fmtNum(d.l)}</span>
         <span>C <strong class="${clsPct(chg)}">${fmtNum(d.c)}</strong></span>
-        <span class="${clsPct(chg)}" title="Close vs previous trading day's close (${fmtNum(d.prevC)})"><strong>${fmtPct(chg)}</strong> (1D)</span>
+        <span class="${clsPct(chg)}"><strong>${fmtPct(chg)}</strong></span>
         <span class="muted">Vol ${Number(d.v || 0).toLocaleString()}</span>`;
       if (typeof d.t === "string") highlightDay(d.t);
     };
     state.tvUpdateLegend = setLegend;
     const byTime = Object.fromEntries(timelinePoints.map((d) => [d.t, d]));
 
-    setLegend(data[data.length - 1]);
+    setLegend(timelinePoints[totalBars - 1]);
     chart.subscribeCrosshairMove((p) => {
-      if (!p || !p.time) { setLegend(data[data.length - 1]); return; }
+      if (!p || !p.time) { setLegend(timelinePoints[totalBars - 1]); return; }
       const key = typeof p.time === "number" || typeof p.time === "string"
         ? p.time
         : `${p.time.year}-${String(p.time.month).padStart(2, "0")}-${String(p.time.day).padStart(2, "0")}`;
-      setLegend(byTime[key] || data[data.length - 1]);
+      setLegend(byTime[key] || timelinePoints[totalBars - 1]);
     });
 
     if (window.ResizeObserver) {
@@ -3591,15 +3960,16 @@
       let lastH = box.clientHeight;
       state.tvResizeObs = new ResizeObserver(() => {
         if (state.tvChart && box.clientWidth && box.clientHeight) {
-          const sizeChanged = Math.abs(box.clientWidth - lastW) > 2 || Math.abs(box.clientHeight - lastH) > 2;
+          const sizeChanged = Math.abs(box.clientWidth - lastW) > 3 || Math.abs(box.clientHeight - lastH) > 3;
+          if (!sizeChanged) return;
+          const prevRange = state.tvChart.timeScale().getVisibleLogicalRange();
           lastW = box.clientWidth;
           lastH = box.clientHeight;
           state.tvChart.applyOptions({ width: box.clientWidth, height: box.clientHeight });
-          if (sizeChanged) {
-            fitAllBars();
-          } else if (is1M) {
-            sync1MDayColumns();
+          if (prevRange) {
+            try { state.tvChart.timeScale().setVisibleLogicalRange(prevRange); } catch {}
           }
+          syncNavDock();
         }
       });
       state.tvResizeObs.observe(box);
@@ -3855,7 +4225,7 @@
       });
     }
 
-    // Escape key exits full-screen chart or open modals
+    // Escape key & Full-Screen Chart keyboard navigation (+, -, ArrowLeft, ArrowRight, 0)
     window.addEventListener("keydown", (ev) => {
       if (ev.key === "Escape") {
         if (state.chartFullscreen) {
@@ -3869,6 +4239,15 @@
         if ($("infoModal") && !$("infoModal").classList.contains("hidden")) {
           closeInfoModal();
         }
+        return;
+      }
+      if (state.chartFullscreen && state.tvControls && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) {
+        if (ev.key === "+" || ev.key === "=") { ev.preventDefault(); state.tvControls.zoomByFactor(0.68); }
+        else if (ev.key === "-" || ev.key === "_") { ev.preventDefault(); state.tvControls.zoomByFactor(1.45); }
+        else if (ev.key === "ArrowLeft") { ev.preventDefault(); state.tvControls.panByFraction(-0.35); }
+        else if (ev.key === "ArrowRight") { ev.preventDefault(); state.tvControls.panByFraction(0.35); }
+        else if (ev.key === "0") { ev.preventDefault(); state.tvControls.reset(); }
+        else if (ev.key === "End") { ev.preventDefault(); state.tvControls.jumpToLatest(); }
       }
     });
 
@@ -4595,50 +4974,52 @@
     if (!cached || !state.tvCandles) return;
     const tech = cached.technical || {};
 
-    if (state.chartRange === "1D") {
-      const ser1d = tech.series_1d;
+    if (state.tvIsIntraday) {
+      const ivEntry = tech._ivCache?.[state.tvEffInterval];
+      const ser1d = ivEntry?.bars?.length ? ivEntry.bars : tech.series_1d;
       if (Array.isArray(ser1d) && ser1d.length >= 2) {
-        if (!state.tvIsIntraday || ser1d.length !== state.tvBarCount) {
-          mountInteractiveChart(cached);
-          return;
-        }
         const last = ser1d[ser1d.length - 1];
+        const liveC = Number(tech.facts?.last_close || last.c);
+        const updC = liveC > 0 ? liveC : last.c;
+        const updH = Math.max(last.h, updC);
+        const updL = Math.min(last.l, updC);
         const prevC = Number(tech.prev_close_1d) || last.o;
-        const chg1d = prevC ? ((last.c - prevC) / prevC) * 100 : 0;
+        const chg1d = prevC ? ((updC - prevC) / prevC) * 100 : 0;
         try {
-          state.tvCandles.update({ time: Number(last.t), open: last.o, high: last.h, low: last.l, close: last.c });
+          state.tvCandles.update({ time: Number(last.t), open: last.o, high: updH, low: updL, close: updC });
           if (state.tvVol && last.v != null) {
             state.tvVol.update({
               time: Number(last.t),
               value: last.v,
-              color: last.c >= last.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)",
+              color: updC >= last.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)",
             });
           }
           if (state.tvUpdateLegend) {
-            state.tvUpdateLegend({ ...last, t: Number(last.t), prevC, chg1d });
+            state.tvUpdateLegend({ ...last, t: Number(last.t), h: updH, l: updL, c: updC, prevC, chg1d });
           }
         } catch {}
-        return;
       }
+      return;
     }
 
-    const isLong = state.chartRange === "5Y" || state.chartRange === "ALL";
-    const ser = isLong && Array.isArray(tech.series_all) && tech.series_all.length ? tech.series_all : (tech.series || []);
+    if (state.tvEffInterval === "1Mo") return;
+    const isWeekly = state.tvEffInterval === "1W";
+    const ser = isWeekly && Array.isArray(tech.series_all) && tech.series_all.length ? tech.series_all : (tech.series || []);
     if (!ser.length) return;
     const last = ser[ser.length - 1];
     const prevC = ser.length >= 2 ? ser[ser.length - 2].c : last.o;
     const chg1d = prevC ? ((last.c - prevC) / prevC) * 100 : 0;
     try {
-      state.tvCandles.update({ time: last.t, open: last.o, high: last.h, low: last.l, close: last.c });
+      state.tvCandles.update({ time: String(last.t).slice(0, 10), open: last.o, high: last.h, low: last.l, close: last.c });
       if (state.tvVol && last.v != null) {
         state.tvVol.update({
-          time: last.t,
+          time: String(last.t).slice(0, 10),
           value: last.v,
           color: last.c >= last.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)",
         });
       }
       if (state.tvUpdateLegend) {
-        state.tvUpdateLegend({ ...last, prevC, chg1d });
+        state.tvUpdateLegend({ ...last, t: String(last.t).slice(0, 10), prevC, chg1d });
       }
     } catch {}
   }

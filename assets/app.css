@@ -2322,29 +2322,37 @@ body.no-scroll { overflow: hidden; }
   }
 }
 
-/* Compact TradingView / Binance Pro Chart Toolbar */
+/* Compact TradingView / Bloomberg Pro Multi-Interval Chart Toolbar */
 .tv-toolbar-pro {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
   padding-bottom: 8px;
   margin-bottom: 6px;
   border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
+}
+.tv-range-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
 }
 .tv-range-strip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 2px;
   background: var(--bg-elev);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 2px;
-  max-width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
 }
 .tv-range-strip::-webkit-scrollbar { display: none; }
 .tv-rbtn {
@@ -2357,6 +2365,7 @@ body.no-scroll { overflow: hidden; }
   font-weight: 700;
   padding: 5px 8px;
   min-height: 28px;
+  flex: 0 0 auto;
   cursor: pointer;
   line-height: 1;
   white-space: nowrap;
@@ -2368,22 +2377,102 @@ body.no-scroll { overflow: hidden; }
   background: var(--bg-card-2);
   color: var(--accent);
 }
-.tv-fit-btn,
-.tv-fs-btn {
-  flex: 0 0 auto;
-  padding: 5px 8px;
-  font-size: 12.5px;
-  border-left: 1px solid var(--border);
-  border-radius: 0;
+.tv-rbtn.sub-active {
+  background: rgba(240, 185, 11, 0.08);
+  color: var(--text);
 }
-.tv-fs-btn {
-  border-radius: 0 6px 6px 0;
+.tv-quick-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2px;
+}
+.tv-act-btn {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
   color: var(--text-soft);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 4px 6px;
+  cursor: pointer;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.tv-act-btn:hover,
+.tv-act-btn:active {
+  background: var(--bg-card-2);
+  color: var(--accent);
+}
+.tv-act-btn.active {
+  background: rgba(240, 185, 11, 0.14);
+  color: var(--accent);
+}
+.tv-subbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.tv-iv-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+}
+.tv-iv-strip::-webkit-scrollbar { display: none; }
+.tv-iv-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-right: 3px;
+  flex-shrink: 0;
+}
+.tv-ivbtn {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 10.8px;
+  font-weight: 700;
+  padding: 3px 6.5px;
+  min-height: 24px;
+  flex: 0 0 auto;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease;
+}
+.tv-ivbtn:hover { color: var(--text); border-color: var(--border-strong); }
+.tv-ivbtn.active {
+  border-color: rgba(240, 185, 11, 0.55);
+  background: rgba(240, 185, 11, 0.1);
+  color: var(--accent);
 }
 .tv-ind-strip {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   flex-wrap: wrap;
 }
 .tv-ibtn {
@@ -2393,9 +2482,9 @@ body.no-scroll { overflow: hidden; }
   font-family: inherit;
   font-size: 11px;
   font-weight: 600;
-  padding: 4px 3px;
+  padding: 3px 3px;
   cursor: pointer;
-  opacity: 0.7;
+  opacity: 0.72;
   border-bottom: 1.5px solid transparent;
   -webkit-tap-highlight-color: transparent;
   transition: opacity 0.12s ease, color 0.12s ease, border-color 0.12s ease;
@@ -2407,11 +2496,11 @@ body.no-scroll { overflow: hidden; }
   border-bottom-color: var(--accent);
 }
 @media (max-width: 640px) {
-  .tv-toolbar-pro { gap: 6px; padding-bottom: 6px; }
-  .tv-range-strip { width: 100%; justify-content: space-between; }
-  .tv-rbtn { flex: 1 1 0; text-align: center; padding: 6px 2px; font-size: 11px; min-height: 31px; }
-  .tv-fit-btn, .tv-fs-btn { flex: 0 0 32px; padding: 6px 4px; text-align: center; }
-  .tv-ind-strip { width: 100%; justify-content: space-between; gap: 6px; }
+  .tv-toolbar-pro { gap: 5px; padding-bottom: 6px; }
+  .tv-rbtn { padding: 6px 8.5px; font-size: 11px; min-height: 30px; }
+  .tv-act-btn { min-width: 30px; min-height: 30px; font-size: 14px; }
+  .tv-subbar-row { gap: 5px; }
+  .tv-ind-strip { gap: 8px; }
 }
 
 /* Enhanced Minimalist Screener UI */
@@ -2576,10 +2665,9 @@ body.no-scroll { overflow: hidden; }
   border-color: rgba(240, 185, 11, 0.35);
 }
 
-/* Full-Screen & Real-Time Interactive Stock Chart (iOS & Android Safe-Area & Flex Layout) */
+/* Full-Screen & Real-Time Interactive Stock Chart (iOS & Android Safe-Area & Pro Date Navigation Dock) */
 body.chart-fs-open {
   overflow: hidden !important;
-  touch-action: none;
 }
 body.chart-fs-open .topbar,
 body.chart-fs-open .mobile-bottom-nav,
@@ -2587,6 +2675,134 @@ body.chart-fs-open .scroll-top-btn,
 body.chart-fs-open .stock-drag-zone,
 body.chart-fs-open #stockJumpBar {
   display: none !important;
+}
+.tv-nav-dock {
+  display: none;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 8px;
+  margin-top: 6px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.chart-card.is-fullscreen .tv-nav-dock {
+  display: flex;
+}
+.tv-dock-scrubber-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.tv-span-badge {
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-soft);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tv-scrubber {
+  flex: 1 1 auto;
+  min-width: 70px;
+  height: 5px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--bg-card-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  touch-action: pan-x;
+}
+.tv-scrubber::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #050608;
+  box-shadow: 0 0 8px rgba(240, 185, 11, 0.45);
+  cursor: grab;
+}
+.tv-scrubber::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #050608;
+  box-shadow: 0 0 8px rgba(240, 185, 11, 0.45);
+  cursor: grab;
+}
+.tv-date-jump-lbl {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+  min-height: 28px;
+}
+.tv-date-input {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0;
+  max-width: 108px;
+  outline: none;
+  color-scheme: dark;
+  cursor: pointer;
+}
+.tv-dock-btns-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tv-dock-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1 1 auto;
+}
+.tv-dock-btn {
+  flex: 1 1 0;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text-soft);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 7px 8px;
+  min-height: 33px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease;
+}
+.tv-dock-btn:hover,
+.tv-dock-btn:active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(240, 185, 11, 0.08);
 }
 .chart-fs-bar {
   display: none;
@@ -2716,27 +2932,66 @@ body.chart-fs-open #stockJumpBar {
 .chart-card.is-fullscreen .tv-day-axis {
   flex-shrink: 0;
 }
+@media (max-width: 640px) {
+  .tv-dock-scrubber-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tv-span-badge {
+    font-size: 10.5px;
+    padding: 3px 7px;
+  }
+  .tv-dock-btns-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+  .tv-dock-group {
+    display: flex;
+    gap: 4px;
+  }
+  .tv-dock-btn {
+    padding: 6px 4px;
+    font-size: 10.8px;
+    min-height: 32px;
+  }
+}
 @media (max-height: 520px) and (orientation: landscape) {
   .chart-card.is-fullscreen {
     padding:
-      calc(6px + env(safe-area-inset-top, 0px))
+      calc(5px + env(safe-area-inset-top, 0px))
       calc(12px + env(safe-area-inset-right, 0px))
-      calc(6px + env(safe-area-inset-bottom, 0px))
+      calc(5px + env(safe-area-inset-bottom, 0px))
       calc(12px + env(safe-area-inset-left, 0px)) !important;
   }
   .chart-card.is-fullscreen .chart-fs-bar {
-    padding-bottom: 4px;
-    margin-bottom: 4px;
+    padding-bottom: 3px;
+    margin-bottom: 3px;
   }
   .chart-card.is-fullscreen .tv-toolbar-pro {
-    padding-bottom: 4px;
-    margin-bottom: 3px;
+    padding-bottom: 3px;
+    margin-bottom: 2px;
+    gap: 3px;
+  }
+  .chart-card.is-fullscreen .tv-nav-dock {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 4px;
+    margin-top: 3px;
+    gap: 8px;
+  }
+  .chart-card.is-fullscreen .tv-dock-scrubber-row {
+    flex: 1 1 45%;
     flex-wrap: nowrap;
   }
-  .chart-card.is-fullscreen .tv-range-strip {
-    width: auto;
+  .chart-card.is-fullscreen .tv-dock-btns-row {
+    display: flex;
+    flex: 1 1 55%;
+    flex-wrap: nowrap;
   }
-  .chart-card.is-fullscreen .tv-ind-strip {
-    width: auto;
+  .chart-card.is-fullscreen .tv-dock-btn {
+    min-height: 26px;
+    padding: 3px 6px;
+    font-size: 10.5px;
   }
 }
