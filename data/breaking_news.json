@@ -1,8 +1,90 @@
 {
-  "updated_at": "2026-11-25T05:03:53+00:00",
-  "min_importance": 42.0,
+  "updated_at": "2026-11-25T13:43:16+00:00",
+  "min_importance": 99.0,
   "max_age_hours": 6.0,
   "items": [
+    {
+      "key": "shock_CRWV_2026-11-25_pre-market_drop",
+      "symbol": "CRWV",
+      "name": "CoreWeave",
+      "title": "CoreWeave (CRWV) drops -8.23% to $39.10 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/CRWV",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-25T13:43:16+00:00",
+      "importance": 88.6,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T13:43:16+00:00"
+    },
+    {
+      "key": "shock_MU_2026-11-25_pre-market_drop",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "Micron Technology (MU) drops -7.73% to $581.12 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/MU",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-25T13:43:16+00:00",
+      "importance": 87.3,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T13:43:16+00:00"
+    },
+    {
+      "key": "shock_CIFR_2026-11-25_pre-market_drop",
+      "symbol": "CIFR",
+      "name": "Cipher Mining",
+      "title": "Cipher Mining (CIFR) drops -7.43% to $5.11 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/CIFR",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-25T13:43:16+00:00",
+      "importance": 86.6,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T13:43:16+00:00"
+    },
+    {
+      "key": "shock_AXTI_2026-11-25_pre-market_drop",
+      "symbol": "AXTI",
+      "name": "AXT Inc",
+      "title": "AXT Inc (AXTI) drops -7.41% to $29.24 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/AXTI",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-25T13:43:16+00:00",
+      "importance": 86.5,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T13:43:16+00:00"
+    },
+    {
+      "key": "3a6d46da271ff4ad",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia, chipmakers slide premarket; Dell falls despite upbeat outlook",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/nvidia-chipmakers-slide-premarket-dell-131630827.html",
+      "source": "Investing.com",
+      "source_tier": 2,
+      "published": "2026-11-25T13:16:30+00:00",
+      "importance": 100.0,
+      "categories": [
+        "earnings_guidance",
+        "policy_geopolitics",
+        "regulatory_legal"
+      ],
+      "age_hours": 0.45,
+      "detected_at": "2026-11-25T13:43:16+00:00"
+    },
     {
       "key": "shock_ADI_2026-11-25_drop",
       "symbol": "ADI",
@@ -916,72 +998,6 @@
         "capex_expansion"
       ],
       "age_hours": 1.91,
-      "detected_at": "2026-11-24T11:04:22+00:00"
-    },
-    {
-      "key": "3014e2a5f11900f1",
-      "symbol": "SNOW",
-      "name": "Snowflake",
-      "title": "Snowflake Stock In Focus As New AI Connectors Reach Its Marketplace",
-      "url": "https://finance.yahoo.com/technology/ai/articles/snowflake-stock-focus-ai-connectors-101138090.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T10:11:38+00:00",
-      "importance": 72.6,
-      "categories": [
-        "contract_partnership",
-        "product_tech"
-      ],
-      "age_hours": 0.88,
-      "detected_at": "2026-11-24T11:04:22+00:00"
-    },
-    {
-      "key": "3ff760dda3b0ea50",
-      "symbol": "CORZ",
-      "name": "Core Scientific",
-      "title": "Core Scientific (CORZ) Stock Fair Value Moves Lower As Analysts Cut Margin Assumptions",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/core-scientific-corz-stock-fair-101158373.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T10:11:58+00:00",
-      "importance": 67.2,
-      "categories": [
-        "analyst"
-      ],
-      "age_hours": 0.87,
-      "detected_at": "2026-11-24T11:04:22+00:00"
-    },
-    {
-      "key": "387ce21641bb4677",
-      "symbol": "MSFT",
-      "name": "Microsoft",
-      "title": "Atos delivers a structured journey to digital sovereignty, leveraging Microsoft technology",
-      "url": "https://finance.yahoo.com/technology/ai/articles/atos-delivers-structured-journey-digital-090000268.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-24T09:00:00+00:00",
-      "importance": 61.6,
-      "categories": [
-        "contract_partnership"
-      ],
-      "age_hours": 2.07,
-      "detected_at": "2026-11-24T11:04:22+00:00"
-    },
-    {
-      "key": "ebe17982e6442601",
-      "symbol": "AI / DATA CENTERS",
-      "name": "AI / DATA CENTERS",
-      "title": "AI Data Centers Are Devouring the Power American Factories Need",
-      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOdVBqTzNycFRfcDN6N0tYVWw3YktURWU1Q1BuRXpPVHd3LXpiWXhjUHNrSnJPS1MzYkJmM0FaYWFQU2RPV3JVV0cxZnQxMkpoOElWeTZzRVI4dzBXMVVFQVFjRTZvci03UmNSYmFaWE8ycnVVNS04N1FhOWl3Rldmc0YwOE1nbGRGZHMxcmxBY0NiNGp1ZVY4cUpmSXlIeHhZV00xcktSMA?oc=5",
-      "source": "Bloomberg.com",
-      "source_tier": 1,
-      "published": "2026-11-24T10:00:12+00:00",
-      "importance": 100.0,
-      "categories": [
-        "data_centers_ai",
-        "capex_expansion"
-      ],
-      "age_hours": 1.07,
       "detected_at": "2026-11-24T11:04:22+00:00"
     }
   ]

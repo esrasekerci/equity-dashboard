@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-25T05:03:53+00:00",
+  "updated_at": "2026-11-25T13:43:16+00:00",
   "items": [
     {
       "agency": "SEC",
@@ -54,38 +54,12 @@
       "sector": "markets_enforcement"
     },
     {
-      "agency": "White House",
-      "title": "Presidential Determination Pursuant to Section 1245(d)(4)(B) and (C) of the National Defense Authorization Act for Fiscal Year 2012",
-      "url": "https://www.federalregister.gov/documents/2026/11/13/2026-23233/presidential-determination-pursuant-to-section-1245d4b-and-c-of-the-national-defense-authorization",
-      "published": "2026-11-13T00:00:00+00:00",
-      "source": "White House",
-      "summary": "",
-      "categories": [
-        "White House Orders",
-        "macro_policy"
-      ],
-      "sector": "macro_policy"
-    },
-    {
       "agency": "Treasury / OFAC",
       "title": "Notice of OFAC Sanctions Action",
       "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23785/notice-of-ofac-sanctions-action",
       "published": "2026-11-23T00:00:00+00:00",
       "source": "Treasury / OFAC",
       "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the name of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject t",
-      "categories": [
-        "OFAC Sanctions",
-        "energy"
-      ],
-      "sector": "energy"
-    },
-    {
-      "agency": "Treasury / OFAC",
-      "title": "Notice of OFAC Sanctions Action",
-      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23772/notice-of-ofac-sanctions-action",
-      "published": "2026-11-23T00:00:00+00:00",
-      "source": "Treasury / OFAC",
-      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the names of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject ",
       "categories": [
         "OFAC Sanctions",
         "energy"
@@ -106,17 +80,69 @@
       "sector": "energy"
     },
     {
-      "agency": "FTC",
-      "title": "FTC Sues to Block Veterinary Supplies Distributor Covetrus’s $3.5 Billion Acquisition of Rival MWI",
-      "url": "https://www.ftc.gov/news-events/news/press-releases/2026/11/ftc-sues-block-veterinary-supplies-distributor-covetruss-35-billion-acquisition-rival-mwi",
-      "published": "2026-11-13T12:00:00+00:00",
-      "source": "FTC Official",
-      "summary": "FTC alleges that combining the two biggest distributors of veterinary products and services will drive up costs and lead to higher prices for veterinary clinics and pet owners The Federal Trade Commission sued today to block Covetrus Inc. and its owners, Clayton, Dubilier & Rice LLC and TPG Inc., from acquiring its closest competitor, MWI Veterinary Supply I",
+      "agency": "White House",
+      "title": "Protecting the Executive's Privileges and Enhancing Efficiencies in Federal Contracting",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24114/protecting-the-executives-privileges-and-enhancing-efficiencies-in-federal-contracting",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "White House",
+      "summary": "",
       "categories": [
-        "FTC Declaration",
-        "antitrust_tech"
+        "White House Orders",
+        "macro_policy"
       ],
-      "sector": "antitrust_tech"
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "Commerce / BIS",
+      "title": "Additions to the Entity List",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23999/additions-to-the-entity-list",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "Commerce / BIS",
+      "summary": "In this rule, the Bureau of Industry and Security (BIS) amends the Export Administration Regulations (EAR) by adding 7 entities to the Entity List, under the destinations of Malaysia, Singapore, and Thailand. These entities have been determined by the U.S. Government to be acting contrary to the national security or foreign policy interests of the United Sta",
+      "categories": [
+        "BIS Export Controls",
+        "semiconductors"
+      ],
+      "sector": "semiconductors"
+    },
+    {
+      "agency": "Treasury / OFAC",
+      "title": "Notice of OFAC Sanctions Action",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23961/notice-of-ofac-sanctions-action",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "Treasury / OFAC",
+      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the names of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject ",
+      "categories": [
+        "OFAC Sanctions",
+        "energy"
+      ],
+      "sector": "energy"
+    },
+    {
+      "agency": "DOJ",
+      "title": "Chinese Telecommunications Conglomerate Huawei and Subsidiaries Convicted of Sanctions Violations, Bank and Wire Fraud, Conspiracy to Steal Trade Secrets, and Money Laundering",
+      "url": "https://www.justice.gov/usao-edny/pr/chinese-telecommunications-conglomerate-huawei-and-subsidiaries-convicted-sanctions",
+      "published": "2026-11-24T12:00:00+00:00",
+      "source": "DOJ Official",
+      "summary": "BROOKLYN, NY – Today, a federal jury in Brooklyn returned guilty verdicts against Huawei Technologies Co., Ltd. (Huawei) and three of its subsidiaries, Chinese subsidiary Huawei Device Co. Ltd. (Huawei Device) and U.S. subsidiaries Futurewei Technologies Inc. (Futurewei) and Huawei Device USA Inc. (Huawei Device USA). One or more of the entities was convicte",
+      "categories": [
+        "DOJ Declaration",
+        "antitrust_legal"
+      ],
+      "sector": "antitrust_legal"
+    },
+    {
+      "agency": "DOJ",
+      "title": "Chinese Tech Giant Huawei and Subsidiaries Convicted of Sanctions Violations, Fraud, Conspiracy to Steal Trade Secrets, and Money Laundering",
+      "url": "https://www.justice.gov/opa/pr/chinese-tech-giant-huawei-and-subsidiaries-convicted-sanctions-violations-fraud-conspiracy",
+      "published": "2026-11-24T12:00:00+00:00",
+      "source": "DOJ Official",
+      "summary": "A federal jury in the Eastern District of New York returned guilty verdicts following a three-month trial against Huawei Technologies Co., Ltd. (Huawei) and three of its subsidiaries for violating U.S. sanctions involving Iran, lying to banks, money laundering, and stealing trade secrets from American companies.",
+      "categories": [
+        "DOJ Declaration",
+        "antitrust_legal"
+      ],
+      "sector": "antitrust_legal"
     },
     {
       "agency": "NHTSA",
@@ -198,11 +224,11 @@
     },
     {
       "agency": "Commerce / ITA",
-      "title": "Certain Corrosion-Resistant Steel Products From the Socialist Republic of Vietnam: Preliminary Negative Determination of Circumvention of the Antidumping Duty and Countervailing Duty Orders",
-      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23944/certain-corrosion-resistant-steel-products-from-the-socialist-republic-of-vietnam-preliminary",
-      "published": "2026-11-24T00:00:00+00:00",
+      "title": "Mattresses From India: Preliminary Results and Rescission, in Part, of Antidumping Duty Administrative Review; 2024-2025",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24012/mattresses-from-india-preliminary-results-and-rescission-in-part-of-antidumping-duty-administrative",
+      "published": "2026-11-25T00:00:00+00:00",
       "source": "Federal Register (Commerce Department, International Trade Administration)",
-      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines on a country-wide basis that imports of certain corrosion- resistant steel products (CORE) completed in Indonesia using cold- rolled steel (CRS) manufactured in the Socialist Republic of Vietnam (Vietnam) are not circumventing the antidumping duty (AD) and countervailing duty (CVD) orders on CORE from Vietnam. The period of inquir",
+      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that producers/exporters subject to this review made sales of subject merchandise at less than normal value (NV) during the period of review (POR), March 1, 2024, through August 31, 2025. In addition, we are rescinding the review with respect to four companies. Interested parties are invited to comment on these preliminary results",
       "categories": [
         "Tariffs & trade",
         "Notice"
@@ -211,11 +237,11 @@
     },
     {
       "agency": "Commerce / ITA",
-      "title": "Certain Steel Wheels from the People's Republic of China: Preliminary Affirmative Determination of Circumvention of the Antidumping Duty and Countervailing Duty Orders",
-      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23943/certain-steel-wheels-from-the-peoples-republic-of-china-preliminary-affirmative-determination-of",
-      "published": "2026-11-24T00:00:00+00:00",
+      "title": "Certain New Pneumatic Off-the-Road Tires From India: Final Results of Antidumping Duty Administrative Review; 2024-2025",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24011/certain-new-pneumatic-off-the-road-tires-from-india-final-results-of-antidumping-duty-administrative",
+      "published": "2026-11-25T00:00:00+00:00",
       "source": "Federal Register (Commerce Department, International Trade Administration)",
-      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that imports of certain steel wheels (steel wheels), completed in the Socialist Republic of Vietnam (Vietnam) using hot- rolled steel (HRS) produced in the People's Republic of China (China), are circumventing the antidumping duty (AD) and countervailing duty (CVD) orders on steel wheels from China. Interested parties are invited ",
+      "summary": "The U.S. Department of Commerce (Commerce) determines that certain producers/exporters subject to this review made sales of subject merchandise at less than normal value (NV) during the period of review (POR), March 1, 2024, through February 28, 2025.",
       "categories": [
         "Tariffs & trade",
         "Notice"
@@ -223,12 +249,25 @@
       "sector": "macro_policy"
     },
     {
+      "agency": "Surface Transportation Board",
+      "title": "Petition for Rulemaking To Consider Amendments to Regulations Governing Interim Use of Rights-of-Way as Trails",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24003/petition-for-rulemaking-to-consider-amendments-to-regulations-governing-interim-use-of-rights-of-way",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "Federal Register (Surface Transportation Board)",
+      "summary": "The Board partially grants a petition for rulemaking and proposes amendments to its regulations implementing section 208 of the National Trails System Act Amendments of 1983 to streamline the railbanking process. Under the proposal, the Board would no longer issue Notices or Certificates of Interim Trail Use during trail-use negotiations. Only after an agreement is reached would the Board issue an",
+      "categories": [
+        "Tariffs & trade",
+        "Proposed Rule"
+      ],
+      "sector": "macro_policy"
+    },
+    {
       "agency": "Commerce / ITA",
-      "title": "Certain Corrosion-Resistant Steel Products From the People's Republic of China: Preliminary Negative Determination of Circumvention of the Antidumping Duty and Countervailing Duty Orders",
-      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23942/certain-corrosion-resistant-steel-products-from-the-peoples-republic-of-china-preliminary-negative",
-      "published": "2026-11-24T00:00:00+00:00",
+      "title": "Prestressed Concrete Steel Wire Strand From the People's Republic of China: Continuation of Antidumping Duty and Countervailing Duty Orders",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23992/prestressed-concrete-steel-wire-strand-from-the-peoples-republic-of-china-continuation-of",
+      "published": "2026-11-25T00:00:00+00:00",
       "source": "Federal Register (Commerce Department, International Trade Administration)",
-      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines on a country-wide basis that imports of certain corrosion- resistant steel products (CORE) completed in Indonesia using hot-rolled steel (HRS) or cold-rolled steel (CRS) manufactured in the People's Republic of China (China) are not circumventing the antidumping duty (AD) and countervailing duty (CVD) orders on CORE from China. Th",
+      "summary": "As a result of the determinations by the U.S. Department of Commerce (Commerce) and the U.S. International Trade Commission (ITC) that revocation of the antidumping duty (AD) and countervailing duty (CVD) orders on prestressed concrete steel wire strand (PC strand) from the People's Republic of China (China) would likely lead to the continuation or recurrence of dumping, countervailable subsidies,",
       "categories": [
         "Tariffs & trade",
         "Notice"
@@ -236,12 +275,25 @@
       "sector": "macro_policy"
     },
     {
-      "agency": "Commerce / ITA",
-      "title": "Hydrofluorocarbon Blends From the People's Republic of China: Final Results of Antidumping Duty Administrative Review; 2024-2025",
-      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23941/hydrofluorocarbon-blends-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
-      "published": "2026-11-24T00:00:00+00:00",
-      "source": "Federal Register (Commerce Department, International Trade Administration)",
-      "summary": "The U.S. Department of Commerce (Commerce) determines that producers/exporters subject to this review made sales of subject merchandise at less than normal value during the period of review (POR) August 1, 2024, through July 31, 2025.",
+      "agency": "Federal Communications Commission",
+      "title": "Auction of Flexible-Use Licenses in the Upper C-Band for Next-Generation Wireless Services; Notice and Filing Requirements, Minimum Opening Bids, Upfront Payments, and Other Procedures for Auction 115; Bidding Scheduled To Begin April 27, 2027",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24013/auction-of-flexible-use-licenses-in-the-upper-c-band-for-next-generation-wireless-services-notice",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "Federal Register (Federal Communications Commission)",
+      "summary": "This document summarizes the procedures, deadlines, upfront payment, and minimum opening bid amounts adopted in the Auction 115 Procedures Public Notice for the Federal Communications Commission's (Commission) upcoming auction of 3,248 new flexible-use licenses in the 3.98-4.14 GHz portion of the Upper C-band. The Auction 115 Procedures Public Notice summarized here provides details regarding the ",
+      "categories": [
+        "Sanctions",
+        "Rule"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "US ITC",
+      "title": "Request for Comments Regarding International Trade Commission's Economic Analysis",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23981/request-for-comments-regarding-international-trade-commissions-economic-analysis",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "Federal Register (International Trade Commission)",
+      "summary": "Pursuant to Section 332 of the Tariff Act of 1930, the United States International Trade Commission (Commission) is seeking information from the public on its economic analysis, including its methodology and areas of focus.",
       "categories": [
         "Sanctions",
         "Notice"
@@ -249,28 +301,15 @@
       "sector": "macro_policy"
     },
     {
-      "agency": "Commerce / ITA",
-      "title": "Light-Walled Rectangular Pipe and Tube From the People's Republic of China: Final Results of Countervailing Duty Administrative Review; 2024",
-      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23940/light-walled-rectangular-pipe-and-tube-from-the-peoples-republic-of-china-final-results-of",
-      "published": "2026-11-24T00:00:00+00:00",
-      "source": "Federal Register (Commerce Department, International Trade Administration)",
-      "summary": "The U.S. Department of Commerce (Commerce) determines that countervailable subsidies were not provided to Hangzhou Ailong Metal Products Co., Ltd. (Hangzhou Ailong), a producer and exporter of light- walled rectangular pipe and tube (LWR pipe and tube) from People's Republic of China (China). The period of review (POR) is January 1, 2024, through December 31, 2024.",
+      "agency": "National Credit Union Administration",
+      "title": "Thresholds Increase for the Major Assets Prohibition of the Depository Institution Management Interlocks Act Rule",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23994/thresholds-increase-for-the-major-assets-prohibition-of-the-depository-institution-management",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "Federal Register (National Credit Union Administration)",
+      "summary": "The NCUA Board (Board) is issuing a final rule increasing two thresholds in its regulation implementing management official interlocks for purposes of the Depository Institution Management Interlocks Act (DIMIA). DIMIA authorizes NCUA to adjust the major assets prohibition thresholds through regulation to respond to inflation or market changes. This final rule increases both major assets prohibiti",
       "categories": [
-        "Sanctions",
-        "Notice"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "Commerce / ITA",
-      "title": "Certain Passenger Vehicle and Light Truck Tires From the People's Republic of China: Final Results of Antidumping Duty Administrative Review; 2024-2025",
-      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23939/certain-passenger-vehicle-and-light-truck-tires-from-the-peoples-republic-of-china-final-results-of",
-      "published": "2026-11-24T00:00:00+00:00",
-      "source": "Federal Register (Commerce Department, International Trade Administration)",
-      "summary": "The U.S. Department of Commerce (Commerce) determines that producers/exporters subject to this review made sales of subject merchandise at less than normal value during the period of review (POR) August 1, 2024, through July 31, 2025.",
-      "categories": [
-        "Sanctions",
-        "Notice"
+        "Antitrust",
+        "Rule"
       ],
       "sector": "macro_policy"
     }
