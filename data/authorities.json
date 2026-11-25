@@ -1,6 +1,58 @@
 {
-  "updated_at": "2026-11-24T22:46:35+00:00",
+  "updated_at": "2026-11-25T05:03:53+00:00",
   "items": [
+    {
+      "agency": "SEC",
+      "title": "SEC Proposes Executive and Director Compensation Disclosure Reforms",
+      "url": "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms",
+      "published": "2026-11-13T16:57:00+00:00",
+      "source": "SEC Official",
+      "summary": "The Securities and Exchange Commission today proposed rule amendments to make its executive and director compensation disclosure requirements more principles-based and materiality-driven, providing investors with clearer, more concise, and less complex…",
+      "categories": [
+        "SEC Declaration",
+        "markets_enforcement"
+      ],
+      "sector": "markets_enforcement"
+    },
+    {
+      "agency": "SEC",
+      "title": "SEC: Eight Entities Used Fake Crypto Asset Trading Platforms to Steal More Than $37 Million From U.S. Investors",
+      "url": "https://www.sec.gov/newsroom/press-releases/2026-115-sec-eight-entities-used-fake-crypto-asset-trading-platforms-steal-more-37-million-us-investors",
+      "published": "2026-11-19T14:39:02+00:00",
+      "source": "SEC Official",
+      "summary": "The Securities and Exchange Commission today charged eight Colorado-based entities, likely operated by individuals located overseas, for defrauding U.S. investors out of more than $37 million. The defendants allegedly lured investors to believe they were…",
+      "categories": [
+        "SEC Declaration",
+        "markets_enforcement"
+      ],
+      "sector": "markets_enforcement"
+    },
+    {
+      "agency": "SEC",
+      "title": "SEC Charges Indianapolis-Based Backward Hat Capital and Its Co-Founders With $560 Million Dollar Offering Fraud and Obtains Emergency Relief",
+      "url": "https://www.sec.gov/newsroom/press-releases/2026-116-sec-charges-indianapolis-based-backward-hat-capital-its-co-founders-560-million-dollar-offering",
+      "published": "2026-11-20T14:28:28+00:00",
+      "source": "SEC Official",
+      "summary": "The Securities and Exchange Commission today announced that it has obtained a temporary restraining order, asset freeze, expedited discovery, and other relief against Indianapolis-based Backward Hat Capital, its co-founders Phillip Williams and Devin…",
+      "categories": [
+        "SEC Declaration",
+        "markets_enforcement"
+      ],
+      "sector": "markets_enforcement"
+    },
+    {
+      "agency": "SEC",
+      "title": "SEC Issues Proposal to Restructure the Consolidated Audit Trail",
+      "url": "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail",
+      "published": "2026-11-20T18:03:24+00:00",
+      "source": "SEC Official",
+      "summary": "The Securities and Exchange Commission today issued a proposal to address the inefficiencies in the current governance and funding model of the Consolidated Audit Trail (CAT). The Commission is proposing to rescind Rule 613 of Regulation NMS, which…",
+      "categories": [
+        "SEC Declaration",
+        "markets_enforcement"
+      ],
+      "sector": "markets_enforcement"
+    },
     {
       "agency": "White House",
       "title": "Presidential Determination Pursuant to Section 1245(d)(4)(B) and (C) of the National Defense Authorization Act for Fiscal Year 2012",
@@ -67,36 +119,10 @@
       "sector": "antitrust_tech"
     },
     {
-      "agency": "DOJ",
-      "title": "Russian National Pleads Guilty to Evading Economic Sanctions on Russia",
-      "url": "https://www.justice.gov/opa/pr/russian-national-pleads-guilty-evading-economic-sanctions-russia",
-      "published": "2026-11-24T12:00:00+00:00",
-      "source": "DOJ Official",
-      "summary": "Alexander Suvorov, 52, a Russian national formerly residing in Sweden, pleaded guilty today to conspiracy to violate the Export Control Reform Act (ECRA).",
-      "categories": [
-        "DOJ Declaration",
-        "antitrust_legal"
-      ],
-      "sector": "antitrust_legal"
-    },
-    {
-      "agency": "DOJ",
-      "title": "Member of Global Insider Trading Network Extradited to United States for Securities Fraud and Money Laundering Offenses",
-      "url": "https://www.justice.gov/usao-ma/pr/member-global-insider-trading-network-extradited-united-states-securities-fraud-and",
-      "published": "2026-11-24T12:00:00+00:00",
-      "source": "DOJ Official",
-      "summary": "BOSTON – A Singaporean citizen has been extradited to the United States to face federal securities fraud and money laundering charges in Boston.",
-      "categories": [
-        "DOJ Declaration",
-        "antitrust_legal"
-      ],
-      "sector": "antitrust_legal"
-    },
-    {
       "agency": "NHTSA",
       "title": "NHTSA Recall 25V359000 (Tesla Model Y): VISIBILITY:WINDSHIELD WIPER/WASHER:LINKAGES",
       "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V359000",
-      "published": "2026-11-24T00:00:00+00:00",
+      "published": "2026-11-25T00:00:00+00:00",
       "source": "NHTSA Official",
       "summary": "30/05/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model Y vehicles. The hose connector may block the windshield washer nozzles, preventing washer fluid from reaching the windshield. As such, these vehicles fail to comply with the requirements of Federal Motor Vehicle Safety Standard (FMVSS) number 104, \"Windshield Wiping and Washing Systems.\"",
       "categories": [
@@ -109,7 +135,7 @@
       "agency": "NHTSA",
       "title": "NHTSA Recall 25V410000 (Tesla Model Y): SEATS:CRITICAL FASTENERS",
       "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V410000",
-      "published": "2026-11-24T00:00:00+00:00",
+      "published": "2026-11-25T00:00:00+00:00",
       "source": "NHTSA Official",
       "summary": "18/06/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model 3 and Model Y vehicles. The fasteners attaching the seat back to the seat bottom may have been improperly tightened.",
       "categories": [
@@ -122,7 +148,7 @@
       "agency": "NHTSA",
       "title": "NHTSA Recall 25V490000 (Tesla Model Y): ELECTRICAL SYSTEM:HORN",
       "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V490000",
-      "published": "2026-11-24T00:00:00+00:00",
+      "published": "2026-11-25T00:00:00+00:00",
       "source": "NHTSA Official",
       "summary": "28/07/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model Y vehicles. The ring terminal of the horn ground wire may be improperly secured, allowing the circuit to open and preventing the horn from sounding.",
       "categories": [

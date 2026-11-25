@@ -1,8 +1,319 @@
 {
-  "updated_at": "2026-11-24T22:46:35+00:00",
+  "updated_at": "2026-11-25T05:03:53+00:00",
   "min_importance": 42.0,
   "max_age_hours": 6.0,
   "items": [
+    {
+      "key": "shock_ADI_2026-11-25_drop",
+      "symbol": "ADI",
+      "name": "Analog Devices",
+      "title": "Analog Devices (ADI) drops -17.76% to $311.50 (Overnight / Off-Market)",
+      "url": "https://finance.yahoo.com/quote/ADI",
+      "source": "Live Market Tape (Overnight / Off-Market)",
+      "source_tier": 1,
+      "published": "2026-11-25T05:03:53+00:00",
+      "importance": 96.0,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "shock_APLD_2026-11-25_drop",
+      "symbol": "APLD",
+      "name": "Applied Digital",
+      "title": "Applied Digital (APLD) drops -13.17% to $12.00 (Overnight / Off-Market)",
+      "url": "https://finance.yahoo.com/quote/APLD",
+      "source": "Live Market Tape (Overnight / Off-Market)",
+      "source_tier": 1,
+      "published": "2026-11-25T05:03:53+00:00",
+      "importance": 96.0,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "shock_AXTI_2026-11-25_drop",
+      "symbol": "AXTI",
+      "name": "AXT Inc",
+      "title": "AXT Inc (AXTI) drops -17.94% to $31.20 (Overnight / Off-Market)",
+      "url": "https://finance.yahoo.com/quote/AXTI",
+      "source": "Live Market Tape (Overnight / Off-Market)",
+      "source_tier": 1,
+      "published": "2026-11-25T05:03:53+00:00",
+      "importance": 96.0,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "shock_CIFR_2026-11-25_drop",
+      "symbol": "CIFR",
+      "name": "Cipher Mining",
+      "title": "Cipher Mining (CIFR) drops -11.75% to $5.47 (Overnight / Off-Market)",
+      "url": "https://finance.yahoo.com/quote/CIFR",
+      "source": "Live Market Tape (Overnight / Off-Market)",
+      "source_tier": 1,
+      "published": "2026-11-25T05:03:53+00:00",
+      "importance": 96.0,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.05,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "e3c65ae895bd031b",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell in Strong Position With No Signs of a Slowdown, CFO Says",
+      "url": "https://finance.yahoo.com/video/dell-strong-position-no-signs-232228501.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-24T23:22:28+00:00",
+      "importance": 92.0,
+      "categories": [
+        "earnings_guidance",
+        "contract_partnership",
+        "data_centers_ai"
+      ],
+      "age_hours": 5.69,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "8e73f36c183a2bf8",
+      "symbol": "BLK",
+      "name": "BlackRock",
+      "title": "BlackRock-led consortium mulls lowering Stack Infrastructure Asia offer- Bloomberg",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/blackrock-led-consortium-mulls-lowering-044311403.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T04:43:11+00:00",
+      "importance": 87.5,
+      "categories": [
+        "analyst",
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 0.35,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "2133911b7a9b6687",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Jim Cramer resets Nvidia stock target as Jensen Huang returns as CEO",
+      "url": "https://www.thestreet.com/investing/stocks/jim-cramer-nvidia-stock-target-jensen-huang",
+      "source": "TheStreet",
+      "source_tier": 2,
+      "published": "2026-11-25T04:33:00+00:00",
+      "importance": 81.8,
+      "categories": [
+        "analyst",
+        "management"
+      ],
+      "age_hours": 0.51,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "d5d4fa2f1dac3add",
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "title": "Tesla's $3.5 trillion merger talks have a surprising catch",
+      "url": "https://www.thestreet.com/investing/teslas-3-5-trillion-merger-talks-have-a-surprising-catch",
+      "source": "TheStreet",
+      "source_tier": 2,
+      "published": "2026-11-25T03:33:00+00:00",
+      "importance": 70.7,
+      "categories": [
+        "m_and_a"
+      ],
+      "age_hours": 1.51,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "8c338cb8f3cbe0bb",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Le Monde details suspected Nvidia chip diversion network through Southeast Asia",
+      "url": "https://finance.yahoo.com/technology/ai/articles/le-monde-details-suspected-nvidia-042239633.html",
+      "source": "Investing.com",
+      "source_tier": 2,
+      "published": "2026-11-25T04:22:39+00:00",
+      "importance": 69.6,
+      "categories": [
+        "regulatory_legal"
+      ],
+      "age_hours": 0.69,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "552b97570650619e",
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "title": "Thinking of Buying SpaceX Stock? Gary Black Says Wait for a Potential Tesla Merger to Send It Below $100",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/thinking-buying-spacex-stock-gary-013135652.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T01:31:35+00:00",
+      "importance": 68.4,
+      "categories": [
+        "m_and_a"
+      ],
+      "age_hours": 3.54,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "fd04528042acf38a",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "Altimetrik Achieves the AWS Agentic AI Specialization",
+      "url": "https://finance.yahoo.com/technology/ai/articles/altimetrik-achieves-aws-agentic-ai-033000212.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T03:30:00+00:00",
+      "importance": 66.4,
+      "categories": [
+        "contract_partnership"
+      ],
+      "age_hours": 1.56,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "589983393a0473bc",
+      "symbol": "MS",
+      "name": "Morgan Stanley",
+      "title": "Morgan Stanley sends a strong signal on where stocks are headed",
+      "url": "https://www.thestreet.com/investing/stocks/morgan-stanley-sends-a-strong-signal-on-where-stocks-are-headed?.tsrc=rss",
+      "source": "thestreet.com",
+      "source_tier": 2,
+      "published": "2026-11-24T23:07:00+00:00",
+      "importance": 65.7,
+      "categories": [
+        "analyst"
+      ],
+      "age_hours": 5.95,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "d4ba86054f141e30",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Dow Jones Futures Fall; Trump Says 'Not Too Late' For U.S. To Take Nvidia Stake",
+      "url": "https://www.investors.com/market-trend/stock-market-today/dow-jones-futures-nvidia-anthropic-ai-retreat-fed-inflation-data/?src=A00220&yptr=yahoo",
+      "source": "Investor's Business Daily",
+      "source_tier": 2,
+      "published": "2026-11-25T04:04:33+00:00",
+      "importance": 62.7,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.99,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "d9d27e84849e2f8b",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia Still Faces 'Key-Man Risk' in Huang: Professor",
+      "url": "https://finance.yahoo.com/video/nvidia-still-faces-key-man-030814447.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T03:08:14+00:00",
+      "importance": 53.2,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.93,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "1e0aab026be970eb",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "Amazon ‘Trying to Trick’ You With Black Friday Offers That Aren’t Really Deals, Says Elizabeth Warren: E-Commerce Giant Pushes Back",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/amazon-trying-trick-black-friday-025557873.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T02:55:57+00:00",
+      "importance": 53.0,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 2.13,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "4f7c2c00d380b6b1",
+      "symbol": "V",
+      "name": "Visa",
+      "title": "iwoca and Visa launch credit card to widen SME funding choice",
+      "url": "https://finance.yahoo.com/small-business/articles/iwoca-visa-launch-credit-card-000100356.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-25T00:01:00+00:00",
+      "importance": 52.5,
+      "categories": [
+        "product_tech"
+      ],
+      "age_hours": 5.05,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "4ddaef08eaa8640b",
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices",
+      "title": "A scandal like the one haunting Nvidia just reached AMD, its biggest rival",
+      "url": "https://www.thestreet.com/investing/stocks/scandal-like-one-haunting-nvidia-just-reached-amd-its-biggest-rival",
+      "source": "TheStreet",
+      "source_tier": 2,
+      "published": "2026-11-24T23:17:00+00:00",
+      "importance": 49.9,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 5.78,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "e30918b6cb166b20",
+      "symbol": "AI / DATA CENTERS",
+      "name": "AI / DATA CENTERS",
+      "title": "Banks Put Data Center Clients Under the Microscope on AI Chips",
+      "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxORUJzZHdsdUt1VDhNT2xRY1VSX3VQZFpET1NKVHlyNlF3V0FvbENTYkt4akxXbElMOENpZ0xwNEtJTkIyTnIxV0MzU2xjVWUwRm5qVUJvbE1Gc25rRk1fOWtCX1NtYU5qZ1VVdTF1c2hlbmwzWDgwQ0RrMUlJR0sxTEJleU1Gd3JtOXNOWHd2UkZBUV83RkwybnhLWlpjQzdhOTNxY2xqdk9lR2paWTVZRVF6YkZoYWxVV0dSaFB0OA?oc=5",
+      "source": "Bloomberg.com",
+      "source_tier": 1,
+      "published": "2026-11-25T01:09:00+00:00",
+      "importance": 100.0,
+      "categories": [
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 3.91,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
+    {
+      "key": "c65764a42a863cc7",
+      "symbol": "AI / DATA CENTERS",
+      "name": "AI / DATA CENTERS",
+      "title": "Dell Raises Annual Forecast as AI Data Center Boom Continues",
+      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPS1dhYzNpaFJlWDE2ejFyX2NmT2NOS0dESExzaUlOeW1xbVgyYnVaendSbHVwbWdFOWstX1JMZ00tdkZEU1VTOXZ4Szl3enA4NWJEcnZ2dmF3M2ljNGpTY1B3LVFRN2tPdUxvbUR4YlhvZFVhZFU3cGFXQmR3Sk1ONzRFOS1zRHFrVERpYWZQTlBoTDY0aDNHTGtQZU9Ea2c?oc=5",
+      "source": "The Information",
+      "source_tier": 1,
+      "published": "2026-11-24T23:57:00+00:00",
+      "importance": 98.8,
+      "categories": [
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 5.11,
+      "detected_at": "2026-11-25T05:03:53+00:00"
+    },
     {
       "key": "shock_AXTI_2026-11-24_drop",
       "symbol": "AXTI",
@@ -82,22 +393,6 @@
         "regulatory_legal"
       ],
       "age_hours": 0.24,
-      "detected_at": "2026-11-24T22:46:35+00:00"
-    },
-    {
-      "key": "fdb32108a6ac3311",
-      "symbol": "ADI",
-      "name": "Analog Devices",
-      "title": "8-K filed 2026-11-24 - Item 2.02: Results of operations (earnings release)",
-      "url": "https://www.sec.gov/Archives/edgar/data/6281/000000628126000087/adi-20261124.htm",
-      "source": "SEC EDGAR 8-K",
-      "source_tier": 1,
-      "published": "2026-11-24T00:00:00+00:00",
-      "importance": 90.0,
-      "categories": [
-        "sec_8k"
-      ],
-      "age_hours": 22.78,
       "detected_at": "2026-11-24T22:46:35+00:00"
     },
     {
