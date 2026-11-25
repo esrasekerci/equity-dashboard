@@ -27,7 +27,7 @@
     deferredInstallPrompt: null,
     stockTab: "news",
     chartTab: "interactive",
-    chartRange: "3M",
+    chartRange: "1D",
     chartInterval: "auto",
     chartFullscreen: false,
     chartOverlays: { sma20: true, sma50: true, sma200: false, sr: true, weekends: false },
@@ -877,6 +877,7 @@
             </div>
             <div style="text-align:right">
               <div class="price-pill ${clsPct(row.change_1d_pct)}">$${fmtNum(row.close)} · ${fmtPct(row.change_1d_pct, 1)}</div>
+              ${renderExtMiniHtml(row)}
               <div style="margin-top:4px"><span class="score-badge" ${notableScoreTipAttr(row)}>Score ${fmtNum(n.score, 0)} <span class="tip-badge">?</span></span></div>
             </div>
           </div>
@@ -2617,6 +2618,68 @@
     });
   }
 
+  function fmtSignedDelta(v) {
+    if (v == null || !Number.isFinite(Number(v))) return "";
+    const n = Number(v);
+    return `${n >= 0 ? "+" : "−"}${Math.abs(n).toFixed(2)}`;
+  }
+
+  function renderDualStockQuoteHtml(facts) {
+    const regClose = Number(facts?.last_close || 0);
+    const regPct = facts?.change_1d_pct;
+    let regUsd = facts?.change_1d_usd;
+    if ((regUsd == null || !Number.isFinite(Number(regUsd))) && regClose > 0 && regPct != null && Number.isFinite(Number(regPct))) {
+      const p = Number(regPct);
+      const prev = Math.abs(100 + p) > 1e-6 ? regClose / (1 + p / 100) : regClose;
+      regUsd = regClose - prev;
+    }
+    const hasExt = facts?.ext_price != null && Number(facts.ext_price) > 0 && facts?.ext_label;
+    const isRegOpen = Boolean(facts?.is_reg_open) || (!hasExt && usMarketSessionLabel() === "MARKET OPEN");
+    const regSessTag = isRegOpen
+      ? `<span class="quote-sess-tag live"><span class="sess-dot"></span>Market Open</span>`
+      : `<span class="quote-sess-tag">At Close</span>`;
+    const regUsdHtml = regUsd != null ? `${fmtSignedDelta(regUsd)} ` : "";
+
+    let extBlockHtml = "";
+    if (hasExt) {
+      const extP = Number(facts.ext_price);
+      const extPct = facts.ext_change_pct;
+      const extUsd = facts.ext_change_usd != null && Number.isFinite(Number(facts.ext_change_usd))
+        ? Number(facts.ext_change_usd)
+        : (regClose > 0 ? extP - regClose : null);
+      const isPm = String(facts.ext_label).includes("Pre");
+      const extUsdHtml = extUsd != null ? `${fmtSignedDelta(extUsd)} ` : "";
+      extBlockHtml = `
+        <div class="quote-col ext-col">
+          <div class="quote-price-row">
+            <span class="stock-price ext-price">$${fmtNum(extP)}</span>
+            <span class="quote-ccy">USD</span>
+          </div>
+          <div class="quote-sub-row">
+            <span class="quote-delta ${clsPct(extPct)}">${extUsdHtml}${fmtPct(extPct)}</span>
+            <span class="quote-sess-tag ${isPm ? "pm" : "ah"}"><span class="sess-dot"></span>${esc(facts.ext_label)}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="stock-price-dual ${hasExt ? "has-ext" : ""}">
+        <div class="quote-col reg-col">
+          <div class="quote-price-row">
+            <span class="stock-price">$${fmtNum(regClose)}</span>
+            <span class="quote-ccy">USD</span>
+          </div>
+          <div class="quote-sub-row">
+            <span class="quote-delta ${clsPct(regPct)}">${regUsdHtml}${fmtPct(regPct)}</span>
+            ${regSessTag}
+          </div>
+        </div>
+        ${extBlockHtml}
+      </div>
+    `;
+  }
+
   function syncTickerBundleWithLiveRow(t) {
     if (!t || !state.summary) return t;
     const liveRow = (state.summary.tickers || []).find((x) => x.symbol === t.symbol);
@@ -2628,12 +2691,17 @@
     const tech = (t.technical ||= {});
     const facts = (tech.facts ||= {});
     facts.last_close = liveClose;
+    if (liveRow.change_1d_usd != null && Number.isFinite(Number(liveRow.change_1d_usd))) {
+      facts.change_1d_usd = Number(liveRow.change_1d_usd);
+    }
     if (liveChg != null && Number.isFinite(liveChg)) {
       facts.change_1d_pct = liveChg;
     }
     facts.ext_price = liveRow.ext_price ?? null;
+    facts.ext_change_usd = liveRow.ext_change_usd ?? null;
     facts.ext_change_pct = liveRow.ext_change_pct ?? null;
     facts.ext_label = liveRow.ext_label ?? null;
+    facts.is_reg_open = Boolean(liveRow.is_reg_open);
     if (liveRow.last_bar) {
       facts.last_bar = liveRow.last_bar;
     }
@@ -2802,14 +2870,8 @@
               <span class="pro-company-name">${esc(t.name)}</span>
             </div>
           </div>
-          <div class="stock-price-box">
-            <div class="stock-price">$${fmtNum(facts.last_close)}</div>
-            <div class="pro-price-sub">
-              <span class="price-pill ${clsPct(facts.change_1d_pct)}">${fmtPct(facts.change_1d_pct)}</span>
-            </div>
-            <div class="ext-quote-line ${facts.ext_price != null ? "" : "hidden"}" id="stockExtSub">
-              ${facts.ext_price != null ? `<span class="muted">${esc(facts.ext_label || "Ext")}</span> <strong>$${fmtNum(facts.ext_price)}</strong> <span class="${clsPct(facts.ext_change_pct)}">(${fmtPct(facts.ext_change_pct)})</span>` : ""}
-            </div>
+          <div class="stock-price-box" id="stockPriceBox">
+            ${renderDualStockQuoteHtml(facts)}
           </div>
         </div>
 
@@ -3280,6 +3342,124 @@
     return withRollingSma([...byMonth.values()]);
   }
 
+  const _etPartsFmt = (() => {
+    try {
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/New_York",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+    } catch {
+      return null;
+    }
+  })();
+
+  function barEtInfo(barT, extHint) {
+    if (typeof barT === "string") {
+      return { iso: barT.slice(0, 10), mins: 570, isExt: false };
+    }
+    const tsSec = Number(barT);
+    if (!Number.isFinite(tsSec)) return { iso: "", mins: 570, isExt: Boolean(extHint) };
+    if (_etPartsFmt) {
+      try {
+        const parts = _etPartsFmt.formatToParts(new Date(tsSec * 1000));
+        const m = {};
+        for (const p of parts) m[p.type] = p.value;
+        const hh = Number(m.hour || 0) % 24;
+        const mm = Number(m.minute || 0);
+        const mins = hh * 60 + mm;
+        const isExt = extHint != null ? Boolean(extHint) : (mins < 570 || mins >= 960);
+        return { iso: `${m.year}-${m.month}-${m.day}`, mins, isExt };
+      } catch {}
+    }
+    const iso = new Date(tsSec * 1000).toISOString().slice(0, 10);
+    return { iso, mins: 570, isExt: Boolean(extHint) };
+  }
+
+  function cnbcTimeWindowStrings(daysBack) {
+    const pad2 = (n) => String(n).padStart(2, "0");
+    const fmt = (dt) => `${dt.getUTCFullYear()}${pad2(dt.getUTCMonth() + 1)}${pad2(dt.getUTCDate())}000000`;
+    const now = new Date();
+    const start = new Date(now.getTime() - daysBack * 86400000);
+    const end = new Date(now.getTime() + 2 * 86400000);
+    return { startStr: fmt(start), endStr: fmt(end) };
+  }
+
+  async function fetchCnbcIntradayBars(sym, ivKey) {
+    const cnbcSym = sym.replace("-", ".");
+    const cfg = ivKey === "1m"
+      ? { apiIv: "1M", days: 7, aggSec: 0 }
+      : ivKey === "5m"
+      ? { apiIv: "5M", days: 14, aggSec: 0 }
+      : ivKey === "15m"
+      ? { apiIv: "5M", days: 30, aggSec: 900 }
+      : ivKey === "1H"
+      ? { apiIv: "1H", days: 120, aggSec: 0 }
+      : null;
+    if (!cfg) return null;
+    const { startStr, endStr } = cnbcTimeWindowStrings(cfg.days);
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 5500);
+    try {
+      const url = `https://ts-api.cnbc.com/harmony/app/bars/${encodeURIComponent(cnbcSym)}/${cfg.apiIv}/${startStr}/${endStr}/adjusted/EST5EDT.json`;
+      const res = await fetch(url, { signal: ctrl.signal, cache: "no-store" });
+      clearTimeout(timer);
+      if (!res.ok) return null;
+      const json = await res.json();
+      const rawBars = json?.barData?.priceBars || [];
+      if (!Array.isArray(rawBars) || rawBars.length < 2) return null;
+      const parsed = [];
+      const seen = new Set();
+      for (const b of rawBars) {
+        const tsSec = Math.floor(Number(b.tradeTimeinMills || 0) / 1000);
+        const c = Number(b.close);
+        if (!Number.isFinite(tsSec) || tsSec <= 0 || seen.has(tsSec) || !Number.isFinite(c) || c <= 0) continue;
+        seen.add(tsSec);
+        const o = Number.isFinite(Number(b.open)) && Number(b.open) > 0 ? Number(b.open) : c;
+        const h = Number.isFinite(Number(b.high)) && Number(b.high) > 0 ? Number(b.high) : c;
+        const l = Number.isFinite(Number(b.low)) && Number(b.low) > 0 ? Number(b.low) : c;
+        const v = Number.isFinite(Number(b.volume)) ? Math.max(0, Math.round(Number(b.volume))) : 0;
+        const tt = String(b.tradeTime || "");
+        const hhmm = tt.length >= 12 ? Number(tt.slice(8, 12)) : null;
+        const isExt = hhmm != null ? (hhmm < 930 || hhmm >= 1600 ? 1 : 0) : (barEtInfo(tsSec).isExt ? 1 : 0);
+        parsed.push({
+          t: tsSec,
+          o: Number(o.toFixed(2)),
+          h: Number(h.toFixed(2)),
+          l: Number(l.toFixed(2)),
+          c: Number(c.toFixed(2)),
+          v,
+          ext: isExt,
+        });
+      }
+      parsed.sort((a, b) => a.t - b.t);
+      if (cfg.aggSec > 0) {
+        const byBucket = new Map();
+        for (const b of parsed) {
+          const bkt = Math.floor(b.t / cfg.aggSec) * cfg.aggSec;
+          const cur = byBucket.get(bkt);
+          if (!cur) {
+            byBucket.set(bkt, { ...b, t: bkt });
+          } else {
+            if (b.h > cur.h) cur.h = b.h;
+            if (b.l < cur.l) cur.l = b.l;
+            cur.c = b.c;
+            cur.v += b.v;
+          }
+        }
+        return [...byBucket.values()];
+      }
+      return parsed;
+    } catch {
+      clearTimeout(timer);
+      return null;
+    }
+  }
+
   const _ivFetchBusy = {};
   async function fetchLiveIntradaySeries(t, ivKey) {
     const sym = t?.symbol;
@@ -3288,7 +3468,7 @@
     const cache = (tech._ivCache ||= {});
     const busyKey = `${sym}:${ivKey}`;
     if (_ivFetchBusy[busyKey]) return;
-    if (cache[ivKey] && (Date.now() - (cache[ivKey].ts || 0)) < 45000) return;
+    if (cache[ivKey] && (Date.now() - (cache[ivKey].ts || 0)) < 25000) return;
 
     const specMap = {
       "1m": { range: "5d", interval: "1m" },
@@ -3301,38 +3481,52 @@
 
     _ivFetchBusy[busyKey] = true;
     try {
-      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=${spec.range}&interval=${spec.interval}&includePrePost=true`;
-      const raw = await fetchViaCors(url, 5500);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
-      const res0 = parsed?.chart?.result?.[0];
-      const tsArr = res0?.timestamp || [];
-      const q0 = res0?.indicators?.quote?.[0] || {};
-      const meta = res0?.meta || {};
-      const prevClose = Number(meta.chartPreviousClose || meta.previousClose || tech.prev_close_1d || 0);
-      const seen = new Set();
-      const bars = [];
-      for (let i = 0; i < tsArr.length; i++) {
-        const tsSec = Number(tsArr[i]);
-        const c = Number(q0.close?.[i]);
-        if (!Number.isFinite(tsSec) || seen.has(tsSec) || !Number.isFinite(c) || c <= 0) continue;
-        seen.add(tsSec);
-        const o = Number.isFinite(Number(q0.open?.[i])) && Number(q0.open[i]) > 0 ? Number(q0.open[i]) : c;
-        const h = Number.isFinite(Number(q0.high?.[i])) && Number(q0.high[i]) > 0 ? Number(q0.high[i]) : c;
-        const l = Number.isFinite(Number(q0.low?.[i])) && Number(q0.low[i]) > 0 ? Number(q0.low[i]) : c;
-        const v = Number.isFinite(Number(q0.volume?.[i])) ? Math.max(0, Math.round(Number(q0.volume[i]))) : 0;
-        bars.push({
-          t: tsSec,
-          o: Number(o.toFixed(2)),
-          h: Number(h.toFixed(2)),
-          l: Number(l.toFixed(2)),
-          c: Number(c.toFixed(2)),
-          v,
-        });
+      // 1. Primary direct CORS-native CNBC consolidated bar feed (zero proxy, up-to-the-second Pre-Market/After-Hours + Regular)
+      let bars = await fetchCnbcIntradayBars(sym, ivKey);
+      let prevClose = Number(tech.prev_close_1d || 0);
+
+      // 2. Fallback to Yahoo Finance via CORS gateway only if direct feed returned empty
+      if (!bars || bars.length < 2) {
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=${spec.range}&interval=${spec.interval}&includePrePost=true`;
+        const raw = await fetchViaCors(url, 5500);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const res0 = parsed?.chart?.result?.[0];
+          const tsArr = res0?.timestamp || [];
+          const q0 = res0?.indicators?.quote?.[0] || {};
+          const meta = res0?.meta || {};
+          prevClose = Number(meta.chartPreviousClose || meta.previousClose || prevClose || 0);
+          const seen = new Set();
+          bars = [];
+          for (let i = 0; i < tsArr.length; i++) {
+            const tsSec = Number(tsArr[i]);
+            const c = Number(q0.close?.[i]);
+            if (!Number.isFinite(tsSec) || seen.has(tsSec) || !Number.isFinite(c) || c <= 0) continue;
+            seen.add(tsSec);
+            const o = Number.isFinite(Number(q0.open?.[i])) && Number(q0.open[i]) > 0 ? Number(q0.open[i]) : c;
+            const h = Number.isFinite(Number(q0.high?.[i])) && Number(q0.high[i]) > 0 ? Number(q0.high[i]) : c;
+            const l = Number.isFinite(Number(q0.low?.[i])) && Number(q0.low[i]) > 0 ? Number(q0.low[i]) : c;
+            const v = Number.isFinite(Number(q0.volume?.[i])) ? Math.max(0, Math.round(Number(q0.volume[i]))) : 0;
+            const et = barEtInfo(tsSec);
+            bars.push({
+              t: tsSec,
+              o: Number(o.toFixed(2)),
+              h: Number(h.toFixed(2)),
+              l: Number(l.toFixed(2)),
+              c: Number(c.toFixed(2)),
+              v,
+              ext: et.isExt ? 1 : 0,
+            });
+          }
+        }
       }
-      if (bars.length >= 2) {
+
+      if (bars && bars.length >= 2) {
         bars.sort((a, b) => a.t - b.t);
         cache[ivKey] = { ts: Date.now(), bars, prevClose };
+        if (ivKey === "5m") {
+          tech.series_1d = bars.slice(-260);
+        }
         if (state.view === "stock" && state.activeTicker === sym && state.tvEffInterval === ivKey && $("tvChart")) {
           mountInteractiveChart(t);
         }
@@ -3377,11 +3571,7 @@
 
   function barToIsoDate(barT) {
     if (typeof barT === "string") return barT.slice(0, 10);
-    try {
-      return new Date(Number(barT) * 1000).toISOString().slice(0, 10);
-    } catch {
-      return "";
-    }
+    return barEtInfo(barT).iso;
   }
 
   function mountInteractiveChart(t) {
@@ -3426,12 +3616,38 @@
           clean.push({ ...b, t: tsNum });
         }
         clean.sort((a, b) => a.t - b.t);
+        const withEt = clean.map((b) => {
+          const et = barEtInfo(b.t, b.ext);
+          return { ...b, etIso: et.iso, isExt: et.isExt };
+        });
+        // Find the latest Regular US session date (09:30–16:00 ET) and the prior day's Regular Close
+        let latestRegIso = "";
+        for (let i = withEt.length - 1; i >= 0; i--) {
+          if (!withEt[i].isExt && withEt[i].etIso) {
+            latestRegIso = withEt[i].etIso;
+            break;
+          }
+        }
+        let priorRegClose = 0;
+        if (latestRegIso) {
+          for (let i = withEt.length - 1; i >= 0; i--) {
+            if (!withEt[i].isExt && withEt[i].etIso && withEt[i].etIso < latestRegIso) {
+              priorRegClose = withEt[i].c;
+              break;
+            }
+          }
+        }
         const dailySer = tech.series || [];
-        basePrevC = Number(ivEntry?.prevClose || tech.prev_close_1d) || (dailySer.length >= 2 ? dailySer[dailySer.length - 2].c : (clean[0]?.o || clean[0]?.c || 0));
-        data = withRollingSma(clean).map((d, i) => {
-          const prevC = state.chartRange === "1D" && basePrevC ? basePrevC : (i > 0 ? clean[i - 1].c : d.o);
+        const factsRegClose = Number(tech.facts?.last_close || 0);
+        const factsRegPct = Number(tech.facts?.change_1d_pct || 0);
+        const derivedPrev = factsRegClose > 0 && Math.abs(100 + factsRegPct) > 1e-6
+          ? Number((factsRegClose / (1 + factsRegPct / 100)).toFixed(2))
+          : 0;
+        basePrevC = priorRegClose || derivedPrev || Number(ivEntry?.prevClose || tech.prev_close_1d) || (dailySer.length >= 2 ? dailySer[dailySer.length - 2].c : (withEt[0]?.o || withEt[0]?.c || 0));
+        data = withRollingSma(withEt).map((d, i) => {
+          const prevC = state.chartRange === "1D" && basePrevC ? basePrevC : (i > 0 ? withEt[i - 1].c : d.o);
           const chg1d = prevC ? ((d.c - prevC) / prevC) * 100 : 0;
-          return { ...d, prevC, chg1d, isIntraday: true };
+          return { ...d, prevC, chg1d, isIntraday: true, latestRegIso };
         });
       }
     }
@@ -3560,6 +3776,8 @@
     });
     state.tvChart = chart;
 
+    const extUpCol = "#94a3b8";
+    const extDnCol = "#64748b";
     const candles = chart.addCandlestickSeries({
       upColor: upCol,
       downColor: dnCol,
@@ -3570,7 +3788,13 @@
       borderVisible: true,
       wickVisible: true,
     });
-    candles.setData(timelinePoints.map((d) => ({ time: d.t, open: d.o, high: d.h, low: d.l, close: d.c })));
+    candles.setData(timelinePoints.map((d) => {
+      if (useIntraday && d.isExt) {
+        const ec = d.c >= d.o ? extUpCol : extDnCol;
+        return { time: d.t, open: d.o, high: d.h, low: d.l, close: d.c, color: ec, borderColor: ec, wickColor: ec };
+      }
+      return { time: d.t, open: d.o, high: d.h, low: d.l, close: d.c };
+    }));
     state.tvCandles = candles;
 
     // Volume histogram at bottom — hide right-axis value badge so volume never collides with dollar prices
@@ -3581,7 +3805,13 @@
       lastValueVisible: false,
     });
     chart.priceScale("vol").applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
-    vol.setData(timelinePoints.map((d) => ({ time: d.t, value: d.v, color: d.c >= d.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)" })));
+    vol.setData(timelinePoints.map((d) => ({
+      time: d.t,
+      value: d.v,
+      color: (useIntraday && d.isExt)
+        ? "rgba(148,163,184,0.28)"
+        : (d.c >= d.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)"),
+    })));
     state.tvVol = vol;
 
     if (useIntraday && state.chartRange === "1D" && basePrevC && basePrevC > 0) {
@@ -3592,6 +3822,16 @@
         lineStyle: LC.LineStyle.Dashed,
         axisLabelVisible: true,
         title: "Prev Close",
+      });
+    }
+    if (useIntraday && state.chartRange === "1D" && tech.facts?.ext_price != null && tech.facts?.last_close > 0) {
+      candles.createPriceLine({
+        price: Number(tech.facts.last_close),
+        color: "rgba(96, 165, 250, 0.5)",
+        lineWidth: 1,
+        lineStyle: LC.LineStyle.Dotted,
+        axisLabelVisible: true,
+        title: "At Close",
       });
     }
     const lineDefs = [
@@ -3730,14 +3970,18 @@
 
       if (useIntraday) {
         const lastTs = Number(timelinePoints[totalBars - 1].t);
-        const lastIso = barToIsoDate(lastTs);
         if (rng === "1D") {
-          const sameDayIdx = timelinePoints.findIndex((b) => barToIsoDate(b.t) === lastIso);
-          if (sameDayIdx >= 0 && (totalBars - sameDayIdx) >= 6) {
-            return { from: Math.max(-0.5, sameDayIdx - 0.5), to: totalBars + 1.5 };
+          const targetRegIso = timelinePoints[totalBars - 1]?.latestRegIso || barToIsoDate(lastTs);
+          const regOpenIdx = timelinePoints.findIndex((b) => !b.isExt && b.etIso === targetRegIso);
+          if (regOpenIdx >= 0 && (totalBars - regOpenIdx) >= 4) {
+            return { from: Math.max(-0.5, regOpenIdx - 0.5), to: totalBars + 2 };
           }
-          const fb = effIv === "1m" ? 390 : effIv === "5m" ? 84 : effIv === "15m" ? 32 : 16;
-          return { from: Math.max(-0.5, totalBars - fb), to: totalBars + 1.5 };
+          const sameDayIdx = timelinePoints.findIndex((b) => barToIsoDate(b.t) === targetRegIso);
+          if (sameDayIdx >= 0 && (totalBars - sameDayIdx) >= 6) {
+            return { from: Math.max(-0.5, sameDayIdx - 0.5), to: totalBars + 2 };
+          }
+          const fb = effIv === "1m" ? 390 : effIv === "5m" ? 105 : effIv === "15m" ? 40 : 18;
+          return { from: Math.max(-0.5, totalBars - fb), to: totalBars + 2 };
         }
         const dayMap = { "5D": 5, "1W": 7, "1M": 31, "3M": 92, "6M": 183, "YTD": 300, "1Y": 365 };
         const cutoffSec = lastTs - (dayMap[rng] || 5) * 86400;
@@ -4931,12 +5175,18 @@
       const q = quotes[row.symbol];
       if (q && q.close != null && Number.isFinite(Number(q.close)) && Number(q.close) > 0) {
         const newClose = Number(Number(q.close).toFixed(2));
+        const newChgUsd = q.change_1d_usd != null && Number.isFinite(Number(q.change_1d_usd))
+          ? Number(Number(q.change_1d_usd).toFixed(2))
+          : row.change_1d_usd;
         const newChg = q.change_1d_pct != null && Number.isFinite(Number(q.change_1d_pct))
           ? Number(Number(q.change_1d_pct).toFixed(2))
           : row.change_1d_pct;
         const newExtP = q.ext_price != null && Number.isFinite(Number(q.ext_price)) && Number(q.ext_price) > 0
           ? Number(Number(q.ext_price).toFixed(2))
           : null;
+        const newExtUsd = newExtP != null && q.ext_change_usd != null && Number.isFinite(Number(q.ext_change_usd))
+          ? Number(Number(q.ext_change_usd).toFixed(2))
+          : (newExtP != null ? Number((newExtP - newClose).toFixed(2)) : null);
         const newExtC = q.ext_change_pct != null && Number.isFinite(Number(q.ext_change_pct))
           ? Number(Number(q.ext_change_pct).toFixed(2))
           : null;
@@ -4946,10 +5196,13 @@
           changed = true;
         }
         row.close = newClose;
+        row.change_1d_usd = newChgUsd;
         row.change_1d_pct = newChg;
         row.ext_price = newExtP;
+        row.ext_change_usd = newExtUsd;
         row.ext_change_pct = newExtC;
         row.ext_label = newExtL;
+        row.is_reg_open = Boolean(q.is_reg_open);
         if (q.last_bar) row.last_bar = q.last_bar;
         if (q.open) row.open = Number(q.open);
         if (q.high) row.high = Number(q.high);
@@ -5104,31 +5357,36 @@
         pill.className = `price-pill ${clsPct(r.change_1d_pct)}`;
         pill.textContent = `$${fmtNum(r.close)} · ${fmtPct(r.change_1d_pct, 1)}`;
       }
+      const existingExt = card.querySelector(".ext-mini-line");
+      if (r.ext_price != null && r.ext_label) {
+        const html = renderExtMiniHtml(r);
+        if (existingExt) existingExt.outerHTML = html;
+        else if (pill) pill.insertAdjacentHTML("afterend", html);
+      } else if (existingExt) {
+        existingExt.remove();
+      }
     });
 
-    // 3. Patch active Stock page (Hero price, Extended-Hours quote, S/R current badge, Full-Screen chart bar & live candle)
+    // 3. Patch active Stock page (Side-by-Side Dual Hero Price, S/R current badge, Full-Screen chart bar & live candle)
     if (state.view === "stock" && state.activeTicker) {
       const r = bySymLive[state.activeTicker];
       if (r) {
-        const sp = document.querySelector("#stockContent .stock-price");
-        const pp = document.querySelector("#stockContent .pro-price-sub .price-pill");
-        const extSub = $("stockExtSub");
+        const pBox = $("stockPriceBox");
         const lc = document.querySelector("#stockContent .level-current");
         const fsp = $("chartFsPrice");
         const fspill = $("chartFsPill");
         const fsExt = $("chartFsExt");
-        if (sp) sp.textContent = `$${fmtNum(r.close)}`;
-        if (pp) {
-          pp.className = `price-pill ${clsPct(r.change_1d_pct)}`;
-          pp.textContent = fmtPct(r.change_1d_pct);
-        }
-        if (extSub) {
-          if (r.ext_price != null && r.ext_label) {
-            extSub.classList.remove("hidden");
-            extSub.innerHTML = `<span class="muted">${esc(r.ext_label)}</span> <strong>$${fmtNum(r.ext_price)}</strong> <span class="${clsPct(r.ext_change_pct)}">(${fmtPct(r.ext_change_pct)})</span>`;
-          } else {
-            extSub.classList.add("hidden");
-          }
+        if (pBox) {
+          pBox.innerHTML = renderDualStockQuoteHtml({
+            last_close: r.close,
+            change_1d_usd: r.change_1d_usd,
+            change_1d_pct: r.change_1d_pct,
+            ext_price: r.ext_price,
+            ext_change_usd: r.ext_change_usd,
+            ext_change_pct: r.ext_change_pct,
+            ext_label: r.ext_label,
+            is_reg_open: r.is_reg_open,
+          });
         }
         if (lc) lc.textContent = `Current · $${fmtNum(r.close)}`;
         if (fsp) fsp.textContent = `$${fmtNum(r.close)}`;
@@ -5176,13 +5434,19 @@
         const updL = Math.min(last.l, updC);
         const prevC = Number(tech.prev_close_1d) || last.o;
         const chg1d = prevC ? ((updC - prevC) / prevC) * 100 : 0;
+        const isExtBar = Boolean(last.ext) || (facts.ext_price != null && facts.ext_price > 0);
         try {
-          state.tvCandles.update({ time: Number(last.t), open: last.o, high: updH, low: updL, close: updC });
+          if (isExtBar) {
+            const ec = updC >= last.o ? "#94a3b8" : "#64748b";
+            state.tvCandles.update({ time: Number(last.t), open: last.o, high: updH, low: updL, close: updC, color: ec, borderColor: ec, wickColor: ec });
+          } else {
+            state.tvCandles.update({ time: Number(last.t), open: last.o, high: updH, low: updL, close: updC });
+          }
           if (state.tvVol && last.v != null) {
             state.tvVol.update({
               time: Number(last.t),
               value: last.v,
-              color: updC >= last.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)",
+              color: isExtBar ? "rgba(148,163,184,0.28)" : (updC >= last.o ? "rgba(34,197,94,0.38)" : "rgba(244,63,94,0.38)"),
             });
           }
           if (state.tvUpdateLegend) {
@@ -5215,17 +5479,130 @@
     } catch {}
   }
 
-  // Direct CORS-native 115-symbol real-time institutional quote stream (every 5 seconds, 0 proxies, ~100ms)
+  function parseCleanNum(val) {
+    if (val == null) return null;
+    const s = String(val).replace(/[,%+]/g, "").trim();
+    if (!s || s === "--") return null;
+    if (s === "UNCH") return 0;
+    const n = Number(s);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function appendLiveTickToCachedSeries(sym, liveTickPrice, tickEpoch, isRegOpen) {
+    const cached = state.tickerCache[`${state.date}:${sym}`];
+    if (!cached?.technical || !(liveTickPrice > 0) || !(tickEpoch > 0)) return;
+    const extFlag = isRegOpen ? 0 : 1;
+    const updateBars = (arr, bucketSec) => {
+      if (!Array.isArray(arr) || !arr.length) return;
+      const bkt = Math.floor(tickEpoch / bucketSec) * bucketSec;
+      const last = arr[arr.length - 1];
+      if (bkt > Number(last.t)) {
+        arr.push({ t: bkt, o: liveTickPrice, h: liveTickPrice, l: liveTickPrice, c: liveTickPrice, v: 0, ext: extFlag });
+      } else if (bkt === Number(last.t)) {
+        last.c = liveTickPrice;
+        if (liveTickPrice > last.h) last.h = liveTickPrice;
+        if (liveTickPrice < last.l) last.l = liveTickPrice;
+      }
+    };
+    updateBars(cached.technical.series_1d, 300);
+    const ivc = cached.technical._ivCache || {};
+    if (ivc["1m"]?.bars) updateBars(ivc["1m"].bars, 60);
+    if (ivc["5m"]?.bars) updateBars(ivc["5m"].bars, 300);
+    if (ivc["15m"]?.bars) updateBars(ivc["15m"].bars, 900);
+    if (ivc["1H"]?.bars) updateBars(ivc["1H"].bars, 3600);
+  }
+
+  // Primary zero-delay 115-symbol real-time stream (CNBC Last NASDAQ LS / CTA, Access-Control-Allow-Origin: *, every 5s)
   let tvPollBusy = false;
   async function pollTradingViewDirect() {
     if (tvPollBusy || document.hidden || !state.summary) return;
     tvPollBusy = true;
     try {
-      const sessLbl = usMarketSessionLabel();
       const allSyms = new Set(["SPY", ...(state.summary.tickers || []).map((t) => t.symbol)]);
       for (const s of state.summary.heatmap?.sectors || []) {
         if (s.etf) allSyms.add(s.etf);
       }
+
+      // 1. Primary: CNBC real-time consolidated quote batch (zero Pre-Market/After-Hours delay, native CORS)
+      try {
+        const cnbcList = [...allSyms].map((s) => s.replace("-", "."));
+        const ctrlC = new AbortController();
+        const tC = setTimeout(() => ctrlC.abort(), 4500);
+        const cnbcUrl = `https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=${encodeURIComponent(cnbcList.join("|"))}&requestMethod=itv&noform=1&partnerId=2&fund=0&exthrs=1&output=json`;
+        const resC = await fetch(cnbcUrl, { signal: ctrlC.signal, cache: "no-store" });
+        clearTimeout(tC);
+        if (resC.ok) {
+          const jsonC = await resC.json();
+          let fq = jsonC?.FormattedQuoteResult?.FormattedQuote || [];
+          if (!Array.isArray(fq)) fq = fq ? [fq] : [];
+          const mapC = {};
+          for (const item of fq) {
+            const rawSym = item?.symbol;
+            const regClose = parseCleanNum(item?.last);
+            if (!rawSym || regClose == null || regClose <= 0) continue;
+            const sym = String(rawSym).replace(".", "-").toUpperCase();
+            const regChgUsd = parseCleanNum(item?.change) ?? 0;
+            const regChgPct = parseCleanNum(item?.change_pct) ?? 0;
+            const oV = parseCleanNum(item?.open);
+            const hV = parseCleanNum(item?.high);
+            const lV = parseCleanNum(item?.low);
+            const regOpen = oV && oV > 0 ? oV : regClose;
+            const regHigh = hV && hV > 0 ? hV : regClose;
+            const regLow = lV && lV > 0 ? lV : regClose;
+            const vol = Math.max(0, Math.round(parseCleanNum(item?.volume) || 0));
+            const mktStatus = String(item?.curmktstatus || "").toUpperCase();
+            const isRegOpen = mktStatus === "REG_MKT";
+            const ltStr = String(item?.last_time || "");
+            const regBarIso = ltStr.length >= 10 && ltStr[4] === "-" ? ltStr.slice(0, 10) : null;
+
+            let extPrice = null, extChgUsd = null, extChgPct = null, extLabel = null, extEpoch = 0;
+            const extObj = item?.ExtendedMktQuote;
+            if (!isRegOpen && extObj && typeof extObj === "object") {
+              const ep = parseCleanNum(extObj.last);
+              if (ep != null && ep > 0) {
+                extPrice = Number(ep.toFixed(2));
+                const ecu = parseCleanNum(extObj.change);
+                const ecp = parseCleanNum(extObj.change_pct);
+                extChgUsd = Number((ecu != null ? ecu : (ep - regClose)).toFixed(2));
+                extChgPct = Number((ecp != null ? ecp : (((ep - regClose) / regClose) * 100)).toFixed(2));
+                const extType = String(extObj.type || mktStatus).toUpperCase();
+                extLabel = extType.includes("PRE") ? "Pre-Market" : "After-Hours";
+                const parsedMs = extObj.last_time ? Date.parse(extObj.last_time) : NaN;
+                extEpoch = Number.isFinite(parsedMs) ? Math.floor(parsedMs / 1000) : Math.floor(Date.now() / 1000);
+              }
+            }
+
+            const liveTickPrice = extPrice != null && extPrice > 0 ? extPrice : Number(regClose.toFixed(2));
+            const tickEpoch = isRegOpen ? Math.floor(Date.now() / 1000) : extEpoch;
+            appendLiveTickToCachedSeries(sym, liveTickPrice, tickEpoch, isRegOpen);
+
+            mapC[sym] = {
+              close: regClose,
+              open: regOpen,
+              high: regHigh,
+              low: regLow,
+              last_bar: regBarIso,
+              change_1d_usd: Number(regChgUsd.toFixed(2)),
+              change_1d_pct: Number(regChgPct.toFixed(2)),
+              ext_price: extPrice,
+              ext_change_usd: extChgUsd,
+              ext_change_pct: extChgPct,
+              ext_label: extLabel,
+              is_reg_open: isRegOpen,
+              volume: vol,
+              dollar_volume_usd: regClose * vol,
+            };
+          }
+          if (Object.keys(mapC).length >= 50) {
+            applyLiveQuotesMap(mapC);
+            MarketRealtimeDB.saveSnapshot(mapC);
+            return;
+          }
+        }
+      } catch {}
+
+      // 2. Automatic Fallback: TradingView America Scanner API
+      const sessLbl = usMarketSessionLabel();
       const tvTickers = [];
       for (const sym of allSyms) {
         if (TV_EXCHANGE_MAP[sym]) {
@@ -5267,6 +5644,8 @@
         const regClose = Number(d[4]);
         if (!Number.isFinite(regClose) || regClose <= 0) continue;
         const regChg = Number(d[5] || 0);
+        const prevC = Math.abs(100 + regChg) > 1e-6 ? regClose / (1 + regChg / 100) : regClose;
+        const regChgUsd = regClose - prevC;
         const regOpen = d[1] != null ? Number(d[1]) : regClose;
         const regHigh = d[2] != null ? Number(d[2]) : regClose;
         const regLow = d[3] != null ? Number(d[3]) : regClose;
@@ -5274,45 +5653,33 @@
 
         const pmP = d[7], pmChg = d[8], pmTs = Number(d[9] || 0);
         const ahP = d[10], ahChg = d[11], ahTs = Number(d[12] || 0);
-        let extPrice = null, extChg = null, extLabel = null, extTs = 0;
+        let extPrice = null, extChg = null, extChgUsd = null, extLabel = null, extTs = 0;
 
         if (!isRegOpen) {
           if (sessLbl === "PRE-MARKET" && pmP != null && pmTs >= ahTs) {
             extPrice = Number(pmP);
             extChg = Number(pmChg || 0);
+            extChgUsd = extPrice - regClose;
             extLabel = "Pre-Market";
             extTs = pmTs;
           } else if (ahP != null && ahTs >= pmTs) {
             extPrice = Number(ahP);
             extChg = Number(ahChg || 0);
+            extChgUsd = extPrice - regClose;
             extLabel = "After-Hours";
             extTs = ahTs;
           } else if (pmP != null) {
             extPrice = Number(pmP);
             extChg = Number(pmChg || 0);
+            extChgUsd = extPrice - regClose;
             extLabel = "Pre-Market";
             extTs = pmTs;
           }
         }
 
-        // Also append live 5m bucket into cached series_1d if viewing this stock
-        const cached = state.tickerCache[`${state.date}:${sym}`];
-        if (cached?.technical?.series_1d?.length) {
-          const ser1d = cached.technical.series_1d;
-          const liveTickPrice = extPrice != null && extPrice > 0 ? Number(extPrice.toFixed(2)) : Number(regClose.toFixed(2));
-          const tickEpoch = isRegOpen ? Math.floor(Date.now() / 1000) : (extTs || 0);
-          if (tickEpoch > 0) {
-            const bucket5m = Math.floor(tickEpoch / 300) * 300;
-            const last1d = ser1d[ser1d.length - 1];
-            if (bucket5m > Number(last1d.t)) {
-              ser1d.push({ t: bucket5m, o: liveTickPrice, h: liveTickPrice, l: liveTickPrice, c: liveTickPrice, v: 0 });
-            } else if (bucket5m === Number(last1d.t)) {
-              last1d.c = liveTickPrice;
-              if (liveTickPrice > last1d.h) last1d.h = liveTickPrice;
-              if (liveTickPrice < last1d.l) last1d.l = liveTickPrice;
-            }
-          }
-        }
+        const liveTickPrice = extPrice != null && extPrice > 0 ? Number(extPrice.toFixed(2)) : Number(regClose.toFixed(2));
+        const tickEpoch = isRegOpen ? Math.floor(Date.now() / 1000) : (extTs || 0);
+        appendLiveTickToCachedSeries(sym, liveTickPrice, tickEpoch, isRegOpen);
 
         map[sym] = {
           close: regClose,
@@ -5320,10 +5687,13 @@
           high: regHigh,
           low: regLow,
           last_bar: regTodayIso,
+          change_1d_usd: Number(regChgUsd.toFixed(2)),
           change_1d_pct: regChg,
           ext_price: extPrice,
+          ext_change_usd: extChgUsd != null ? Number(extChgUsd.toFixed(2)) : null,
           ext_change_pct: extChg,
           ext_label: extLabel,
+          is_reg_open: isRegOpen,
           volume: vol,
           dollar_volume_usd: regClose * vol,
         };
@@ -5340,51 +5710,23 @@
 
   async function refreshSingleStockRealtime(sym) {
     if (!sym) return;
-    // Trigger instant direct TradingView tick first
+    // 1. Trigger instant zero-delay quote tick
     pollTradingViewDirect();
     try {
-      const chartUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1d&interval=5m&includePrePost=true`;
-      const raw = await fetchViaCors(chartUrl, 4500);
-      if (raw) {
-        const data = JSON.parse(raw);
-        const res0 = data?.chart?.result?.[0];
-        const meta = res0?.meta;
-        const tsArr = res0?.timestamp || [];
-        const q0 = res0?.indicators?.quote?.[0] || {};
-        const regPrice = Number(meta?.regularMarketPrice || 0);
-        const prev = Number(meta?.chartPreviousClose || meta?.previousClose || regPrice);
-        const cacheKey = `${state.date}:${sym}`;
-        const cached = state.tickerCache[cacheKey];
-
-        // Populate 1D 5-minute intraday series (never overwrite Regular close with After-Hours print!)
-        const series1d = [];
-        const seenTs = new Set();
-        for (let i = 0; i < tsArr.length; i++) {
-          const tsSec = Number(tsArr[i]);
-          const cVal = Number(q0.close?.[i]);
-          if (!Number.isFinite(tsSec) || seenTs.has(tsSec) || !Number.isFinite(cVal) || cVal <= 0) continue;
-          seenTs.add(tsSec);
-          const oVal = Number.isFinite(Number(q0.open?.[i])) && Number(q0.open[i]) > 0 ? Number(q0.open[i]) : cVal;
-          const hVal = Number.isFinite(Number(q0.high?.[i])) && Number(q0.high[i]) > 0 ? Number(q0.high[i]) : cVal;
-          const lVal = Number.isFinite(Number(q0.low?.[i])) && Number(q0.low[i]) > 0 ? Number(q0.low[i]) : cVal;
-          const vVal = Number.isFinite(Number(q0.volume?.[i])) ? Math.max(0, Math.round(Number(q0.volume[i]))) : 0;
-          series1d.push({
-            t: tsSec,
-            o: Number(oVal.toFixed(2)),
-            h: Number(hVal.toFixed(2)),
-            l: Number(lVal.toFixed(2)),
-            c: Number(cVal.toFixed(2)),
-            v: vVal,
-          });
-        }
-        if (cached && series1d.length >= 2) {
-          const tech = (cached.technical ||= {});
-          const had1d = Array.isArray(tech.series_1d) && tech.series_1d.length >= 2;
-          tech.series_1d = series1d;
-          if (prev > 0) tech.prev_close_1d = Number(prev.toFixed(2));
-          if (!had1d && state.view === "stock" && state.activeTicker === sym && $("tvChart")) {
+      const cacheKey = `${state.date}:${sym}`;
+      const cached = state.tickerCache[cacheKey];
+      // 2. Pull direct CORS-native 5-minute candles (Regular + After-Hours + Pre-Market) with zero proxy lag
+      const cnbcBars = await fetchCnbcIntradayBars(sym, "5m");
+      if (cached && cnbcBars && cnbcBars.length >= 2) {
+        const tech = (cached.technical ||= {});
+        const had1d = Array.isArray(tech.series_1d) && tech.series_1d.length >= 2;
+        tech.series_1d = cnbcBars.slice(-260);
+        tech._ivCache = tech._ivCache || {};
+        tech._ivCache["5m"] = { ts: Date.now(), bars: cnbcBars, prevClose: tech.prev_close_1d || 0 };
+        if (state.view === "stock" && state.activeTicker === sym && $("tvChart")) {
+          if (!had1d || state.chartRange === "1D" || state.tvEffInterval === "5m") {
             mountInteractiveChart(cached);
-          } else if (state.view === "stock" && state.activeTicker === sym) {
+          } else {
             streamLiveChartTick(sym);
           }
         }
