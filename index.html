@@ -7,16 +7,16 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="racenter" />
+  <meta name="apple-mobile-web-app-title" content="Markets" />
   <meta name="format-detection" content="telephone=no" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png" />
   <link rel="apple-touch-icon-precomposed" sizes="180x180" href="assets/icon-180.png" />
   <link rel="icon" type="image/png" href="assets/icon-192.png" />
-  <meta property="og:title" content="racenter" />
+  <meta property="og:title" content="Equity Intelligence" />
   <meta property="og:description" content="Live 100-stock quantitative intelligence, Gold &amp; Silver benchmarks, interactive charts, supply-chain value network, Institutional Flow, official legal authorities &amp; SEC filings." />
-  <title>racenter</title>
-  <link rel="stylesheet" href="assets/app.css?v=40" />
+  <title>Equity Intelligence</title>
+  <link rel="stylesheet" href="assets/app.css?v=41" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -25,8 +25,8 @@
       <div class="brand-row">
         <div class="brand" id="brandHome" role="button" tabindex="0">
           <div style="min-width:0">
-            <div class="brand-title">racenter</div>
-            <div class="brand-sub" id="marketCloseBadge">Loading market data…</div>
+            <div class="brand-title hidden" aria-hidden="true"></div>
+            <div class="brand-sub hidden" id="marketCloseBadge" aria-hidden="true"></div>
           </div>
         </div>
 
@@ -240,7 +240,6 @@
       <div class="section-header">
         <div>
           <h2>Breaking &amp; Important News</h2>
-          <p class="section-sub" id="breakingUpdated">Checked automatically every hour, 24/7</p>
         </div>
       </div>
       <div class="filter-bar-scroll">
@@ -394,6 +393,6 @@
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
 
-  <script src="assets/app.js?v=40"></script>
+  <script src="assets/app.js?v=41"></script>
 </body>
 </html>

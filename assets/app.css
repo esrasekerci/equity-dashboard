@@ -66,10 +66,10 @@ a:hover { text-decoration: underline; }
 .topbar-inner {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 10px 16px 8px;
+  padding: 6px 14px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
 }
 .brand-row {

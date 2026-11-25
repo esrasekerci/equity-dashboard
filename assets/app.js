@@ -170,9 +170,36 @@
   }
 
   async function fetchJson(url) {
-    const res = await fetch(url, { cache: "no-cache" });
+    // Cache-bust every data request so iOS/Android PWAs, GitHub Pages CDN (max-age=600) and the service worker never serve yesterday's files
+    const bust = url.startsWith("data/") && !/[?&]t=/.test(url) ? `${url.includes("?") ? "&" : "?"}t=${Date.now()}` : "";
+    const res = await fetch(url + bust, { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status} loading ${url}`);
     return res.json();
+  }
+
+  // If a newer daily report is published while the app stays open (or resumes from background), switch to it automatically
+  let lastFreshCheck = 0;
+  async function checkForNewerReport(force = false) {
+    if (!state.index || state.reportCheckBusy) return;
+    if (!force && Date.now() - lastFreshCheck < 120000) return;
+    lastFreshCheck = Date.now();
+    state.reportCheckBusy = true;
+    try {
+      const idx = await fetchJson("data/index.json");
+      if (idx && idx.latest && idx.latest !== state.date) {
+        state.index = idx;
+        const dates = idx.dates || [];
+        $("dateSelect").innerHTML = dates.map((d) => `<option value="${esc(d.date)}">${esc(d.date)}</option>`).join("");
+        state.tickerCache = {};
+        const sy = window.scrollY;
+        await loadDate(idx.latest, state.view === "stock" ? state.activeTicker : null);
+        await loadBreaking();
+        await loadAuthorities();
+        if (state.view !== "stock") window.scrollTo({ top: sy, behavior: "instant" });
+      }
+    } catch {} finally {
+      state.reportCheckBusy = false;
+    }
   }
 
   function currentHistoryState() {
@@ -185,10 +212,10 @@
 
   function syncUrl(push = true) {
     const params = new URLSearchParams();
-    if (state.date) params.set("date", state.date);
     if (state.view === "stock" && state.activeTicker) params.set("ticker", state.activeTicker);
     else if (state.view !== "overview") params.set("view", state.view);
-    const nextUrl = `${location.pathname}?${params.toString()}`;
+    const qs = params.toString();
+    const nextUrl = qs ? `${location.pathname}?${qs}` : location.pathname;
     const curUrl = `${location.pathname}${location.search}`;
     const hState = currentHistoryState();
     try {
@@ -275,7 +302,7 @@
       state.breaking = Array.isArray(b.items) ? b.items : [];
       $("breakingCount").textContent = String(state.breaking.length);
       if ($("moreBreakingCount")) $("moreBreakingCount").textContent = String(state.breaking.length);
-      if (b.updated_at) $("breakingUpdated").textContent = `Updated ${b.updated_at.replace("T", " ").replace("Z", " UTC")} · Auto-checked every hour (24/7)`;
+
     } catch {
       state.breaking = [];
       $("breakingCount").textContent = "0";
@@ -288,7 +315,7 @@
     try {
       const a = await fetchJson("data/authorities.json");
       state.authorities = Array.isArray(a.items) ? a.items : [];
-      if (a.updated_at) $("authoritiesUpdated").textContent = `Official US Regulators · Updated ${a.updated_at.replace("T", " ").replace("Z", " UTC")}`;
+
     } catch {
       state.authorities = [];
     }
@@ -575,18 +602,6 @@
       state.date = dateStr;
       state.summary = await fetchJson(`data/${dateStr}/summary.json`);
       $("dateSelect").value = dateStr;
-      const rawTs = state.index?.updated_at || state.summary.generated_at || "";
-      let updTxt = dateStr;
-      if (rawTs) {
-        const dt = new Date(rawTs);
-        if (!Number.isNaN(dt.getTime())) {
-          const pad = (n) => String(n).padStart(2, "0");
-          updTxt = `Updated ${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
-        } else {
-          updTxt = `Updated ${rawTs.replace("T", " ").slice(0, 16)}`;
-        }
-      }
-      $("marketCloseBadge").textContent = updTxt;
       $("navTickerCount").textContent = String(state.summary.n_tickers || 0);
       if ($("viewAllScreenerBtn")) $("viewAllScreenerBtn").textContent = `View all ${state.summary.n_tickers || 0} →`;
       renderOverview();
@@ -2774,7 +2789,6 @@
             <div class="stock-price">$${fmtNum(facts.last_close)}</div>
             <div class="pro-price-sub">
               <span class="price-pill ${clsPct(facts.change_1d_pct)}">${fmtPct(facts.change_1d_pct)}</span>
-              <span class="muted">${esc(facts.last_bar || "")}</span>
             </div>
           </div>
         </div>
@@ -2858,7 +2872,7 @@
           <h3 ${tipAttr("sr_levels")}>Support &amp; Resistance Ladder <span class="tip-badge">?</span></h3>
           <div class="level-list">
             ${resLevels.map(renderLevelRow).join("")}
-            <div class="level-current">Last Close · $${fmtNum(facts.last_close)}</div>
+            <div class="level-current">Current · $${fmtNum(facts.last_close)}</div>
             ${supLevels.map(renderLevelRow).join("")}
           </div>
         </div>
@@ -4180,7 +4194,7 @@
       overlay.setAttribute("aria-modal", "true");
 
       const stepsHtml = hasNativePrompt
-        ? `<p class="install-modal-desc">Install <strong>racenter</strong> directly to your device home screen for full-screen native access.</p>`
+        ? `<p class="install-modal-desc">Install the app directly to your device home screen for full-screen native access.</p>`
         : isIOS
           ? `<div class="install-steps">
                <div><strong>1.</strong> If opened inside Telegram, tap the <strong>Safari compass icon</strong> at the bottom-right first (Apple only allows app installs from Safari).</div>
@@ -4202,13 +4216,13 @@
           <div class="install-modal-hdr">
             <div>
               <div class="install-modal-eyebrow">${isIOS ? "iOS App Installation" : "App Installation"}</div>
-              <h2 class="install-modal-title">Install racenter</h2>
+              <h2 class="install-modal-title">Install the App</h2>
             </div>
             <button type="button" class="install-dismiss-btn hidden" id="autoInstallDismissBtn" aria-label="Close"></button>
           </div>
           ${stepsHtml}
           <div class="install-modal-actions">
-            ${hasNativePrompt ? `<button type="button" class="btn-primary-accent install-modal-primary" id="autoInstallNowBtn">Install racenter Now</button>` : ""}
+            ${hasNativePrompt ? `<button type="button" class="btn-primary-accent install-modal-primary" id="autoInstallNowBtn">Install Now</button>` : ""}
             ${!hasNativePrompt && isIOS ? `<button type="button" class="btn-primary-accent install-modal-primary" id="copyIosLinkBtn">Copy Link to Open in Safari</button>` : ""}
             <button type="button" class="btn-secondary install-modal-secondary" id="autoInstallLaterBtn">Continue in Browser</button>
           </div>
@@ -4509,12 +4523,6 @@
       }
     }
 
-    const sessLbl = usMarketSessionLabel();
-    const nowStr = tsLabel || new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-    if ($("marketCloseBadge")) {
-      $("marketCloseBadge").innerHTML = `<span class="live-dot"></span>${esc(sessLbl)} · ${esc(nowStr)}`;
-    }
-
     if (!changed) return;
 
     // Patch visible DOM in place without losing scroll position or expanded states
@@ -4561,7 +4569,7 @@
           pp.className = `price-pill ${clsPct(r.change_1d_pct)}`;
           pp.textContent = fmtPct(r.change_1d_pct);
         }
-        if (lc) lc.textContent = `Last Close · $${fmtNum(r.close)}`;
+        if (lc) lc.textContent = `Current · $${fmtNum(r.close)}`;
         if (fsp) fsp.textContent = `$${fmtNum(r.close)}`;
         if (fspill) {
           fspill.className = `price-pill ${clsPct(r.change_1d_pct)}`;
@@ -4760,9 +4768,11 @@
   let rtCursor = 0;
   async function pollRealtimeTick() {
     if (document.hidden || !state.summary) return;
+    // 0. Switch to a newer daily report if one was published since the app opened
+    await checkForNewerReport();
     // 1. Check cloud-synced live_quotes.json & breaking_news.json
     try {
-      const lq = await fetchJson(`data/live_quotes.json?t=${Date.now()}`);
+      const lq = await fetchJson("data/live_quotes.json");
       if (lq && lq.quotes) applyLiveQuotesMap(lq.quotes);
     } catch {}
     try {
@@ -4806,8 +4816,15 @@
   function initRealtimeEngine() {
     setTimeout(pollRealtimeTick, 1800);
     setInterval(pollRealtimeTick, 25000);
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) pollRealtimeTick();
+    document.addEventListener("visibilitychange", async () => {
+      if (!document.hidden) {
+        await checkForNewerReport(true);
+        pollRealtimeTick();
+      }
+    });
+    // iOS restores PWAs from the back-forward cache without re-running scripts; force a fresh check on resume
+    window.addEventListener("pageshow", (ev) => {
+      if (ev.persisted) checkForNewerReport(true).then(() => pollRealtimeTick());
     });
   }
 
@@ -4825,8 +4842,7 @@
       ).join("");
 
       const params = new URLSearchParams(location.search);
-      const wantedDate = params.get("date");
-      const targetDate = dates.some((d) => d.date === wantedDate) ? wantedDate : state.index.latest;
+      const targetDate = state.index.latest;
       const wantedTicker = params.get("ticker");
       const wantedView = params.get("view");
       if (wantedView && ["overview", "screener", "network", "smartmoney", "breaking", "authorities", "macro", "formulas"].includes(wantedView)) state.view = wantedView;
@@ -4843,7 +4859,19 @@
   }
 
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then((reg) => {
+        // Pull the newest app version whenever the user comes back to the app
+        document.addEventListener("visibilitychange", () => { if (!document.hidden) reg.update().catch(() => {}); });
+      }).catch(() => {});
+    });
+    // When a new version takes over, reload once so screens never stay on the old build
+    let swReloaded = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (swReloaded) return;
+      swReloaded = true;
+      location.reload();
+    });
   }
 
   boot();
