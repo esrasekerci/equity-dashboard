@@ -1,8 +1,8 @@
 {
   "id": "/equity-dashboard/",
-  "name": "racenter",
-  "short_name": "racenter",
-  "description": "Quantitative 100-stock & precious metals intelligence: interactive all-time charts, supply-chain network, Institutional Flow, SEC filings & live regulatory watch.",
+  "name": "Equity Intelligence",
+  "short_name": "Markets",
+  "description": "Real-time 100-stock & precious metals quantitative intelligence: live multi-timeframe charts, supply-chain network, institutional flow, SEC filings & regulatory watch.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

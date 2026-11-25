@@ -76,7 +76,12 @@
     power_utilities: "Power & Nuclear Utilities",
     clean_energy: "Clean & Nuclear Energy",
     energy: "Oil & Natural Gas",
-    ev_energy: "EV & Autonomous AI",
+    ev_energy: "EV & Autonomous",
+    defense_industrial: "Defense & Industrials",
+    financials: "Financials & Payments",
+    healthcare: "Healthcare & MedTech",
+    consumer: "Consumer & Retail",
+    precious_metals: "Gold, Silver & Copper",
     macro_policy: "Macro & Trade Policy",
   };
   const fmtSector = (s) => {
@@ -86,58 +91,58 @@
     return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   };
 
-  // Simple, clear Binance-style explanations for ? tooltips (exact formulas live on the dedicated "Formulas" tab)
+  // Consistent, unambiguous pop-out definitions across all screens (exact live math on the "Formulas" tab)
   const GLOSSARY = {
     notable_score:
-      "Notable Score (0–100)|Shows how unusually active a stock is today based on price move size, volume spike, news, and SEC filings. Higher score = more market attention today (not a buy/sell rating).",
+      "Notable Score (0–100)|Measures how unusually active a stock is right now based on live 1D price move vs ATR, relative volume surge, chart breakouts, extreme RSI, news, and SEC filings. Higher = greater market catalyst attention.",
     rsi14:
-      "RSI-14 (Momentum)|0–100 speed gauge over the last 14 days. Below 30 = Oversold (sharp recent drop); Above 70 = Overbought (sharp recent rally); 30–70 = Neutral.",
+      "RSI-14 (Momentum)|0–100 momentum oscillator over 14 sessions. Below 30 = Oversold; Above 70 = Overbought; 30–70 = Neutral.",
     sma:
-      "SMA 20 / 50 / 200 (Trend Lines)|Average closing price over the last 20 (short-term), 50 (medium-term), and 200 (long-term) trading days. Green = price is above that trend line; Red = below.",
+      "SMA 20 / 50 / 200 (Trend)|Simple moving averages over 20, 50, and 200 sessions. Green = price above trend line; Red = below.",
     rs_spy:
-      "vs SPY (1-Month Relative Strength)|How much the stock beat (+) or lagged (−) the S&P 500 index over the last 21 trading days.",
+      "vs SPY (21d Relative Strength)|21-trading-day excess return over the S&P 500 (SPY). Positive = outperforming; Negative = lagging.",
     rs_sector:
-      "vs Sector ETF (1-Month)|How much the stock beat (+) or lagged (−) its own industry ETF over the last 21 trading days.",
+      "vs Sector ETF (21d)|21-trading-day excess return over the stock's industry benchmark ETF.",
     sr_levels:
-      "Support (S1–S3) & Resistance (R1–R3)|Support (S) is a price floor where buyers previously stepped in; Resistance (R) is a price ceiling where sellers capped rallies.",
+      "Support (S1–S3) & Resistance (R1–R3)|Support (S) is a price floor with historical demand; Resistance (R) is an overhead ceiling with historical supply. Percentages show live distance from current price.",
     sr_strength:
-      "Level Strength (0–100)|How reliable a Support or Resistance zone is, based on how many times price bounced there and how much volume traded at that price.",
+      "Level Strength (0–100)|Confluence score based on historical pivot touches, 180-day volume-at-price density, recency, and multi-timeframe alignment.",
     scenarios:
-      "20-Day Scenarios (Bull / Base / Bear %)|Rule-based probability split for the next 20 trading days based on trend, momentum, and key price levels. Not financial advice.",
+      "20-Day Scenarios (Bull / Base / Bear %)|Rule-based 20-trading-day probability split combining trend (30%), momentum (30%), relative strength (25%), and chart patterns (15%). Not investment advice.",
     tech_score:
-      "Technical Score (-1.00 to +1.00)|Overall technical trend balance from -1.00 (strongly bearish) to +1.00 (strongly bullish).",
+      "Technical Score (-1.00 to +1.00)|Directional composite score from -1.00 (strongly bearish) to +1.00 (strongly bullish).",
     breadth:
-      "Market Breadth (Advancers / Decliners)|How many of the 39 watchlist stocks closed green (↑) vs red (↓) today, plus their average 1-day return.",
+      "Market Breadth (Advancers / Decliners)|Live count of the 100 watchlist equities & benchmarks trading positive (↑) vs negative (↓) in the current session, plus equal-weighted average 1D return.",
     vix:
-      "VIX Volatility Index|Market's 30-day 'fear gauge' on the S&P 500. Below 15 = calm market; 20–25 = elevated caution; Above 30 = high stress.",
+      "VIX Volatility Index|Live CBOE 30-day S&P 500 implied volatility gauge. Below 15 = calm; 20–25 = elevated caution; Above 30 = market stress.",
     dgs10:
-      "US 10-Year Treasury Yield|Benchmark 10-year US government bond interest rate. Rising yields often pressure growth & tech stock valuations.",
+      "US 10-Year Treasury Yield|Live benchmark 10-year US government bond yield. Rising yields tighten financial conditions and discount rates.",
     fomc:
-      "Next FOMC Decision|Countdown to the Federal Reserve's next interest-rate decision meeting.",
+      "Next FOMC Decision|Countdown to the Federal Reserve's next scheduled interest-rate decision.",
     vol_ratio:
-      "Volume vs 20d Average|Today's trading volume compared to the stock's normal 20-day average. 1.5x or higher signals heavy institutional activity.",
+      "Volume vs 20d Average (RVOL)|Session trading volume divided by the stock's 20-day average volume. 1.35x+ indicates elevated institutional participation.",
     updown_vol:
-      "Up/Down Volume Ratio (20d)|Volume on green days divided by volume on red days over the last 20 sessions. Above 1.2 = Accumulation (buying); Below 0.8 = Distribution (selling).",
+      "Up/Down Volume Ratio (20d)|Total volume on advancing days divided by volume on declining days over 20 sessions. ≥1.20 = Accumulation; ≤0.80 = Distribution.",
     short_float:
-      "Short % of Float|Percentage of tradable shares currently borrowed and sold short by bears. High short interest (>10%) can fuel bigger swings.",
+      "Short Interest (% of Float)|Percentage of tradable float currently sold short. ≥10% indicates crowded bearish positioning; ≥20% indicates high squeeze convexity.",
     pe:
-      "P/E Ratio (Trailing / Forward)|Stock price divided by last 12 months' earnings per share (TTM) vs estimated next 12 months' earnings (Forward).",
+      "P/E Ratio (Trailing / Forward)|Current share price divided by trailing 12-month EPS (TTM) vs consensus next-12-month EPS (Forward).",
     fcf:
-      "Free Cash Flow (TTM)|Actual cash generated by the business over the last 12 months after paying for data centers, fabs, and equipment.",
+      "Free Cash Flow (TTM)|Trailing 12-month operating cash flow minus capital expenditures across plants, infrastructure, and equipment.",
     target_upside:
-      "Analyst Target Δ|Percentage difference between the average Wall Street analyst price target and current price.",
+      "Analyst Target Implied|Live percentage spread between the consensus Wall Street analyst target price and current market price.",
     form4:
-      "SEC Form 4 (Insider Trades)|Official SEC filing required within 2 business days whenever a company executive or director buys or sells shares.",
+      "SEC Form 4 (Insider Trades)|Mandatory SEC filing within 2 business days when a corporate officer, director, or 10% owner buys or sells shares.",
     whale_13d:
-      "SEC Schedule 13D / 13G|Official SEC filing required when a major fund or whale acquires more than 5% of a company.",
+      "SEC Schedule 13D / 13G|Mandatory SEC disclosure when an activist (13D) or institutional investor (13G) crosses 5% ownership.",
     gk_vol:
       "Garman-Klass Realized Volatility (20d / 60d)|OHLC range-based annualized volatility estimator (Garman & Klass, 1980) — 7.4x more statistically efficient than close-to-close standard deviation.",
     capm_beta:
-      "CAPM Market Beta & Jensen's Alpha (60d)|OLS regression of daily log-returns against SPY over 60 trading days. Beta measures systematic market sensitivity; Alpha is annualized risk-adjusted excess return.",
+      "CAPM Market Beta & Jensen's Alpha (60d)|OLS regression of daily log-returns against SPY over 60 sessions. Beta measures systematic sensitivity; Alpha is annualized risk-adjusted excess return.",
     sharpe_sortino:
-      "Sharpe & Sortino Ratio (1Y)|Annualized excess return (over 4.2% risk-free rate) divided by total volatility (Sharpe) or downside semi-deviation only (Sortino).",
+      "Sharpe & Sortino Ratio (1Y)|Annualized excess return divided by total volatility (Sharpe) or downside semi-deviation only (Sortino).",
     var_cvar:
-      "Max Drawdown (1Y) & 1D Expected Shortfall / CVaR (95%)|Peak-to-trough 1-year drawdown and Basel III tail-risk Expected Shortfall (average daily loss across the worst 5% of sessions).",
+      "Max Drawdown (1Y) & 1D CVaR (95%)|Peak-to-trough 1-year drawdown and 95% Expected Shortfall (average 1-day loss across the worst 5% of sessions).",
   };
   const tipAttr = (key) => (GLOSSARY[key] ? `data-tip="${esc(GLOSSARY[key])}"` : "");
 
@@ -300,18 +305,38 @@
   }
 
   // ---- LOAD DATA ----
+  function syncOverviewBreakingBanner() {
+    const banner = $("breakingBanner");
+    if (!banner) return;
+    if (state.breaking.length > 0) {
+      const latest = state.breaking[0];
+      banner.innerHTML = `
+        <div class="breaking-banner-body">
+          <span class="breaking-tag">Breaking</span>
+          <span class="breaking-headline"><strong>${esc(latest.symbol)}</strong> · ${esc(latest.title)}</span>
+          <div class="muted" style="margin-top:3px">${esc(latest.source || "")} · ${state.breaking.length} live alerts</div>
+        </div>
+        <span class="breaking-arrow">›</span>
+      `;
+      banner.classList.remove("hidden");
+      banner.onclick = () => setView("breaking");
+    } else {
+      banner.classList.add("hidden");
+    }
+  }
+
   async function loadBreaking() {
     try {
       const b = await fetchJson("data/breaking_news.json");
       state.breaking = Array.isArray(b.items) ? b.items : [];
       $("breakingCount").textContent = String(state.breaking.length);
       if ($("moreBreakingCount")) $("moreBreakingCount").textContent = String(state.breaking.length);
-
     } catch {
       state.breaking = [];
       $("breakingCount").textContent = "0";
       if ($("moreBreakingCount")) $("moreBreakingCount").textContent = "0";
     }
+    syncOverviewBreakingBanner();
     renderBreaking();
   }
 
@@ -379,6 +404,7 @@
   }
 
   function closeInfoModal() {
+    state.openSectorModalKey = null;
     $("infoModal")?.classList.add("hidden");
   }
 
@@ -387,6 +413,7 @@
     const modal = $("infoModal");
     const box = $("infoModalBody");
     if (!modal || !box) return;
+    state.openSectorModalKey = sector;
 
     const allTickers = state.summary.tickers || [];
     const hmSec = (state.summary.heatmap?.sectors || []).find((x) => x.sector === sector) || {};
@@ -403,9 +430,9 @@
         <div>
           <div class="modal-eyebrow">Sector Intelligence Explorer</div>
           <h2 style="font-size:19px;text-transform:capitalize">${esc(fmtSector(sector))}</h2>
-          <div class="muted" style="margin-top:2px">
+          <div class="muted" style="margin-top:2px" id="sectorModalSub">
             Benchmark ETF: <strong>${esc(hmSec.etf || members[0]?.sector_etf || "—")}</strong>
-            (${fmtPct(hmSec.etf_ret_1d, 2)} 1D) · Sector Equal-Weighted Avg 1D:
+            (${fmtPct(hmSec.etf_ret_1d, 2)} 1D) · Equal-Weighted Avg 1D:
             <strong class="${clsPct(hmSec.avg_ret_1d)}">${fmtPct(hmSec.avg_ret_1d, 2)}</strong>
           </div>
         </div>
@@ -419,28 +446,29 @@
             ${allSecs.map((sec) => `<option value="${esc(sec)}" ${sec === sector ? "selected" : ""}>${esc(fmtSector(sec))}</option>`).join("")}
           </select>
         </div>
-        <button class="btn-secondary compact-hdr-btn" id="filterScreenerBySecBtn">Open in Screener Table →</button>
+        <button class="btn-secondary compact-hdr-btn" id="filterScreenerBySecBtn">Open in Screener →</button>
       </div>
 
-      <div class="rel-cards-grid" style="max-height:60vh;overflow-y:auto;padding-right:2px">
+      <div class="rel-cards-grid" style="max-height:60vh;overflow-y:auto;padding-right:2px" id="sectorModalCards">
         ${members.map((r) => `
           <div class="rel-conn-card" data-sec-open="${esc(r.symbol)}" style="cursor:pointer">
             <div class="rcc-top">
               <div>
                 <div class="rcc-sym">
                   <strong class="touch-name-link">${esc(r.symbol)} · ${esc(r.name)} ↗</strong>${r.is_core ? ' <span class="core-star">★</span>' : ""}
-                  <span class="tag">${fmtCap(r.market_cap)}</span>
+                  <span class="tag modal-mcap">${fmtCap(r.market_cap)}</span>
                 </div>
               </div>
-              <div style="text-align:right">
+              <div style="text-align:right" class="modal-price-col">
                 <div style="font-weight:800;font-size:15px">$${fmtNum(r.close)}</div>
                 <span class="price-pill ${clsPct(r.change_1d_pct)}" style="font-size:12px">${fmtPct(r.change_1d_pct)}</span>
+                ${renderExtMiniHtml(r)}
               </div>
             </div>
             <div class="rcc-stats">
               <span>21d vs SPY: <strong class="${clsPct(r.rs_spy_21d)}">${fmtPct(r.rs_spy_21d, 1)}</strong></span>
               <span>RSI-14: <strong class="${r.rsi14 < 30 ? "neg" : r.rsi14 > 70 ? "pos" : ""}">${fmtNum(r.rsi14, 1)}</strong></span>
-              <span ${notableScoreTipAttr(r)}>Score: <strong>${fmtNum(r.notable_score, 1)}</strong> <span class="tip-badge">?</span></span>
+              <span class="modal-score-tip" ${notableScoreTipAttr(r)}>Score: <strong class="modal-score-val">${fmtNum(r.notable_score, 1)}</strong> <span class="tip-badge">?</span></span>
             </div>
           </div>
         `).join("")}
@@ -570,12 +598,12 @@
           </div>
         </div>
         <div class="math-box">
-          <div class="math-title">📱 Install on iPhone / iPad (iOS Safari)</div>
-          <div class="math-sub">1. Open <strong>${esc(appUrl)}</strong> in Safari.<br/>2. Tap the <strong>Share</strong> icon (square with upward arrow) at the bottom.<br/>3. Tap <strong>Add to Home Screen</strong> → launches full-screen like a native iOS app with the <strong>ER</strong> icon.</div>
+          <div class="math-title">Install on iPhone / iPad (iOS Safari)</div>
+          <div class="math-sub">1. Open <strong>${esc(appUrl)}</strong> in Safari.<br/>2. Tap the <strong>Share</strong> icon on the bottom bar.<br/>3. Tap <strong>Add to Home Screen</strong> to launch full-screen as a standalone app.</div>
         </div>
         <div class="math-box">
-          <div class="math-title">🤖 Install on Android (Chrome) &amp; 💻 Desktop (Chrome / Edge / Brave)</div>
-          <div class="math-sub">1. Tap the browser menu (<strong>⋮</strong>) on Android or the <strong>Install App</strong> icon in the desktop address bar.<br/>2. Select <strong>Install App / Add to Home Screen</strong>.</div>
+          <div class="math-title">Install on Android (Chrome) &amp; Desktop</div>
+          <div class="math-sub">1. Tap the browser menu (<strong>⋮</strong>) on Android or the install icon in the desktop address bar.<br/>2. Select <strong>Install App / Add to Home Screen</strong>.</div>
         </div>
       </div>
     `;
@@ -663,22 +691,7 @@
     }
 
     // Breaking news banner
-    const banner = $("breakingBanner");
-    if (state.breaking.length > 0) {
-      const latest = state.breaking[0];
-      banner.innerHTML = `
-        <div class="breaking-banner-body">
-          <span class="breaking-tag">Breaking</span>
-          <span class="breaking-headline"><strong>${esc(latest.symbol)}</strong> · ${esc(latest.title)}</span>
-          <div class="muted" style="margin-top:3px">${esc(latest.source || "")} · ${state.breaking.length} alerts</div>
-        </div>
-        <span class="breaking-arrow">›</span>
-      `;
-      banner.classList.remove("hidden");
-      banner.onclick = () => setView("breaking");
-    } else {
-      banner.classList.add("hidden");
-    }
+    syncOverviewBreakingBanner();
 
     // KPI Strip
     const adv = br.advancers ?? 0;
@@ -698,9 +711,9 @@
         sub: `Avg 1D: ${fmtPct(br.avg_ret_1d)}`,
         extra: `<div class="breadth-bar"><div class="breadth-up" style="width:${advPct}%"></div><div class="breadth-dn" style="width:${100 - advPct}%"></div></div>`,
       },
-      { label: "US 10Y", tip: "dgs10", val: mp.dgs10 ? `${fmtNum(mp.dgs10.latest, 2)}%` : "—", cls: "", sub: mp.dgs10 ? `1W: ${fmtNum(mp.dgs10.change_1w, 2)}pp` : "FRED" },
-      { label: "VIX", tip: "vix", val: mp.vix ? fmtNum(mp.vix.latest, 1) : "—", cls: mp.vix && mp.vix.latest >= 20 ? "warn" : "", sub: mp.vix ? `1W: ${fmtNum(mp.vix.change_1w, 1)}` : "FRED" },
-      { label: "WTI Oil", val: mp.wti ? `$${fmtNum(mp.wti.latest, 1)}` : "—", cls: "", sub: mp.wti ? `1M: ${fmtNum(mp.wti.change_1m, 1)}` : "FRED" },
+      { label: "US 10Y", tip: "dgs10", val: mp.dgs10 ? `${fmtNum(mp.dgs10.latest, 2)}%` : "—", cls: "", sub: mp.dgs10 && mp.dgs10.change_1d != null ? `1D: ${fmtSignedDelta(mp.dgs10.change_1d)}pp` : (mp.dgs10 ? `1W: ${fmtNum(mp.dgs10.change_1w, 2)}pp` : "Live") },
+      { label: "VIX", tip: "vix", val: mp.vix ? fmtNum(mp.vix.latest, 2) : "—", cls: mp.vix && mp.vix.latest >= 20 ? "warn" : "", sub: mp.vix && mp.vix.change_pct != null ? `1D: ${fmtPct(mp.vix.change_pct, 1)}` : (mp.vix ? `1W: ${fmtNum(mp.vix.change_1w, 1)}` : "Live") },
+      { label: "WTI Oil", val: mp.wti ? `$${fmtNum(mp.wti.latest, 2)}` : "—", cls: "", sub: mp.wti && mp.wti.change_pct != null ? `1D: ${fmtPct(mp.wti.change_pct, 1)}` : (mp.wti ? `1M: ${fmtNum(mp.wti.change_1m, 1)}` : "Live") },
       { label: "Next FOMC", tip: "fomc", val: fomcDays, cls: "", sub: fomcNext ? fomcNext : "Fed calendar" },
     ];
     $("kpiStrip").innerHTML = kpis.map((k) => `
@@ -783,7 +796,7 @@
       }
     };
 
-    // Earnings Calendar (Upcoming & Recently Reported across all 39 stocks)
+    // Earnings Calendar (Upcoming & Recently Reported across all 100 equities)
     const ecGrid = $("earningsCalendarGrid");
     if (ecGrid) {
       const allT = s.tickers || [];
@@ -1163,13 +1176,13 @@
       if (found !== -1) selectedIdx = found;
     }
 
-    // Tight world bounding box around (0, 0) + all orbiting bubbles so zero empty black space appears on mobile or desktop
-    let minX = -90, maxX = 90, minY = -90, maxY = 90;
+    // Padded world bounding box around (0, 0) + all orbiting bubbles so 100% of nodes & labels fit inside iOS & Android screens
+    let minX = -104, maxX = 104, minY = -104, maxY = 104;
     for (const n of nodesPos) {
-      minX = Math.min(minX, n.x - n.r - 28);
-      maxX = Math.max(maxX, n.x + n.r + 28);
-      minY = Math.min(minY, n.y - n.r - 28);
-      maxY = Math.max(maxY, n.y + n.r + 28);
+      minX = Math.min(minX, n.x - n.r - 44);
+      maxX = Math.max(maxX, n.x + n.r + 44);
+      minY = Math.min(minY, n.y - n.r - 42);
+      maxY = Math.max(maxY, n.y + n.r + 42);
     }
     const baseW = Math.max(420, maxX - minX);
     const baseH = Math.max(400, maxY - minY);
@@ -1281,26 +1294,12 @@
         </div>
 
         <div class="bubble-stage" id="bubbleStage">
-          <div class="bubble-zoom-bar">
-            <button type="button" class="zoom-btn" id="bZoomInBtn" title="Zoom In">+</button>
-            <button type="button" class="zoom-btn" id="bZoomOutBtn" title="Zoom Out">−</button>
-            <button type="button" class="zoom-btn reset" id="bZoomResetBtn" title="Reset Zoom">100%</button>
-          </div>
           <svg class="bubble-svg" id="bubbleSvg" viewBox="${baseCX - baseW / 2} ${baseCY - baseH / 2} ${baseW} ${baseH}" preserveAspectRatio="xMidYMid meet">
             ${crossEdgesSvg.join("")}
             ${edgesSvg}
             ${nodesSvg}
             ${centerSvg}
           </svg>
-        </div>
-
-        <div class="filter-bar-scroll" style="margin:10px 0 6px;padding:0">
-          <div class="filter-bar" id="bubbleQuickSelectBar">
-            ${nodesPos.map((item, idx) => {
-              const rc = REL_COLORS[item.type] || REL_COLORS.peer;
-              return `<button type="button" class="chip" data-qsel="${idx}"><i class="legend-dot" style="background:${rc.stroke}"></i><strong>${esc(item.symbol)}</strong> <span class="muted">${esc((item.scale || rc.short).split("·")[0].trim())}</span></button>`;
-            }).join("")}
-          </div>
         </div>
 
         <div class="bubble-inspector" id="bubbleInspectorCard"></div>
@@ -1374,11 +1373,11 @@
       });
     };
 
-    // Interactive SVG Zoom & Pan Engine (supports + / - / Reset buttons, 1-finger drag pan, 2-finger pinch zoom & mouse wheel)
+    // Interactive SVG Zoom & Pan Engine (fits 100% cleanly on iOS & Android; pinch-zoom, double-tap reset & drag)
     const stage = container.querySelector("#bubbleStage");
     const svg = container.querySelector("#bubbleSvg");
-    const resetBtn = container.querySelector("#bZoomResetBtn");
-    const viewState = { zoom: window.innerWidth <= 640 ? 1.12 : 1.0, panX: 0, panY: 0 };
+    const defaultZoom = () => (window.innerWidth <= 640 ? 0.96 : 1.0);
+    const viewState = { zoom: defaultZoom(), panX: 0, panY: 0 };
 
     const updateViewBox = () => {
       if (!svg || !stage) return;
@@ -1400,16 +1399,14 @@
       const vx = baseCX - vw / 2 + viewState.panX;
       const vy = baseCY - vh / 2 + viewState.panY;
       svg.setAttribute("viewBox", `${vx.toFixed(1)} ${vy.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}`);
-      if (resetBtn) resetBtn.textContent = `${Math.round(viewState.zoom * 100)}%`;
-      const isZoomed = viewState.zoom > 1.18;
+      const isZoomed = viewState.zoom > 1.05;
       stage.classList.toggle("is-zoomed", isZoomed);
       stage.style.touchAction = isZoomed ? "none" : "pan-y";
       return { fitW, fitH, vw, vh, vx, vy, rect };
     };
 
-    const MIN_Z = 0.6;
-    const MAX_Z = 4.0;
-    const defaultZoom = () => (window.innerWidth <= 640 ? 1.12 : 1.0);
+    const MIN_Z = 0.65;
+    const MAX_Z = 3.5;
     let animFrame = null;
     const cancelAnim = () => { if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; } };
 
@@ -1457,19 +1454,6 @@
 
     updateViewBox();
     requestAnimationFrame(updateViewBox);
-
-    container.querySelector("#bZoomInBtn").onclick = (e) => {
-      e.stopPropagation();
-      animateTo(viewState.zoom * 1.32, viewState.panX, viewState.panY);
-    };
-    container.querySelector("#bZoomOutBtn").onclick = (e) => {
-      e.stopPropagation();
-      animateTo(viewState.zoom / 1.32, viewState.panX, viewState.panY);
-    };
-    resetBtn.onclick = (e) => {
-      e.stopPropagation();
-      animateTo(defaultZoom(), 0, 0, 220);
-    };
 
     // Smooth focal wheel/trackpad zoom, pointer-capture pan, double-click zoom, & 2-finger pinch+pan
     let isDragging = false;
@@ -1863,7 +1847,7 @@
         ? "No abnormal institutional volume surges (≥1.35x 20d avg) recorded in this session."
         : `${accPct >= 60 ? "Institutional Accumulation regime" : distPct >= 60 ? "Heavy Institutional Distribution regime" : "Mixed Two-Way Institutional Flow"}: ${distCnt} of ${vf.length} high-volume stocks closed lower (${distPct}% of surge dollar flow).${topFlowItem ? ` ${topFlowItem.symbol} alone accounts for ${topSharePct.toFixed(1)}% (${fmtCap(topFlowItem.dollar_volume_usd)}) of total unusual flow.` : ""}`;
 
-      // 2. 20-Day Cross-Sectional Up/Down Volume Regime (All 39 Watchlist Stocks)
+      // 2. 20-Day Cross-Sectional Up/Down Volume Regime (All 100 Watchlist Equities)
       const udVals = allTickers.map((t) => t.updown_vol_20d).filter((v) => v != null && Number.isFinite(Number(v))).map(Number);
       const udAcc = udVals.filter((v) => v >= 1.2).length;
       const udDist = udVals.filter((v) => v <= 0.8).length;
@@ -1931,7 +1915,7 @@
           }).join("")
         : `<div class="muted">No short interest data available.</div>`;
 
-      // 5. Sector Capital Rotation (All 39 stocks: Signed Dollar Flow & Avg 20d U/D)
+      // 5. Sector Capital Rotation (All 100 equities: Signed Dollar Flow & Avg 20d U/D)
       const secMap = new Map();
       for (const t of allTickers) {
         const sec = t.sector || "other";
@@ -1965,7 +1949,7 @@
           </div>`;
       }).join("");
 
-      // 6. 20-Day Quiet Accumulation vs Silent Distribution Leaders (All 39 stocks)
+      // 6. 20-Day Quiet Accumulation vs Silent Distribution Leaders (All 100 equities)
       const withUd = allTickers
         .filter((t) => t.updown_vol_20d != null && Number.isFinite(Number(t.updown_vol_20d)))
         .sort((a, b) => Number(b.updown_vol_20d) - Number(a.updown_vol_20d));
@@ -2316,35 +2300,43 @@
   }
 
   // ---- MACRO ----
+  const MONTHLY_FRED_IDS = new Set(["CPIAUCSL", "CPILFESL", "PCEPILFE", "UNRATE", "PAYEMS"]);
   function renderMacro() {
     const s = state.summary;
     const mc = s.macro || {};
     const fomc = mc.fomc || {};
     $("fomcBadge").textContent = fomc.next_meeting
-      ? `Next FOMC: ${fomc.next_meeting[0]} – ${fomc.next_meeting[1]} (${fomc.days_to_decision}d away)`
-      : "";
+      ? `Live yields & volatility + official FRED releases · Next FOMC: ${fomc.next_meeting[0]} – ${fomc.next_meeting[1]} (${fomc.days_to_decision}d away)`
+      : "Live yields & volatility + official FRED macro series";
 
     const series = mc.series || [];
-    $("macroBody").innerHTML = series.map((row) => `
+    $("macroBody").innerHTML = series.map((row) => {
+      const showStale = row.stale && !MONTHLY_FRED_IDS.has(row.id);
+      const c1d = row.change_1d != null ? `<span class="${clsPct(row.change_1d)}">${fmtSignedDelta(row.change_1d)}</span>` : "—";
+      return `
       <tr>
-        <td><strong>${esc(row.label)}</strong>${row.stale ? ' <span class="tag amber">stale</span>' : ""}</td>
+        <td><strong>${esc(row.label)}</strong>${showStale ? ' <span class="tag amber">delayed</span>' : ""}</td>
         <td class="muted">${esc(row.id)}</td>
         <td class="num"><strong>${row.available ? fmtNum(row.latest, 2) : "—"}</strong> <span class="muted">${esc(row.unit || "")}</span></td>
-        <td class="muted">${esc(row.latest_date || "—")}</td>
+        <td class="num">${c1d}</td>
         <td class="num">${fmtNum(row.change_1w, 2)}</td>
         <td class="num">${fmtNum(row.change_1m, 2)}</td>
         <td class="num">${fmtNum(row.change_3m, 2)}</td>
       </tr>
-    `).join("");
+    `;
+    }).join("");
 
-    $("macroCardsMobile").innerHTML = series.map((row) => `
+    $("macroCardsMobile").innerHTML = series.map((row) => {
+      const c1dSub = row.change_1d != null ? `1D: ${fmtSignedDelta(row.change_1d)} · ` : "";
+      return `
       <div class="macro-card">
         <div class="kpi-label">${esc(row.id)}</div>
         <div style="font-size:12px;font-weight:600;margin-top:2px">${esc(row.label)}</div>
         <div class="macro-val">${row.available ? fmtNum(row.latest, 2) : "—"} <span class="muted">${esc(row.unit || "")}</span></div>
-        <div class="muted">1W: ${fmtNum(row.change_1w, 2)} · 1M: ${fmtNum(row.change_1m, 2)}</div>
+        <div class="muted">${c1dSub}1W: ${fmtNum(row.change_1w, 2)} · 1M: ${fmtNum(row.change_1m, 2)}</div>
       </div>
-    `).join("");
+    `;
+    }).join("");
 
     const renderFeed = (id, items) => {
       $(id).innerHTML = (items || []).length
@@ -2808,13 +2800,13 @@
     if (val.fifty_two_week_low != null && val.fifty_two_week_high != null && facts.last_close != null && val.fifty_two_week_high > val.fifty_two_week_low) {
       const pct = Math.max(0, Math.min(100, ((facts.last_close - val.fifty_two_week_low) / (val.fifty_two_week_high - val.fifty_two_week_low)) * 100));
       rangeHtml = `
-        <div class="range-box">
+        <div class="range-box" id="stkRangeBox" data-low="${val.fifty_two_week_low}" data-high="${val.fifty_two_week_high}">
           <div class="range-labels">
             <span>52W Low $${fmtNum(val.fifty_two_week_low)}</span>
-            <span>${pct.toFixed(0)}% of 52W range</span>
+            <span id="stkRangePct">${pct.toFixed(0)}% of 52W range</span>
             <span>52W High $${fmtNum(val.fifty_two_week_high)}</span>
           </div>
-          <div class="range-track"><div class="range-fill"></div><div class="range-dot" style="left:${pct}%"></div></div>
+          <div class="range-track"><div class="range-fill"></div><div class="range-dot" id="stkRangeDot" style="left:${pct}%"></div></div>
         </div>
       `;
     }
@@ -2824,14 +2816,14 @@
     const supLevels = lv.support || [];
 
     const renderLevelRow = (x) => `
-      <div class="level-row">
+      <div class="level-row" data-lv-price="${x.price}">
         <div>
           <span class="tag ${x.role === "support" ? "bull" : "bear"}" ${tipAttr("sr_levels")}>${esc(x.label)}</span>
           <strong style="margin-left:6px">$${fmtNum(x.price)}</strong>
           <span class="muted" style="margin-left:5px">($${fmtNum(x.band_low)}–$${fmtNum(x.band_high)})</span>
         </div>
         <div style="text-align:right">
-          <span class="${clsPct(x.distance_pct)}" style="font-weight:700;font-size:12.5px">${fmtPct(x.distance_pct, 1)}</span>
+          <span class="lv-dist ${clsPct(x.distance_pct)}" style="font-weight:700;font-size:12.5px">${fmtPct(x.distance_pct, 1)}</span>
           <div class="muted" ${levelStrengthTipAttr(x)}><span class="strength-bar"><span class="strength-fill" style="width:${Math.min(100, x.strength || 0)}%"></span></span>${fmtNum(x.strength, 0)}/100 <span class="tip-badge">?</span></div>
         </div>
       </div>
@@ -2886,7 +2878,7 @@
         <div class="pro-stat-strip">
           <div class="pro-stat">
             <span class="pro-stat-k">Mkt Cap</span>
-            <span class="pro-stat-v">${fmtCap(val.market_cap)}</span>
+            <span class="pro-stat-v" id="stkStatMcap">${fmtCap(val.market_cap)}</span>
           </div>
           <div class="pro-stat" ${tipAttr("rsi14")}>
             <span class="pro-stat-k">RSI 14 <span class="tip-badge">?</span></span>
@@ -2904,9 +2896,9 @@
             <span class="pro-stat-k">20d U/D <span class="tip-badge">?</span></span>
             <span class="pro-stat-v ${ind.updown_volume_20d != null ? (ind.updown_volume_20d >= 1.2 ? "pos" : ind.updown_volume_20d <= 0.8 ? "neg" : "") : ""}">${fmtNum(ind.updown_volume_20d, 2)}x</span>
           </div>
-          <div class="pro-stat" ${notableScoreTipAttr(t)}>
+          <div class="pro-stat" id="stkStatScoreWrap" ${notableScoreTipAttr(t)}>
             <span class="pro-stat-k">Score <span class="tip-badge">?</span></span>
-            <span class="pro-stat-v">${fmtNum(t.notable?.score, 0)}<span class="muted">/100</span></span>
+            <span class="pro-stat-v" id="stkStatScore">${fmtNum(t.notable?.score, 0)}<span class="muted">/100</span></span>
           </div>
         </div>
 
@@ -2916,14 +2908,6 @@
         </div>` : ""}
         ${legalBarHtml}
         ${rangeHtml}
-      </div>
-
-      <div class="quick-jump-bar" id="stockJumpBar" aria-label="Jump to stock section">
-        <button type="button" class="jump-pill" data-jump="stk-chart">Chart</button>
-        <button type="button" class="jump-pill" data-jump="stk-scenarios">Scenarios</button>
-        <button type="button" class="jump-pill" data-jump="stk-tearsheet">Levels &amp; Metrics</button>
-        <button type="button" class="jump-pill" data-jump="stk-network">Network</button>
-        <button type="button" class="jump-pill" data-jump="stk-intel">News &amp; Filings</button>
       </div>
 
       ${hasSeries ? `
@@ -2936,7 +2920,6 @@
           <h2 ${techScenarioTipAttr(judg.score, judg.components, scByName)}>20-Day Scenario Matrix <span class="tip-badge">?</span></h2>
           <p class="section-sub">Technical composite ${fmtNum(judg.score, 2)}</p>
         </div>
-        <button class="link-btn" id="openFullMathModalBtn">Methodology →</button>
       </div>
       <div class="prob-bar wide">
         <div class="prob-bull" style="width:${scByName.bullish || 0}%"></div>
@@ -2975,8 +2958,8 @@
             <div class="pro-kv-row" ${tipAttr("pe")}><span class="pro-kv-k">P/E (TTM / Fwd) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtNum(val.trailing_pe, 1)} / ${fmtNum(val.forward_pe, 1)}</span></div>
             <div class="pro-kv-row" ${tipAttr("fcf")}><span class="pro-kv-k">Free Cash Flow (TTM) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtCap(der.free_cash_flow_ttm)}</span></div>
             <div class="pro-kv-row"><span class="pro-kv-k">Cash / Total Debt</span><span class="pro-kv-v">${fmtCap(der.cash)} / ${fmtCap(der.total_debt)}</span></div>
-            <div class="pro-kv-row" ${tipAttr("target_upside")}><span class="pro-kv-k">Analyst Target Implied <span class="tip-badge">?</span></span><span class="pro-kv-v ${clsPct(der.target_mean_vs_price_pct)}">${fmtPct(der.target_mean_vs_price_pct, 1)}</span></div>
-            <div class="pro-kv-row" ${tipAttr("vol_ratio")}><span class="pro-kv-k">Session Dollar Turnover <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtCap(dollarVol)}</span></div>
+            <div class="pro-kv-row" ${tipAttr("target_upside")}><span class="pro-kv-k">Analyst Target Implied <span class="tip-badge">?</span></span><span class="pro-kv-v ${clsPct(der.target_mean_vs_price_pct)}" id="stkTargetImplied" data-target-mean="${der.target_mean ?? ""}">${fmtPct(der.target_mean_vs_price_pct, 1)}</span></div>
+            <div class="pro-kv-row" ${tipAttr("vol_ratio")}><span class="pro-kv-k">Session Dollar Turnover <span class="tip-badge">?</span></span><span class="pro-kv-v" id="stkDollarTurnover">${fmtCap(dollarVol)}</span></div>
             <div class="pro-kv-row" ${tipAttr("updown_vol")}><span class="pro-kv-k">20d Up/Down Volume <span class="tip-badge">?</span></span><span class="pro-kv-v ${ind.updown_volume_20d != null ? (ind.updown_volume_20d >= 1.2 ? "pos" : ind.updown_volume_20d <= 0.8 ? "neg" : "") : ""}">${fmtNum(ind.updown_volume_20d, 2)}x</span></div>
             <div class="pro-kv-row" ${tipAttr("short_float")}><span class="pro-kv-k">Short Interest (% Float) <span class="tip-badge">?</span></span><span class="pro-kv-v">${val.short_pct_float != null ? `${fmtNum(val.short_pct_float * 100, 1)}%` : "—"}</span></div>
             ${risk.realized_vol_20d_pct != null ? `<div class="pro-kv-row" ${tipAttr("gk_vol")}><span class="pro-kv-k">Realized Vol (20d / 60d GK) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtNum(risk.realized_vol_20d_pct, 1)}% / ${fmtNum(risk.realized_vol_60d_pct, 1)}%</span></div>` : ""}
@@ -3018,36 +3001,15 @@
       destroyInteractiveChart();
       const card = $("stk-chart");
       if (card) card.classList.toggle("is-fullscreen", state.chartFullscreen);
-      const ov = state.chartOverlays;
       const hasAll = Array.isArray(tech.series_all) && tech.series_all.length > 5;
       const ranges = hasAll
-        ? ["1D", "5D", "1W", "1M", "3M", "6M", "YTD", "1Y", "3Y", "5Y", "ALL"]
-        : ["1D", "5D", "1W", "1M", "3M", "6M", "YTD", "1Y"];
-      if (!ranges.includes(state.chartRange)) state.chartRange = "3M";
-      const effIv = resolveEffectiveInterval(state.chartRange, state.chartInterval, hasAll);
+        ? ["1D", "5D", "1M", "3M", "6M", "1Y", "5Y", "ALL"]
+        : ["1D", "5D", "1M", "3M", "6M", "1Y"];
+      if (!ranges.includes(state.chartRange)) state.chartRange = "1D";
+      state.chartInterval = "auto";
+      const effIv = resolveEffectiveInterval(state.chartRange, "auto", hasAll);
       state.tvEffInterval = effIv;
-      const intervals = hasAll
-        ? [
-            { id: "1m", label: "1m" },
-            { id: "5m", label: "5m" },
-            { id: "15m", label: "15m" },
-            { id: "1H", label: "1H" },
-            { id: "1D", label: "1D" },
-            { id: "1W", label: "1W" },
-            { id: "1Mo", label: "1Mo" },
-          ]
-        : [
-            { id: "1m", label: "1m" },
-            { id: "5m", label: "5m" },
-            { id: "15m", label: "15m" },
-            { id: "1H", label: "1H" },
-            { id: "1D", label: "1D" },
-          ];
-      const is1M = !state.chartFullscreen && state.chartRange === "1M" && effIv === "1D";
-      const at = tech.all_time_stats || null;
-      const athBanner = (state.chartRange === "ALL" || state.chartRange === "5Y" || state.chartRange === "3Y") && at
-        ? `<div class="muted tv-ath-banner" style="font-size:11.5px;margin-bottom:5px">Since ${esc(at.ipo_date)} · ATH <strong>$${fmtNum(at.ath)}</strong> (${esc(at.ath_date)}, <span class="${clsPct(at.pct_from_ath)}">${fmtPct(at.pct_from_ath, 1)}</span>) · ATL <strong>$${fmtNum(at.atl)}</strong></div>`
-        : "";
+
       body.innerHTML = `
         <div class="chart-fs-bar">
           <div class="chart-fs-title">
@@ -3062,78 +3024,23 @@
           </div>
         </div>
         <div class="tv-toolbar-pro">
-          <div class="tv-range-strip" id="rangeBar" role="tablist" aria-label="Timeframe range">
+          <div class="tv-range-strip" id="rangeBar" role="tablist" aria-label="Timeframe">
             ${ranges.map((r) => `<button type="button" class="tv-rbtn ${state.chartRange === r ? "active" : ""}" data-range="${r}">${r}</button>`).join("")}
           </div>
-          <div class="tv-right-controls">
-            <div class="tv-iv-dropdown" id="ivDropdownWrap">
-              <button type="button" class="tv-iv-pill ${state.chartInterval !== "auto" ? "manual" : ""}" id="ivMenuBtn" title="Candle resolution (${effIv})">
-                <span>${esc(effIv)}</span><span class="tv-caret">▾</span>
-              </button>
-              <div class="tv-iv-menu hidden" id="ivDropdownMenu">
-                <button type="button" class="tv-iv-opt ${state.chartInterval === "auto" ? "active" : ""}" data-iv="auto">Auto (${esc(resolveEffectiveInterval(state.chartRange, "auto", hasAll))})</button>
-                ${intervals.map((iv) => `<button type="button" class="tv-iv-opt ${state.chartInterval === iv.id ? "active" : ""}" data-iv="${iv.id}">${iv.label} candles</button>`).join("")}
-              </div>
-            </div>
-            <div class="tv-ind-strip" id="overlayBar">
-              <button type="button" class="tv-ibtn ${ov.sma20 ? "active" : ""}" data-ov="sma20">MA20</button>
-              <button type="button" class="tv-ibtn ${ov.sma50 ? "active" : ""}" data-ov="sma50">MA50</button>
-              <button type="button" class="tv-ibtn ${ov.sma200 ? "active" : ""}" data-ov="sma200">MA200</button>
-              <button type="button" class="tv-ibtn ${ov.sr ? "active" : ""}" data-ov="sr">S/R</button>
-            </div>
-            ${!state.chartFullscreen ? `<button type="button" class="tv-act-btn tv-fs-trigger" id="toggleChartFsBtn" title="Full screen chart" aria-label="Full screen chart">⛶</button>` : ""}
-          </div>
+          ${!state.chartFullscreen ? `<button type="button" class="tv-act-btn tv-fs-trigger" id="toggleChartFsBtn" title="Full screen" aria-label="Full screen">⛶</button>` : ""}
         </div>
-        ${athBanner}
         <div class="tv-legend" id="tvLegend"></div>
-        <div class="tv-chart-wrap ${is1M ? "is-1m" : ""}" id="tvChartWrap">
+        <div class="tv-chart-wrap" id="tvChartWrap">
           <div class="tv-chart-box" id="tvChart"></div>
-          <button type="button" class="tv-floating-latest hidden" id="chartFloatingLatestBtn" title="Jump back to latest live candle">Latest ▶</button>
-          <div class="tv-day-overlay ${is1M ? "" : "hidden"}" id="tvDayOverlay"></div>
-          <div class="tv-day-axis ${is1M ? "" : "hidden"}" id="tvDayAxis"></div>
-        </div>
-        <div class="tv-nav-dock" id="chartNavDock">
-          <span class="tv-span-badge" id="chartVisibleSpan">—</span>
-          <input type="range" class="tv-scrubber" id="chartTimeScrubber" min="0" max="1000" value="1000" aria-label="Scroll through historical dates" />
-          <label class="tv-date-jump-lbl" title="Jump to specific date">
-            <span>Date</span>
-            <input type="date" id="chartDateJump" class="tv-date-input" aria-label="Jump to date" />
-          </label>
-          <div class="tv-fs-zoom-trio">
-            <button type="button" class="tv-act-btn" id="chartZoomOutBtn" title="Zoom out" aria-label="Zoom out">−</button>
-            <button type="button" class="tv-act-btn" id="chartZoomInBtn" title="Zoom in" aria-label="Zoom in">+</button>
-            <button type="button" class="tv-act-btn" id="chartResetDockBtn" title="Reset view" aria-label="Fit range">⟲</button>
-          </div>
+          <button type="button" class="tv-floating-latest hidden" id="chartFloatingLatestBtn" title="Return to latest">Latest ▶</button>
         </div>`;
+
       $("rangeBar").querySelectorAll("button[data-range]").forEach((b) => {
         b.onclick = () => {
           state.chartRange = b.dataset.range;
           state.chartInterval = "auto";
           renderChartBody();
         };
-      });
-      const ivBtn = $("ivMenuBtn");
-      const ivMenu = $("ivDropdownMenu");
-      if (ivBtn && ivMenu) {
-        ivBtn.onclick = (ev) => {
-          ev.stopPropagation();
-          ivMenu.classList.toggle("hidden");
-        };
-        ivMenu.querySelectorAll("button[data-iv]").forEach((b) => {
-          b.onclick = (ev) => {
-            ev.stopPropagation();
-            const chosen = b.dataset.iv;
-            state.chartInterval = chosen;
-            if (chosen !== "auto") {
-              state.chartRange = alignRangeForManualInterval(state.chartRange, chosen, hasAll);
-            }
-            ivMenu.classList.add("hidden");
-            renderChartBody();
-          };
-        });
-      }
-      $("overlayBar").querySelectorAll("button[data-ov]").forEach((b) => {
-        b.onclick = () => { state.chartOverlays[b.dataset.ov] = !state.chartOverlays[b.dataset.ov]; renderChartBody(); };
       });
       const fsBtn = $("toggleChartFsBtn");
       if (fsBtn) {
@@ -3142,11 +3049,6 @@
       const exitFsTopBtn = $("exitChartFsTopBtn");
       if (exitFsTopBtn) {
         exitFsTopBtn.onclick = () => setChartFullscreen(false);
-      }
-      // Auto-scroll active range button into center of strip on narrow screens
-      const actR = $("rangeBar")?.querySelector(".tv-rbtn.active");
-      if (actR?.scrollIntoView) {
-        try { actR.scrollIntoView({ inline: "center", block: "nearest", behavior: "instant" }); } catch {}
       }
       mountInteractiveChart(t);
     };
@@ -3740,7 +3642,7 @@
 
     state.tvIsIntraday = useIntraday;
     state.tvBarCount = data.length;
-    const is1M = !state.chartFullscreen && state.chartRange === "1M" && effIv === "1D";
+    const is1M = false;
 
     const dark = document.documentElement.dataset.theme !== "light";
     const css = getComputedStyle(document.documentElement);
@@ -3768,19 +3670,21 @@
     });
 
     const LC = window.LightweightCharts;
-    const initW = Math.max(220, box.clientWidth || 320);
-    const initH = Math.max(180, box.clientHeight || 300);
+    const wrapEl = $("tvChartWrap") || box.parentElement || box;
+    const initW = Math.max(200, wrapEl.clientWidth || box.clientWidth || 300);
+    const initH = Math.max(160, wrapEl.clientHeight || box.clientHeight || 270);
+    const isNarrowMobile = window.innerWidth <= 540;
     const chart = LC.createChart(box, {
       width: initW,
       height: initH,
-      layout: { background: { type: "solid", color: "transparent" }, textColor: textCol, fontSize: 11 },
+      layout: { background: { type: "solid", color: "transparent" }, textColor: textCol, fontSize: isNarrowMobile ? 10 : 11 },
       grid: {
-        vertLines: { color: gridCol, visible: !is1M },
+        vertLines: { color: gridCol, visible: true },
         horzLines: { color: gridCol, visible: true },
       },
       crosshair: { mode: LC.CrosshairMode.Normal },
       kineticScroll: { touch: true, mouse: true },
-      rightPriceScale: { borderColor: gridCol, scaleMargins: { top: 0.08, bottom: 0.22 }, autoScale: true },
+      rightPriceScale: { borderColor: gridCol, scaleMargins: { top: 0.08, bottom: 0.2 }, autoScale: true },
       timeScale: {
         borderColor: gridCol,
         visible: !is1M,
@@ -4113,8 +4017,10 @@
 
     const applyRangeWindow = () => {
       if (!state.tvChart) return;
-      if (box.clientWidth && box.clientHeight) {
-        state.tvChart.applyOptions({ width: box.clientWidth, height: box.clientHeight });
+      const wNow = wrapEl.clientWidth || box.clientWidth;
+      const hNow = wrapEl.clientHeight || box.clientHeight;
+      if (wNow && hNow) {
+        state.tvChart.applyOptions({ width: wNow, height: hNow });
       }
       state.tvChart.priceScale("right").applyOptions({ autoScale: true });
       const win = computeInitialWindow();
@@ -4241,24 +4147,15 @@
 
     const setLegend = (d) => {
       if (!legend || !d) return;
-      if (d.isClosed) {
-        legend.innerHTML = `
-          <span><strong>${esc(d.t)} (${esc(d.wdLabel)})</strong></span>
-          <span class="tag amber">${esc(d.reason)}</span>`;
-        highlightDay(d.t);
-        return;
-      }
       const chg = d.chg1d ?? 0;
       const timeLabel = typeof d.t === "number"
-        ? formatEtIntradayTime(d.t, true)
-        : `${d.t} (${d.wdLabel || WEEKDAYS[dayOfWeek(d.t)]})`;
+        ? formatEtIntradayTime(d.t, true).replace(" ET", "")
+        : `${d.t}`;
       legend.innerHTML = `
         <span><strong>${esc(timeLabel)}</strong></span>
         <span>O ${fmtNum(d.o)}</span><span>H ${fmtNum(d.h)}</span><span>L ${fmtNum(d.l)}</span>
         <span>C <strong class="${clsPct(chg)}">${fmtNum(d.c)}</strong></span>
-        <span class="${clsPct(chg)}"><strong>${fmtPct(chg)}</strong></span>
-        <span class="muted">Vol ${Number(d.v || 0).toLocaleString()}</span>`;
-      if (typeof d.t === "string") highlightDay(d.t);
+        <span class="${clsPct(chg)}"><strong>${fmtPct(chg)}</strong></span>`;
     };
     state.tvUpdateLegend = setLegend;
     const byTime = Object.fromEntries(timelinePoints.map((d) => [d.t, d]));
@@ -4272,24 +4169,28 @@
       setLegend(byTime[key] || timelinePoints[totalBars - 1]);
     });
 
+    box.ondblclick = () => applyRangeWindow();
+
     if (window.ResizeObserver) {
-      let lastW = box.clientWidth;
-      let lastH = box.clientHeight;
+      let lastW = wrapEl.clientWidth;
+      let lastH = wrapEl.clientHeight;
       state.tvResizeObs = new ResizeObserver(() => {
-        if (state.tvChart && box.clientWidth && box.clientHeight) {
-          const sizeChanged = Math.abs(box.clientWidth - lastW) > 3 || Math.abs(box.clientHeight - lastH) > 3;
+        const w = wrapEl.clientWidth;
+        const h = wrapEl.clientHeight;
+        if (state.tvChart && w && h) {
+          const sizeChanged = Math.abs(w - lastW) > 2 || Math.abs(h - lastH) > 2;
           if (!sizeChanged) return;
           const prevRange = state.tvChart.timeScale().getVisibleLogicalRange();
-          lastW = box.clientWidth;
-          lastH = box.clientHeight;
-          state.tvChart.applyOptions({ width: box.clientWidth, height: box.clientHeight });
+          lastW = w;
+          lastH = h;
+          state.tvChart.applyOptions({ width: w, height: h });
           if (prevRange) {
             try { state.tvChart.timeScale().setVisibleLogicalRange(prevRange); } catch {}
           }
           syncNavDock();
         }
       });
-      state.tvResizeObs.observe(box);
+      state.tvResizeObs.observe(wrapEl);
     }
   }
 
@@ -4384,7 +4285,7 @@
       dd.innerHTML = header + hits.map((h) => `
         <div class="search-item" data-sym="${esc(h.symbol)}">
           <span><strong>${esc(h.symbol)}</strong> <span class="muted">${esc(h.name)}</span></span>
-          <span class="price-pill ${clsPct(h.change_1d_pct)}" style="font-size:12px">${fmtPct(h.change_1d_pct, 1)}</span>
+          <span class="price-pill ${clsPct(h.change_1d_pct)}" style="font-size:12px">$${fmtNum(h.close)} · ${fmtPct(h.change_1d_pct, 1)}</span>
         </div>
       `).join("");
       dd.querySelectorAll(".search-item").forEach((el) => {
@@ -4845,7 +4746,8 @@
       const isDirectTipTrigger =
         el &&
         (e.target.classList.contains("tip-badge") ||
-          el.classList.contains("sc-m-k") ||
+          el.classList.contains("scr-mk") ||
+          el.classList.contains("scr-prob-edge") ||
           el.classList.contains("kv") ||
           el.classList.contains("kpi-label") ||
           el.classList.contains("score-badge") ||
@@ -4865,12 +4767,15 @@
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideTip(); });
   }
 
-  // ---- AUTOMATIC INSTALL SCREEN POP-UP (Pops up on top of opening page every time until installed) ----
+  // ---- NON-INTRUSIVE ONE-TIME INSTALL GUIDE ----
   function initAutoInstallPrompt() {
     const isStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       window.navigator.standalone === true;
     if (isStandalone) return;
+    try {
+      if (localStorage.getItem("eq_install_dismissed") === "1") return;
+    } catch {}
 
     const ua = navigator.userAgent || "";
     const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -4879,6 +4784,7 @@
 
     let overlay = null;
     const closeOverlay = () => {
+      try { localStorage.setItem("eq_install_dismissed", "1"); } catch {}
       if (overlay) { overlay.remove(); overlay = null; }
     };
 
@@ -5213,6 +5119,59 @@
     XLP: "AMEX:XLP", XLU: "AMEX:XLU", XLV: "AMEX:XLV", XLY: "AMEX:XLY", XOM: "NYSE:XOM",
   };
 
+  function recomputeLiveDerivedRow(row) {
+    if (!row || !(row.close > 0)) return;
+    if (!row._baseClose && row.close > 0) {
+      row._baseClose = row.close;
+      row._baseMcap = row.market_cap || null;
+      if (row.target_upside_pct != null && Number.isFinite(Number(row.target_upside_pct))) {
+        row._impliedTarget = row.close * (1 + Number(row.target_upside_pct) / 100);
+      }
+    }
+    if (row._baseClose && row._baseMcap) {
+      row.market_cap = Math.round(row._baseMcap * (row.close / row._baseClose));
+    }
+    if (row._impliedTarget && row._impliedTarget > 0) {
+      row.target_upside_pct = Number((((row._impliedTarget - row.close) / row.close) * 100).toFixed(2));
+    }
+    if (row.s1 && row.s1.price > 0) {
+      row.s1.distance_pct = Number((((row.s1.price - row.close) / row.close) * 100).toFixed(2));
+    }
+    if (row.r1 && row.r1.price > 0) {
+      row.r1.distance_pct = Number((((row.r1.price - row.close) / row.close) * 100).toFixed(2));
+    }
+    const bd = row.notable_bd;
+    if (bd && bd.terms && bd.atr_pct > 0 && row.change_1d_pct != null) {
+      const zAtr = Number(Math.min(3.0, Math.abs(Number(row.change_1d_pct)) / Number(bd.atr_pct)).toFixed(2));
+      const ptsVolZ = zAtr >= 1.0 ? Number((12.0 * zAtr).toFixed(1)) : 0;
+      bd.z_atr = zAtr;
+      bd.terms.vol_z = ptsVolZ;
+      const tm = bd.terms;
+      const tot = Math.min(100, Number((
+        ptsVolZ + (tm.rvol || 0) + (tm.pattern || 0) + (tm.rsi_extreme || 0) +
+        (tm.news || 0) + (tm.sec || 0) + (tm.insider || 0) + (tm.earnings || 0)
+      ).toFixed(1)));
+      bd.total = tot;
+      row.notable_score = tot;
+    }
+  }
+
+  function extractTipRaw(r) {
+    const bd = r?.notable_bd || r?.notable?.breakdown;
+    if (!bd || !bd.terms) return GLOSSARY.notable_score;
+    const tm = bd.terms;
+    const parts = [];
+    if (tm.vol_z > 0) parts.push(`Price move (${bd.z_atr}x daily range: +${tm.vol_z})`);
+    if (tm.rvol > 0) parts.push(`Volume surge (${bd.rvol_20d}x avg: +${tm.rvol})`);
+    if (tm.pattern > 0) parts.push(`Chart breakout/pattern (+${tm.pattern})`);
+    if (tm.rsi_extreme > 0) parts.push(`Extreme RSI (+${tm.rsi_extreme})`);
+    if (tm.news > 0) parts.push(`News activity (+${tm.news})`);
+    if (tm.sec > 0) parts.push(`SEC filing (+${tm.sec})`);
+    if ((tm.insider || 0) + (tm.earnings || 0) > 0) parts.push(`Insider/Earnings (+${(tm.insider || 0) + (tm.earnings || 0)})`);
+    const summary = parts.length ? `Driven today by: ${parts.join(" · ")}.` : "Normal daily activity today.";
+    return `Notable Score: ${fmtNum(bd.total, 1)} / 100|Measures how unusually active ${r.symbol} is today. ${summary}`;
+  }
+
   function renderExtMiniHtml(r) {
     if (!r || r.ext_price == null || !r.ext_label) return "";
     const tag = r.ext_label === "Pre-Market" ? "PM" : "AH";
@@ -5267,8 +5226,19 @@
         if (q.dollar_volume_usd && Number(q.dollar_volume_usd) > 0) {
           row.dollar_volume_usd = Number(q.dollar_volume_usd);
         }
+        recomputeLiveDerivedRow(row);
         const cached = state.tickerCache[`${state.date}:${row.symbol}`];
         if (cached) {
+          if (cached.notable && row.notable_bd) {
+            cached.notable.score = row.notable_score;
+            cached.notable.breakdown = row.notable_bd;
+          }
+          if (cached.fundamentals?.valuation && row.market_cap) {
+            cached.fundamentals.valuation.market_cap = row.market_cap;
+          }
+          if (cached.fundamentals?.derived && row.target_upside_pct != null) {
+            cached.fundamentals.derived.target_mean_vs_price_pct = row.target_upside_pct;
+          }
           syncTickerBundleWithLiveRow(cached);
         }
       }
@@ -5392,6 +5362,18 @@
         cells[3].className = `num ${clsPct(r.change_1d_pct)}`;
         cells[3].innerHTML = `<strong>${fmtPct(r.change_1d_pct)}</strong>`;
       }
+      if (cells[4]) {
+        const sb = cells[4].querySelector(".score-badge");
+        if (sb) {
+          sb.textContent = fmtNum(r.notable_score, 1);
+          sb.setAttribute("data-tip", extractTipRaw(r));
+        }
+      }
+      if (cells[8]) {
+        const s1Txt = r.s1 ? `S ${fmtPct(r.s1.distance_pct, 1)}` : "—";
+        const r1Txt = r.r1 ? `R ${fmtPct(r.r1.distance_pct, 1)}` : "—";
+        cells[8].innerHTML = `<span class="muted">${s1Txt} / ${r1Txt}</span>`;
+      }
     });
     document.querySelectorAll("#screenerCards .stock-card[data-sym]").forEach((card) => {
       const r = bySymLive[card.dataset.sym];
@@ -5404,6 +5386,13 @@
           ${renderExtMiniHtml(r)}
         `;
       }
+      const firstM = card.querySelector(".scr-metrics-row .scr-m");
+      if (firstM) {
+        const mk = firstM.querySelector(".scr-mk");
+        const mv = firstM.querySelector(".scr-mv");
+        if (mk) mk.setAttribute("data-tip", extractTipRaw(r));
+        if (mv) mv.textContent = fmtNum(r.notable_score, 0);
+      }
     });
     document.querySelectorAll("#notableGrid .notable-card[data-sym]").forEach((card) => {
       const r = bySymLive[card.dataset.sym];
@@ -5412,6 +5401,11 @@
       if (pill) {
         pill.className = `price-pill ${clsPct(r.change_1d_pct)}`;
         pill.textContent = `$${fmtNum(r.close)} · ${fmtPct(r.change_1d_pct, 1)}`;
+      }
+      const sb = card.querySelector(".score-badge");
+      if (sb) {
+        sb.setAttribute("data-tip", extractTipRaw(r));
+        sb.innerHTML = `Score ${fmtNum(r.notable_score, 0)} <span class="tip-badge">?</span>`;
       }
       const existingExt = card.querySelector(".ext-mini-line");
       if (r.ext_price != null && r.ext_label) {
@@ -5423,7 +5417,40 @@
       }
     });
 
-    // 3. Patch active Stock page (Side-by-Side Dual Hero Price, S/R current badge, Full-Screen chart bar & live candle)
+    // Patch open Sector Explorer pop-out modal & open Search Spotlight if visible
+    if (state.openSectorModalKey && $("infoModal") && !$("infoModal").classList.contains("hidden")) {
+      const secObj = (hm.sectors || []).find((s) => s.sector === state.openSectorModalKey);
+      const subEl = $("sectorModalSub");
+      if (secObj && subEl) {
+        subEl.innerHTML = `Benchmark ETF: <strong>${esc(secObj.etf || "—")}</strong> (${fmtPct(secObj.etf_ret_1d, 2)} 1D) · Equal-Weighted Avg 1D: <strong class="${clsPct(secObj.avg_ret_1d)}">${fmtPct(secObj.avg_ret_1d, 2)}</strong>`;
+      }
+      document.querySelectorAll("#sectorModalCards .rel-conn-card[data-sec-open]").forEach((card) => {
+        const r = bySymLive[card.dataset.secOpen];
+        if (!r) return;
+        const mcapEl = card.querySelector(".modal-mcap");
+        if (mcapEl && r.market_cap) mcapEl.textContent = fmtCap(r.market_cap);
+        const pCol = card.querySelector(".modal-price-col");
+        if (pCol) {
+          pCol.innerHTML = `<div style="font-weight:800;font-size:15px">$${fmtNum(r.close)}</div><span class="price-pill ${clsPct(r.change_1d_pct)}" style="font-size:12px">${fmtPct(r.change_1d_pct)}</span>${renderExtMiniHtml(r)}`;
+        }
+        const stEl = card.querySelector(".modal-score-tip");
+        const svEl = card.querySelector(".modal-score-val");
+        if (stEl) stEl.setAttribute("data-tip", extractTipRaw(r));
+        if (svEl) svEl.textContent = fmtNum(r.notable_score, 1);
+      });
+    }
+    if ($("searchOverlay") && !$("searchOverlay").classList.contains("hidden")) {
+      document.querySelectorAll("#searchDropdown .search-item[data-sym]").forEach((el) => {
+        const r = bySymLive[el.dataset.sym];
+        const pill = el.querySelector(".price-pill");
+        if (r && pill) {
+          pill.className = `price-pill ${clsPct(r.change_1d_pct)}`;
+          pill.textContent = `$${fmtNum(r.close)} · ${fmtPct(r.change_1d_pct, 1)}`;
+        }
+      });
+    }
+
+    // 3. Patch active Stock page (Hero price, Mkt Cap, Score + pop-out, 52W range, S/R distances, Target upside, Turnover & Chart)
     if (state.view === "stock" && state.activeTicker) {
       const r = bySymLive[state.activeTicker];
       if (r) {
@@ -5444,6 +5471,35 @@
             is_reg_open: r.is_reg_open,
           });
         }
+        if ($("stkStatMcap") && r.market_cap) $("stkStatMcap").textContent = fmtCap(r.market_cap);
+        if ($("stkStatScore")) $("stkStatScore").innerHTML = `${fmtNum(r.notable_score, 0)}<span class="muted">/100</span>`;
+        if ($("stkStatScoreWrap")) $("stkStatScoreWrap").setAttribute("data-tip", extractTipRaw(r));
+        const rBox = $("stkRangeBox");
+        if (rBox) {
+          const lo = Number(rBox.dataset.low);
+          const hi = Number(rBox.dataset.high);
+          if (hi > lo && r.close > 0) {
+            const pct = Math.max(0, Math.min(100, ((r.close - lo) / (hi - lo)) * 100));
+            if ($("stkRangePct")) $("stkRangePct").textContent = `${pct.toFixed(0)}% of 52W range`;
+            if ($("stkRangeDot")) $("stkRangeDot").style.left = `${pct}%`;
+          }
+        }
+        document.querySelectorAll("#stk-tearsheet .level-row[data-lv-price]").forEach((lRow) => {
+          const lp = Number(lRow.dataset.lvPrice);
+          const distEl = lRow.querySelector(".lv-dist");
+          if (lp > 0 && r.close > 0 && distEl) {
+            const dPct = ((lp - r.close) / r.close) * 100;
+            distEl.className = `lv-dist ${clsPct(dPct)}`;
+            distEl.textContent = fmtPct(dPct, 1);
+          }
+        });
+        if ($("stkTargetImplied") && r.target_upside_pct != null) {
+          $("stkTargetImplied").className = `pro-kv-v ${clsPct(r.target_upside_pct)}`;
+          $("stkTargetImplied").textContent = fmtPct(r.target_upside_pct, 1);
+        }
+        if ($("stkDollarTurnover") && r.dollar_volume_usd > 0) {
+          $("stkDollarTurnover").textContent = fmtCap(r.dollar_volume_usd);
+        }
         if (lc) lc.textContent = `Current · $${fmtNum(r.close)}`;
         if (fsp) fsp.textContent = `$${fmtNum(r.close)}`;
         if (fspill) {
@@ -5460,6 +5516,29 @@
         }
         streamLiveChartTick(state.activeTicker);
       }
+    }
+    // Patch SVG Bubble Network nodes in place (preserving zoom/pan) & live-refresh Flow / Formulas views when active
+    document.querySelectorAll(".orbit-bubble[data-sym]").forEach((g) => {
+      const r = bySymLive[g.dataset.sym];
+      const txts = g.querySelectorAll("text");
+      if (r && txts.length >= 3) {
+        txts[2].textContent = fmtPct(r.change_1d_pct, 1);
+        txts[2].setAttribute("fill", (r.change_1d_pct ?? 0) >= 0 ? "var(--green)" : "var(--red)");
+      }
+    });
+    document.querySelectorAll(".center-bubble[data-sym]").forEach((g) => {
+      const r = bySymLive[g.dataset.sym];
+      const txts = g.querySelectorAll("text");
+      if (r && txts.length >= 4) {
+        txts[2].textContent = `$${fmtNum(r.close)}`;
+        txts[3].textContent = fmtPct(r.change_1d_pct, 1);
+        txts[3].setAttribute("fill", (r.change_1d_pct ?? 0) >= 0 ? "var(--green)" : "var(--red)");
+      }
+    });
+    if (state.view === "smartmoney") {
+      renderSmartMoney();
+    } else if (state.view === "formulas") {
+      renderFormulasView(state.formulaTicker);
     }
     document.querySelectorAll("#volumeFlowGrid .notable-card[data-sym]").forEach((card) => {
       const r = bySymLive[card.dataset.sym];
@@ -5583,7 +5662,10 @@
           r.available = true;
           r.stale = false;
           if (todayEt) r.latest_date = todayEt;
-          if (chg != null && Number.isFinite(chg) && r.change_1w == null) r.change_1w = Number(chg.toFixed(2));
+          if (chg != null && Number.isFinite(chg)) {
+            r.change_1d = Number(chg.toFixed(2));
+            if (r.change_1w == null) r.change_1w = Number(chg.toFixed(2));
+          }
         }
       }
     };
@@ -5594,6 +5676,11 @@
     }
     if (macroMap.US2Y) {
       patchSeriesRow("DGS2", macroMap.US2Y.val, macroMap.US2Y.chg);
+    }
+    if (macroMap.US10Y && macroMap.US2Y) {
+      const spreadVal = macroMap.US10Y.val - macroMap.US2Y.val;
+      const spreadChg = (macroMap.US10Y.chg != null && macroMap.US2Y.chg != null) ? (macroMap.US10Y.chg - macroMap.US2Y.chg) : null;
+      patchSeriesRow("T10Y2Y", spreadVal, spreadChg);
     }
     if (macroMap[".VIX"]) {
       mp.vix = { ...(mp.vix || {}), latest: macroMap[".VIX"].val, change_1d: macroMap[".VIX"].chg, change_pct: macroMap[".VIX"].pct };
@@ -6022,6 +6109,8 @@
         discovered.sort((a, b) => (b.importance || 0) - (a.importance || 0));
         state.breaking = [...discovered, ...(state.breaking || [])].slice(0, 80);
         if ($("breakingCount")) $("breakingCount").textContent = String(state.breaking.length);
+        if ($("moreBreakingCount")) $("moreBreakingCount").textContent = String(state.breaking.length);
+        syncOverviewBreakingBanner();
         if (state.view === "breaking") renderBreaking();
       }
     } catch {}

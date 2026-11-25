@@ -16,7 +16,7 @@
   <meta property="og:title" content="Equity Intelligence" />
   <meta property="og:description" content="Live 100-stock quantitative intelligence, Gold &amp; Silver benchmarks, interactive charts, supply-chain value network, Institutional Flow, official legal authorities &amp; SEC filings." />
   <title>Equity Intelligence</title>
-  <link rel="stylesheet" href="assets/app.css?v=45" />
+  <link rel="stylesheet" href="assets/app.css?v=46" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -65,13 +65,6 @@
       <div id="todayEarningsBanner" class="today-earnings-banner hidden"></div>
       <div id="breakingBanner" class="breaking-banner hidden"></div>
       <div id="kpiStrip" class="kpi-grid"></div>
-
-      <div class="quick-jump-bar" id="overviewJumpBar" aria-label="Jump to section">
-        <button type="button" class="jump-pill" data-jump="sec-signals">Signals</button>
-        <button type="button" class="jump-pill" data-jump="sec-sectors">Sectors</button>
-        <button type="button" class="jump-pill" data-jump="sec-movers">Top Movers</button>
-        <button type="button" class="jump-pill" data-jump="sec-earnings">Earnings</button>
-      </div>
 
       <div class="section-header" id="sec-signals">
         <div>
@@ -150,14 +143,14 @@
             <tr>
               <th data-sort="symbol">Ticker</th>
               <th data-sort="sector">Sector</th>
-              <th data-sort="close" class="num">Close</th>
+              <th data-sort="close" class="num">Price</th>
               <th data-sort="change_1d_pct" class="num">1D %</th>
-              <th data-sort="notable_score" class="num" data-tip="Notable Score (0–100)|Measures how active or unusual a stock is today based on price move, volume surge, news, and filings. Higher = more market attention today.">Score <span class="tip-badge">?</span></th>
-              <th data-sort="rsi14" class="num" data-tip="RSI-14 (Momentum)|0–100 speed gauge over 14 days. Below 30 = Oversold (sharp recent drop); Above 70 = Overbought (sharp recent rally).">RSI-14 <span class="tip-badge">?</span></th>
-              <th data-tip="SMA 20 / 50 / 200 (Trend)|Average price over the last 20, 50, and 200 trading days. Green = price is above that trend line; Red = below.">SMA 20/50/200 <span class="tip-badge">?</span></th>
-              <th data-sort="rs_spy_21d" class="num" data-tip="vs SPY (1-Month Relative Strength)|The stock's 21-day return minus the S&amp;P 500 (SPY) return. Positive = beating the market; Negative = lagging.">vs SPY 21d <span class="tip-badge">?</span></th>
-              <th data-sort="s1_dist" class="num" data-tip="Support (S1) &amp; Resistance (R1)|How far current price is (%) from the nearest support floor (S1) below and resistance ceiling (R1) above.">Near S1 / R1 <span class="tip-badge">?</span></th>
-              <th data-tip="20-Day Scenarios (Bull / Base / Bear %)|Rule-based probability split for the next 20 trading days based on trend, momentum, and key price levels.">Scenarios (B/N/S) <span class="tip-badge">?</span></th>
+              <th data-sort="notable_score" class="num" data-tip="Notable Score (0–100)|Measures how unusually active a stock is right now based on live 1D price move vs ATR, relative volume surge, chart breakouts, extreme RSI, news, and SEC filings. Higher = greater market catalyst attention.">Score <span class="tip-badge">?</span></th>
+              <th data-sort="rsi14" class="num" data-tip="RSI-14 (Momentum)|0–100 momentum oscillator over 14 sessions. Below 30 = Oversold; Above 70 = Overbought; 30–70 = Neutral.">RSI-14 <span class="tip-badge">?</span></th>
+              <th data-tip="SMA 20 / 50 / 200 (Trend)|Simple moving averages over 20, 50, and 200 sessions. Green = price above trend line; Red = below.">SMA 20/50/200 <span class="tip-badge">?</span></th>
+              <th data-sort="rs_spy_21d" class="num" data-tip="vs SPY (21d Relative Strength)|21-trading-day excess return over the S&amp;P 500 (SPY). Positive = outperforming; Negative = lagging.">vs SPY 21d <span class="tip-badge">?</span></th>
+              <th data-sort="s1_dist" class="num" data-tip="Support (S1) &amp; Resistance (R1)|Live percentage distance from current price to nearest support floor (S1) below and resistance ceiling (R1) above.">Near S1 / R1 <span class="tip-badge">?</span></th>
+              <th data-tip="20-Day Scenarios (Bull / Base / Bear %)|Rule-based 20-day probability split combining trend, momentum, relative strength, and chart structure.">Scenarios (B/N/S) <span class="tip-badge">?</span></th>
               <th data-sort="earnings_days" class="num">Earnings</th>
             </tr>
           </thead>
@@ -185,13 +178,6 @@
 
       <div id="flowKpiStrip" class="kpi-grid flow-kpi-grid"></div>
 
-      <div class="quick-jump-bar" id="flowJumpBar" aria-label="Jump to flow section">
-        <button type="button" class="jump-pill" data-jump="flow-sec-charts">Flow Analytics</button>
-        <button type="button" class="jump-pill" data-jump="flow-sec-surges">Volume Surges</button>
-        <button type="button" class="jump-pill" data-jump="flow-sec-insiders">Form 4 Insiders</button>
-        <button type="button" class="jump-pill" data-jump="flow-sec-shorts">Short Interest</button>
-      </div>
-
       <div id="flow-sec-charts"></div>
       <div id="smartMoneyCharts" class="sm-charts-grid"></div>
 
@@ -199,11 +185,6 @@
         <div>
           <h2>Unusual Volume Surges (&ge; 1.35x 20d Avg) <span class="muted" id="vfCountBadge"></span></h2>
           <p class="section-sub">Abnormal relative volume sessions with dollar turnover, 20d U/D confirmation &amp; conviction classification.</p>
-        </div>
-        <div class="flow-filter-pills" id="flowSurgeFilters">
-          <button type="button" class="jump-pill active" data-flow-filter="all">All</button>
-          <button type="button" class="jump-pill" data-flow-filter="Accumulation">Accumulation</button>
-          <button type="button" class="jump-pill" data-flow-filter="Distribution">Distribution</button>
         </div>
       </div>
       <div id="volumeFlowGrid" class="notable-grid"></div>
@@ -266,7 +247,7 @@
     <section id="view-macro" class="view hidden">
       <div class="section-header">
         <div>
-          <h2>US Macro Indicators (FRED)</h2>
+          <h2>Macro, Yields &amp; Volatility</h2>
           <p class="section-sub" id="fomcBadge"></p>
         </div>
       </div>
@@ -280,7 +261,7 @@
               <th>Indicator</th>
               <th>Series</th>
               <th class="num">Latest</th>
-              <th>Date</th>
+              <th class="num">1D</th>
               <th class="num">1W</th>
               <th class="num">1M</th>
               <th class="num">3M</th>
@@ -365,7 +346,7 @@
           <span class="badge-pill" id="moreAuthoritiesCount">0</span>
         </button>
         <button type="button" class="more-sheet-item" data-view="macro">
-          <span>Macro &amp; FRED</span>
+          <span>Macro &amp; Yields</span>
           <span class="more-arrow">→</span>
         </button>
         <button type="button" class="more-sheet-item" data-view="formulas">
@@ -393,6 +374,6 @@
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
 
-  <script src="assets/app.js?v=45"></script>
+  <script src="assets/app.js?v=46"></script>
 </body>
 </html>
