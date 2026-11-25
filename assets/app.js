@@ -303,6 +303,26 @@
       btn.classList.toggle("active", btn.dataset.view === view);
     });
     $("mobileMoreSheet")?.classList.add("hidden");
+    const VIEW_TITLES = {
+      overview: "Overview",
+      screener: "Screener",
+      network: "Supply Chain",
+      smartmoney: "Institutional Flow",
+      breaking: "Market News",
+      authorities: "Authorities",
+      macro: "Macro & Yields",
+      formulas: "Formulas",
+      stock: state.activeTicker || "Stock",
+    };
+    const mTitle = $("mobileViewTitle");
+    const mBack = $("mobileStockBackBtn");
+    if (mTitle) {
+      mTitle.textContent = view === "stock" && state.activeTicker ? state.activeTicker : (VIEW_TITLES[view] || "Markets");
+      mTitle.classList.toggle("is-stock-sym", view === "stock");
+    }
+    if (mBack) {
+      mBack.classList.toggle("hidden", view !== "stock");
+    }
     const stockTab = $("stockNavTab");
     if (stockTab && state.activeTicker) {
       stockTab.classList.remove("hidden");
@@ -454,7 +474,7 @@
             <strong class="${clsPct(hmSec.avg_ret_1d)}">${fmtPct(hmSec.avg_ret_1d, 2)}</strong>
           </div>
         </div>
-        <button class="modal-close-inline hidden" id="closeInfoModalBtn" aria-label="Close"></button>
+        <button type="button" class="modal-close-inline" id="closeInfoModalBtn" aria-label="Close">✕</button>
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
@@ -522,7 +542,7 @@
           <h2 style="font-size:19px">Mathematical Formulations &amp; Score Architecture</h2>
           <div class="muted">Every score on the dashboard uses deterministic, peer-reviewed quantitative finance equations (zero black-box AI). Hover or tap any score badge on any stock for its live plugged-in numbers.</div>
         </div>
-        <button class="modal-close-inline hidden" id="closeInfoModalBtn" aria-label="Close"></button>
+        <button type="button" class="modal-close-inline" id="closeInfoModalBtn" aria-label="Close">✕</button>
       </div>
 
       <div class="math-guide-list">
@@ -604,7 +624,7 @@
           <h2 style="font-size:19px">Where to Access &amp; Install the Equity Research App</h2>
           <div class="muted">Works as a standalone full-screen application on iPhone, iPad, Android, macOS, and Windows.</div>
         </div>
-        <button class="modal-close-inline hidden" id="closeInfoModalBtn" aria-label="Close"></button>
+        <button type="button" class="modal-close-inline" id="closeInfoModalBtn" aria-label="Close">✕</button>
       </div>
 
       <div class="math-guide-list">
@@ -4960,7 +4980,20 @@
 
   // ---- EVENTS ----
   function wireEvents() {
-    $("brandHome").onclick = () => setView("overview");
+    $("brandHome").onclick = (e) => {
+      if (e.target.closest("#mobileStockBackBtn")) {
+        e.stopPropagation();
+        closeStockTab();
+        return;
+      }
+      if (state.view !== "overview") setView("overview");
+    };
+    if ($("mobileStockBackBtn")) {
+      $("mobileStockBackBtn").onclick = (e) => {
+        e.stopPropagation();
+        closeStockTab();
+      };
+    }
     if ($("backToOverview")) $("backToOverview").onclick = () => closeStockTab();
     $("viewAllScreenerBtn").onclick = () => setView("screener");
     if ($("viewAllNewsOverviewBtn")) $("viewAllNewsOverviewBtn").onclick = () => setView("breaking");
@@ -6994,8 +7027,54 @@
     });
   }
 
+  // Lock pinch-zoom and double-tap zoom across all app pages while preserving zoom exclusively inside interactive graphs (#tvChart & .bubble-stage)
+  function initPageZoomLock() {
+    const isInsideGraph = (target) => Boolean(target && target.closest && target.closest("#tvChart, .bubble-stage"));
+
+    // 1. Block WebKit/iOS Safari native HTML-page pinch-zoom gestures globally (graphs use 2-finger touchmove internally)
+    const blockGesture = (e) => {
+      e.preventDefault();
+    };
+    document.addEventListener("gesturestart", blockGesture, { passive: false });
+    document.addEventListener("gesturechange", blockGesture, { passive: false });
+    document.addEventListener("gestureend", blockGesture, { passive: false });
+
+    // 2. Block 2-finger pinch-zoom on Android Chrome & iOS Safari everywhere outside graphs
+    document.addEventListener("touchmove", (e) => {
+      const multiTouch = (e.touches && e.touches.length > 1) || (typeof e.scale === "number" && e.scale !== 1);
+      if (multiTouch && !isInsideGraph(e.target)) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    // 3. Block double-tap page zoom outside graphs (both iOS & Android)
+    let lastTouchEndMs = 0;
+    document.addEventListener("touchend", (e) => {
+      if (isInsideGraph(e.target)) return;
+      const now = Date.now();
+      if (now - lastTouchEndMs <= 280 && e.cancelable && !e.target.closest("button, a, input, select, [role='button'], [data-sym], [data-ov-news-id]")) {
+        e.preventDefault();
+      }
+      lastTouchEndMs = now;
+    }, { passive: false });
+
+    document.addEventListener("dblclick", (e) => {
+      if (!isInsideGraph(e.target)) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    // 4. Block desktop/tablet Ctrl+wheel page zoom outside graphs
+    document.addEventListener("wheel", (e) => {
+      if (e.ctrlKey && !isInsideGraph(e.target)) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  }
+
   async function boot() {
     initTheme();
+    initPageZoomLock();
     initTooltips();
     initCustomSelects();
     wireEvents();

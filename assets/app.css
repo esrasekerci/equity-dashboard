@@ -27,6 +27,9 @@
 html {
   color-scheme: dark;
   overscroll-behavior-y: none;
+  overscroll-behavior-x: none;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 html, body {
   margin: 0;
@@ -38,7 +41,25 @@ html, body {
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
-  touch-action: manipulation;
+  text-size-adjust: 100%;
+  touch-action: pan-y;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+/* Allow horizontal + vertical pan on scrollable strips while keeping page zoom 100% locked */
+.subnav,
+.filter-bar-scroll,
+.pro-subtabs,
+.tv-range-strip,
+.tv-overlay-bar,
+.table-wrap {
+  touch-action: pan-x pan-y;
+}
+/* Prevent iOS Safari from auto-zooming the page when focusing any input/select on iPhone or iPad */
+@media (pointer: coarse) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
 }
 a { color: var(--accent-2); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -83,9 +104,13 @@ a:hover { text-decoration: underline; }
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
   min-width: 0;
+}
+.mobile-view-title,
+.mobile-back-btn {
+  display: none;
 }
 .brand-mark {
   width: 34px;
@@ -1409,7 +1434,7 @@ a:hover { text-decoration: underline; }
   left: 12px !important;
   right: 12px !important;
   top: auto !important;
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
   width: auto !important;
   max-width: calc(100vw - 24px) !important;
   pointer-events: auto;
@@ -1479,15 +1504,24 @@ a:hover { text-decoration: underline; }
   margin-bottom: 2px;
 }
 .modal-close-inline {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
   background: var(--bg-elev);
-  color: var(--text);
-  font-size: 15px;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
+}
+.modal-close-inline:hover,
+.modal-close-inline:active {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* Mathematical Formulations & Live Score Breakdown Boxes */
@@ -2369,13 +2403,144 @@ body.no-scroll { overflow: hidden; }
   .search-kbd { display: none; }
   .search-wrap input { font-size: 16px; padding: 9px 12px 9px 32px; }
   .subnav { display: none; }
-  .topbar-inner { padding: 8px 14px 10px; gap: 7px; }
-  .container { padding: 12px 14px calc(86px + env(safe-area-inset-bottom, 0px)); }
+  .topbar-inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 46px;
+    padding: 6px calc(14px + env(safe-area-inset-right, 0px)) 6px calc(14px + env(safe-area-inset-left, 0px));
+    gap: 8px;
+  }
+  .mobile-view-title {
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mobile-view-title.is-stock-sym {
+    font-weight: 800;
+    color: var(--text);
+  }
+  .mobile-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 5px 9px 5px 5px;
+    min-height: 32px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .mobile-back-btn:active {
+    transform: scale(0.96);
+    background: var(--bg-hover);
+  }
+  .search-trigger-btn {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    border-radius: 9px;
+  }
+  .container {
+    padding: 12px calc(14px + env(safe-area-inset-right, 0px)) calc(84px + env(safe-area-inset-bottom, 0px)) calc(14px + env(safe-area-inset-left, 0px));
+    overflow-x: clip;
+  }
+  .filter-bar-scroll {
+    margin: 0 -14px 10px;
+    padding: 0 14px;
+  }
   .footer { margin-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
-  #sec-signals, #sec-sectors, #sec-movers, #sec-earnings { scroll-margin-top: 108px; }
+  #sec-signals, #sec-sectors, #sec-movers, #sec-earnings { scroll-margin-top: 72px; }
+  .section-header { margin: 18px 0 10px; }
+  .section-header h2 { font-size: 16px; }
+  .ov-news-hdr { margin-top: 12px; margin-bottom: 8px; }
   .jump-pill { min-height: 34px; padding: 6px 13px; }
   .more-sheet-item { min-height: 48px; }
 
+  /* Native Bottom-Sheet Modals on Android & iOS */
+  .modal {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal-card {
+    width: 100%;
+    max-width: 100%;
+    max-height: 85vh;
+    max-height: 85dvh;
+    border-radius: 18px 18px 0 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    padding: 16px 15px calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Clean 2-Column Equal-Width Screener Controls on Mobile */
+  .screener-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .screener-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+  .screener-controls .control-group,
+  .screener-controls .cselect-wrap {
+    width: 100%;
+    min-width: 0;
+  }
+  .cselect-trigger {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .cselect-opt {
+    min-height: 42px;
+    font-size: 13.5px;
+  }
+
+  /* Full-Width News Search & Segmented Filter Pills on Mobile */
+  .news-page-hdr {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 9px;
+  }
+  .news-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 7px;
+    width: 100%;
+  }
+  .news-search-box {
+    width: 100%;
+    flex: none;
+    min-height: 38px;
+    padding: 6px 11px;
+  }
+  .news-tier-pills {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+  }
+  .news-tier-btn {
+    text-align: center;
+    min-height: 32px;
+    font-size: 12px;
+  }
+
+  /* Native Tactile Mobile Bottom Navigation Bar */
   .mobile-bottom-nav {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -2384,11 +2549,13 @@ body.no-scroll { overflow: hidden; }
     right: 0;
     bottom: 0;
     z-index: 80;
-    background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    background: color-mix(in srgb, var(--bg-elev) 96%, transparent);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--border);
-    padding: 5px 4px calc(5px + env(safe-area-inset-bottom, 0px));
+    padding: 4px calc(4px + env(safe-area-inset-right, 0px)) calc(5px + env(safe-area-inset-bottom, 0px)) calc(4px + env(safe-area-inset-left, 0px));
+    user-select: none;
+    -webkit-user-select: none;
   }
   .mnav-btn {
     position: relative;
@@ -2400,24 +2567,49 @@ body.no-scroll { overflow: hidden; }
     align-items: center;
     justify-content: center;
     gap: 3px;
-    min-height: 46px;
-    padding: 4px 2px;
+    min-height: 48px;
+    padding: 5px 2px 3px;
     font-family: inherit;
     font-size: 10.5px;
     font-weight: 600;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    transition: color 0.14s ease;
+    transition: color 0.14s ease, transform 0.1s ease;
   }
+  .mnav-btn:active { transform: scale(0.93); }
   .mnav-btn svg { width: 20px; height: 20px; }
   .mnav-btn.active { color: var(--accent); font-weight: 700; }
+  .mnav-btn.active::before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: 28%;
+    right: 28%;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
   .flow-kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .flow-dual-grid { grid-template-columns: 1fr; }
   .scroll-top-btn {
-    right: 12px;
-    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
-    width: 30px;
-    height: 28px;
+    right: calc(12px + env(safe-area-inset-right, 0px));
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    width: 32px;
+    height: 30px;
+  }
+}
+@media (max-width: 400px) {
+  .stock-price-dual {
+    gap: 10px;
+  }
+  .stock-price-dual.has-ext .ext-col {
+    padding-left: 10px;
+  }
+  .stock-price-dual .stock-price {
+    font-size: 20px;
+  }
+  .quote-delta {
+    font-size: 11.5px;
   }
 }
 
