@@ -16,7 +16,7 @@
   <meta property="og:title" content="Equity Intelligence" />
   <meta property="og:description" content="Live 100-stock quantitative intelligence, Gold &amp; Silver benchmarks, interactive charts, supply-chain value network, Institutional Flow, official legal authorities &amp; SEC filings." />
   <title>Equity Intelligence</title>
-  <link rel="stylesheet" href="assets/app.css?v=47" />
+  <link rel="stylesheet" href="assets/app.css?v=48" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -63,8 +63,18 @@
     <!-- OVERVIEW VIEW -->
     <section id="view-overview" class="view hidden">
       <div id="todayEarningsBanner" class="today-earnings-banner hidden"></div>
-      <div id="breakingBanner" class="breaking-banner hidden"></div>
       <div id="kpiStrip" class="kpi-grid"></div>
+
+      <div class="section-header ov-news-hdr" id="sec-ov-news">
+        <div>
+          <h2>Market News</h2>
+        </div>
+        <div class="ov-news-actions">
+          <button type="button" class="ov-news-shuffle-btn" id="shuffleOverviewNewsBtn" title="Show another set of news" aria-label="Show another set of news">↻</button>
+          <button type="button" class="link-btn" id="viewAllNewsOverviewBtn">All news →</button>
+        </div>
+      </div>
+      <div id="overviewNewsGrid" class="ov-news-grid"></div>
 
       <div class="section-header" id="sec-signals">
         <div>
@@ -218,15 +228,28 @@
 
     <!-- BREAKING NEWS VIEW -->
     <section id="view-breaking" class="view hidden">
-      <div class="section-header">
+      <div class="section-header news-page-hdr">
         <div>
-          <h2>Breaking &amp; Important News</h2>
+          <h2>Market News &amp; Intelligence</h2>
+          <p class="section-sub" id="newsDeskMeta">Real-time wires, SEC filings, analyst ratings &amp; macro policy</p>
+        </div>
+        <div class="news-controls-row">
+          <div class="news-search-box">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="newsSearchInput" placeholder="Filter ticker, topic, source…" aria-label="Filter news" autocomplete="off" />
+          </div>
+          <div class="news-tier-pills" id="newsTierBar" role="group" aria-label="Significance filter">
+            <button type="button" class="news-tier-btn active" data-ntier="all">All</button>
+            <button type="button" class="news-tier-btn" data-ntier="critical">Critical</button>
+            <button type="button" class="news-tier-btn" data-ntier="watchlist">Watchlist</button>
+          </div>
         </div>
       </div>
       <div class="filter-bar-scroll">
         <div class="filter-bar" id="breakingCategoryBar"></div>
       </div>
-      <div id="breakingList" class="feed-list"></div>
+      <div id="breakingLeadSpot"></div>
+      <div id="breakingList" class="news-wire-grid"></div>
     </section>
 
     <!-- OFFICIAL AUTHORITIES & LEGAL DECLARATIONS VIEW -->
@@ -374,6 +397,6 @@
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
 
-  <script src="assets/app.js?v=47"></script>
+  <script src="assets/app.js?v=48"></script>
 </body>
 </html>

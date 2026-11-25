@@ -49,7 +49,8 @@ WIRES = [
     ("CNBC", "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664"),
     ("CNBC Earnings", "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15839135"),
     ("CNBC Tech", "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=19854910"),
-    ("MarketWatch", "https://feeds.content.dowjones.io/public/rss/mw_realtimeheadlines"),
+    ("CNBC Investing", "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15839069"),
+    ("CNBC Economy", "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=20910258"),
     ("Yahoo Finance", "https://finance.yahoo.com/news/rssindex"),
 ]
 
@@ -549,12 +550,68 @@ def main() -> None:
     if len(seen) > 1200:
         seen = dict(sorted(seen.items(), key=lambda kv: kv[1], reverse=True)[:1200])
 
-    merged = (deduped + existing)[:80]
+    # Keep up to 120 items in breaking_news.json while capping synthetic market_move shocks at 12 so editorial journalism leads
+    combined = deduped + existing
+    editorial_items = [x for x in combined if "market_move" not in (x.get("categories") or [])]
+    tape_items = [x for x in combined if "market_move" in (x.get("categories") or [])][:12]
+    merged = (editorial_items[:108] + tape_items)[:120]
     breaking_path.write_text(
         json.dumps({"updated_at": now_iso, "min_importance": 42, "max_age_hours": 4, "items": merged}, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
     seen_path.write_text(json.dumps(seen, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    # Patch fresh editorial ticker news & live quotes directly into data/<latest_date>/tickers/<SYM>.json
+    tickers_dir = DATA_DIR / latest_date / "tickers"
+    if tickers_dir.exists():
+        new_ed_by_sym: dict[str, list[dict]] = {}
+        for it in deduped:
+            if "market_move" not in (it.get("categories") or []) and it.get("symbol") in ticker_names:
+                new_ed_by_sym.setdefault(it["symbol"], []).append(it)
+        for sym in set(list(new_ed_by_sym.keys()) + list(quotes.keys())):
+            tp = tickers_dir / f"{sym}.json"
+            if not tp.exists():
+                continue
+            try:
+                td = json.loads(tp.read_text(encoding="utf-8"))
+                q = quotes.get(sym)
+                if q:
+                    tech = td.setdefault("technical", {})
+                    facts = tech.setdefault("facts", {})
+                    facts["last_close"] = q["close"]
+                    facts["change_1d_usd"] = q["change_1d_usd"]
+                    facts["change_1d_pct"] = q["change_1d_pct"]
+                    facts["ext_price"] = q["ext_price"]
+                    facts["ext_change_usd"] = q["ext_change_usd"]
+                    facts["ext_change_pct"] = q["ext_change_pct"]
+                    facts["ext_label"] = q["ext_label"]
+                    lv = (tech.get("computed") or {}).get("levels") or {}
+                    for side in ("support", "resistance"):
+                        for lv_it in lv.get(side) or []:
+                            if lv_it and lv_it.get("price"):
+                                lv_it["distance_pct"] = round(((float(lv_it["price"]) - q["close"]) / q["close"]) * 100.0, 2)
+                if sym in new_ed_by_sym:
+                    cur_news = td.get("news") or []
+                    cur_keys = {story_key(n.get("title", "")) for n in cur_news}
+                    add_n = [
+                        {
+                            "id": "LIVE",
+                            "kind": "news",
+                            "title": x["title"],
+                            "url": x["url"],
+                            "published": x["published"],
+                            "source": x["source"],
+                            "importance": x["importance"],
+                            "categories": x["categories"],
+                        }
+                        for x in new_ed_by_sym[sym]
+                        if x["key"] not in cur_keys
+                    ]
+                    if add_n:
+                        td["news"] = (add_n + cur_news)[:35]
+                tp.write_text(json.dumps(td, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+            except Exception:
+                continue
 
     # Dispatch separate Telegram messages according to significance tier (CRITICAL -> HIGH -> NOTABLE)
     tg_tok = os.environ.get("TELEGRAM_BOT_TOKEN")

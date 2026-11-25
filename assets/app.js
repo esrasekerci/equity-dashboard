@@ -15,6 +15,11 @@
     sortKey: "notable_score",
     sortDir: -1,
     breakingCategory: "all",
+    breakingTier: "all",
+    breakingSearch: "",
+    ovNewsCurrentIds: [],
+    ovBootRotated: false,
+    lastHiddenAt: 0,
     authorityAgency: "all",
     networkCenter: "NVDA",
     networkFilter: "all",
@@ -159,6 +164,8 @@
   // Simple Binance-style per-stock tooltips (tap "Formulas" tab for full math & live step-by-step equations)
   function notableScoreTipAttr(r) {
     const bd = r?.notable_bd || r?.notable?.breakdown;
+    const rawTot = bd?.total ?? r?.notable_score ?? r?.notable?.score ?? 0;
+    const cappedTot = Math.min(100, Math.max(0, Number(rawTot || 0)));
     if (!bd || !bd.terms) return tipAttr("notable_score");
     const tm = bd.terms;
     const parts = [];
@@ -170,13 +177,14 @@
     if (tm.sec > 0) parts.push(`SEC filing (+${tm.sec})`);
     if ((tm.insider || 0) + (tm.earnings || 0) > 0) parts.push(`Insider/Earnings (+${(tm.insider || 0) + (tm.earnings || 0)})`);
     const summary = parts.length ? `Driven today by: ${parts.join(" · ")}.` : "Normal daily activity today.";
-    const text = `Notable Score: ${fmtNum(bd.total, 1)} / 100|Measures how unusually active ${r.symbol} is today. ${summary}`;
+    const text = `Notable Score: ${fmtNum(cappedTot, 1)} / 100|Measures how unusually active ${r.symbol} is today. ${summary}`;
     return `data-tip="${esc(text)}"`;
   }
 
   function levelStrengthTipAttr(x) {
+    const distPart = x.distance_pct != null ? ` (${fmtPct(x.distance_pct, 1)} from current price)` : "";
     const text =
-      `${x.label} ($${fmtNum(x.price)}) — Strength ${fmtNum(x.strength, 0)}/100|` +
+      `${x.label} ($${fmtNum(x.price)})${distPart} — Strength ${fmtNum(x.strength, 0)}/100|` +
       `Reliability score based on ${x.touches ?? 0} historical price bounces at this zone, trading volume concentration, and how recently it was tested (${x.last_touch || "recent"}).`;
     return `data-tip="${esc(text)}"`;
   }
@@ -249,6 +257,8 @@
   function setView(view, opts = {}) {
     const fromHistory = Boolean(opts.fromHistory);
     const replace = Boolean(opts.replace);
+    const skipScrollTop = Boolean(opts.skipScrollTop);
+    const wasView = state.view;
     if (state.view && state.view !== view && state.view !== "stock") {
       state.prevView = state.view;
     }
@@ -257,6 +267,16 @@
       destroyInteractiveChart();
     }
     state.view = view;
+    if (view === "overview" && state.summary) {
+      // Advance news rotation every time Overview is opened (initial boot, switching tabs back to Overview, or tapping Overview again)
+      const shouldRotate = !state.ovBootRotated || !replace || wasView !== "overview";
+      if (shouldRotate) {
+        state.ovBootRotated = true;
+        renderOverviewNews({ advance: true });
+      }
+    } else if (view === "breaking" && !opts.preserveHighlight) {
+      renderBreaking();
+    }
     for (const v of ["overview", "screener", "network", "smartmoney", "breaking", "authorities", "macro", "formulas", "stock"]) {
       $(`view-${v}`)?.classList.toggle("hidden", v !== view);
     }
@@ -290,7 +310,9 @@
     if (!fromHistory) {
       syncUrl(!replace);
     }
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (!skipScrollTop) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   function closeStockTab() {
@@ -314,40 +336,22 @@
     if (meta) meta.setAttribute("content", "#050608");
   }
 
-  // ---- LOAD DATA ----
+  // ---- LOAD DATA & UNIFIED NEWS ROTATION ----
   function syncOverviewBreakingBanner() {
-    const banner = $("breakingBanner");
-    if (!banner) return;
-    if (state.breaking.length > 0) {
-      const latest = state.breaking[0];
-      banner.innerHTML = `
-        <div class="breaking-banner-body">
-          <span class="breaking-tag">Breaking</span>
-          <span class="breaking-headline"><strong>${esc(latest.symbol)}</strong> · ${esc(latest.title)}</span>
-          <div class="muted" style="margin-top:3px">${esc(latest.source || "")} · ${state.breaking.length} live alerts</div>
-        </div>
-        <span class="breaking-arrow">›</span>
-      `;
-      banner.classList.remove("hidden");
-      banner.onclick = () => setView("breaking");
-    } else {
-      banner.classList.add("hidden");
-    }
+    renderOverviewNews({ advance: false });
   }
 
   async function loadBreaking() {
     try {
       const b = await fetchJson("data/breaking_news.json");
       state.breaking = Array.isArray(b.items) ? b.items : [];
-      $("breakingCount").textContent = String(state.breaking.length);
-      if ($("moreBreakingCount")) $("moreBreakingCount").textContent = String(state.breaking.length);
     } catch {
       state.breaking = [];
-      $("breakingCount").textContent = "0";
-      if ($("moreBreakingCount")) $("moreBreakingCount").textContent = "0";
     }
-    syncOverviewBreakingBanner();
-    renderBreaking();
+    syncNewsBadgeCounts();
+    renderOverviewNews({ advance: false });
+    if (state.view === "breaking") renderBreaking();
+    if (state.view === "stock" && state.refreshActiveStockNews) state.refreshActiveStockNews();
   }
 
   async function loadAuthorities() {
@@ -643,6 +647,46 @@
     try {
       state.date = dateStr;
       state.summary = await fetchJson(`data/${dateStr}/summary.json`);
+      const nowEtIso = (() => {
+        try {
+          return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+        } catch {
+          return new Date().toISOString().slice(0, 10);
+        }
+      })();
+      const etMidnightMs = (iso) => {
+        const [y, m, d] = String(iso || "").slice(0, 10).split("-").map(Number);
+        return y && m && d ? Date.UTC(y, m - 1, d) : NaN;
+      };
+      const todayEtMs = etMidnightMs(nowEtIso);
+      for (const row of (state.summary.tickers || [])) {
+        if (row.notable_score != null) {
+          row.notable_score = Math.min(100, Math.max(0, Number(row.notable_score)));
+        }
+        if (row.notable_bd && row.notable_bd.total != null) {
+          row.notable_bd.total = Math.min(100, Math.max(0, Number(row.notable_bd.total)));
+        }
+        if (row.earnings_date && Number.isFinite(todayEtMs)) {
+          const em = etMidnightMs(row.earnings_date);
+          if (Number.isFinite(em)) row.earnings_days = Math.round((em - todayEtMs) / 86400000);
+        }
+      }
+      for (const e of (state.summary.alerts?.earnings_soon || [])) {
+        if (e.date && Number.isFinite(todayEtMs)) {
+          const em = etMidnightMs(e.date);
+          if (Number.isFinite(em)) e.days = Math.round((em - todayEtMs) / 86400000);
+        }
+      }
+      const fomcObj = state.summary.macro?.fomc;
+      const fomcPulse = state.summary.alerts?.macro_pulse?.fomc;
+      if (fomcObj?.next_meeting?.[1] && Number.isFinite(todayEtMs)) {
+        const fm = etMidnightMs(fomcObj.next_meeting[1]);
+        if (Number.isFinite(fm)) {
+          const dLeft = Math.max(0, Math.round((fm - todayEtMs) / 86400000));
+          fomcObj.days_to_decision = dLeft;
+          if (fomcPulse) fomcPulse.days_to_decision = dLeft;
+        }
+      }
       $("dateSelect").value = dateStr;
       $("navTickerCount").textContent = String(state.summary.n_tickers || 0);
       if ($("viewAllScreenerBtn")) $("viewAllScreenerBtn").textContent = `View all ${state.summary.n_tickers || 0} →`;
@@ -700,8 +744,8 @@
       }
     }
 
-    // Breaking news banner
-    syncOverviewBreakingBanner();
+    renderOverviewNews({ advance: false });
+    syncNewsBadgeCounts();
 
     // KPI Strip
     const adv = br.advancers ?? 0;
@@ -887,31 +931,70 @@
       el.onclick = () => openSectorModal(el.dataset.sector);
     });
 
-    // Notable Movers
-    const bySym = Object.fromEntries((s.tickers || []).map((t) => [t.symbol, t]));
-    $("notableGrid").innerHTML = (s.notable || []).slice(0, 6).map((n) => {
-      const row = bySym[n.symbol] || {};
+    // Notable Movers (dynamically ranked & generated from live synchronized ticker state)
+    renderNotableMoversGrid();
+  }
+
+  function buildLiveNotableBullets(row, staticWhyMap) {
+    const bullets = [];
+    const bd = row.notable_bd || {};
+    const chg = Number(row.change_1d_pct || 0);
+    if (Math.abs(chg) >= 1.2 && bd.z_atr != null && bd.z_atr > 0) {
+      bullets.push(`${fmtPct(chg, 1)} 1D move (${fmtNum(bd.z_atr, 1)}x normal daily range)`);
+    } else if (Math.abs(chg) >= 1.5) {
+      bullets.push(`${fmtPct(chg, 1)} session move ($${fmtNum(row.close)})`);
+    }
+    const rvol = Number(row.vol_ratio_20d || bd.rvol_20d || 0);
+    if (rvol >= 1.3) {
+      bullets.push(`Volume ${fmtNum(rvol, 2)}x 20-day average`);
+    }
+    const rawWhy = staticWhyMap[row.symbol] || row.notable_why || [];
+    for (const w of rawWhy) {
+      if (/move\s*=\s*[\d.]+x/i.test(w) || /^volume\s+[\d.]+x/i.test(w)) continue;
+      bullets.push(w);
+      if (bullets.length >= 2) break;
+    }
+    if (bullets.length < 2 && row.rsi14 != null && (row.rsi14 <= 30 || row.rsi14 >= 70)) {
+      bullets.push(`RSI-14 ${row.rsi14 <= 30 ? "oversold" : "overbought"} at ${fmtNum(row.rsi14, 1)}`);
+    }
+    if (bullets.length < 2 && row.earnings_days != null && Math.abs(row.earnings_days) <= 7) {
+      bullets.push(`Earnings ${row.earnings_days === 0 ? "today" : row.earnings_days > 0 ? `in ${row.earnings_days}d` : `${Math.abs(row.earnings_days)}d ago`}`);
+    }
+    return bullets.slice(0, 2);
+  }
+
+  function renderNotableMoversGrid() {
+    const box = $("notableGrid");
+    const s = state.summary;
+    if (!box || !s) return;
+    const staticWhyMap = Object.fromEntries((s.notable || []).map((n) => [n.symbol, n.why || []]));
+    const topRows = [...(s.tickers || [])]
+      .sort((a, b) => (b.notable_score || 0) - (a.notable_score || 0))
+      .slice(0, 6);
+    box.innerHTML = topRows.map((row) => {
+      const scoreVal = Math.min(100, Math.max(0, Number(row.notable_score || 0)));
+      const bullets = buildLiveNotableBullets(row, staticWhyMap);
       return `
-        <div class="notable-card" data-sym="${esc(n.symbol)}">
+        <div class="notable-card" data-sym="${esc(row.symbol)}">
           <div class="notable-top">
             <div>
-              <div class="notable-sym">${esc(n.symbol)}${row.is_core ? ' <span class="core-star">★</span>' : ""} <span class="tag sector-link" data-sector="${esc(row.sector)}">${esc(fmtSector(row.sector))}</span></div>
+              <div class="notable-sym">${esc(row.symbol)}${row.is_core ? ' <span class="core-star">★</span>' : ""} <span class="tag sector-link" data-sector="${esc(row.sector)}">${esc(fmtSector(row.sector))}</span></div>
               <div class="notable-name">${esc(row.name || "")}</div>
             </div>
             <div style="text-align:right">
               <div class="price-pill ${clsPct(row.change_1d_pct)}">$${fmtNum(row.close)} · ${fmtPct(row.change_1d_pct, 1)}</div>
               ${renderExtMiniHtml(row)}
-              <div style="margin-top:4px"><span class="score-badge" ${notableScoreTipAttr(row)}>Score ${fmtNum(n.score, 0)} <span class="tip-badge">?</span></span></div>
+              <div style="margin-top:4px"><span class="score-badge" ${notableScoreTipAttr(row)}>Score ${fmtNum(scoreVal, 0)} <span class="tip-badge">?</span></span></div>
             </div>
           </div>
-          <ul class="notable-why">${(n.why || []).slice(0, 2).map((w) => `<li>${esc(w)}</li>`).join("")}</ul>
+          ${bullets.length ? `<ul class="notable-why">${bullets.map((w) => `<li>${esc(w)}</li>`).join("")}</ul>` : ""}
         </div>
       `;
     }).join("");
-    $("notableGrid").querySelectorAll(".notable-card").forEach((el) => {
+    box.querySelectorAll(".notable-card").forEach((el) => {
       el.onclick = () => openStock(el.dataset.sym);
     });
-    wireSectorLinks($("notableGrid"));
+    wireSectorLinks(box);
   }
 
   // ---- SCREENER (Desktop Table + Mobile Cards) ----
@@ -1726,6 +1809,31 @@
       inspector.innerHTML = `<div class="muted">No connections match the selected filter.</div>`;
     }
 
+    // Live-sync hook so 5-second price ticks update Bubble Network hub header & open Inspector drawer without resetting zoom/pan
+    container._refreshBubbleLive = (liveMap) => {
+      if (!liveMap) return;
+      const cLive = liveMap[center.symbol];
+      if (cLive) {
+        center.close = cLive.close;
+        center.change_1d_pct = cLive.change_1d_pct;
+        if (cLive.market_cap) center.market_cap = cLive.market_cap;
+        const hdrLink = container.querySelector(".bubble-header .touch-name-link[data-open-stock]");
+        if (hdrLink) hdrLink.textContent = `${center.symbol} · ${center.name} (${fmtCap(center.market_cap)}) ↗`;
+      }
+      for (const np of nodesPos) {
+        const nLive = liveMap[np.symbol];
+        if (nLive) {
+          np.close = nLive.close;
+          np.change_1d_pct = nLive.change_1d_pct;
+          if (nLive.market_cap) np.market_cap = nLive.market_cap;
+          bySym[np.symbol] = nLive;
+        }
+      }
+      if (nodesPos.length > 0 && selectedIdx >= 0 && selectedIdx < nodesPos.length) {
+        inspectItem(selectedIdx, false);
+      }
+    };
+
     container.querySelectorAll(".orbit-bubble[data-idx], .edge-badge[data-idx]").forEach((nodeEl) => {
       nodeEl.addEventListener("click", (e) => {
         if (dragMoved > 7) return;
@@ -2229,84 +2337,550 @@
     $("smShortInterest").querySelectorAll(".level-row").forEach((r) => { r.onclick = () => openStock(r.dataset.sym); });
   }
 
-  // ---- BREAKING NEWS ----
-  const CAT_LABELS = {
-    all: "All",
-    policy_geopolitics: "Policy & Geopolitics",
-    data_centers_ai: "Data Centers & AI",
-    regulatory_legal: "Regulatory & Legal",
-    earnings_guidance: "Earnings & Guidance",
-    m_and_a: "M&A",
-    contract_partnership: "Deals & Partnerships",
-    management: "Leadership",
-    capital_markets: "Capital Markets",
-    capex_expansion: "Capex & Expansion",
-    product_tech: "Product & Tech",
-    analyst: "Analyst",
-    market_move: "Market Move",
-    general: "Market",
-  };
+  // ---- UNIFIED INSTITUTIONAL NEWS DESK & DYNAMIC OVERVIEW ROTATION ----
+  const NEWS_DESK_ORDER = [
+    ["all", "All News"],
+    ["macro_policy", "Macro & Fed"],
+    ["ai_tech", "AI & Chips"],
+    ["earnings", "Earnings"],
+    ["deals", "Deals & M&A"],
+    ["analyst", "Analyst Calls"],
+    ["sec_legal", "SEC & Legal"],
+    ["tape_moves", "Price Shocks"],
+  ];
+  const NEWS_DESK_LABELS = Object.fromEntries(NEWS_DESK_ORDER);
+
+  function makeNewsUid(title, fallbackKey = "") {
+    const stem = String(title || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim()
+      .split(/\s+/)
+      .slice(0, 9)
+      .join("-");
+    if (stem) return `nw-${stem.slice(0, 56)}`;
+    return `nw-${String(fallbackKey || Math.random()).replace(/[^a-z0-9_-]/gi, "").slice(0, 32)}`;
+  }
+
+  function fmtRelNewsTime(pubMs) {
+    if (!Number.isFinite(pubMs) || pubMs <= 0) return "Recent";
+    const diffMin = Math.max(1, Math.round((Date.now() - pubMs) / 60000));
+    if (diffMin <= 2) return "Just now";
+    if (diffMin < 60) return `${diffMin}m ago`;
+    const diffH = Math.floor(diffMin / 60);
+    if (diffH < 24) return `${diffH}h ago`;
+    const d = new Date(pubMs);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }
+
+  function classifyNewsDesks(item, bySym) {
+    const rawCats = (item.categories || []).map((c) => String(c).toLowerCase());
+    const src = String(item.source || "");
+    const title = String(item.title || "");
+    const tl = title.toLowerCase();
+
+    if (rawCats.includes("market_move") || /^live market tape/i.test(src) || /^cboe live/i.test(src)) {
+      return { desks: ["tape_moves"], isTape: true };
+    }
+
+    const desks = new Set();
+    for (const c of rawCats) {
+      if (c === "policy_geopolitics" || c === "fed" || c.includes("tariff") || c.includes("trade") || c.includes("macro")) desks.add("macro_policy");
+      if (c === "data_centers_ai" || c === "product_tech" || c === "supply_chain_producers") desks.add("ai_tech");
+      if (c === "earnings_guidance") desks.add("earnings");
+      if (c === "m_and_a" || c === "contract_partnership" || c === "capex_expansion" || c === "capital_markets") desks.add("deals");
+      if (c === "analyst") desks.add("analyst");
+      if (c === "sec_8k" || c === "official_authority" || c === "regulatory_legal" || c === "management" || c === "ownership") desks.add("sec_legal");
+    }
+
+    // Headline keyword refinement so broad "general" stories map to accurate desks
+    if (/\b(fed |federal reserve|fomc|powell|inflation|pce|cpi|gdp|jobless|treasury|yields|tariff|tariffs|sanction|white house|china trade|geopolit|opec)\b/i.test(tl)) {
+      desks.add("macro_policy");
+    }
+    if (/\b(ai |artificial intelligence|chip|chips|semiconductor|gpu|blackwell|rubin|hbm|cowos|data center|hyperscaler|cloud|foundry|wafer|nvidia|tsmc|amd|broadcom|openai|agentic)\b/i.test(tl)) {
+      desks.add("ai_tech");
+    }
+    if (/\b(earnings|revenue|eps |quarterly|q[1-4]\b|guidance|outlook|backlog|beats|misses|forecast|profit)\b/i.test(tl)) {
+      desks.add("earnings");
+    }
+    if (/\b(merger|acquire|acquisition|buyout|deal|order|orders|contract|partnership|ipo|valuation|consortium|offer|buyback|joint venture)\b/i.test(tl)) {
+      desks.add("deals");
+    }
+    if (/\b(upgrade|downgrade|price target|overweight|underweight|outperform|morgan stanley|goldman|jpmorgan|bofa|bank of america|barclays|citigroup|citi |ubs |bernstein|wedbush|jefferies|analyst)\b/i.test(tl)) {
+      desks.add("analyst");
+    }
+    if (/\b(8-k|sec |doj|ftc|antitrust|subpoena|lawsuit|probe|investigation|pardon|senate|congress|ceo |cfo |board|insider|diversion|export control|executive order)\b/i.test(tl)) {
+      desks.add("sec_legal");
+    }
+
+    if (desks.size === 0) {
+      const tRow = bySym[item.symbol];
+      const sec = String(tRow?.sector || "").toLowerCase();
+      if (["semiconductors", "neocloud_ai_infra", "datacenter_neocloud", "ai_cloud", "software", "hardware_infra", "megacap_platforms"].includes(sec)) {
+        desks.add("ai_tech");
+      } else {
+        desks.add("macro_policy");
+      }
+    }
+    return { desks: [...desks], isTape: false };
+  }
+
+  function getUnifiedNewsFeed() {
+    const tickers = state.summary?.tickers || [];
+    const bySym = Object.fromEntries(tickers.map((t) => [t.symbol, t]));
+    const rawPool = [];
+
+    for (const it of (state.breaking || [])) {
+      rawPool.push({ ...it, _origin: "breaking" });
+    }
+    for (const w of (state.summary?.feeds?.world || [])) {
+      rawPool.push({
+        key: w.id || w.url,
+        symbol: "MACRO",
+        name: "Global Macro",
+        title: w.title,
+        url: w.url,
+        source: w.source || "Global Wire",
+        published: w.published,
+        summary: w.summary && w.summary !== w.title ? w.summary : "",
+        importance: Number(w.importance || 68),
+        categories: w.categories || ["policy_geopolitics"],
+        _origin: "world",
+      });
+    }
+    for (const f of (state.summary?.feeds?.fed || [])) {
+      rawPool.push({
+        key: f.id || f.url,
+        symbol: "FED",
+        name: "Federal Reserve",
+        title: f.title,
+        url: f.url,
+        source: "Federal Reserve",
+        published: f.published,
+        summary: f.summary && f.summary !== f.title ? f.summary : "",
+        importance: Math.max(66, Number(f.importance || 66)),
+        categories: ["fed", "policy_geopolitics"],
+        _origin: "fed",
+      });
+    }
+    for (const a of (state.authorities || []).slice(0, 14)) {
+      rawPool.push({
+        key: a.url || a.title,
+        symbol: String(a.agency || "POLICY").split(/\s+/)[0].toUpperCase().slice(0, 8),
+        name: a.agency || "Official Authority",
+        title: a.title,
+        url: a.url,
+        source: a.agency || a.source || "Official",
+        published: a.published,
+        summary: a.summary && a.summary !== a.title ? a.summary : "",
+        importance: Math.max(72, Number(a.importance || 74)),
+        categories: ["official_authority", ...(a.categories || [])],
+        _origin: "authority",
+      });
+    }
+
+    const byUid = new Map();
+    for (const raw of rawPool) {
+      const title = String(raw.title || "").trim();
+      if (!title || !raw.url) continue;
+      // Match ticker if tagged MACRO/POLICY/etc.
+      let sym = String(raw.symbol || "MACRO").toUpperCase();
+      if (!bySym[sym]) {
+        const tl = title.toLowerCase();
+        for (const r of tickers) {
+          const firstW = String(r.name || "").split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, "") || "";
+          if (
+            (r.symbol.length >= 3 && !["NOW", "ARM", "APP", "CAT", "ALL"].includes(r.symbol) && new RegExp(`(?<![A-Za-z])${r.symbol.replace("-", "\\-")}(?![A-Za-z])`).test(title)) ||
+            (firstW.length >= 5 && !["applied", "advanced", "first", "general", "united", "american", "constellation", "southern"].includes(firstW) && tl.includes(firstW))
+          ) {
+            sym = r.symbol;
+            break;
+          }
+        }
+      }
+      const uid = makeNewsUid(title, raw.key);
+      const pubMs = raw.published ? Date.parse(raw.published) : Date.now();
+      const validMs = Number.isFinite(pubMs) ? pubMs : Date.now() - 3600000;
+      const ageH = Math.max(0, (Date.now() - validMs) / 3600000);
+      const { desks, isTape } = classifyNewsDesks({ ...raw, symbol: sym }, bySym);
+      const imp = Number(raw.importance || 55);
+      const tier1Bonus = /\b(cnbc|reuters|bloomberg|wsj|sec|federal reserve|ftc|doj|axios|financial times|barron)\b/i.test(String(raw.source || "")) ? 6 : 0;
+      const rankScore = isTape
+        ? (imp - 18 - Math.min(42, ageH * 3.5))
+        : (imp + 26 + tier1Bonus - Math.min(34, ageH * 1.15));
+
+      const tRow = bySym[sym] || null;
+      const cleanSummary = (() => {
+        const sm = String(raw.summary || "").trim();
+        if (!sm || sm.length < 28) return "";
+        if (sm.toLowerCase().startsWith(title.toLowerCase().slice(0, 32))) return "";
+        return sm.length > 190 ? `${sm.slice(0, 188).trim()}…` : sm;
+      })();
+
+      const enriched = {
+        uid,
+        symbol: sym,
+        isWatchlist: Boolean(tRow),
+        companyName: tRow?.name || raw.name || sym,
+        close: tRow?.close ?? null,
+        change1d: tRow?.change_1d_pct ?? null,
+        title,
+        summary: cleanSummary,
+        url: raw.url,
+        source: String(raw.source || "Market Wire").replace(/^Fed monetary policy press releases$/i, "Federal Reserve"),
+        pubMs: validMs,
+        relTime: fmtRelNewsTime(validMs),
+        importance: imp,
+        sigTier: imp >= 76 ? "CRITICAL" : (imp >= 56 ? "HIGH" : "NOTABLE"),
+        desks,
+        primaryDesk: desks[0] || "macro_policy",
+        isTape,
+        rankScore,
+      };
+
+      const prev = byUid.get(uid);
+      if (!prev || enriched.rankScore > prev.rankScore) {
+        byUid.set(uid, enriched);
+      }
+    }
+
+    return [...byUid.values()].sort((a, b) => b.rankScore - a.rankScore || b.pubMs - a.pubMs);
+  }
+
+  function syncNewsBadgeCounts() {
+    const all = getUnifiedNewsFeed();
+    const edCount = all.filter((x) => !x.isTape).length || all.length;
+    if ($("breakingCount")) $("breakingCount").textContent = String(edCount);
+    if ($("moreBreakingCount")) $("moreBreakingCount").textContent = String(edCount);
+  }
 
   function sigTierBadgeHtml(imp) {
     const sc = Number(imp || 0);
-    if (sc >= 78) return `<span class="tag sig-crit">CRITICAL</span>`;
-    if (sc >= 58) return `<span class="tag sig-high">HIGH</span>`;
-    return `<span class="tag">NOTABLE</span>`;
+    if (sc >= 76) return `<span class="news-sig-pill crit">Critical</span>`;
+    if (sc >= 56) return `<span class="news-sig-pill high">High</span>`;
+    return `<span class="news-sig-pill notable">Radar</span>`;
   }
 
-  function renderBreaking() {
+  function renderNewsTickerChipHtml(item, interactive = true) {
+    if (item.isWatchlist && item.close != null) {
+      const chg = item.change1d;
+      if (interactive) {
+        return `<button type="button" class="news-live-ticker ${clsPct(chg)}" data-sym="${esc(item.symbol)}" title="Open ${esc(item.symbol)} chart"><strong>${esc(item.symbol)}</strong><span>$${fmtNum(item.close)}</span><span class="nlt-pct">${fmtPct(chg, 1)}</span></button>`;
+      }
+      return `<span class="news-live-ticker static ${clsPct(chg)}" data-sym="${esc(item.symbol)}"><strong>${esc(item.symbol)}</strong><span>${fmtPct(chg, 1)}</span></span>`;
+    }
+    return `<span class="news-entity-tag">${esc(item.symbol)}</span>`;
+  }
+
+  // Dynamic Overview 4-Story Showcase — rotates to a fresh set every time Overview is opened!
+  function pickOverviewNewsBatch(editorialPool, advance = false) {
+    if (!editorialPool.length) return [];
+    const SHOW_N = Math.min(4, editorialPool.length);
+    const topPool = editorialPool.slice(0, 28);
+    const byId = Object.fromEntries(editorialPool.map((x) => [x.uid, x]));
+
+    // Keep current batch stable during background 30s polling unless advancing or empty
+    if (!advance && state.ovNewsCurrentIds.length > 0) {
+      const cur = state.ovNewsCurrentIds.map((id) => byId[id]).filter(Boolean);
+      if (cur.length === SHOW_N) return cur;
+    }
+
+    let cursor = 0;
+    let lastIds = [];
+    try {
+      const saved = JSON.parse(localStorage.getItem("eq_ov_news_deck_v1") || "{}");
+      if (Number.isFinite(saved.cursor)) cursor = saved.cursor;
+      if (Array.isArray(saved.lastIds)) lastIds = saved.lastIds;
+    } catch {}
+
+    const prevSet = new Set(lastIds);
+    const n = topPool.length;
+    const startIdx = advance ? (cursor + 3) % n : cursor % n;
+    const picked = [];
+    const usedSyms = new Set();
+    const usedIds = new Set();
+
+    // Pass 1: strictly avoid stories shown on the previous Overview visit + enforce 1 story per ticker for rich variety
+    for (let step = 0; step < n && picked.length < SHOW_N; step++) {
+      const cand = topPool[(startIdx + step) % n];
+      if (prevSet.has(cand.uid)) continue;
+      if (cand.isWatchlist && usedSyms.has(cand.symbol)) continue;
+      picked.push(cand);
+      usedIds.add(cand.uid);
+      if (cand.isWatchlist) usedSyms.add(cand.symbol);
+    }
+    // Pass 2: relax ticker uniqueness if needed while still avoiding previous visit's stories
+    for (let step = 0; step < n && picked.length < SHOW_N; step++) {
+      const cand = topPool[(startIdx + step) % n];
+      if (usedIds.has(cand.uid) || prevSet.has(cand.uid)) continue;
+      picked.push(cand);
+      usedIds.add(cand.uid);
+    }
+    // Pass 3: fallback if total pool <= 4
+    for (let step = 0; step < n && picked.length < SHOW_N; step++) {
+      const cand = topPool[(startIdx + step) % n];
+      if (usedIds.has(cand.uid)) continue;
+      picked.push(cand);
+      usedIds.add(cand.uid);
+    }
+
+    const nextIds = picked.map((x) => x.uid);
+    state.ovNewsCurrentIds = nextIds;
+    if (advance || !lastIds.length) {
+      try {
+        localStorage.setItem("eq_ov_news_deck_v1", JSON.stringify({
+          cursor: (startIdx + SHOW_N) % Math.max(1, n),
+          lastIds: nextIds,
+        }));
+      } catch {}
+    }
+    return picked;
+  }
+
+  function openNewsItemInBreaking(uid) {
+    if (!uid) {
+      setView("breaking");
+      return;
+    }
+    // Clear filters if needed so the clicked news item is guaranteed visible on the News page
+    state.breakingCategory = "all";
+    state.breakingTier = "all";
+    state.breakingSearch = "";
+    if ($("newsSearchInput")) $("newsSearchInput").value = "";
+    document.querySelectorAll("#newsTierBar .news-tier-btn").forEach((b) => {
+      b.classList.toggle("active", b.dataset.ntier === "all");
+    });
+
+    renderBreaking(uid);
+    setView("breaking", { skipScrollTop: true, preserveHighlight: true });
+
+    requestAnimationFrame(() => {
+      const escId = window.CSS && CSS.escape ? CSS.escape(uid) : uid.replace(/"/g, "");
+      const target = document.querySelector(`#view-breaking [data-news-id="${escId}"]`);
+      if (!target) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      target.classList.remove("news-highlight-pulse");
+      void target.offsetWidth;
+      target.classList.add("news-highlight-pulse");
+      setTimeout(() => {
+        target.classList.remove("news-highlight-pulse");
+      }, 2800);
+    });
+  }
+
+  function renderOverviewNews(opts = {}) {
+    const grid = $("overviewNewsGrid");
+    if (!grid) return;
+    const feed = getUnifiedNewsFeed();
+    const editorial = feed.filter((x) => !x.isTape);
+    const pool = editorial.length >= 4 ? editorial : feed;
+    if (!pool.length) {
+      grid.innerHTML = `<div class="panel muted">Loading live market wires…</div>`;
+      return;
+    }
+    const batch = pickOverviewNewsBatch(pool, Boolean(opts.advance));
+    grid.innerHTML = batch.map((item) => `
+      <article class="ov-news-card sig-${item.sigTier.toLowerCase()}" data-ov-news-id="${esc(item.uid)}" role="button" tabindex="0">
+        <div class="ov-news-top">
+          <div class="ov-news-badges">
+            ${sigTierBadgeHtml(item.importance)}
+            <span class="news-desk-tag">${esc(NEWS_DESK_LABELS[item.primaryDesk] || "Market")}</span>
+          </div>
+          <span class="ov-news-time">${esc(item.source)} · ${esc(item.relTime)}</span>
+        </div>
+        <div class="ov-news-title">${esc(item.title)}</div>
+        <div class="ov-news-foot">
+          ${renderNewsTickerChipHtml(item, false)}
+          <span class="ov-news-go">View in News →</span>
+        </div>
+      </article>
+    `).join("");
+
+    grid.querySelectorAll(".ov-news-card[data-ov-news-id]").forEach((card) => {
+      card.onclick = () => openNewsItemInBreaking(card.dataset.ovNewsId);
+      card.onkeydown = (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openNewsItemInBreaking(card.dataset.ovNewsId);
+        }
+      };
+    });
+  }
+
+  function renderBreaking(highlightUid = null) {
     const el = $("breakingList");
+    const leadBox = $("breakingLeadSpot");
     const bar = $("breakingCategoryBar");
-    if (!state.breaking.length) {
+    const metaEl = $("newsDeskMeta");
+    if (!el) return;
+
+    const allItems = getUnifiedNewsFeed();
+    syncNewsBadgeCounts();
+
+    if (!allItems.length) {
       if (bar) bar.innerHTML = "";
+      if (leadBox) leadBox.innerHTML = "";
       el.innerHTML = `<div class="panel muted">Monitoring live market wires, SEC filings, and official authorities in real time.</div>`;
       return;
     }
 
-    // Build category filter chips dynamically from available categories
-    const catCounts = {};
-    for (const item of state.breaking) {
-      for (const c of (item.categories && item.categories.length ? item.categories : ["general"])) {
-        catCounts[c] = (catCounts[c] || 0) + 1;
+    // Apply tier & search filter before computing desk counts so counts stay accurate & consistent
+    const q = (state.breakingSearch || "").trim().toLowerCase();
+    const baseFiltered = allItems.filter((it) => {
+      if (state.breakingTier === "critical" && it.sigTier !== "CRITICAL") return false;
+      if (state.breakingTier === "watchlist" && !it.isWatchlist) return false;
+      if (q) {
+        const hay = `${it.symbol} ${it.companyName} ${it.title} ${it.source} ${it.desks.map((d) => NEWS_DESK_LABELS[d] || d).join(" ")}`.toLowerCase();
+        if (!hay.includes(q)) return false;
       }
+      return true;
+    });
+
+    const deskCounts = { all: baseFiltered.filter((x) => !x.isTape).length || baseFiltered.length };
+    for (const [dKey] of NEWS_DESK_ORDER) {
+      if (dKey === "all") continue;
+      deskCounts[dKey] = baseFiltered.filter((it) => it.desks.includes(dKey)).length;
     }
-    const cats = ["all", ...Object.keys(catCounts).sort((a, b) => catCounts[b] - catCounts[a])];
-    if (!cats.includes(state.breakingCategory)) state.breakingCategory = "all";
+
+    const visibleDesks = NEWS_DESK_ORDER.filter(([k]) => k === "all" || deskCounts[k] > 0);
+    if (!visibleDesks.some(([k]) => k === state.breakingCategory)) {
+      state.breakingCategory = "all";
+    }
+
     if (bar) {
-      bar.innerHTML = cats.map((c) => {
-        const label = CAT_LABELS[c] || c.replace(/_/g, " ");
-        const cnt = c === "all" ? state.breaking.length : catCounts[c];
-        return `<button class="chip ${state.breakingCategory === c ? "active" : ""}" data-bcat="${esc(c)}">${esc(label)} (${cnt})</button>`;
-      }).join("");
-      bar.querySelectorAll("button").forEach((b) => {
-        b.onclick = () => { state.breakingCategory = b.dataset.bcat; renderBreaking(); };
+      bar.innerHTML = visibleDesks.map(([k, lbl]) => `
+        <button type="button" class="chip ${state.breakingCategory === k ? "active" : ""}" data-bcat="${esc(k)}">${esc(lbl)} <span class="chip-cnt">${deskCounts[k]}</span></button>
+      `).join("");
+      bar.querySelectorAll("button[data-bcat]").forEach((b) => {
+        b.onclick = () => {
+          state.breakingCategory = b.dataset.bcat;
+          renderBreaking();
+        };
       });
     }
 
-    const filtered = state.breakingCategory === "all"
-      ? state.breaking
-      : state.breaking.filter((it) => (it.categories || ["general"]).includes(state.breakingCategory));
+    let list = state.breakingCategory === "all"
+      ? (baseFiltered.some((x) => !x.isTape) ? baseFiltered.filter((x) => !x.isTape) : baseFiltered)
+      : baseFiltered.filter((it) => it.desks.includes(state.breakingCategory));
 
-    const tickerSet = new Set((state.summary?.tickers || []).map((t) => t.symbol));
-    el.innerHTML = filtered.map((item) => {
-      const clickable = tickerSet.has(item.symbol);
-      const badge = clickable
-        ? `<span class="ticker-pill" data-sym="${esc(item.symbol)}"><strong>${esc(item.symbol)}</strong></span>`
-        : `<span class="tag amber">${esc(item.symbol)}</span>`;
-      return `
-      <div class="feed-item">
-        <div class="feed-meta">
-          ${sigTierBadgeHtml(item.importance)}
-          ${badge}
-          ${(item.categories || []).slice(0, 2).map((c) => `<span class="tag">${esc(CAT_LABELS[c] || c.replace(/_/g, " "))}</span>`).join("")}
-          <span>${esc(item.source || "")}</span>
+    if (metaEl) {
+      const critN = list.filter((x) => x.sigTier === "CRITICAL").length;
+      metaEl.textContent = `${list.length} live stories · ${critN} critical catalysts · Updated continuously`;
+    }
+
+    if (!list.length) {
+      if (leadBox) leadBox.innerHTML = "";
+      el.innerHTML = `<div class="panel muted">No news stories match the current filter.</div>`;
+      return;
+    }
+
+    // Featured Lead Story Spotlight when browsing All News without keyword filter
+    const showLead = state.breakingCategory === "all" && !q && state.breakingTier === "all" && list.length >= 3;
+    const leadItem = showLead ? list[0] : null;
+    const gridItems = showLead ? list.slice(1) : list;
+
+    if (leadBox) {
+      if (leadItem) {
+        leadBox.innerHTML = `
+          <article class="news-lead-card sig-${leadItem.sigTier.toLowerCase()}${highlightUid === leadItem.uid ? " news-highlight-pulse" : ""}" data-news-id="${esc(leadItem.uid)}">
+            <div class="news-card-meta">
+              <div class="news-meta-left">
+                <span class="news-lead-kicker">Top Story</span>
+                ${sigTierBadgeHtml(leadItem.importance)}
+                ${leadItem.desks.slice(0, 2).map((d) => `<span class="news-desk-tag">${esc(NEWS_DESK_LABELS[d] || d)}</span>`).join("")}
+              </div>
+              <span class="news-time-src">${esc(leadItem.source)} · ${esc(leadItem.relTime)}</span>
+            </div>
+            <a class="news-lead-title" href="${esc(leadItem.url)}" target="_blank" rel="noopener">${esc(leadItem.title)}</a>
+            ${leadItem.summary ? `<p class="news-lead-summary">${esc(leadItem.summary)}</p>` : ""}
+            <div class="news-card-foot">
+              ${renderNewsTickerChipHtml(leadItem, true)}
+              <a class="news-ext-link" href="${esc(leadItem.url)}" target="_blank" rel="noopener">Read source ↗</a>
+            </div>
+          </article>
+        `;
+      } else {
+        leadBox.innerHTML = "";
+      }
+    }
+
+    el.innerHTML = gridItems.map((item) => `
+      <article class="news-card sig-${item.sigTier.toLowerCase()}${highlightUid === item.uid ? " news-highlight-pulse" : ""}" data-news-id="${esc(item.uid)}">
+        <div class="news-card-meta">
+          <div class="news-meta-left">
+            ${sigTierBadgeHtml(item.importance)}
+            ${item.desks.slice(0, 2).map((d) => `<span class="news-desk-tag">${esc(NEWS_DESK_LABELS[d] || d)}</span>`).join("")}
+          </div>
+          <span class="news-time-src">${esc(item.source)} · ${esc(item.relTime)}</span>
         </div>
-        <a class="feed-title" href="${esc(item.url || "#")}" target="_blank" rel="noopener">${esc(item.title)}</a>
-      </div>`;
-    }).join("");
-    el.querySelectorAll(".ticker-pill").forEach((p) => {
-      p.onclick = () => openStock(p.dataset.sym);
+        <a class="news-headline-link" href="${esc(item.url)}" target="_blank" rel="noopener">${esc(item.title)}</a>
+        ${item.summary ? `<div class="news-card-summary">${esc(item.summary)}</div>` : ""}
+        <div class="news-card-foot">
+          ${renderNewsTickerChipHtml(item, true)}
+          <a class="news-ext-link" href="${esc(item.url)}" target="_blank" rel="noopener">${esc(item.source)} ↗</a>
+        </div>
+      </article>
+    `).join("");
+
+    document.querySelectorAll("#view-breaking .news-live-ticker[data-sym]").forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        openStock(btn.dataset.sym);
+      };
     });
+  }
+
+  // Merge live unified news feed + ticker-specific news so every Stock Deep-Dive page stays 100% up-to-date
+  function getMergedStockNews(t) {
+    if (!t || !t.symbol) return [];
+    const sym = t.symbol;
+    const tickers = state.summary?.tickers || [];
+    const bySym = Object.fromEntries(tickers.map((x) => [x.symbol, x]));
+    const firstW = String(t.name || "").split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, "") || "";
+    const unified = getUnifiedNewsFeed().filter((it) => {
+      if (it.isTape) return false;
+      if (it.symbol === sym) return true;
+      const tl = it.title.toLowerCase();
+      if (sym.length >= 3 && !["NOW", "ARM", "APP", "CAT", "ALL"].includes(sym) && new RegExp(`(?<![A-Za-z])${sym.replace("-", "\\-")}(?![A-Za-z])`).test(it.title)) return true;
+      if (firstW.length >= 5 && !["applied", "advanced", "first", "general", "united", "american", "constellation", "southern"].includes(firstW) && tl.includes(firstW)) return true;
+      return false;
+    });
+
+    const byUid = new Map();
+    for (const u of unified) {
+      byUid.set(u.uid, u);
+    }
+    for (const raw of (t.news || [])) {
+      const title = String(raw.title || "").trim();
+      if (!title || !raw.url) continue;
+      const uid = makeNewsUid(title, raw.id || raw.url);
+      if (byUid.has(uid)) continue;
+      const pubMs = raw.published ? Date.parse(raw.published) : Date.now() - 3600000;
+      const validMs = Number.isFinite(pubMs) ? pubMs : Date.now() - 3600000;
+      const { desks } = classifyNewsDesks({ ...raw, symbol: sym }, bySym);
+      const imp = Number.isFinite(Number(raw.importance)) && Number(raw.importance) > 0 ? Number(raw.importance) : 62;
+      const rawSum = String(raw.summary || "").trim();
+      const cleanSummary = (rawSum.length >= 28 && !rawSum.toLowerCase().startsWith(title.toLowerCase().slice(0, 32)))
+        ? (rawSum.length > 180 ? `${rawSum.slice(0, 178).trim()}…` : rawSum)
+        : "";
+      byUid.set(uid, {
+        uid,
+        symbol: sym,
+        title,
+        summary: cleanSummary,
+        url: raw.url,
+        source: String(raw.source || "Market Wire"),
+        pubMs: validMs,
+        relTime: fmtRelNewsTime(validMs),
+        importance: imp,
+        sigTier: imp >= 76 ? "CRITICAL" : (imp >= 56 ? "HIGH" : "NOTABLE"),
+        desks,
+      });
+    }
+    return [...byUid.values()].sort((a, b) => b.pubMs - a.pubMs || b.importance - a.importance);
   }
 
   // ---- MACRO ----
@@ -2715,6 +3289,30 @@
     if (liveRow.last_bar) {
       facts.last_bar = liveRow.last_bar;
     }
+    if (liveRow.volume) {
+      facts.last_volume = liveRow.volume;
+    }
+    const comp = (tech.computed ||= {});
+    const ind = (comp.indicators ||= {});
+    if (liveRow.vol_ratio_20d != null) {
+      ind.vol_ratio_vs_20d = liveRow.vol_ratio_20d;
+    }
+    const val = t.fundamentals?.valuation;
+    if (val && liveClose > 0) {
+      if (!val._baseClose) {
+        val._baseClose = Number(val._origClose || liveRow._baseClose || liveClose);
+        val._baseTrailingPe = val.trailing_pe ?? null;
+        val._baseForwardPe = val.forward_pe ?? null;
+      }
+      if (val._baseClose > 0) {
+        const ratio = liveClose / val._baseClose;
+        if (val._baseTrailingPe != null) val.trailing_pe = Number((val._baseTrailingPe * ratio).toFixed(2));
+        if (val._baseForwardPe != null) val.forward_pe = Number((val._baseForwardPe * ratio).toFixed(2));
+      }
+    }
+    if (t.notable && liveRow.notable_score != null) {
+      t.notable.score = Math.min(100, Math.max(0, Number(liveRow.notable_score)));
+    }
 
     // Keep interactive chart's latest daily candle synchronized with the Regular Hero price (never overnight wicks)
     if (Array.isArray(tech.series) && tech.series.length > 0) {
@@ -2906,7 +3504,7 @@
           </div>
           <div class="pro-stat" ${tipAttr("vol_ratio")}>
             <span class="pro-stat-k">Rel Vol <span class="tip-badge">?</span></span>
-            <span class="pro-stat-v">${fmtNum(ind.vol_ratio_vs_20d, 2)}x</span>
+            <span class="pro-stat-v" id="stkStatRvol">${fmtNum(ind.vol_ratio_vs_20d, 2)}x</span>
           </div>
           <div class="pro-stat" ${tipAttr("rs_spy")}>
             <span class="pro-stat-k">vs SPY <span class="tip-badge">?</span></span>
@@ -2975,7 +3573,7 @@
           <div class="pro-kv-table">
             <div class="pro-kv-row" ${tipAttr("sma")}><span class="pro-kv-k">SMA 20 / 50 / 200 <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtNum(ind.sma20, 0)} / ${fmtNum(ind.sma50, 0)} / ${fmtNum(ind.sma200, 0)}</span></div>
             <div class="pro-kv-row" ${tipAttr("rs_sector")}><span class="pro-kv-k">21d vs ${esc(t.sector_etf || "Sector")} <span class="tip-badge">?</span></span><span class="pro-kv-v ${clsPct(rsSec21)}">${fmtPct(rsSec21, 1)}</span></div>
-            <div class="pro-kv-row" ${tipAttr("pe")}><span class="pro-kv-k">P/E (TTM / Fwd) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtNum(val.trailing_pe, 1)} / ${fmtNum(val.forward_pe, 1)}</span></div>
+            <div class="pro-kv-row" ${tipAttr("pe")}><span class="pro-kv-k">P/E (TTM / Fwd) <span class="tip-badge">?</span></span><span class="pro-kv-v" id="stkKvPe">${fmtNum(val.trailing_pe, 1)} / ${fmtNum(val.forward_pe, 1)}</span></div>
             <div class="pro-kv-row" ${tipAttr("fcf")}><span class="pro-kv-k">Free Cash Flow (TTM) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtCap(der.free_cash_flow_ttm)}</span></div>
             <div class="pro-kv-row"><span class="pro-kv-k">Cash / Total Debt</span><span class="pro-kv-v">${fmtCap(der.cash)} / ${fmtCap(der.total_debt)}</span></div>
             <div class="pro-kv-row" ${tipAttr("target_upside")}><span class="pro-kv-k">Analyst Target Implied <span class="tip-badge">?</span></span><span class="pro-kv-v ${clsPct(der.target_mean_vs_price_pct)}" id="stkTargetImplied" data-target-mean="${der.target_mean ?? ""}">${fmtPct(der.target_mean_vs_price_pct, 1)}</span></div>
@@ -2997,7 +3595,7 @@
 
       <div class="panel pro-panel" id="stk-intel" style="margin-top:16px">
         <div class="pro-subtabs" id="stockSubTabs">
-          <button type="button" class="pro-subtab ${state.stockTab === "news" ? "active" : ""}" data-stab="news">News <span class="muted">${(t.news || []).length}</span></button>
+          <button type="button" class="pro-subtab ${state.stockTab === "news" ? "active" : ""}" data-stab="news">News <span class="muted" id="stkNewsTabCnt">${getMergedStockNews(t).length}</span></button>
           <button type="button" class="pro-subtab ${state.stockTab === "institutions" ? "active" : ""}" data-stab="institutions">Institutions <span class="muted">${(t.fundamentals?.holders?.institutional || []).length}</span></button>
           <button type="button" class="pro-subtab ${state.stockTab === "insiders" ? "active" : ""}" data-stab="insiders">Insiders <span class="muted">${(t.insiders?.items || []).length}</span></button>
           <button type="button" class="pro-subtab ${state.stockTab === "filings" ? "active" : ""}" data-stab="filings">SEC Filings <span class="muted">${(t.filings || []).length}</span></button>
@@ -3105,17 +3703,27 @@
 
     const renderSubTab = () => {
       const box = $("stockSubContent");
+      if (!box) return;
+      const mergedStockNews = getMergedStockNews(t);
+      if ($("stkNewsTabCnt")) $("stkNewsTabCnt").textContent = String(mergedStockNews.length);
       if (state.stockTab === "news") {
-        box.innerHTML = (t.news || []).length
-          ? `<div class="feed-list">${t.news.slice(0, 18).map((n) => `
-              <div class="feed-item">
-                <div class="feed-meta">
-                  <span class="tag amber">Imp ${fmtNum(n.importance, 0)}</span>
-                  <span>${esc(n.source || "")}</span>
-                  <span>${esc((n.published || "").replace("T", " ").slice(0, 16))}</span>
+        box.innerHTML = mergedStockNews.length
+          ? `<div class="news-wire-grid">${mergedStockNews.slice(0, 24).map((n) => `
+              <article class="news-card sig-${n.sigTier.toLowerCase()}">
+                <div class="news-card-meta">
+                  <div class="news-meta-left">
+                    ${sigTierBadgeHtml(n.importance)}
+                    ${(n.desks || []).slice(0, 2).map((d) => `<span class="news-desk-tag">${esc(NEWS_DESK_LABELS[d] || d)}</span>`).join("")}
+                  </div>
+                  <span class="news-time-src">${esc(n.source)} · ${esc(n.relTime)}</span>
                 </div>
-                <a class="feed-title" href="${esc(n.url || "#")}" target="_blank" rel="noopener">${esc(n.title)}</a>
-              </div>`).join("")}</div>`
+                <a class="news-headline-link" href="${esc(n.url || "#")}" target="_blank" rel="noopener">${esc(n.title)}</a>
+                ${n.summary ? `<div class="news-card-summary">${esc(n.summary)}</div>` : ""}
+                <div class="news-card-foot">
+                  <span class="news-entity-tag">${esc(t.symbol)}</span>
+                  <a class="news-ext-link" href="${esc(n.url || "#")}" target="_blank" rel="noopener">${esc(n.source)} ↗</a>
+                </div>
+              </article>`).join("")}</div>`
           : `<div class="muted">No recent news items.</div>`;
       } else if (state.stockTab === "institutions") {
         const inst = t.fundamentals?.holders?.institutional || [];
@@ -3191,6 +3799,11 @@
       };
     });
     renderSubTab();
+    state.refreshActiveStockNews = () => {
+      if (state.view !== "stock" || state.activeTicker !== t.symbol) return;
+      if ($("stkNewsTabCnt")) $("stkNewsTabCnt").textContent = String(getMergedStockNews(t).length);
+      if (state.stockTab === "news" || state.stockTab === "peers") renderSubTab();
+    };
     wireSectorLinks($("stockContent"));
     const mathBtn = $("openFullMathModalBtn");
     if (mathBtn) {
@@ -4319,6 +4932,24 @@
     $("brandHome").onclick = () => setView("overview");
     if ($("backToOverview")) $("backToOverview").onclick = () => closeStockTab();
     $("viewAllScreenerBtn").onclick = () => setView("screener");
+    if ($("viewAllNewsOverviewBtn")) $("viewAllNewsOverviewBtn").onclick = () => setView("breaking");
+    if ($("shuffleOverviewNewsBtn")) {
+      $("shuffleOverviewNewsBtn").onclick = () => renderOverviewNews({ advance: true });
+    }
+    const newsInp = $("newsSearchInput");
+    if (newsInp) {
+      newsInp.addEventListener("input", () => {
+        state.breakingSearch = newsInp.value;
+        renderBreaking();
+      });
+    }
+    document.querySelectorAll("#newsTierBar .news-tier-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.breakingTier = btn.dataset.ntier || "all";
+        document.querySelectorAll("#newsTierBar .news-tier-btn").forEach((b) => b.classList.toggle("active", b === btn));
+        renderBreaking();
+      });
+    });
 
     document.querySelectorAll("#mainNav .nav-tab").forEach((btn) => {
       btn.onclick = () => setView(btn.dataset.view);
@@ -4801,10 +5432,20 @@
 
     const isMobileScreen = () => window.innerWidth <= 680 || window.matchMedia("(pointer: coarse)").matches;
 
+    let activeTipTarget = null;
     const hideTip = () => {
+      activeTipTarget = null;
       tipEl.classList.add("hidden");
       tipEl.classList.remove("mobile-sheet");
       backdropEl.classList.add("hidden");
+    };
+
+    state.refreshOpenTooltip = () => {
+      if (!activeTipTarget || tipEl.classList.contains("hidden") || !document.body.contains(activeTipTarget)) return;
+      const raw = activeTipTarget.getAttribute("data-tip");
+      if (!raw) return;
+      const [title, body] = raw.includes("|") ? raw.split("|", 2) : ["Definition", raw];
+      tipEl.innerHTML = `<strong>${esc(title)}</strong><span>${esc(body)}</span>`;
     };
 
     backdropEl.addEventListener("click", (e) => {
@@ -4819,6 +5460,7 @@
     const showTip = (target, clientX, clientY, fromClick = false) => {
       const raw = target.getAttribute("data-tip");
       if (!raw) return;
+      activeTipTarget = target;
       const [title, body] = raw.includes("|") ? raw.split("|", 2) : ["Definition", raw];
       tipEl.innerHTML = `<strong>${esc(title)}</strong><span>${esc(body)}</span>`;
 
@@ -5244,12 +5886,18 @@
     if (!row._baseClose && row.close > 0) {
       row._baseClose = row.close;
       row._baseMcap = row.market_cap || null;
+      if (row.volume > 0 && row.vol_ratio_20d > 0) {
+        row._avgVol20d = row.volume / row.vol_ratio_20d;
+      }
       if (row.target_upside_pct != null && Number.isFinite(Number(row.target_upside_pct))) {
         row._impliedTarget = row.close * (1 + Number(row.target_upside_pct) / 100);
       }
     }
     if (row._baseClose && row._baseMcap) {
       row.market_cap = Math.round(row._baseMcap * (row.close / row._baseClose));
+    }
+    if (row._avgVol20d && row._avgVol20d > 0 && row.volume > 0) {
+      row.vol_ratio_20d = Number((row.volume / row._avgVol20d).toFixed(2));
     }
     if (row._impliedTarget && row._impliedTarget > 0) {
       row.target_upside_pct = Number((((row._impliedTarget - row.close) / row.close) * 100).toFixed(2));
@@ -5266,6 +5914,10 @@
       const ptsVolZ = zAtr >= 1.0 ? Number((12.0 * zAtr).toFixed(1)) : 0;
       bd.z_atr = zAtr;
       bd.terms.vol_z = ptsVolZ;
+      if (row.vol_ratio_20d != null && row.vol_ratio_20d > 0) {
+        bd.rvol_20d = row.vol_ratio_20d;
+        bd.terms.rvol = row.vol_ratio_20d > 1.3 ? Number((8.0 * (Math.min(3.0, row.vol_ratio_20d) - 1.0)).toFixed(1)) : 0;
+      }
       const tm = bd.terms;
       const tot = Math.min(100, Number((
         ptsVolZ + (tm.rvol || 0) + (tm.pattern || 0) + (tm.rsi_extreme || 0) +
@@ -5386,7 +6038,13 @@
     }
     for (const vfItem of state.summary.smart_money?.volume_flow || []) {
       const lr = bySymLive[vfItem.symbol];
-      if (lr) { vfItem.close = lr.close; vfItem.change_1d_pct = lr.change_1d_pct; }
+      if (lr) {
+        vfItem.close = lr.close;
+        vfItem.change_1d_pct = lr.change_1d_pct;
+        vfItem.flow = (lr.change_1d_pct ?? 0) >= 0 ? "Accumulation" : "Distribution";
+        if (lr.dollar_volume_usd > 0) vfItem.dollar_volume_usd = lr.dollar_volume_usd;
+        if (lr.vol_ratio_20d > 0) vfItem.vol_ratio_20d = lr.vol_ratio_20d;
+      }
     }
     for (const siItem of state.summary.smart_money?.short_interest || []) {
       const lr = bySymLive[siItem.symbol];
@@ -5514,28 +6172,7 @@
         if (mv) mv.textContent = fmtNum(r.notable_score, 0);
       }
     });
-    document.querySelectorAll("#notableGrid .notable-card[data-sym]").forEach((card) => {
-      const r = bySymLive[card.dataset.sym];
-      if (!r) return;
-      const pill = card.querySelector(".price-pill");
-      if (pill) {
-        pill.className = `price-pill ${clsPct(r.change_1d_pct)}`;
-        pill.textContent = `$${fmtNum(r.close)} · ${fmtPct(r.change_1d_pct, 1)}`;
-      }
-      const sb = card.querySelector(".score-badge");
-      if (sb) {
-        sb.setAttribute("data-tip", extractTipRaw(r));
-        sb.innerHTML = `Score ${fmtNum(r.notable_score, 0)} <span class="tip-badge">?</span>`;
-      }
-      const existingExt = card.querySelector(".ext-mini-line");
-      if (r.ext_price != null && r.ext_label) {
-        const html = renderExtMiniHtml(r);
-        if (existingExt) existingExt.outerHTML = html;
-        else if (pill) pill.insertAdjacentHTML("afterend", html);
-      } else if (existingExt) {
-        existingExt.remove();
-      }
-    });
+    renderNotableMoversGrid();
 
     // Patch open Sector Explorer pop-out modal & open Search Spotlight if visible
     if (state.openSectorModalKey && $("infoModal") && !$("infoModal").classList.contains("hidden")) {
@@ -5592,8 +6229,14 @@
           });
         }
         if ($("stkStatMcap") && r.market_cap) $("stkStatMcap").textContent = fmtCap(r.market_cap);
-        if ($("stkStatScore")) $("stkStatScore").innerHTML = `${fmtNum(r.notable_score, 0)}<span class="muted">/100</span>`;
+        if ($("stkStatRvol") && r.vol_ratio_20d != null) $("stkStatRvol").textContent = `${fmtNum(r.vol_ratio_20d, 2)}x`;
+        if ($("stkStatScore")) $("stkStatScore").innerHTML = `${fmtNum(Math.min(100, Number(r.notable_score || 0)), 0)}<span class="muted">/100</span>`;
         if ($("stkStatScoreWrap")) $("stkStatScoreWrap").setAttribute("data-tip", extractTipRaw(r));
+        const cachedCur = state.tickerCache[`${state.date}:${state.activeTicker}`];
+        const cVal = cachedCur?.fundamentals?.valuation;
+        if ($("stkKvPe") && cVal) {
+          $("stkKvPe").textContent = `${fmtNum(cVal.trailing_pe, 1)} / ${fmtNum(cVal.forward_pe, 1)}`;
+        }
         const rBox = $("stkRangeBox");
         if (rBox) {
           const lo = Number(rBox.dataset.low);
@@ -5604,15 +6247,31 @@
             if ($("stkRangeDot")) $("stkRangeDot").style.left = `${pct}%`;
           }
         }
+        const lvAll = [
+          ...(cachedCur?.technical?.computed?.levels?.support || []),
+          ...(cachedCur?.technical?.computed?.levels?.resistance || []),
+        ];
         document.querySelectorAll("#stk-tearsheet .level-row[data-lv-price]").forEach((lRow) => {
           const lp = Number(lRow.dataset.lvPrice);
           const distEl = lRow.querySelector(".lv-dist");
           if (lp > 0 && r.close > 0 && distEl) {
-            const dPct = ((lp - r.close) / r.close) * 100;
+            const dPct = Number((((lp - r.close) / r.close) * 100).toFixed(2));
             distEl.className = `lv-dist ${clsPct(dPct)}`;
             distEl.textContent = fmtPct(dPct, 1);
+            const tipDiv = lRow.querySelector("[data-tip]");
+            const matchedLv = lvAll.find((x) => Math.abs(Number(x.price) - lp) < 1e-3);
+            if (tipDiv && matchedLv) {
+              matchedLv.distance_pct = dPct;
+              const attrRaw = levelStrengthTipAttr(matchedLv).replace(/^data-tip="/, "").replace(/"$/, "");
+              const txt = document.createElement("textarea");
+              txt.innerHTML = attrRaw;
+              tipDiv.setAttribute("data-tip", txt.value);
+            }
           }
         });
+        if (state.stockTab === "peers" && state.refreshActiveStockNews) {
+          state.refreshActiveStockNews();
+        }
         if ($("stkTargetImplied") && r.target_upside_pct != null) {
           $("stkTargetImplied").className = `pro-kv-v ${clsPct(r.target_upside_pct)}`;
           $("stkTargetImplied").textContent = fmtPct(r.target_upside_pct, 1);
@@ -5655,6 +6314,25 @@
         txts[3].setAttribute("fill", (r.change_1d_pct ?? 0) >= 0 ? "var(--green)" : "var(--red)");
       }
     });
+    // Live-patch stock quote pills inside Overview News & News Desk cards, Bubble Inspectors, and any open Tooltip
+    document.querySelectorAll(".news-live-ticker[data-sym]").forEach((chip) => {
+      const r = bySymLive[chip.dataset.sym];
+      if (!r || r.close == null) return;
+      const isStatic = chip.classList.contains("static");
+      chip.className = `news-live-ticker${isStatic ? " static" : ""} ${clsPct(r.change_1d_pct)}`;
+      if (isStatic) {
+        chip.innerHTML = `<strong>${esc(r.symbol)}</strong><span>${fmtPct(r.change_1d_pct, 1)}</span>`;
+      } else {
+        chip.innerHTML = `<strong>${esc(r.symbol)}</strong><span>$${fmtNum(r.close)}</span><span class="nlt-pct">${fmtPct(r.change_1d_pct, 1)}</span>`;
+      }
+    });
+    if ($("globalNetworkContainer")?._refreshBubbleLive && state.view === "network") {
+      $("globalNetworkContainer")._refreshBubbleLive(bySymLive);
+    }
+    if ($("stockBubbleMount")?._refreshBubbleLive && state.view === "stock") {
+      $("stockBubbleMount")._refreshBubbleLive(bySymLive);
+    }
+    if (state.refreshOpenTooltip) state.refreshOpenTooltip();
     if (state.view === "smartmoney") {
       renderSmartMoney();
     } else if (state.view === "formulas") {
@@ -6101,23 +6779,29 @@
       const xmlTxt = await fetchViaCors(rssUrl, 5000);
       if (!xmlTxt || !xmlTxt.includes("<item>")) return;
       const doc = new DOMParser().parseFromString(xmlTxt, "text/xml");
-      const items = [...doc.querySelectorAll("item")].slice(0, 6);
+      const items = [...doc.querySelectorAll("item")].slice(0, 8);
       const cacheKey = `${state.date}:${sym}`;
       const cached = state.tickerCache[cacheKey];
       if (!cached) return;
       const curNews = cached.news || [];
-      const seenTitles = new Set(curNews.map((n) => (n.title || "").toLowerCase().slice(0, 45)));
+      const seenUids = new Set(curNews.map((n) => makeNewsUid(n.title || "", n.url)));
+      const lowQual = /fool\.com|motley fool|24\/7 wall|247wallst|investorplace|zacks|simply wall|marketbeat|insider monkey|stocktwits/i;
       const fresh = [];
       for (const it of items) {
         const rawTitle = (it.querySelector("title")?.textContent || "").trim();
         const link = (it.querySelector("link")?.textContent || "").trim();
         const pub = (it.querySelector("pubDate")?.textContent || "").trim();
-        const src = (it.querySelector("source")?.textContent || "Live News").trim();
+        const src = (it.querySelector("source")?.textContent || "Market Wire").trim();
         const cleanTitle = rawTitle.replace(/\s+-\s+[^-]+$/, "").trim() || rawTitle;
-        const key = cleanTitle.toLowerCase().slice(0, 45);
-        if (!cleanTitle || !link || seenTitles.has(key)) continue;
-        seenTitles.add(key);
-        const pubIso = pub ? new Date(pub).toISOString() : new Date().toISOString();
+        if (!cleanTitle || !link || cleanTitle.endsWith("?") || lowQual.test(src)) continue;
+        const uid = makeNewsUid(cleanTitle, link);
+        if (seenUids.has(uid)) continue;
+        seenUids.add(uid);
+        const pubMs = pub ? Date.parse(pub) : Date.now();
+        if (Number.isFinite(pubMs) && (Date.now() - pubMs) > 36 * 3600000) continue;
+        const pubIso = Number.isFinite(pubMs) ? new Date(pubMs).toISOString() : new Date().toISOString();
+        const { desks } = classifyNewsDesks({ title: cleanTitle, source: src, symbol: sym, categories: [] }, {});
+        const imp = /\b(cnbc|reuters|bloomberg|wsj|barron|financial times|axios)\b/i.test(src) ? 74 : 64;
         fresh.push({
           id: "LIVE",
           kind: "news",
@@ -6125,24 +6809,25 @@
           url: link,
           published: pubIso,
           source: src,
-          categories: ["general"],
+          importance: imp,
+          categories: desks,
         });
       }
       if (fresh.length) {
         cached.news = [...fresh, ...curNews];
-        if (state.view === "stock" && state.activeTicker === sym && state.stockTab === "news") {
-          const tabBtn = document.querySelector('#stockSubTabs button[data-stab="news"]');
-          if (tabBtn) tabBtn.click();
+        if (state.view === "stock" && state.activeTicker === sym && state.refreshActiveStockNews) {
+          state.refreshActiveStockNews();
         }
       }
     } catch {}
   }
 
-  // Direct CORS-native 30s real-time Breaking Wire stream (CNBC + Dow Jones / MarketWatch)
+  // Direct CORS-native 30s real-time Breaking Wire stream (CNBC Top, Earnings, Tech & Investing)
   const DIRECT_WIRE_FEEDS = [
     { url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664", src: "CNBC" },
+    { url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15839135", src: "CNBC Earnings" },
     { url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=19854910", src: "CNBC Tech" },
-    { url: "https://feeds.content.dowjones.io/public/rss/mw_realtimeheadlines", src: "MarketWatch" },
+    { url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15839069", src: "CNBC Investing" },
   ];
 
   async function pollLiveBrowserNews() {
@@ -6227,11 +6912,11 @@
 
       if (discovered.length) {
         discovered.sort((a, b) => (b.importance || 0) - (a.importance || 0));
-        state.breaking = [...discovered, ...(state.breaking || [])].slice(0, 80);
-        if ($("breakingCount")) $("breakingCount").textContent = String(state.breaking.length);
-        if ($("moreBreakingCount")) $("moreBreakingCount").textContent = String(state.breaking.length);
-        syncOverviewBreakingBanner();
+        state.breaking = [...discovered, ...(state.breaking || [])].slice(0, 110);
+        syncNewsBadgeCounts();
+        renderOverviewNews({ advance: false });
         if (state.view === "breaking") renderBreaking();
+        if (state.view === "stock" && state.refreshActiveStockNews) state.refreshActiveStockNews();
       }
     } catch {}
   }
@@ -6258,10 +6943,16 @@
     setInterval(pollBackgroundFeeds, 30000);
 
     document.addEventListener("visibilitychange", async () => {
-      if (!document.hidden) {
+      if (document.hidden) {
+        state.lastHiddenAt = Date.now();
+      } else {
+        const awayMs = state.lastHiddenAt ? (Date.now() - state.lastHiddenAt) : 0;
         pollTradingViewDirect();
         await checkForNewerReport(true);
         pollBackgroundFeeds();
+        if (state.view === "overview" && awayMs > 15000) {
+          renderOverviewNews({ advance: true });
+        }
       }
     });
     window.addEventListener("pageshow", (ev) => {
