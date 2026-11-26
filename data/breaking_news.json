@@ -1,8 +1,59 @@
 {
-  "updated_at": "2026-11-26T13:21:58+00:00",
-  "min_importance": 99.0,
-  "max_age_hours": 6.0,
+  "updated_at": "2026-11-26T18:57:04+00:00",
+  "min_importance": 42,
+  "max_age_hours": 4,
   "items": [
+    {
+      "key": "71c2ea391fc4e818",
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "title": "Tesla: A SpaceX Merger Could Turn $5,000 Into $10,000",
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOU2JzUElDUGJyN0MzOC0yV21iYzdfdFhQWmRIaGtWZjM0QkdRY3lzT1BlX1pjUGtZSGE0WFI4Nm9pSHZjM2J2Z2NiVFFsd2VuTEFnMDV1MVFwWVllcUcwYmRkTHVtVjI2Y3hzSEgxN1dJLTd2SUU1UXFlN2VYZWtLYnJLT0hUeWtJeWVQSlhRTUZicnZuQUtKSnBYNHNVRHVDdTZxalhYWS1TQ3Mwa0N3?oc=5",
+      "source": "TradingView",
+      "source_tier": 1,
+      "published": "2026-11-26T17:46:06+00:00",
+      "importance": 74.0,
+      "significance": "HIGH",
+      "categories": [
+        "m_and_a"
+      ],
+      "age_hours": 1.18,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "a1c60d3ae9a3f25d",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia Halts AI Server Deliveries to Four Southeast Asian Countries: Three Earnings Risks Behind Thousands of B300 Chips Seeking New Buyers",
+      "url": "https://news.google.com/rss/articles/CBMipgJBVV95cUxOOUJ5dFo1TG1PVFdvZ2hFaUlEQW9PdjM3SjR5OTBvVG5qNko5T05hdC1sREI3QjQ1OUU5NlROSDR6TktqNGxtSWFwU1NLRzRUTVVUUzA2d2d4aEl1MjVRUnlmS1NQTDZRZUZDaUxMRXliQWNfZFpQT0JrMmhTcUZSVl93NmNPdC1tOWotMjFoM200aWM2NS0tX2ZzQXNILThsTHUxY2lFYVhCVXIwSjVTNzhoaUhOMS1RQjY1RVV5djdCal8zZ3NxQjlFenNoQkhiTXk4TWJ2R1VieUJYXzdFdGtKR1hjeklna2NjTlp5OEZYZjFkTkx3NnpWcUtvVy1nYjk5QWxSMnVPeUluR2RvMHlUUzBWVzBRa2x4VVJlYTI4NFZ6MHc?oc=5",
+      "source": "NewsBreak: Local News & Alerts",
+      "source_tier": 1,
+      "published": "2026-11-26T17:05:31+00:00",
+      "importance": 74.0,
+      "significance": "HIGH",
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 1.86,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "dd5dd9039945b0b2",
+      "symbol": "META",
+      "name": "Meta Platforms",
+      "title": "Meta Platforms’ (META) Surging Capex Pressures Free Cash Flow Amid Monetization Debates",
+      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPOXhVeHBHOXRsaEhnRENYTW55cnV5LUlHY3UxRU56Si00T2I0X1ZMMEdjTzk5ZGxRMUR2VHAzdXBlcVYxS1RqRVRaSDc1czh2OU9aT0Rwd1lEX3FmU1ZpMy1BVFREZWFQU0gtemRLckUtQndFa0JkVFRwN0lvWmVhSHZTZlNHRHVkenprYjlSVjhnY3E0clJsRlliZ0wzbnc?oc=5",
+      "source": "Yahoo Finance",
+      "source_tier": 1,
+      "published": "2026-11-26T16:59:27+00:00",
+      "importance": 68.0,
+      "significance": "HIGH",
+      "categories": [
+        "data_centers_ai"
+      ],
+      "age_hours": 1.96,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
     {
       "key": "a99a1eb783e425e0",
       "symbol": "TRADE / TARIFFS",
@@ -56,25 +107,6 @@
       "age_hours": 3.23,
       "detected_at": "2026-11-26T09:42:59+00:00",
       "significance": "CRITICAL"
-    },
-    {
-      "key": "d12cd310099d275d",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Kioxia jumps 14% after Nvidia collaboration as chip stocks rebound",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/kioxia-jumps-14-nvidia-collaboration-062844097.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T06:28:44+00:00",
-      "importance": 70.8,
-      "categories": [
-        "market_move",
-        "capex_expansion",
-        "product_tech"
-      ],
-      "age_hours": 3.24,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "HIGH"
     },
     {
       "key": "afdcb2ca1fac41c3",
@@ -1052,6 +1084,210 @@
       "age_hours": 3.52,
       "detected_at": "2026-11-26T01:04:14+00:00",
       "significance": "HIGH"
+    },
+    {
+      "key": "shock_ADI_2026-11-26_reg_surge_t2",
+      "symbol": "ADI",
+      "name": "Analog Devices",
+      "title": "Analog Devices (ADI) gains +6.44% to $333.11",
+      "url": "https://finance.yahoo.com/quote/ADI",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 85.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_LRCX_2026-11-26_reg_drop_t2",
+      "symbol": "LRCX",
+      "name": "Lam Research",
+      "title": "Lam Research (LRCX) drops -5.68% to $185.01",
+      "url": "https://finance.yahoo.com/quote/LRCX",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 85.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_ORCL_2026-11-26_reg_drop_t2",
+      "symbol": "ORCL",
+      "name": "Oracle",
+      "title": "Oracle (ORCL) drops -5.13% to $103.88",
+      "url": "https://finance.yahoo.com/quote/ORCL",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 85.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_WPM_2026-11-26_reg_surge_t2",
+      "symbol": "WPM",
+      "name": "Wheaton Precious Metals",
+      "title": "Wheaton Precious Metals (WPM) gains +5.15% to $122.60",
+      "url": "https://finance.yahoo.com/quote/WPM",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 85.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_AMZN_2026-11-26_reg_drop_t1",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "Amazon (AMZN) drops -3.12% to $244.43",
+      "url": "https://finance.yahoo.com/quote/AMZN",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 66.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_META_2026-11-26_reg_surge_t1",
+      "symbol": "META",
+      "name": "Meta Platforms",
+      "title": "Meta Platforms (META) gains +3.40% to $609.89",
+      "url": "https://finance.yahoo.com/quote/META",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 66.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_NVDA_2026-11-26_reg_drop_t1",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "NVIDIA (NVDA) drops -3.91% to $149.30",
+      "url": "https://finance.yahoo.com/quote/NVDA",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 66.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_AEM_2026-11-26_reg_surge_t1",
+      "symbol": "AEM",
+      "name": "Agnico Eagle Mines",
+      "title": "Agnico Eagle Mines (AEM) gains +3.03% to $161.20",
+      "url": "https://finance.yahoo.com/quote/AEM",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_AG_2026-11-26_reg_surge_t1",
+      "symbol": "AG",
+      "name": "First Majestic Silver",
+      "title": "First Majestic Silver (AG) gains +4.37% to $11.23",
+      "url": "https://finance.yahoo.com/quote/AG",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_AMAT_2026-11-26_reg_drop_t1",
+      "symbol": "AMAT",
+      "name": "Applied Materials",
+      "title": "Applied Materials (AMAT) drops -3.89% to $311.18",
+      "url": "https://finance.yahoo.com/quote/AMAT",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_CEG_2026-11-26_reg_drop_t1",
+      "symbol": "CEG",
+      "name": "Constellation Energy",
+      "title": "Constellation Energy (CEG) drops -3.90% to $235.28",
+      "url": "https://finance.yahoo.com/quote/CEG",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_DDOG_2026-11-26_reg_drop_t1",
+      "symbol": "DDOG",
+      "name": "Datadog",
+      "title": "Datadog (DDOG) drops -4.31% to $158.25",
+      "url": "https://finance.yahoo.com/quote/DDOG",
+      "source": "Live Market Tape",
+      "source_tier": 1,
+      "published": "2026-11-26T18:57:04+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-26T18:57:04+00:00"
     }
   ]
 }
