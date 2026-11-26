@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26T01:04:14+00:00",
+  "updated_at": "2026-11-26T09:42:59+00:00",
   "items": [
     {
       "agency": "SEC",
@@ -119,6 +119,19 @@
       "sector": "energy"
     },
     {
+      "agency": "White House",
+      "title": "Expeditious Enforcement of Capital Sentences and the Pursuit of Justice for Victims of Heinous Crimes",
+      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24236/expeditious-enforcement-of-capital-sentences-and-the-pursuit-of-justice-for-victims-of-heinous",
+      "published": "2026-11-27T00:00:00+00:00",
+      "source": "White House",
+      "summary": "",
+      "categories": [
+        "White House Orders",
+        "macro_policy"
+      ],
+      "sector": "macro_policy"
+    },
+    {
       "agency": "FTC",
       "title": "FTC Sues to Block Veterinary Supplies Distributor Covetrus’s $3.5 Billion Acquisition of Rival MWI",
       "url": "https://www.ftc.gov/news-events/news/press-releases/2026/11/ftc-sues-block-veterinary-supplies-distributor-covetruss-35-billion-acquisition-rival-mwi",
@@ -223,15 +236,15 @@
       "sector": "macro_policy"
     },
     {
-      "agency": "Commerce / ITA",
-      "title": "Mattresses From India: Preliminary Results and Rescission, in Part, of Antidumping Duty Administrative Review; 2024-2025",
-      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24012/mattresses-from-india-preliminary-results-and-rescission-in-part-of-antidumping-duty-administrative",
+      "agency": "Federal Communications Commission",
+      "title": "Auction of Flexible-Use Licenses in the Upper C-Band for Next-Generation Wireless Services; Notice and Filing Requirements, Minimum Opening Bids, Upfront Payments, and Other Procedures for Auction 115; Bidding Scheduled To Begin April 27, 2027",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24013/auction-of-flexible-use-licenses-in-the-upper-c-band-for-next-generation-wireless-services-notice",
       "published": "2026-11-25T00:00:00+00:00",
-      "source": "Federal Register (Commerce Department, International Trade Administration)",
-      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that producers/exporters subject to this review made sales of subject merchandise at less than normal value (NV) during the period of review (POR), March 1, 2024, through August 31, 2025. In addition, we are rescinding the review with respect to four companies. Interested parties are invited to comment on these preliminary results",
+      "source": "Federal Register (Federal Communications Commission)",
+      "summary": "This document summarizes the procedures, deadlines, upfront payment, and minimum opening bid amounts adopted in the Auction 115 Procedures Public Notice for the Federal Communications Commission's (Commission) upcoming auction of 3,248 new flexible-use licenses in the 3.98-4.14 GHz portion of the Upper C-band. The Auction 115 Procedures Public Notice summarized here provides details regarding the ",
       "categories": [
-        "Tariffs & trade",
-        "Notice"
+        "Sanctions",
+        "Rule"
       ],
       "sector": "macro_policy"
     },
@@ -243,21 +256,8 @@
       "source": "Federal Register (Commerce Department, International Trade Administration)",
       "summary": "The U.S. Department of Commerce (Commerce) determines that certain producers/exporters subject to this review made sales of subject merchandise at less than normal value (NV) during the period of review (POR), March 1, 2024, through February 28, 2025.",
       "categories": [
-        "Tariffs & trade",
+        "Sanctions",
         "Notice"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "Surface Transportation Board",
-      "title": "Petition for Rulemaking To Consider Amendments to Regulations Governing Interim Use of Rights-of-Way as Trails",
-      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24003/petition-for-rulemaking-to-consider-amendments-to-regulations-governing-interim-use-of-rights-of-way",
-      "published": "2026-11-25T00:00:00+00:00",
-      "source": "Federal Register (Surface Transportation Board)",
-      "summary": "The Board partially grants a petition for rulemaking and proposes amendments to its regulations implementing section 208 of the National Trails System Act Amendments of 1983 to streamline the railbanking process. Under the proposal, the Board would no longer issue Notices or Certificates of Interim Trail Use during trail-use negotiations. Only after an agreement is reached would the Board issue an",
-      "categories": [
-        "Tariffs & trade",
-        "Proposed Rule"
       ],
       "sector": "macro_policy"
     },
@@ -269,21 +269,8 @@
       "source": "Federal Register (Commerce Department, International Trade Administration)",
       "summary": "As a result of the determinations by the U.S. Department of Commerce (Commerce) and the U.S. International Trade Commission (ITC) that revocation of the antidumping duty (AD) and countervailing duty (CVD) orders on prestressed concrete steel wire strand (PC strand) from the People's Republic of China (China) would likely lead to the continuation or recurrence of dumping, countervailable subsidies,",
       "categories": [
-        "Tariffs & trade",
-        "Notice"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "Federal Communications Commission",
-      "title": "Auction of Flexible-Use Licenses in the Upper C-Band for Next-Generation Wireless Services; Notice and Filing Requirements, Minimum Opening Bids, Upfront Payments, and Other Procedures for Auction 115; Bidding Scheduled To Begin April 27, 2027",
-      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24013/auction-of-flexible-use-licenses-in-the-upper-c-band-for-next-generation-wireless-services-notice",
-      "published": "2026-11-25T00:00:00+00:00",
-      "source": "Federal Register (Federal Communications Commission)",
-      "summary": "This document summarizes the procedures, deadlines, upfront payment, and minimum opening bid amounts adopted in the Auction 115 Procedures Public Notice for the Federal Communications Commission's (Commission) upcoming auction of 3,248 new flexible-use licenses in the 3.98-4.14 GHz portion of the Upper C-band. The Auction 115 Procedures Public Notice summarized here provides details regarding the ",
-      "categories": [
         "Sanctions",
-        "Rule"
+        "Notice"
       ],
       "sector": "macro_policy"
     },
@@ -310,6 +297,58 @@
       "categories": [
         "Antitrust",
         "Rule"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "FERC",
+      "title": "Combined Notice of Filings #1",
+      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24083/combined-notice-of-filings-1",
+      "published": "2026-11-27T00:00:00+00:00",
+      "source": "Federal Register (Energy Department, Federal Energy Regulatory Commission)",
+      "summary": "",
+      "categories": [
+        "Tariffs & trade",
+        "Notice"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "Commerce / ITA",
+      "title": "Extending Deadlines for Submissions by Importers of Automobiles Qualifying for Preferential Tariff Treatment Under the USMCA To Determine U.S. Content",
+      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24076/extending-deadlines-for-submissions-by-importers-of-automobiles-qualifying-for-preferential-tariff",
+      "published": "2026-11-27T00:00:00+00:00",
+      "source": "Federal Register (Commerce Department, International Trade Administration)",
+      "summary": "In Proclamation 10908 of March 26, 2025, \"Adjusting Imports of Automobiles and Automobile Parts Into the United States,\" the President imposed additional tariffs on imports of specified automobiles and automobile parts to eliminate the threat to national security posed by such imports. That Proclamation also provided that importers of automobiles that qualify for preferential tariff treatment unde",
+      "categories": [
+        "Tariffs & trade",
+        "Notice"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "US ITC",
+      "title": "Chromium Trioxide From India and Turkey; Determinations",
+      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24053/chromium-trioxide-from-india-and-turkey-determinations",
+      "published": "2026-11-27T00:00:00+00:00",
+      "source": "Federal Register (International Trade Commission)",
+      "summary": "",
+      "categories": [
+        "Tariffs & trade",
+        "Notice"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "US ITC",
+      "title": "Welded Line Pipe From South Korea and Turkey; Determinations",
+      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24047/welded-line-pipe-from-south-korea-and-turkey-determinations",
+      "published": "2026-11-27T00:00:00+00:00",
+      "source": "Federal Register (International Trade Commission)",
+      "summary": "",
+      "categories": [
+        "Tariffs & trade",
+        "Notice"
       ],
       "sector": "macro_policy"
     }
