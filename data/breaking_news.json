@@ -1,8 +1,348 @@
 {
-  "updated_at": "2026-11-26T01:04:14+00:00",
-  "min_importance": 35.0,
-  "max_age_hours": 6.0,
+  "updated_at": "2026-11-26T09:00:26+00:00",
+  "min_importance": 42,
+  "max_age_hours": 4,
   "items": [
+    {
+      "key": "67072e49878393aa",
+      "symbol": "MACRO",
+      "name": "MACRO",
+      "title": "Global stocks rally as investors shrug off U.S. tariffs and AI jitters",
+      "url": "https://www.cnbc.com/2026/11/26/stock-markets-today-.html",
+      "source": "CNBC Tech",
+      "source_tier": 1,
+      "published": "2026-11-26T08:42:26+00:00",
+      "importance": 74.0,
+      "significance": "HIGH",
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 0.3,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "3f20b82153154aa3",
+      "symbol": "POLICY",
+      "name": "POLICY",
+      "title": "U.S. tariff-hike threats pile pressure on partners to sign trade deals",
+      "url": "https://www.cnbc.com/2026/11/26/us-tariffs-hike-trade-agreement.html",
+      "source": "CNBC Economy",
+      "source_tier": 1,
+      "published": "2026-11-26T08:09:39+00:00",
+      "importance": 74.0,
+      "significance": "HIGH",
+      "categories": [
+        "policy_geopolitics"
+      ],
+      "age_hours": 0.85,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "e60a23570e8ffc1c",
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "title": "Key facts: Tesla-SpaceX merger talks; €3B Grünheide plan; EU review delayed",
+      "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxPZmw1Q2ljZkI2ZFFydHUtZjBvZkVMeHBoOHNaOGQ4ZXJRSVVCaEdvX25iS3VsTWFXX0syLUNwZWtlQm5icDBzX2V4bFhJaUZvMXBaUzQ0YUZidjA2Tmh5al9WcHVJZTZNRHhjTmtpRDBINDJKUE52bVlhVkktM2w5RkFwYU5Rb1NDZHpTU1N6Ukw2NVRMZElsSzd1SUpiX2tNYVI3SmlRTzhEVlF0N2d2OF9hOGlIQ05nYUtkMzVHVDVPdTNFaExoT2tWYlBJQQ?oc=5",
+      "source": "TradingView",
+      "source_tier": 1,
+      "published": "2026-11-26T08:00:00+00:00",
+      "importance": 74.0,
+      "significance": "HIGH",
+      "categories": [
+        "m_and_a"
+      ],
+      "age_hours": 1.01,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "6c46dc4a7f12d225",
+      "symbol": "AAPL",
+      "name": "Apple",
+      "title": "Key facts: Apple stock gains; spending, tariffs and AI partnerships",
+      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNWmpFb0FmLWVSVGxiNFZSdlZzU3ptTEhGSVNzSU8wazcxeWhLV3JmUjFiYVFwQnZWMmJsR2kwVVFMVVF2dHZBWEhDZkFMNnY4SDFCb280SUtzc2hrbXdHQjNpY005WC14U285Wkk5dC1kaThRUXlPek1CMFVZXzVfN0VFR2lYUjE2TzkzTlJuaHNsV2Z3ZGdsNEgtMjVHZy1FQVVMOG9SZkNNRVpLRjNCQjVTUnNxb2pZd0VQV1YzYzVFNFJU?oc=5",
+      "source": "TradingView",
+      "source_tier": 1,
+      "published": "2026-11-26T08:00:00+00:00",
+      "importance": 74.0,
+      "significance": "HIGH",
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 1.01,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "3104a400d2c7ee97",
+      "symbol": "TSM",
+      "name": "Taiwan Semiconductor",
+      "title": "US tariff plan would exempt Taiwan-made servers; five suppliers hit Taipei’s limit",
+      "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxNLUNNbGlBYlR0aERvY24wYkFoZkRqWkJyUENfZFdMYzcxXzlXRzhLY2Q3VUVYMzFKMktjMEtoclpfcHY2MmRtV1RRX290UXd1ckMyMzR1Zk9CVzNudHZ2cWEwTDMzcG93TFBZNW8zbHBaNEpUZFZzQWtXcld0RDNzSnNkWkJyU0p6NHhVMGZmdVhydw?oc=5",
+      "source": "Techi",
+      "source_tier": 1,
+      "published": "2026-11-26T07:11:10+00:00",
+      "importance": 74.0,
+      "significance": "HIGH",
+      "categories": [
+        "policy_geopolitics"
+      ],
+      "age_hours": 1.82,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "9bf13eda51782e7e",
+      "symbol": "LMT",
+      "name": "Lockheed Martin",
+      "title": "Lockheed Martin: From Buyback Machine To Munitions Compounder",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNZk56cVJjdEVmbkRGaG04cExScG9KOXNNbDZWNnRLaUpKcDQtTnNhSG95R0RQcEMyYXI0Z2VEN0kzc3RrN3FveTNzaHZWRHIzUUFNazdlRWt5YW1uQTBhSjlRYnNxVTlNOHhjNWh4MGd0ZjZRYzFmdlhMM0s5TFYzRGQwLVZUNDdSUExSMjYwdVR3VGpRWTRfSDF0Y2d1LXh6R0NZ?oc=5",
+      "source": "Seeking Alpha",
+      "source_tier": 2,
+      "published": "2026-11-26T07:57:06+00:00",
+      "importance": 63.0,
+      "significance": "HIGH",
+      "categories": [
+        "contract_partnership"
+      ],
+      "age_hours": 1.06,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "39d91a7380911cff",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "S&P Plans to Downgrade Nvidia Credit Rating as Risk of Stock Testing $100 Mark Rises",
+      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPdGN2cjBham1UYWhlWDVvbEpwSDEzVXZUVmhYZ2pPY2pVek8tNzhqTm5zU3JKVUg5S3RGZVUtWE5uV2NfVllRSjIxZV9Pa09pMW9JakpJRFdVUDdEWVRCQk4zRk9iamhWNENFWXhlanNGeFB3QUxoNnFNaUFOZUx6Zy02b0ZuelNDakJ0OFhDWlNqYzBnMXBEek9DaEd3YWRtTGdMaHlmbWFhSzhGeUh5cFF6ZF9aNS03Smc?oc=5",
+      "source": "TradingKey",
+      "source_tier": 2,
+      "published": "2026-11-26T07:53:33+00:00",
+      "importance": 63.0,
+      "significance": "HIGH",
+      "categories": [
+        "analyst"
+      ],
+      "age_hours": 1.11,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "203b7fcb4481f643",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia Reportedly Halts AI Server Shipments To Southeast Asia Ahead Of Jensen Huang's Congress Testimony",
+      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxNQU5pMWdnMm5wTkRka3ViZzBVX0xIT245TFNzcGJBazNqRml5aVpuNkl0Mk1DcFFidjgtdnZuaGZGcEpFUURJa3MtN0V5MkZxXzU4NUVnM005anhxTmRrNWJ5VktRZXU3UlJ0RXEzX2RzaGhFVy1jN0VfTmJISWtLSktpd1F4M2pPU2NzWEsxNXdKQ0hGeW03ZnZJNUpMdw?oc=5",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-26T08:11:47+00:00",
+      "importance": 53.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 0.81,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "05058a0d160d15f6",
+      "symbol": "AAPL",
+      "name": "Apple",
+      "title": "Apple Is November's Mag7 Winner — Nvidia Takes The Biggest Hit",
+      "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQREFyRVJWQTg4ZEgwUUItc0wya2xoLW9JYXBLcm5LTzNZVHRubVFtUnVNdGF2Q3Y4ODNNU1Z2ZHBBdWFfbXhYOHQyZmlJMjdBVTk2UElYZ1ZhaGxsT3JiTlVoWUlLT2hMRmRYUlNnZ2p0WVhjOVhTemZDeS0xaGtCRUVkaHBhajk5dmF5UUN3NnM2RVBlZzNvVUFqd28ydDRx?oc=5",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-26T07:32:00+00:00",
+      "importance": 53.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.47,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "df091c6d8475cd21",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "Form 4 Amazon.com Inc For: 26 November By Investing.com",
+      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPMkMwZ3J2T0hJTVh6b0NiUzhCclcyM3ZvdHpZLXhuZ2hlM3dydGw0RzZWQjA4WFFqdFVvQmxCTWx2TC1mVXhpb0pHUU9pQ1lUV1gwNXRrdVFBZzdXQm5JcXBZS2dzbjk4Z3dKZnFFa3dXZng1aUFyUk8xTEVDRS1henZoSmFvWTAweTAtVzBUQjZWNWRKYkltM2M0cWxWUQ?oc=5",
+      "source": "Investing.com South Africa",
+      "source_tier": 2,
+      "published": "2026-11-26T07:16:24+00:00",
+      "importance": 53.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.73,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "59d04a062cf05c57",
+      "symbol": "PLTR",
+      "name": "Palantir Technologies",
+      "title": "Form 4 Palantir Technologies Inc For: 26 November By Investing.com",
+      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOVk8wOE9uRFozNlF2cXRlVldoOHVMa3pHLXNDZExNT0o3Q0YxTUVINkd4dWttcWNWd3NlQ2JfT1AyZWVEVWZCY1EwZUVQNHVfczFiR0lxcFRORWRIRVlIMUpXU2lOOEdvSU5oS3RYWmFEUVlXM2c3RTBoN1pMeG8wMnRVdnVmZzdLUXJ3SFB4dVhFU0o2MnU0eHo5Q3VMRzFwRmttV0J5MU41Qmh2enc?oc=5",
+      "source": "Investing.com South Africa",
+      "source_tier": 2,
+      "published": "2026-11-26T07:16:24+00:00",
+      "importance": 53.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.73,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "8d7db9abc4441111",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia Stock Price Drops Below $150 as Company Agrees to $290M Crypto Mining Settlement",
+      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOMVZDZGJPZGM5QnVmQ2d2UmZuTmhPVVJ6TGo4aUQwY3ZUZUJ4OVozNXp6R2VOQ1NseVBPTzh2a0lEZlMwSHB4c0tQZ1ZuSWZVVDMwYjJaY1B5Mms3em1QYUZ0UktRaG5wam5UanByUEs0bERZM05Zblp5WmNDcjVRRmlyQzg5b2hNWDE1RXZMN0J6ZmhXdHY5eXBLeklaOTEyWW13a0t5OE55Q0huZnhSTlpBdXhwRlBodXc?oc=5",
+      "source": "CryptoRank",
+      "source_tier": 2,
+      "published": "2026-11-26T08:36:47+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 0.39,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "cb80fce33345eeff",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia’s Top AI Chips Reportedly Reached Chinese-Owned U.S. Firms",
+      "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOaGswb3NwQklVYXkxaFB0MFpKOS1WWXM1ZHFTdVJlbXdDZWkxbTRmQVI4NjFmaUNZOTdFZ3FkUXJ2dkN6R0FLZXNYX0tFNWtRbGV0Q0dDckpHRmdZVXFBeTBBMDllVzIzR0Y2UDdQbGZoVVhZaXFtejdVX21pbmYzSUt6UHc4MnRrMjlweV9kaVdYSFBVNEQxbQ?oc=5",
+      "source": "TipRanks",
+      "source_tier": 2,
+      "published": "2026-11-26T08:37:03+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 0.39,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "ad20d2305a6a6f61",
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "title": "Microsoft Launches ‘Code Red’ After 24-Hour Outage, Wants Critical Fixes Deployed Worldwide in Just 1 Hou",
+      "url": "https://news.google.com/rss/articles/CBMi9gFBVV95cUxOLWhYTExjWkRqOG5pSnNlNEZfbmZ3U0E4U01tQTRMZTAxcWdQRmkyVzJ6YXU2bTFiLUxHWTFuQjl4aWVCNE5yNkhxT081ZHJpeTdKUDNOaFhBdUhfV3QtMElhbFo5RjRRbjRrdVRIOG9WVFk3R2l2cGFILThFeDFhVjgtaXRyTXI4a2wtTmhxbExlaEVwUlU1MVBtZTZtYkxpbXF5T1BNREkydnBFUnE1R1VFWWhjNjFyb1JGVzI1WUR3U2J5NEl1SUREUi00bVlJUTNQZlh3VjhodExMUE5yN3M0dkRnYzdLaWJDTVF6WTNNSFFieFE?oc=5",
+      "source": "Benzinga",
+      "source_tier": 2,
+      "published": "2026-11-26T08:30:00+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 0.51,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "8df513ace2b4f26e",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "Key facts: Sales +12%, AWS +39%; $309.5M Settlement; UK Autos 2027",
+      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQenJLaUxwWnBuVzNLd1AzcThwNHprcXFTZlB2Y3dJTDBxM25uVWpSTkZ6aUNZcTRYcHBNQkhkdzkzRTI5Uzgta01QMURmS1hUYmh3SC1CZmdXdnpxcjdUMm9QcHFTZWlvZ3ZIcEtkZmFZNUZaMnZ1dmZTNUY1bXJaNmcyOUNPeEZLRE9MVC0zT1I1ZDM1UlIybmRySWlZdFFOVjdQUUZIMU1ZaU4wTWtGcDhDV3Mxc09yVEIw?oc=5",
+      "source": "TradingView",
+      "source_tier": 2,
+      "published": "2026-11-26T08:00:00+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.01,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "14921554f854dd87",
+      "symbol": "AAPL",
+      "name": "Apple",
+      "title": "Apple to Launch New Store in Hyderabad, India in December",
+      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQWkRyUW1oVjd3T3pUbWxKSWJ3bjN4SzVwU3BPUXVTS0dla0phcjN3WjFkVkZDS1RXcUJ5MklKdDgxWFI4Zm5yc1pDQ0JEMDY2ZUZyLXY2Y2ZxV0lvdzZjYXlJQ3d4Q2xnN21tRGM4SW1YODR3RzhaZnZKNmRFd3B5SmIyX2h6TVMzLVpVTWxWeW1VODgtSnhnUnhwUHY5c3Y4RzJ3RU9XLVA5WDdPN0E?oc=5",
+      "source": "marketscreener.com",
+      "source_tier": 2,
+      "published": "2026-11-26T07:45:19+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.25,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "0af928fbf7b735ec",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Top Analyst Flags 5 Major Risks for NVDA Stock, Says Nvidia Could Stay in ‘Penalty Box’ for 1-2 Quarters",
+      "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNM0h2OGVIVXpRNWtNWDd6bk5iWnJmZTAtNG5sOW80UnpZbUJKOXVlUHB5WUk0TGVoYkJ6aHhuZUV0YkFrdWVSaEJjV1ZGaTczRnYzUXBydG92VUc1WGR5SjN3SndmczZIYUpNdkFpM3RQMHlCdUtLcmotZHEybXhKVUlpaUFqUkZzNjBLRVM3b252WmZXRjlPUnZuRVJXM3lRTWViMmc4bzJKT3UwZTJoc1V6OWJ1YTVxdDVXVV9ndUduTkMzb0E?oc=5",
+      "source": "Benzinga",
+      "source_tier": 2,
+      "published": "2026-11-26T07:43:58+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.27,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "821a7be187f3b36f",
+      "symbol": "RTX",
+      "name": "RTX Corporation",
+      "title": "RTX Corporation stock trades at EUR 179.30, up 1.39%",
+      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxNMy1vVElNYnd5TGhpNGkyakxsay0wcEhJbjJuV3Y0cU5RdnJ5dGNMLWh1cDV5Nk5uT0RreHBab3F0UmNFWUQxWm9zTEl3LV94ak1hZVhZdl9CMUdMUVJNS0ZfWC1qak9td2E3aVJFelRUX3ZDZk9HVmtuNUVlV1pxbmF1YW00emlqa2l5UWxiYTdYb3Z4R3N2TXRfZFlydEdQRjU1Ykxhbzd4cjdt?oc=5",
+      "source": "ad-hoc-news.de",
+      "source_tier": 2,
+      "published": "2026-11-26T07:43:51+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.28,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "7781e476a2ff1762",
+      "symbol": "AVGO",
+      "name": "Broadcom",
+      "title": "Broadcom (AVGO) Stock Price Today",
+      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNQWZOU0tzSjREZGRwRFZEYVhaWmplVEFXRms5MHptLTB1aVNNdE5FRzF2S1BjNkVQbVhrY1JoZU91MWUySXRPRm12MDhVbzNPV1QxNXZDSklqVkZhcGt2TzhjakJQRms2T2t4QXR2WTBQR1JIQTJpcWlPY0VNMnluZHQtejYyOFRXU0pyUGdkY0JHZEI2aGNlSUM4QlVzX0E?oc=5",
+      "source": "JournalArta",
+      "source_tier": 2,
+      "published": "2026-11-26T07:36:00+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.41,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "49beb0653221223f",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "TruGolf Holdings Shares Surge 18.94% After Hours - Amazon.com (NASDAQ:AMZN), IBM (NYSE:IBM)",
+      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNbjRYV2Y4eWNxM3UtMm45b3pWcFlvbzhXVkhZak4zNkRPYjZIQU9vX2NqbjhlQzlWLWt6Z2RQQ3BWVjVGYXBSVnFIVHlOdGZaMGdjNkVtSjhLbDFkRF9Ed29XcXozMGwzNVVxWDJFVktVR2ZOemFJMHBxNFc5MDNZR1FKUVVMVWdaQjJ3LTVCN0VLSVR0d1d2ZFlZYl9LNWpvaENCbmpQNzdiLWpBbklKaA?oc=5",
+      "source": "Benzinga",
+      "source_tier": 2,
+      "published": "2026-11-26T07:11:38+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.81,
+      "detected_at": "2026-11-26T09:00:26+00:00"
+    },
     {
       "key": "1c1d9db206925dad",
       "symbol": "MACRO",
