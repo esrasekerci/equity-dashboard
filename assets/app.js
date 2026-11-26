@@ -1665,21 +1665,23 @@
       }
     }, { passive: true });
     stage.addEventListener("touchmove", (e) => {
-      if (e.touches.length === 2 && pinchState) {
+      if (e.touches.length >= 2) {
         e.preventDefault();
-        const t0 = e.touches[0], t1 = e.touches[1];
-        const midX = (t0.clientX + t1.clientX) / 2;
-        const midY = (t0.clientY + t1.clientY) / 2;
-        const dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
-        const newZ = Math.max(MIN_Z, Math.min(MAX_Z, pinchState.startZoom * (dist / pinchState.startDist)));
-        const relX = (midX - pinchState.rect.left) / pinchState.rect.width;
-        const relY = (midY - pinchState.rect.top) / pinchState.rect.height;
-        const newVW = pinchState.fitW / newZ;
-        const newVH = pinchState.fitH / newZ;
-        viewState.zoom = newZ;
-        viewState.panX = (pinchState.worldX - relX * newVW) - (baseCX - newVW / 2);
-        viewState.panY = (pinchState.worldY - relY * newVH) - (baseCY - newVH / 2);
-        updateViewBox();
+        if (e.touches.length === 2 && pinchState) {
+          const t0 = e.touches[0], t1 = e.touches[1];
+          const midX = (t0.clientX + t1.clientX) / 2;
+          const midY = (t0.clientY + t1.clientY) / 2;
+          const dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+          const newZ = Math.max(MIN_Z, Math.min(MAX_Z, pinchState.startZoom * (dist / pinchState.startDist)));
+          const relX = (midX - pinchState.rect.left) / pinchState.rect.width;
+          const relY = (midY - pinchState.rect.top) / pinchState.rect.height;
+          const newVW = pinchState.fitW / newZ;
+          const newVH = pinchState.fitH / newZ;
+          viewState.zoom = newZ;
+          viewState.panX = (pinchState.worldX - relX * newVW) - (baseCX - newVW / 2);
+          viewState.panY = (pinchState.worldY - relY * newVH) - (baseCY - newVH / 2);
+          updateViewBox();
+        }
       }
     }, { passive: false });
     stage.addEventListener("touchend", (e) => {
@@ -7030,46 +7032,57 @@
   // Lock pinch-zoom and double-tap zoom across all app pages while preserving zoom exclusively inside interactive graphs (#tvChart & .bubble-stage)
   function initPageZoomLock() {
     const isInsideGraph = (target) => Boolean(target && target.closest && target.closest("#tvChart, .bubble-stage"));
+    const capOpts = { capture: true, passive: false };
 
-    // 1. Block WebKit/iOS Safari native HTML-page pinch-zoom gestures globally (graphs use 2-finger touchmove internally)
+    // 1. Block WebKit/iOS Safari native HTML-page pinch-zoom gestures in capture phase (graphs use TouchEvent internally)
     const blockGesture = (e) => {
       e.preventDefault();
     };
-    document.addEventListener("gesturestart", blockGesture, { passive: false });
-    document.addEventListener("gesturechange", blockGesture, { passive: false });
-    document.addEventListener("gestureend", blockGesture, { passive: false });
+    document.addEventListener("gesturestart", blockGesture, capOpts);
+    document.addEventListener("gesturechange", blockGesture, capOpts);
+    document.addEventListener("gestureend", blockGesture, capOpts);
 
-    // 2. Block 2-finger pinch-zoom on Android Chrome & iOS Safari everywhere outside graphs
+    // 2. Intercept multi-finger touchstart & touchmove in capture phase on Android & iOS everywhere outside graphs
+    document.addEventListener("touchstart", (e) => {
+      if (e.touches && e.touches.length > 1 && !isInsideGraph(e.target)) {
+        e.preventDefault();
+      }
+    }, capOpts);
+
     document.addEventListener("touchmove", (e) => {
+      if (e.touches && e.touches.length > 2) {
+        e.preventDefault();
+        return;
+      }
       const multiTouch = (e.touches && e.touches.length > 1) || (typeof e.scale === "number" && e.scale !== 1);
       if (multiTouch && !isInsideGraph(e.target)) {
         e.preventDefault();
       }
-    }, { passive: false });
+    }, capOpts);
 
     // 3. Block double-tap page zoom outside graphs (both iOS & Android)
     let lastTouchEndMs = 0;
     document.addEventListener("touchend", (e) => {
       if (isInsideGraph(e.target)) return;
       const now = Date.now();
-      if (now - lastTouchEndMs <= 280 && e.cancelable && !e.target.closest("button, a, input, select, [role='button'], [data-sym], [data-ov-news-id]")) {
+      if (now - lastTouchEndMs <= 280 && e.cancelable && !e.target.closest("button, a, input, select, textarea, [role='button'], [data-sym], [data-ov-news-id]")) {
         e.preventDefault();
       }
       lastTouchEndMs = now;
-    }, { passive: false });
+    }, capOpts);
 
     document.addEventListener("dblclick", (e) => {
       if (!isInsideGraph(e.target)) {
         e.preventDefault();
       }
-    }, { passive: false });
+    }, capOpts);
 
-    // 4. Block desktop/tablet Ctrl+wheel page zoom outside graphs
+    // 4. Block desktop/tablet Ctrl/Cmd+wheel page zoom outside graphs
     document.addEventListener("wheel", (e) => {
-      if (e.ctrlKey && !isInsideGraph(e.target)) {
+      if ((e.ctrlKey || e.metaKey) && !isInsideGraph(e.target)) {
         e.preventDefault();
       }
-    }, { passive: false });
+    }, capOpts);
   }
 
   async function boot() {
