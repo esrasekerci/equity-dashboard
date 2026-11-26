@@ -1,8 +1,26 @@
 {
-  "updated_at": "2026-11-26T09:42:59+00:00",
-  "min_importance": 35.0,
+  "updated_at": "2026-11-26T13:21:58+00:00",
+  "min_importance": 99.0,
   "max_age_hours": 6.0,
   "items": [
+    {
+      "key": "a99a1eb783e425e0",
+      "symbol": "TRADE / TARIFFS",
+      "name": "TRADE / TARIFFS",
+      "title": "Watch Trump’s China Tariffs Threaten Fresh Trade Tensions",
+      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOaGdtSnItLVVFWENtbHltMDdEVGNkZkUtOTcwZzdwMm4yQlVURHhSVEVqQWMzb3dlZGNQVUJibHFiOWtweDVCV2xZQi1JYVUxVjh4ODhuSU5LMlVUTkhHMEZCLWg1Q3NYdm8zSHlzNG1zdUxCRTFzU0Q1NDNyUndGeGR5bWpMS0Q5ZXpMLUVkVGRFcWwyQnZxZjJKUGc?oc=5",
+      "source": "Bloomberg.com",
+      "source_tier": 1,
+      "published": "2026-11-26T12:24:29+00:00",
+      "importance": 100.0,
+      "categories": [
+        "policy_geopolitics",
+        "regulatory_legal"
+      ],
+      "age_hours": 0.96,
+      "detected_at": "2026-11-26T13:21:58+00:00",
+      "significance": "CRITICAL"
+    },
     {
       "key": "ba849ecc8c3572ff",
       "symbol": "AAPL",
@@ -1032,23 +1050,6 @@
         "contract_partnership"
       ],
       "age_hours": 3.52,
-      "detected_at": "2026-11-26T01:04:14+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "c507a437f549eced",
-      "symbol": "CRM",
-      "name": "Salesforce",
-      "title": "Salesforce Stock (CRM) Looks Mispriced After the AI Sell-Off",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/salesforce-stock-crm-looks-mispriced-205300259.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-25T20:53:00+00:00",
-      "importance": 63.5,
-      "categories": [
-        "contract_partnership"
-      ],
-      "age_hours": 4.19,
       "detected_at": "2026-11-26T01:04:14+00:00",
       "significance": "HIGH"
     }
