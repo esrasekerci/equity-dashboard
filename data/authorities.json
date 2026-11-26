@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26T13:21:58+00:00",
+  "updated_at": "2026-11-26T19:44:04+00:00",
   "items": [
     {
       "agency": "SEC",
@@ -130,6 +130,32 @@
         "macro_policy"
       ],
       "sector": "macro_policy"
+    },
+    {
+      "agency": "FTC",
+      "title": "FTC Sues to Block Veterinary Supplies Distributor Covetrus’s $3.5 Billion Acquisition of Rival MWI",
+      "url": "https://www.ftc.gov/news-events/news/press-releases/2026/11/ftc-sues-block-veterinary-supplies-distributor-covetruss-35-billion-acquisition-rival-mwi",
+      "published": "2026-11-13T12:00:00+00:00",
+      "source": "FTC Official",
+      "summary": "FTC alleges that combining the two biggest distributors of veterinary products and services will drive up costs and lead to higher prices for veterinary clinics and pet owners The Federal Trade Commission sued today to block Covetrus Inc. and its owners, Clayton, Dubilier & Rice LLC and TPG Inc., from acquiring its closest competitor, MWI Veterinary Supply I",
+      "categories": [
+        "FTC Declaration",
+        "antitrust_tech"
+      ],
+      "sector": "antitrust_tech"
+    },
+    {
+      "agency": "FTC",
+      "title": "FTC Finalizes Order Resolving Antitrust Concerns Stemming from Beretta, Ruger Stock Purchase Deal",
+      "url": "https://www.ftc.gov/news-events/news/press-releases/2026/11/ftc-finalizes-order-resolving-antitrust-concerns-stemming-beretta-ruger-stock-purchase-deal",
+      "published": "2026-11-25T12:00:00+00:00",
+      "source": "FTC Official",
+      "summary": "The Federal Trade Commission has finalized an order resolving antitrust concerns related to a stock purchase agreement between two of the largest firearm manufacturers, Beretta Holding S.A. and Sturm, Ruger & Co. Inc., by prohibiting anticompetitive entanglements between the two companies. View Press Release",
+      "categories": [
+        "FTC Declaration",
+        "antitrust_tech"
+      ],
+      "sector": "antitrust_tech"
     },
     {
       "agency": "NHTSA",
