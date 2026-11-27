@@ -1,8 +1,464 @@
 {
-  "updated_at": "2026-11-27T13:20:55+00:00",
-  "min_importance": 99,
-  "max_age_hours": 6,
+  "updated_at": "2026-11-27T22:10:45+00:00",
+  "min_importance": 35.0,
+  "max_age_hours": 6.0,
   "items": [
+    {
+      "key": "41055c35bd6a96e9",
+      "symbol": "PLTR",
+      "name": "Palantir Technologies",
+      "title": "Palantir Stock (PLTR) Has No Room for Error at This Valuation",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/palantir-stock-pltr-no-room-213800829.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T21:38:00+00:00",
+      "importance": 100.0,
+      "categories": [
+        "earnings_guidance",
+        "analyst"
+      ],
+      "age_hours": 0.55,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "3fb2c9ff5c045d85",
+      "symbol": "JPM",
+      "name": "JPMorgan Chase",
+      "title": "Why JPMorgan Chase Fans May Look To ETFs Right Now",
+      "url": "https://finance.yahoo.com/markets/options/articles/why-jpmorgan-chase-fans-may-211349086.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T21:13:49+00:00",
+      "importance": 87.7,
+      "categories": [
+        "analyst",
+        "regulatory_legal"
+      ],
+      "age_hours": 0.95,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "92f4d4213cfa9fd7",
+      "symbol": "IREN",
+      "name": "IREN Limited",
+      "title": "IREN Is Transitioning From Bitcoin Mining to AI Cloud",
+      "url": "https://finance.yahoo.com/technology/ai/articles/iren-transitioning-bitcoin-mining-ai-202843357.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T20:28:43+00:00",
+      "importance": 85.5,
+      "categories": [
+        "m_and_a",
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 1.7,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "b8f8df3d7f40e42f",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Why DELL Stock Is Rising Today — and Why Analysts Still See 70%+ Upside",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/why-dell-stock-rising-today-200125895.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T20:01:25+00:00",
+      "importance": 99.7,
+      "categories": [
+        "earnings_guidance",
+        "analyst",
+        "market_move"
+      ],
+      "age_hours": 2.16,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "000a1aefc9def4d2",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia Stocks Slip 1.66% as S&P Weighs Downgrade Over Key-Man Risk",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/nvidia-stocks-slip-1-66-194936975.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T19:49:36+00:00",
+      "importance": 79.2,
+      "categories": [
+        "analyst",
+        "management"
+      ],
+      "age_hours": 2.35,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "7b2f48f8c459924b",
+      "symbol": "TSM",
+      "name": "Taiwan Semiconductor",
+      "title": "TSMC Stocks Climb 1.84% as U.S. Tariff Proposal Leaves Chips Off the List",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/tsmc-stocks-climb-1-84-194609822.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T19:46:09+00:00",
+      "importance": 85.5,
+      "categories": [
+        "policy_geopolitics",
+        "regulatory_legal",
+        "supply_chain_producers"
+      ],
+      "age_hours": 2.41,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "e69f9a3d958b0be1",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "Jeff Bezos makes a $200 million move involving Amazon stock",
+      "url": "https://www.thestreet.com/investing/jeff-bezos-amazon-stock-charitable-donation",
+      "source": "TheStreet",
+      "source_tier": 2,
+      "published": "2026-11-27T19:03:00+00:00",
+      "importance": 78.2,
+      "categories": [
+        "regulatory_legal",
+        "ownership"
+      ],
+      "age_hours": 3.13,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "641b0fc22a474d99",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell Stocks Jump 5.28% as $132.3 Billion AI Backlog Keeps Buyers Coming",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/dell-stocks-jump-5-28-190215807.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T19:02:15+00:00",
+      "importance": 93.8,
+      "categories": [
+        "earnings_guidance",
+        "capital_markets"
+      ],
+      "age_hours": 3.14,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "836291511460cf5d",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell's Strong Results Fail to Ease Concerns About AI Spending Durability, UBS Says",
+      "url": "https://finance.yahoo.com/technology/ai/articles/dell-apos-strong-results-fail-185100918.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T18:51:00+00:00",
+      "importance": 97.7,
+      "categories": [
+        "earnings_guidance",
+        "analyst"
+      ],
+      "age_hours": 3.33,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "4d79dcfe12de4644",
+      "symbol": "MACRO",
+      "name": "MACRO",
+      "title": "Jensen Huang's return did little to ease AI jitters. We used the weakness to buy",
+      "url": "https://www.cnbc.com/investingclub/2026/11/27/jensen-huangs-return-did-little-to-ease-ai-jitters-we-bought-on-weakness.html",
+      "source": "CNBC Tech",
+      "source_tier": 1,
+      "published": "2026-11-27T18:46:20+00:00",
+      "importance": 59.7,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 3.41,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "243cc2a212f1374e",
+      "symbol": "MACRO",
+      "name": "MACRO",
+      "title": "SpaceX shares jump over 4% amid tech rally and after Musk says he will expand on Trump Account share donations",
+      "url": "https://www.cnbc.com/2026/11/27/spacex-shares-musk-donations.html",
+      "source": "CNBC Tech",
+      "source_tier": 1,
+      "published": "2026-11-27T18:24:06+00:00",
+      "importance": 59.4,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 3.78,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "fa127282dae84a79",
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "title": "Microsoft Stocks Rise 0.26% as Code Red Targets One-Hour Outage Recovery",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/microsoft-stocks-rise-0-26-182320294.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T18:23:20+00:00",
+      "importance": 92.8,
+      "categories": [
+        "earnings_guidance",
+        "incident"
+      ],
+      "age_hours": 3.79,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "8ea3d7e297e5a421",
+      "symbol": "COIN",
+      "name": "Coinbase Global",
+      "title": "Coinbase CEO issues bullish Bitcoin prediction as inflation fears grow",
+      "url": "https://www.thestreet.com/crypto/markets/coinbase-ceo-issues-bullish-bitcoin-warning-as-inflation-fears-grow",
+      "source": "TheStreet",
+      "source_tier": 2,
+      "published": "2026-11-27T18:14:46+00:00",
+      "importance": 95.7,
+      "categories": [
+        "earnings_guidance",
+        "regulatory_legal",
+        "market_move"
+      ],
+      "age_hours": 3.93,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "84d0fd5029b945ef",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "AI Chip Stocks Roar Back -- Sandisk and Micron Lead the Rally",
+      "url": "https://finance.yahoo.com/technology/ai/articles/ai-chip-stocks-roar-back-180304210.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T18:03:04+00:00",
+      "importance": 80.0,
+      "categories": [
+        "analyst",
+        "market_move"
+      ],
+      "age_hours": 4.13,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "312971d61d7754f1",
+      "symbol": "ARM",
+      "name": "Arm Holdings",
+      "title": "Arm Holdings Stocks Climb 3.12% as CEO Haas Commits Through 2033",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/arm-holdings-stocks-climb-3-180219496.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T18:02:19+00:00",
+      "importance": 94.4,
+      "categories": [
+        "earnings_guidance",
+        "contract_partnership",
+        "management"
+      ],
+      "age_hours": 4.14,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "73eda36dfd71d372",
+      "symbol": "IREN",
+      "name": "IREN Limited",
+      "title": "IREN Stock Jumps 8% as Analysts See 340% Upside Despite Sell Signals",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/iren-stock-jumps-8-analysts-173438398.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T17:34:38+00:00",
+      "importance": 81.4,
+      "categories": [
+        "analyst",
+        "data_centers_ai",
+        "market_move"
+      ],
+      "age_hours": 4.6,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "016ab2e9715294a2",
+      "symbol": "GOOGL",
+      "name": "Alphabet",
+      "title": "3 Ways To Own Alphabet In ETFs When Each Fund Holds It Differently",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/3-ways-own-alphabet-etfs-171242209.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T17:12:42+00:00",
+      "importance": 94.1,
+      "categories": [
+        "earnings_guidance",
+        "regulatory_legal"
+      ],
+      "age_hours": 4.97,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "2375bb762ab66b50",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell Faces AI Server Shipment Halt as Nvidia Tightens Asia Restrictions",
+      "url": "https://finance.yahoo.com/technology/ai/articles/dell-faces-ai-server-shipment-171229537.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T17:12:29+00:00",
+      "importance": 81.9,
+      "categories": [
+        "policy_geopolitics",
+        "regulatory_legal",
+        "incident"
+      ],
+      "age_hours": 4.97,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "c1f06f404d400c55",
+      "symbol": "META",
+      "name": "Meta Platforms",
+      "title": "Meta, Anthropic in Talks to Build AI Data Centers in Japan",
+      "url": "https://finance.yahoo.com/technology/ai/articles/meta-anthropic-talks-build-ai-170949948.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T17:09:49+00:00",
+      "importance": 76.8,
+      "categories": [
+        "contract_partnership",
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 5.02,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "7ac6282da2db8148",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "Micron Stock Jumps Despite GF Securities Slashes DRAM Price Estimates",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/micron-stock-jumps-despite-gf-170306292.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T17:03:06+00:00",
+      "importance": 78.7,
+      "categories": [
+        "analyst",
+        "market_move"
+      ],
+      "age_hours": 5.13,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "e1eb14a16e32e5d8",
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "title": "Dell delivers record results, but Wall Street sees a catch",
+      "url": "https://www.thestreet.com/investing/dell-delivers-record-results-but-wall-street-sees-a-catch?.tsrc=rss",
+      "source": "thestreet.com",
+      "source_tier": 2,
+      "published": "2026-11-27T17:03:00+00:00",
+      "importance": 78.7,
+      "categories": [
+        "analyst",
+        "capital_markets"
+      ],
+      "age_hours": 5.13,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "75b8ffdfc8b49598",
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices",
+      "title": "Dual AI Growth Catalysts Position Advanced Micro Devices (AMD) for Revenue Acceleration",
+      "url": "https://finance.yahoo.com/technology/ai/articles/dual-ai-growth-catalysts-position-164930131.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T16:49:30+00:00",
+      "importance": 77.4,
+      "categories": [
+        "analyst",
+        "ownership"
+      ],
+      "age_hours": 5.35,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "9f01964dab7b75f5",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "AI shopping agents are having a moment, but Amazon and a growing number of sites threaten to stunt their growth",
+      "url": "https://www.cnbc.com/2026/11/27/ai-shopping-agents-retailer-blocks.html",
+      "source": "CNBC Tech",
+      "source_tier": 1,
+      "published": "2026-11-27T16:43:14+00:00",
+      "importance": 60.2,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 5.46,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "11d60ae172483f8e",
+      "symbol": "NOW",
+      "name": "ServiceNow",
+      "title": "Baron Fund Reestablishes Position in ServiceNow (NOW) Following Attractive Valuation Pullback",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/baron-fund-reestablishes-position-servicenow-164101736.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T16:41:01+00:00",
+      "importance": 77.2,
+      "categories": [
+        "analyst",
+        "ownership"
+      ],
+      "age_hours": 5.5,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "41929d4af8974f5d",
+      "symbol": "SNOW",
+      "name": "Snowflake",
+      "title": "Snowflake (SNOW) Raises Full-Year Outlook Following Third Consecutive Quarter of Growth Acceleration",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/snowflake-snow-raises-full-outlook-162232434.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T16:22:32+00:00",
+      "importance": 93.8,
+      "categories": [
+        "earnings_guidance",
+        "analyst",
+        "ownership"
+      ],
+      "age_hours": 5.8,
+      "detected_at": "2026-11-27T22:10:45+00:00",
+      "significance": "CRITICAL"
+    },
     {
       "key": "2b587627f7ad5e5f",
       "symbol": "NVDA",
@@ -606,439 +1062,6 @@
       ],
       "age_hours": 1.59,
       "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "a92864b9300cebdf",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Binance Will Support the Cash Dividend Distribution of The Wendy's Company (WEN), NVIDIA Corporation (NVDA), Qualcomm Incorporated (QCOM), PayPal Holdings, Inc. (PYPL), and Western Digital Corporation (WDC) via bStocks",
-      "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPeHREOG5PdlIwM3h1TkVha2RFTzQ0N0Q4YW9vV0N0b0dJc2dxOXlZejRxSHdkUllzRWpQNFBibjdaMU1veHl2R2VYYkk1cGZZeXhnVkJTZDJFR3ptT0dnUG9ocWJZcVI1RVJiQW93UmxUTzR1QzkzT1MzZ2NNNUpoUWdFZUlhMzg?oc=5",
-      "source": "Binance",
-      "source_tier": 2,
-      "published": "2026-11-27T01:06:53+00:00",
-      "importance": 63,
-      "significance": "HIGH",
-      "categories": [
-        "contract_partnership"
-      ],
-      "age_hours": 0.95,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "16c4ee0dd8b56094",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "A new catalyst lies behind the stock price pullback; physics AI may become NVIDIA's next major growth story.",
-      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPdl9oWnBTRzhpcWROQVZELUlBWkR1MVhUdmdUM2J5YmVwRXFJd08tMF9XcmZIYksxSVhXS3l4N2lvRjkwdTNEamdla3FNdTBpSy1KNEtvY2dEZHJwMUYtLTM0bmRmUF9NSUtSeE1UY3NyZTVxeFp5dFlPS09BSVE1OGdTSklrWjJzNlFHVW1mZnE3SVZoVTdZWk9pRWlBNTF3Wm45Tw?oc=5",
-      "source": "富途牛牛",
-      "source_tier": 2,
-      "published": "2026-11-27T01:00:00+00:00",
-      "importance": 48,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 1.07,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "2d64db08b3e01334",
-      "symbol": "UNH",
-      "name": "UnitedHealth Group",
-      "title": "UnitedHealth: 2 New Headaches, 1 Buying Opportunity",
-      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNM1FxQ1k1TW5WYnBwVWVZOUpJV2RhYWRnVjNOM2RNWVlXRDN1blVHODNBakJJSE95QkxhMHVKakUtclNodVFhRkVyWm82Q2F5aEVWdjJGTERqbnRycGlSNm5MUDljRENzUHIyWkxrR1BiUlJEOVYwLWhDbVYxZFFxV3JESE5SYjFaY0lVRFI1Q2RuWkhqT1NoVUwwdkZmeGM1aWc?oc=5",
-      "source": "Seeking Alpha",
-      "source_tier": 2,
-      "published": "2026-11-27T00:54:14+00:00",
-      "importance": 48,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 1.16,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "3d668c603d3c4c0f",
-      "symbol": "UNH",
-      "name": "UnitedHealth Group",
-      "title": "Form 4 Unitedhealth Group For: 26 November By Investing.com",
-      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPeTFQbEtyQndRZ1Q4aWNaQlc0OU1lOXoyNjJPOGxwSHh4V0xSMHV0RFRCaVR6SURuRUtQeXRvMmwyZ0c2aUlQeEJXR0dKRHBRQkVMbnl0RmNXck9vYUtJNzBxelNBSUtPb09qajRkQlZIbFRyaENvX1BNQWFIU2xTdHdHN0owaTBJME1jakt2dGlQd0JpOVQ3ZHFER1NJNGJLejhLRg?oc=5",
-      "source": "Investing.com India",
-      "source_tier": 2,
-      "published": "2026-11-27T00:49:18+00:00",
-      "importance": 53,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 1.24,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "97717a9976a8ebde",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Trump Says Huang Is Excited About His ‘Second Term’ at Nvidia",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/trump-says-huang-excited-second-003925008.html",
-      "source": "Bloomberg",
-      "source_tier": 1,
-      "published": "2026-11-27T00:39:25+00:00",
-      "importance": 63.4,
-      "categories": [
-        "general"
-      ],
-      "age_hours": 2.34,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "cf2e316931df4045",
-      "symbol": "WMT",
-      "name": "Walmart",
-      "title": "When Walmart, Target, Costco, and other major retailers open on Black Friday",
-      "url": "https://www.thestreet.com/retail/when-walmart-target-costco-and-other-major-retailers-open-on-black-friday",
-      "source": "TheStreet",
-      "source_tier": 2,
-      "published": "2026-11-27T00:37:00+00:00",
-      "importance": 52.8,
-      "categories": [
-        "general"
-      ],
-      "age_hours": 2.39,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "NOTABLE"
-    },
-    {
-      "key": "bc0521210f3f3c34",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "We are living in perilous times if Nvidia CEO Jensen Huang dictates your 401(k) balance",
-      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNTkZ4TzUwSHNOaFYtVC1xcnRINWZVdHZnWGZCNHpqbUJ4dFF1QmJnNkFOS1Z5cUxRNlVaU0c0Y1JvSFRZMWFxRjU2VWgxWXhOX1hHZHZJc3k5Q3pWb1MwbDdfSU1WQTRjWjZFUWlsUEZlY3NoZUI2NF9mNk1teWRSS0VCdUZ4d1VvUW5mNS1KWWtqRENUX1NKNHpCdElhSnVjZXRIcE44TDRsMkN2VUI2cnZnd08xVVE4OThudzAwT2M0cWNB?oc=5",
-      "source": "MarketWatch",
-      "source_tier": 1,
-      "published": "2026-11-27T00:31:00+00:00",
-      "importance": 68,
-      "significance": "HIGH",
-      "categories": [
-        "contract_partnership"
-      ],
-      "age_hours": 1.55,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "ba92553ed8a6d9f3",
-      "symbol": "TSM",
-      "name": "Taiwan Semiconductor",
-      "title": "Taiwan Semiconductor: The Winner of the AI Chip Revolution",
-      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNeVI0OFdmQmJqb2YyWERZWXNtbElXdjdnVmJfWWE0c0dKSElHTGx3ci1NVTlkeEJoUEJPc0NjZTVnUk9wdWd2dGhidzZpSVBTb1BiNUdHSlBZQUhBemtNcEtFOUZHOTdlSHVsQUIyUGJEeFRVMEZNeUZ3Mm5pbzhsdUVTajhnOEl2aWVMbWJJcWZMSVhWWHc?oc=5",
-      "source": "Intellectia AI",
-      "source_tier": 2,
-      "published": "2026-11-27T00:29:01+00:00",
-      "importance": 48,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 1.58,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "4e742dc2f10d4922",
-      "symbol": "SHOP",
-      "name": "Shopify",
-      "title": "Shopify Inc. tokenized stock (xStock): Funding, Investors, Team and Key Events",
-      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1oNlBjTzJRUWFLN2VxT0NUYnhiTEhUOWZlVUNCZkRGQnotdXRaWm1IOWE3SXcwNE53WlAzX1BpOElGTmx0M0lPOTQzNXlONldjNm9KVVRCbExSdG9SczczT25CdzFCM3NJNnFRenRHWQ?oc=5",
-      "source": "CryptoRank",
-      "source_tier": 2,
-      "published": "2026-11-27T00:21:59+00:00",
-      "importance": 48,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 1.7,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "5ddc4876d63af744",
-      "symbol": "AI / DATA CENTERS",
-      "name": "AI / DATA CENTERS",
-      "title": "Scottsdale eyes data center rules even as big projects stay away",
-      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxObHI2Rzd0UnY1dUpOOVRHMDZNdjNWcHBSUzdCQ0xoRHF4RktzOHpra1gwNGV0SVFnU3VqSU02bnZHTFliS0hpWVJOcjF1dTVjZGVmSlZ1NkpDcWJBNFdYZmNRN1lCdXdEWHVQZ3B6UFFSZERJeXhSYUxzeFQ4NGZvcGZhTU1iajdRTzZWcmVXTFB5M1l1aXQ5LTZSaF9WdFpmc0JIZndSU20tS3lwMmdMSnBQZGsyeWExZURqdGJuZkR1RkZr?oc=5",
-      "source": "ABC15 Arizona",
-      "source_tier": 2,
-      "published": "2026-11-27T00:15:01+00:00",
-      "importance": 66.4,
-      "categories": [
-        "data_centers_ai",
-        "capex_expansion"
-      ],
-      "age_hours": 2.75,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "e5f610c6031cc36b",
-      "symbol": "TSLA",
-      "name": "Tesla",
-      "title": "EU Pushes Tesla Driving-System Vote Back to 15 December",
-      "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQbnVJMTM1bk15RGxMNWktazlJYXZaMjVBcmI0YnhLRjI2VjZJbUhuMWIwbURpZ3NzQzh4QlRRdTJENE05bzh6UTFaLUdwQV9sMHE1ZWNDeEFjeFVPWThLbGJqa0hURVN0a2x0VzF6T2gzV21yRkYyejNQUldxbHQ5SVF5STdFZm1ONWUyU2FMZFFpZFE?oc=5",
-      "source": "Financial-News.co.uk",
-      "source_tier": 2,
-      "published": "2026-11-27T00:10:47+00:00",
-      "importance": 48,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 1.89,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "24d00ff18de45d33",
-      "symbol": "WHITE HOUSE",
-      "name": "White House",
-      "title": "Expeditious Enforcement of Capital Sentences and the Pursuit of Justice for Victims of Heinous Crimes",
-      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24236/expeditious-enforcement-of-capital-sentences-and-the-pursuit-of-justice-for-victims-of-heinous",
-      "source": "White House",
-      "source_tier": 1,
-      "published": "2026-11-27T00:00:00+00:00",
-      "importance": 88,
-      "categories": [
-        "official_authority"
-      ],
-      "age_hours": 3,
-      "detected_at": "2026-11-27T03:00:06+00:00"
-    },
-    {
-      "key": "9bf4e5eeaad46f38",
-      "symbol": "HD",
-      "name": "Home Depot",
-      "title": "Home Depot shoppers can now dodge a classic cart disaster",
-      "url": "https://www.thestreet.com/investing/stocks/home-depot-shoppers-can-now-dodge-a-classic-cart-disaster",
-      "source": "TheStreet",
-      "source_tier": 2,
-      "published": "2026-11-27T00:00:00+00:00",
-      "importance": 52.3,
-      "categories": [
-        "general"
-      ],
-      "age_hours": 3,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "NOTABLE"
-    },
-    {
-      "key": "bbe567c756409848",
-      "symbol": "FED / MACRO",
-      "name": "FED / MACRO",
-      "title": "Tokyo CPI firms in Nov, core inflation slightly misses expectations",
-      "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPR3V2VEpra1BlUk51allueVlKMzJTZTBjcm5sLUpZX2U1QUdsZmNGcGZpcjZyYUN0NWRZREstcHYzOGY1eGpCbFpEMWcyX3d3RGczWHIydTkyUHRIVmtSMDZFNEJEMGs3ai1oY2RheXRHNVVQV3lPVVZYdHVaS1BJMGtmcnN0UGJiV3hkYU1PdVRjZDBaYTNUOS1ZVGJsclB1S1RQeTBySi1tNlFKTEItTFBZa0RDVUhoMndHbnJnMW9WVTg?oc=5",
-      "source": "Investing.com",
-      "source_tier": 2,
-      "published": "2026-11-26T23:48:45+00:00",
-      "importance": 72.3,
-      "categories": [
-        "earnings_guidance"
-      ],
-      "age_hours": 3.19,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "df227283062834d3",
-      "symbol": "AMZN",
-      "name": "Amazon",
-      "title": "Amazon tried to kill Musk’s plan for 1 million AI satellites. The FCC chair scolded it and gave SpaceX the green light",
-      "url": "https://finance.yahoo.com/technology/ai/articles/amazon-tried-kill-musk-plan-233000718.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T23:30:00+00:00",
-      "importance": 74.6,
-      "categories": [
-        "data_centers_ai",
-        "capex_expansion"
-      ],
-      "age_hours": 3.5,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "e6b3e0fa3bd448a6",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Jensen Huang: How the Nvidia scandal exposed the risks of Asia's big AI bet",
-      "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE41YlVGc1JsY3A2MEFYRnFreHZKNVJDdk9SdXE2Uy1DdzA5RWdNLVFPeU5fTC1TNXZWUXUwRUFienowR1VUNU9TV3NPTWtNbFlGeTZvSlJPWW1zUzNLY1E?oc=5",
-      "source": "BBC",
-      "source_tier": 1,
-      "published": "2026-11-26T23:08:12+00:00",
-      "importance": 61.8,
-      "categories": [
-        "general"
-      ],
-      "age_hours": 3.87,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "1794c008850a4b1c",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "Why Trump’s Trade War May Benefit Canada in the Long Run",
-      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPUUpCVmZTdFlpRHVKQUMtR3VjUXRxUXprOFlFanpJa0xrY1FqRGVnMjlnOG00TkhVdmt1elBLUmJ5dUZGMVNnV0FsUlJnS3lHdlFkYWROWGktUjVTT19fZVV1NFp5eEhXdlU0NWtOLXpQakdnYXlyRXlMUWVwMTFFX0laeVl1MXNyaUJSU0VKaFdVcVpNTHVUWHB1T3RrTURDN3JmelRYTHR6cXc?oc=5",
-      "source": "Bloomberg.com",
-      "source_tier": 1,
-      "published": "2026-11-26T22:22:43+00:00",
-      "importance": 93.3,
-      "categories": [
-        "policy_geopolitics"
-      ],
-      "age_hours": 4.62,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "f1769cfa8f4fd838",
-      "symbol": "ORCL",
-      "name": "Oracle",
-      "title": "‘Room to Spare,’ Says Investor About Oracle Stock",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/room-spare-says-investor-oracle-215243159.html",
-      "source": "TipRanks",
-      "source_tier": 3,
-      "published": "2026-11-26T21:52:43+00:00",
-      "importance": 66.6,
-      "categories": [
-        "contract_partnership",
-        "data_centers_ai",
-        "capex_expansion"
-      ],
-      "age_hours": 5.12,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "867c8ab46d6cf65b",
-      "symbol": "AI / DATA CENTERS",
-      "name": "AI / DATA CENTERS",
-      "title": "Japan's JERA aims to build Anthropic, Meta data centers near power plants",
-      "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPN0FKWlltSXhpMTdpTnRja2JXb3VyWlBnVG9ITFA3YnRiN0lYMzYwNE1vMmF0WEZzLTJyM09jMnVoZks4alExa09oUTA5ZnZLYzl4UllpZjBiWHFuazQ4WkFhUGw1SC1nRGNRQUpoZ25sUFMzQ25EckVCSWZCdWJMVmhfR0s0dlBxSUZwYjdyVUUzN1ppbzBDLWw2eEszQUE0NWNKZ0hicF9oVzlmaXFVXzNtR1FVdlBmalNIOU4xZDRLUXp5bFQ0MnZYdWFwR3lRWWF1LUhDTQ?oc=5",
-      "source": "Nikkei Asia",
-      "source_tier": 1,
-      "published": "2026-11-26T21:51:00+00:00",
-      "importance": 98.7,
-      "categories": [
-        "data_centers_ai",
-        "capex_expansion"
-      ],
-      "age_hours": 5.15,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "520ff5554cd46a07",
-      "symbol": "AVGO",
-      "name": "Broadcom",
-      "title": "Goldman Sachs resets Broadcom's 12-month price target before earnings",
-      "url": "https://www.thestreet.com/investing/stocks/avgo-broadcom-stock-goldman-sachs-resets-avgo-stock-12-month-price-target-before-earnings",
-      "source": "TheStreet",
-      "source_tier": 2,
-      "published": "2026-11-26T19:33:15+00:00",
-      "importance": 100,
-      "categories": [
-        "earnings_guidance",
-        "analyst",
-        "data_centers_ai"
-      ],
-      "age_hours": 0.18,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "a948bc8b38de622f",
-      "symbol": "DELL",
-      "name": "Dell Technologies",
-      "title": "BofA resets Dell stock price target by $100 after record earnings",
-      "url": "https://www.thestreet.com/investing/stocks/dell-dell-technologies-bank-of-america-resets-dell-stock-price-target-by-100-after-record-q3-earnings",
-      "source": "TheStreet",
-      "source_tier": 2,
-      "published": "2026-11-26T19:03:00+00:00",
-      "importance": 100,
-      "categories": [
-        "earnings_guidance",
-        "analyst"
-      ],
-      "age_hours": 0.68,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "ce8e09bb49a75c89",
-      "symbol": "AMZN",
-      "name": "Amazon",
-      "title": "Goldman Sachs sends strong signal on Amazon stock before Black Friday",
-      "url": "https://www.thestreet.com/investing/stocks/goldman-sachs-amazon-stock-370-target",
-      "source": "TheStreet",
-      "source_tier": 2,
-      "published": "2026-11-26T18:17:00+00:00",
-      "importance": 100,
-      "categories": [
-        "earnings_guidance",
-        "analyst"
-      ],
-      "age_hours": 1.45,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "802ccd6123b348cd",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Nvidia chip buyers told to rule out Chinese renters to purchase GPUs, sources say",
-      "url": "https://www.cnbc.com/2026/11/26/neoclouds-nvidia-china-ai.html",
-      "source": "CNBC Tech",
-      "source_tier": 1,
-      "published": "2026-11-26T17:04:54+00:00",
-      "importance": 65.2,
-      "categories": [
-        "product_tech"
-      ],
-      "age_hours": 2.65,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "a17207fcddff519d",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Buyer beware? Nvidia's volatile swings expose risks of single-stock ETFs",
-      "url": "https://www.cnbc.com/2026/11/26/nvidias-volatile-swings-expose-risks-of-single-stock-etfs.html",
-      "source": "CNBC",
-      "source_tier": 1,
-      "published": "2026-11-26T16:00:01+00:00",
-      "importance": 64,
-      "categories": [
-        "management"
-      ],
-      "age_hours": 3.73,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "80c2294cad51b675",
-      "symbol": "BAC",
-      "name": "Bank of America",
-      "title": "Spain’s Pablo Hernández de Cos set to lead European Central Bank",
-      "url": "https://www.cnbc.com/2026/11/26/pablo-hernandez-de-cos-ecb-president.html",
-      "source": "CNBC Economy",
-      "source_tier": 1,
-      "published": "2026-11-26T15:28:26+00:00",
-      "importance": 61.4,
-      "categories": [
-        "general"
-      ],
-      "age_hours": 4.26,
-      "detected_at": "2026-11-26T19:44:04+00:00",
       "significance": "HIGH"
     }
   ]
