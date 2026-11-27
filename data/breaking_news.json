@@ -1,8 +1,445 @@
 {
-  "updated_at": "2026-11-27T02:03:56+00:00",
-  "min_importance": 42,
-  "max_age_hours": 4,
+  "updated_at": "2026-11-27T03:00:06+00:00",
+  "min_importance": 35.0,
+  "max_age_hours": 6.0,
   "items": [
+    {
+      "key": "24d00ff18de45d33",
+      "symbol": "WHITE HOUSE",
+      "name": "White House",
+      "title": "Expeditious Enforcement of Capital Sentences and the Pursuit of Justice for Victims of Heinous Crimes",
+      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24236/expeditious-enforcement-of-capital-sentences-and-the-pursuit-of-justice-for-victims-of-heinous",
+      "source": "White House",
+      "source_tier": 1,
+      "published": "2026-11-27T00:00:00+00:00",
+      "importance": 88.0,
+      "categories": [
+        "official_authority"
+      ],
+      "age_hours": 3.0,
+      "detected_at": "2026-11-27T03:00:06+00:00"
+    },
+    {
+      "key": "97717a9976a8ebde",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Trump Says Huang Is Excited About His ‘Second Term’ at Nvidia",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/trump-says-huang-excited-second-003925008.html",
+      "source": "Bloomberg",
+      "source_tier": 1,
+      "published": "2026-11-27T00:39:25+00:00",
+      "importance": 63.4,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 2.34,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "1a70674c1619c9f6",
+      "symbol": "MACRO",
+      "name": "MACRO",
+      "title": "China industrial profits growth surges to a 5-month high of 20.1% in October",
+      "url": "https://www.cnbc.com/2026/11/27/china-industrial-profits-october.html",
+      "source": "CNBC Economy",
+      "source_tier": 1,
+      "published": "2026-11-27T02:04:09+00:00",
+      "importance": 61.6,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.93,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "352637f81bf1bc24",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "The Savvy Showmanship That Helps Jensen Huang Always Come Out on Top",
+      "url": "https://www.wsj.com/business/jensen-huang-nvidia-ping-pong-rise-and-fall-bfd13000?siteid=yhoof2&yptr=yahoo",
+      "source": "The Wall Street Journal",
+      "source_tier": 1,
+      "published": "2026-11-27T02:00:00+00:00",
+      "importance": 41.1,
+      "categories": [
+        "management"
+      ],
+      "age_hours": 1.0,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "81d4c1dfe0e3d4a8",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Trump says Wednesday's market had him briefly 'concerned' before stocks recovered",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/trump-says-wednesdays-market-had-002533115.html",
+      "source": "Reuters",
+      "source_tier": 1,
+      "published": "2026-11-27T00:25:33+00:00",
+      "importance": 40.0,
+      "categories": [
+        "management"
+      ],
+      "age_hours": 2.58,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "0b4562c90fa9615e",
+      "symbol": "MRVL",
+      "name": "Marvell Technology",
+      "title": "Credo Technology Group Holding (CRDO) Could Be 50% Below Fair Value After Marvell Settlement",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/credo-technology-group-holding-crdo-012531407.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T01:25:31+00:00",
+      "importance": 99.6,
+      "categories": [
+        "earnings_guidance",
+        "regulatory_legal"
+      ],
+      "age_hours": 1.58,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "df227283062834d3",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "Amazon tried to kill Musk’s plan for 1 million AI satellites. The FCC chair scolded it and gave SpaceX the green light",
+      "url": "https://finance.yahoo.com/technology/ai/articles/amazon-tried-kill-musk-plan-233000718.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-26T23:30:00+00:00",
+      "importance": 74.6,
+      "categories": [
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 3.5,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "7984796de06a2400",
+      "symbol": "GOOGL",
+      "name": "Alphabet",
+      "title": "‘How Can TSLA Compete With Waymo?’ Gary Black Questions Tesla’s Robotaxi Strategy, Predicts Waymo Will Lead in Miles and Trips",
+      "url": "https://finance.yahoo.com/technology/articles/tsla-compete-waymo-gary-black-013007370.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T01:30:07+00:00",
+      "importance": 62.2,
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 1.5,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "cf2e316931df4045",
+      "symbol": "WMT",
+      "name": "Walmart",
+      "title": "When Walmart, Target, Costco, and other major retailers open on Black Friday",
+      "url": "https://www.thestreet.com/retail/when-walmart-target-costco-and-other-major-retailers-open-on-black-friday",
+      "source": "TheStreet",
+      "source_tier": 2,
+      "published": "2026-11-27T00:37:00+00:00",
+      "importance": 52.8,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 2.39,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "9bf4e5eeaad46f38",
+      "symbol": "HD",
+      "name": "Home Depot",
+      "title": "Home Depot shoppers can now dodge a classic cart disaster",
+      "url": "https://www.thestreet.com/investing/stocks/home-depot-shoppers-can-now-dodge-a-classic-cart-disaster",
+      "source": "TheStreet",
+      "source_tier": 2,
+      "published": "2026-11-27T00:00:00+00:00",
+      "importance": 52.3,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 3.0,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "f1769cfa8f4fd838",
+      "symbol": "ORCL",
+      "name": "Oracle",
+      "title": "‘Room to Spare,’ Says Investor About Oracle Stock",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/room-spare-says-investor-oracle-215243159.html",
+      "source": "TipRanks",
+      "source_tier": 3,
+      "published": "2026-11-26T21:52:43+00:00",
+      "importance": 66.6,
+      "categories": [
+        "contract_partnership",
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 5.12,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "867c8ab46d6cf65b",
+      "symbol": "AI / DATA CENTERS",
+      "name": "AI / DATA CENTERS",
+      "title": "Japan's JERA aims to build Anthropic, Meta data centers near power plants",
+      "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPN0FKWlltSXhpMTdpTnRja2JXb3VyWlBnVG9ITFA3YnRiN0lYMzYwNE1vMmF0WEZzLTJyM09jMnVoZks4alExa09oUTA5ZnZLYzl4UllpZjBiWHFuazQ4WkFhUGw1SC1nRGNRQUpoZ25sUFMzQ25EckVCSWZCdWJMVmhfR0s0dlBxSUZwYjdyVUUzN1ppbzBDLWw2eEszQUE0NWNKZ0hicF9oVzlmaXFVXzNtR1FVdlBmalNIOU4xZDRLUXp5bFQ0MnZYdWFwR3lRWWF1LUhDTQ?oc=5",
+      "source": "Nikkei Asia",
+      "source_tier": 1,
+      "published": "2026-11-26T21:51:00+00:00",
+      "importance": 98.7,
+      "categories": [
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 5.15,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "1794c008850a4b1c",
+      "symbol": "TRADE / TARIFFS",
+      "name": "TRADE / TARIFFS",
+      "title": "Why Trump’s Trade War May Benefit Canada in the Long Run",
+      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPUUpCVmZTdFlpRHVKQUMtR3VjUXRxUXprOFlFanpJa0xrY1FqRGVnMjlnOG00TkhVdmt1elBLUmJ5dUZGMVNnV0FsUlJnS3lHdlFkYWROWGktUjVTT19fZVV1NFp5eEhXdlU0NWtOLXpQakdnYXlyRXlMUWVwMTFFX0laeVl1MXNyaUJSU0VKaFdVcVpNTHVUWHB1T3RrTURDN3JmelRYTHR6cXc?oc=5",
+      "source": "Bloomberg.com",
+      "source_tier": 1,
+      "published": "2026-11-26T22:22:43+00:00",
+      "importance": 93.3,
+      "categories": [
+        "policy_geopolitics"
+      ],
+      "age_hours": 4.62,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "19b88e4edc50d396",
+      "symbol": "TRADE / TARIFFS",
+      "name": "TRADE / TARIFFS",
+      "title": "Two Years After Trump’s Tariff Declaration, Canada Tries to Move On",
+      "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOaWdwNl9jTnFFSS10Z3BXNVZOWjR6N3ItM3d4MHhIcXZ1TGtyQS03UUV4a0FuYVdMd3FaZ0VVQ09QUTl6d3RDU1RJQW1fcVM3aGZMWURHanZmN3BQanNhT1FVa3Fwb0pUYmtmb3poMm5ZZ0gwelVieGVOQUozVHlXYlkxV1Q4azV5MlNfbEw1T1lSbnFyNndwNjlWUDVBWGFjZkZiUVJLY1dRcU9PU1QwQUZ4V2lnZ3IwNTNGcXMwQldueE5fVWc?oc=5",
+      "source": "Bloomberg.com",
+      "source_tier": 1,
+      "published": "2026-11-27T02:52:48+00:00",
+      "importance": 89.5,
+      "categories": [
+        "policy_geopolitics",
+        "regulatory_legal"
+      ],
+      "age_hours": 0.12,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "f27d22e018011a6a",
+      "symbol": "TRADE / TARIFFS",
+      "name": "TRADE / TARIFFS",
+      "title": "Trump’s Latest Tariffs Undercut the ‘China Plus One’ Idea",
+      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQRlZxT2c1ekdQZ3lIOXg3OW1kakF5bnFLMHhYLWluR2EyVUlvSGc0R2d4TmgzSUsyTlRWdVo4M0NLdTU5YmpDbnNWOEpIQWtGSE1ORFhuZE0xaTFYQ3pFR0JmR1ozMnFZc3lyZ0Y2T3dRckRIWE51ZjhnODR5cVlzSFJDaXlmNVpzOUd0TXZBQlJHZ1JSNU5CeG5ZdG9lTEJCTmZQQlZQcFVEWGI3c0E?oc=5",
+      "source": "Bloomberg.com",
+      "source_tier": 1,
+      "published": "2026-11-27T01:31:56+00:00",
+      "importance": 87.9,
+      "categories": [
+        "policy_geopolitics",
+        "regulatory_legal"
+      ],
+      "age_hours": 1.47,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "92ec3e014329754b",
+      "symbol": "FED / MACRO",
+      "name": "FED / MACRO",
+      "title": "Tokyo's core CPI hits 2.9%, strengthening case for BOJ rate hike in December",
+      "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxORXF6Y1p2eVk5b2VSa2hNQVAyeFV2Y19SRFVteHd6elhlcUs2Umt4Y1dNaVdZeXBfX3BMY3NLVW5kc1lfRFlWWFZWb0ZBdUVsUExSZjRVX0h4d29JVmktaURkS1FoTWdfQ2JJeVFGY2Flb05SNkZnR08wRlBzdzVCNG9Zd2ppWjk2NFFnSld3bExsbHp0WlRSRk9rdm8xemFVUjdPNkE1UzBsamY1RFM2QmhDR0JuRG9XZzBaZm9rTdIBxAFBVV95cUxNWmZGQUdhaHJhY0YtR3NFcmtMeV9mNmNyNjFhdlVEclJDRC14Y0JfR0xZQVZZZnl5MXEtNWstQW83VGdFdEU4VDhoXzU5ZW10VFdzcjExOEtsZXRaOHdXM1ZtZmNrLW12TWozNjQwX25ENzJqQ0dwMjlNV0k2UTlHbnJrdFYtQzJIS0pnbUl4U2x1QmpQc2lZajh2Tld6Y3lsYUdER1VVNmgxOXl5X184YkFweDA2LWNzOWxVNHZ6TVM3QndD?oc=5",
+      "source": "CNBC TV18",
+      "source_tier": 1,
+      "published": "2026-11-27T01:49:51+00:00",
+      "importance": 72.1,
+      "categories": [
+        "policy_geopolitics"
+      ],
+      "age_hours": 1.17,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "e6b3e0fa3bd448a6",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Jensen Huang: How the Nvidia scandal exposed the risks of Asia's big AI bet",
+      "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE41YlVGc1JsY3A2MEFYRnFreHZKNVJDdk9SdXE2Uy1DdzA5RWdNLVFPeU5fTC1TNXZWUXUwRUFienowR1VUNU9TV3NPTWtNbFlGeTZvSlJPWW1zUzNLY1E?oc=5",
+      "source": "BBC",
+      "source_tier": 1,
+      "published": "2026-11-26T23:08:12+00:00",
+      "importance": 61.8,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 3.87,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "9a7bcb04d1f12d50",
+      "symbol": "AI / DATA CENTERS",
+      "name": "AI / DATA CENTERS",
+      "title": "U.S. AI chip curbs stall billions in Asia data center deals, Bloomberg reports",
+      "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxOM1h5aHdjN0IxNmd1VUJYb3dvZ3hxT053OEhFU1JBTm1qSEJkcjhEbnpDdDVMbThBYnRzYUJSUjJTOGJxdWFubW45WHYwWXJVa2k4RWloR3JWRjZybUR4S2VBVWtpbVVfMTlVRVlOV29HZm1QT2lBOE5XMnIta3Y3RVdHcEN2WjVvZ0lhYVRkS1pCcGJhX3NVM2FRSFBqOGd0RGEwN0F5bmt6cHpNa1RkN3RJaFQxM3o1NmhMeXRhSG54UUtjODZRbmlnT1E?oc=5",
+      "source": "Investing.com",
+      "source_tier": 2,
+      "published": "2026-11-27T02:38:23+00:00",
+      "importance": 94.7,
+      "categories": [
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 0.36,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "0a2cd8b8904fbab7",
+      "symbol": "CCJ",
+      "name": "Cameco",
+      "title": "Cameco Corp. stock rises Thursday, outperforms market",
+      "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQdlY5ak54OTk1LWFOX0pKTGdVeV9zby1PaDIyeU1EWGhENVVFYlh4Vi1QWTBtcDBycURnN1lKOHVzWXptUXhpbk5ZNzEtXzAyazF5SkZ6WUNSSmNuWXViZ0ZkYjJrMVZKdkpRb3dyU0hkU2UzWVVnLWdhU19Da3NOZE91UHp4R1JkNURMMlJ6YkR2RHJ2MEVEdEZZMWRfcWRfby1rbC1hdzBjZTZzbU5lcld3aGZUaURXV1ZKT0d6YmVDR3l1azBMNA?oc=5",
+      "source": "MarketWatch",
+      "source_tier": 2,
+      "published": "2026-11-26T21:31:00+00:00",
+      "importance": 81.3,
+      "categories": [
+        "analyst",
+        "supply_chain_producers",
+        "market_move"
+      ],
+      "age_hours": 5.49,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "11e674d2789fb482",
+      "symbol": "WPM",
+      "name": "Wheaton Precious Metals",
+      "title": "Wheaton Precious Metals Corp. stock rises Thursday, outperforms market",
+      "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQRm1XX0VVenhHa3BlSUt3SkVYamVLOXJIZGwyTm42V2xYUE9tenZuTG1RbUJfcHlsejBPVndadEdtTzNXRnZjOWtrbVBSS2FwRDFJZmJwVGdxODJ3bXZwQ2tXMnVjZ2F3b3VTT3h0VElUNm1PclV6b1dBTzlKRk1VQ21PZUgxcC0xVm5sSlpGajBWQWVPdk4tRXBMcUxvOWZid0pRYXRsdTNGYjlfLUY0WlRIQjlvMUJEWlZ1Ty1ZbjJBT1hBcXM5b3RCTGdEWHBEdnhMU3BNeVhXNjBMNEVZ?oc=5",
+      "source": "MarketWatch",
+      "source_tier": 2,
+      "published": "2026-11-26T21:36:00+00:00",
+      "importance": 78.4,
+      "categories": [
+        "analyst",
+        "market_move"
+      ],
+      "age_hours": 5.4,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "7b34632d9b3a7bb1",
+      "symbol": "FNV",
+      "name": "Franco-Nevada",
+      "title": "Franco-Nevada Corp. stock rises Thursday, outperforms market",
+      "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQWEh4TjJiWEpmV1VVc1NSRkdYOE9sSEx5blkzS1htNmlwNlFuZGdfbGFBeEtINzZZRmlJb1BIU3Vrd3FZVnhJc0ZDYXd4Ykktcl82MlRfMF82YzEtS0w2VzFRZWY5OXVzaVI1WFdpS3pjQXJfSFNOUWRnbHl6R3RxQzY2TWFQY1Jzd1BZQ3h2YnVsaUU1N1FSeHloNFFBYkJ3WnVoRDRYSTM4WlZuUWdHSFV2ekNEQ3Fwc2hOZlgzMmhkd1ZJdEJxMGkzNGc5UVBFbFE?oc=5",
+      "source": "MarketWatch",
+      "source_tier": 2,
+      "published": "2026-11-26T21:32:00+00:00",
+      "importance": 78.3,
+      "categories": [
+        "analyst",
+        "market_move"
+      ],
+      "age_hours": 5.47,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "bbe567c756409848",
+      "symbol": "FED / MACRO",
+      "name": "FED / MACRO",
+      "title": "Tokyo CPI firms in Nov, core inflation slightly misses expectations",
+      "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPR3V2VEpra1BlUk51allueVlKMzJTZTBjcm5sLUpZX2U1QUdsZmNGcGZpcjZyYUN0NWRZREstcHYzOGY1eGpCbFpEMWcyX3d3RGczWHIydTkyUHRIVmtSMDZFNEJEMGs3ai1oY2RheXRHNVVQV3lPVVZYdHVaS1BJMGtmcnN0UGJiV3hkYU1PdVRjZDBaYTNUOS1ZVGJsclB1S1RQeTBySi1tNlFKTEItTFBZa0RDVUhoMndHbnJnMW9WVTg?oc=5",
+      "source": "Investing.com",
+      "source_tier": 2,
+      "published": "2026-11-26T23:48:45+00:00",
+      "importance": 72.3,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 3.19,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "650eda238bf5322a",
+      "symbol": "WMT",
+      "name": "Walmart",
+      "title": "Walmart (WMT) Stock Gets Fair Value Boost After Q3 Price Target Increases",
+      "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQY0paY2tGbzVENWJJNVFrZWpPc1FqNmF1c1FGejR3R04wWDJpVV9VZUphbnA4NkFHeGNVWXVvMWdCaS1aTGRBd3VYNWtyTVk2aTBhSnBpcTIteGVUQjNsM2gzcUgzaUJtbVduOUJRUlJzLUdCVGpwbzF5d1AwbHIybUtfN3NTV19sUDdIcUVsTDJqdlN5d0ZB?oc=5",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T02:15:00+00:00",
+      "importance": 71.7,
+      "categories": [
+        "analyst"
+      ],
+      "age_hours": 0.75,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "9547a842523b332f",
+      "symbol": "COIN",
+      "name": "Coinbase Global",
+      "title": "Coinbase (COIN) Stock Sees Modest Fair Value Cut As Analyst Views Stay Split",
+      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNbzdvdzVNdm95U2R2SGxwc0RQODJMbUR4R0c4TG9qNHRhSkFBRDNZLW9xaTBxeHB5Qmo0dFJTS3RTeXlScG0wRlBOMUFLdU9qT3dQSnFsWlNMdXZ6X1BkNTQtUjkwTHh6Q1AyQ3lRUXdGWXVGYk1VdmR3QmsxTkpSU1Q3Rm9wWWI1UUU5VEN2RTNMZkE4OVQ4LWF1V2g?oc=5",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T01:25:00+00:00",
+      "importance": 70.6,
+      "categories": [
+        "analyst"
+      ],
+      "age_hours": 1.59,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "5ddc4876d63af744",
+      "symbol": "AI / DATA CENTERS",
+      "name": "AI / DATA CENTERS",
+      "title": "Scottsdale eyes data center rules even as big projects stay away",
+      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxObHI2Rzd0UnY1dUpOOVRHMDZNdjNWcHBSUzdCQ0xoRHF4RktzOHpra1gwNGV0SVFnU3VqSU02bnZHTFliS0hpWVJOcjF1dTVjZGVmSlZ1NkpDcWJBNFdYZmNRN1lCdXdEWHVQZ3B6UFFSZERJeXhSYUxzeFQ4NGZvcGZhTU1iajdRTzZWcmVXTFB5M1l1aXQ5LTZSaF9WdFpmc0JIZndSU20tS3lwMmdMSnBQZGsyeWExZURqdGJuZkR1RkZr?oc=5",
+      "source": "ABC15 Arizona",
+      "source_tier": 2,
+      "published": "2026-11-27T00:15:01+00:00",
+      "importance": 66.4,
+      "categories": [
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 2.75,
+      "detected_at": "2026-11-27T03:00:06+00:00",
+      "significance": "HIGH"
+    },
     {
       "key": "bc0521210f3f3c34",
       "symbol": "NVDA",
@@ -610,779 +1047,6 @@
       ],
       "age_hours": 1.86,
       "detected_at": "2026-11-26T18:57:04+00:00"
-    },
-    {
-      "key": "dd5dd9039945b0b2",
-      "symbol": "META",
-      "name": "Meta Platforms",
-      "title": "Meta Platforms’ (META) Surging Capex Pressures Free Cash Flow Amid Monetization Debates",
-      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPOXhVeHBHOXRsaEhnRENYTW55cnV5LUlHY3UxRU56Si00T2I0X1ZMMEdjTzk5ZGxRMUR2VHAzdXBlcVYxS1RqRVRaSDc1czh2OU9aT0Rwd1lEX3FmU1ZpMy1BVFREZWFQU0gtemRLckUtQndFa0JkVFRwN0lvWmVhSHZTZlNHRHVkenprYjlSVjhnY3E0clJsRlliZ0wzbnc?oc=5",
-      "source": "Yahoo Finance",
-      "source_tier": 1,
-      "published": "2026-11-26T16:59:27+00:00",
-      "importance": 68.0,
-      "significance": "HIGH",
-      "categories": [
-        "data_centers_ai"
-      ],
-      "age_hours": 1.96,
-      "detected_at": "2026-11-26T18:57:04+00:00"
-    },
-    {
-      "key": "a99a1eb783e425e0",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "Watch Trump’s China Tariffs Threaten Fresh Trade Tensions",
-      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOaGdtSnItLVVFWENtbHltMDdEVGNkZkUtOTcwZzdwMm4yQlVURHhSVEVqQWMzb3dlZGNQVUJibHFiOWtweDVCV2xZQi1JYVUxVjh4ODhuSU5LMlVUTkhHMEZCLWg1Q3NYdm8zSHlzNG1zdUxCRTFzU0Q1NDNyUndGeGR5bWpMS0Q5ZXpMLUVkVGRFcWwyQnZxZjJKUGc?oc=5",
-      "source": "Bloomberg.com",
-      "source_tier": 1,
-      "published": "2026-11-26T12:24:29+00:00",
-      "importance": 100.0,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal"
-      ],
-      "age_hours": 0.96,
-      "detected_at": "2026-11-26T13:21:58+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "ba849ecc8c3572ff",
-      "symbol": "AAPL",
-      "name": "Apple",
-      "title": "Apple pulls MiniMax AI chatbot from App Store over child safety concerns",
-      "url": "https://finance.yahoo.com/news/apple-pulls-minimax-ai-chatbot-051333389.html",
-      "source": "Reuters",
-      "source_tier": 1,
-      "published": "2026-11-26T05:13:33+00:00",
-      "importance": 61.2,
-      "categories": [
-        "general"
-      ],
-      "age_hours": 4.49,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "5da933927fdc09b3",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Nvidia stops shipping AI servers to 4 Southeast Asian countries- FT",
-      "url": "https://finance.yahoo.com/technology/ai/articles/nvidia-stops-shipping-ai-servers-062916311.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T06:29:16+00:00",
-      "importance": 84.3,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal",
-        "incident"
-      ],
-      "age_hours": 3.23,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "afdcb2ca1fac41c3",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Nvidia halts chip exports to south-east Asia after US crackdown",
-      "url": "https://uk.finance.yahoo.com/news/nvidia-halts-chip-exports-south-091719498.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T09:17:19+00:00",
-      "importance": 63.3,
-      "categories": [
-        "incident"
-      ],
-      "age_hours": 0.43,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "a4b7648ae58c4395",
-      "symbol": "AMZN",
-      "name": "Amazon",
-      "title": "MegazoneCloud Launches Its Amazon Quick Center of Excellence to Turn Enterprise Data Into Autonomous Action",
-      "url": "https://finance.yahoo.com/technology/ai/articles/megazonecloud-launches-amazon-quick-center-042800157.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T04:28:00+00:00",
-      "importance": 61.4,
-      "categories": [
-        "product_tech",
-        "management"
-      ],
-      "age_hours": 5.25,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "b26efe21f56735c9",
-      "symbol": "WMT",
-      "name": "Walmart",
-      "title": "Walmart (WMT) Brings Direct AI Shopping And a 3,000 Store Beauty Box Launch",
-      "url": "https://finance.yahoo.com/technology/ai/articles/walmart-wmt-brings-direct-ai-091223863.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T09:12:23+00:00",
-      "importance": 56.7,
-      "categories": [
-        "product_tech"
-      ],
-      "age_hours": 0.51,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "7f8162308bce7c3c",
-      "symbol": "MU",
-      "name": "Micron Technology",
-      "title": "Micron faces Taiwan uncertainty as labor dispute threatens expansion, report warns",
-      "url": "https://finance.yahoo.com/technology/articles/micron-faces-taiwan-uncertainty-labor-055543451.html",
-      "source": "Investing.com",
-      "source_tier": 2,
-      "published": "2026-11-26T05:55:43+00:00",
-      "importance": 55.7,
-      "categories": [
-        "capex_expansion"
-      ],
-      "age_hours": 3.79,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "NOTABLE"
-    },
-    {
-      "key": "43f01141d98cd5fc",
-      "symbol": "MRK",
-      "name": "Merck & Co",
-      "title": "HLTH 2026: Merck's Isabel Brown on Impact of Representation in Clinical Trials",
-      "url": "https://finance.yahoo.com/video/hlth-2026-mercks-isabel-brown-035412996.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T03:54:12+00:00",
-      "importance": 49.9,
-      "categories": [
-        "general"
-      ],
-      "age_hours": 5.81,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "NOTABLE"
-    },
-    {
-      "key": "52ad20cdc615312e",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "Trump Riles Trade Partners With Tariffs That Undercut ‘China+1’",
-      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNalFybkwxanpDZHdLeGlnSHN6dTBsUnoxS0Zrc3FjaDJ1ZDhGS3Y4Y09qRnNEMmhMazJfeXRlMVdnNy1RM2RoenR0VDlCOWpfZTdWME5pY19lcFlkbzIzUDgwYkN0RXVlcTRET0dEMGNpUnFUcnhkUDQ0a1dzZGpzaXByMnRvTGFMQlZZRVlMOHlBdDRfNUV2VlBPZklRdmFyeTZRWC1lZGdGX1R4MmdGRU1R?oc=5",
-      "source": "Bloomberg.com",
-      "source_tier": 1,
-      "published": "2026-11-26T08:05:24+00:00",
-      "importance": 100.0,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal",
-        "contract_partnership"
-      ],
-      "age_hours": 1.63,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "ee86bc8f44c60ba9",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "US Tariff Proposal Raises Stakes for India to Clinch Trade Deal",
-      "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPZC1kOEEtUUhWWU96b1c0clRmTmk4NWFhaG9nQklwWTIzdHEzN3ZJZk5YSGpqM0ttY3NLb2xlWnFFXzcxQU5sR0NnNGhVakxjclBtTzR5V1JUSlliNnNoSGlQS1AwLTYzUWM4ZGtpbjk2aUc1bzh1cnpuSkVDOWNPYmdIc1czaDhfMFEyX3BQQVVZWkxvT3RIY1l2ZXlLRi1FWHVmaENuZzlqejBNbm5LN2hEOXQ?oc=5",
-      "source": "Bloomberg.com",
-      "source_tier": 1,
-      "published": "2026-11-26T04:55:00+00:00",
-      "importance": 100.0,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal"
-      ],
-      "age_hours": 4.8,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "1dfa04b000b0d4c2",
-      "symbol": "GOLD / SILVER / METALS",
-      "name": "GOLD / SILVER / METALS",
-      "title": "Gold Edges Lower as US Inflation Data Fuels Bets for Rate Hikes",
-      "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNWk5iY21FejJMUDVfS2h4ekdoUnQ1RndSalFWS2pkZzJZY1AwSXRnY1otVEdsMUdRVWZJV0NKSUxEM3Boc2VlQXNMMWkweGxJSWVGaFJHcC1qWTk0WTdIbXR0Z3VNQ2N2R054YXZMa1I2eVk4RjU5T09FelF5ZC1KdGJRYnV5bFdvMjJoRzBpMjNoUDkzMDJiTmdvejdOMF85Vy1JZU16eEI1M3VzVlBNa0RyMjk?oc=5",
-      "source": "Bloomberg.com",
-      "source_tier": 1,
-      "published": "2026-11-26T06:56:00+00:00",
-      "importance": 95.7,
-      "categories": [
-        "policy_geopolitics"
-      ],
-      "age_hours": 2.78,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "79aa32b08ceb7cc3",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "China hits back at Trump tariff threat",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOOXdLemg3R0M0SkVKVUhMZHdsQmN0X2t0Tk9lYWY4RzFuYzhWUFFxVHQ0WUxkMDhnQTB4dEhoZDJvQ0gzUmhmelROQmRlS2kxdUpXTkI0TkxFM0pVMElQWlE4RmY2UE1UZjQyLUNtdmVJT3k5OE1xOXJvaURWU1hjZmN5anY?oc=5",
-      "source": "Financial Times",
-      "source_tier": 1,
-      "published": "2026-11-26T08:19:05+00:00",
-      "importance": 87.9,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal"
-      ],
-      "age_hours": 1.4,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "aec03bf517f54cee",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "US Partners Respond to Tariffs With Anger, Protest and Diplomacy",
-      "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPSkF3aC1sbjRDck0zelpqaHVfa29acDJvY3VITko0eWJjaFJaQndUREJXUmhZb3ZDZm14YmRVZDFOV2JZUF9YNW9xVF9lOHVSTFVQWVBQRGpSQy1STi1Pa1EtTW9vQVRmUmNPQm9wdDJLcmNSRlB5MEhLak5VaGpEWVhNVThvNUZIQnVYa2VDa0ZyMHBtLUx5REVTUmRySm9WU3BwMm5VWTRtRjdXRVZOYWk5NDc?oc=5",
-      "source": "Bloomberg.com",
-      "source_tier": 1,
-      "published": "2026-11-26T08:16:17+00:00",
-      "importance": 87.9,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal"
-      ],
-      "age_hours": 1.45,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "553676e0989f13f6",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "Asia rejects basis of new Trump tariffs as US gathers China ammunition",
-      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNWTdlU2lyQ1Q2c0lSWERfaE9nM3ZHUDlYaldoRGNJWERpNm5HTTNVNTJJRjBTOTRXcFNUV3MzR2RLSDZKR3ZsUnFFY1ZOMXYtUXRpbnZPc1VvTFRuSktXOUJlZWJOOVhYajBSbGt1bEtQT0dPWDFNLUIxVzN5NHNaSWVOUGJhZGdpS0RUQVphSm9JNjEwSDBaWk9HSlFlTDU4c0Z3WnZGdXU1bnYyZ1MxZmE5c3FfN3dfOEg5c3pSM0tWZnNh?oc=5",
-      "source": "Nikkei Asia",
-      "source_tier": 1,
-      "published": "2026-11-26T07:28:00+00:00",
-      "importance": 86.9,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal"
-      ],
-      "age_hours": 2.25,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "80a81274425db42c",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "Trump Aims to Keep Leverage Over Xi With 40% China Tariff Threat",
-      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNcTVMWExHUXNZQS1TWHdON1BLSjgydFhicUlOeWo0dXZ4cVBxYm4zUk9ydG5YXy1oNlVNMDB4TlU1ZjRoaDdGMlJieE5XSlJsenNFZ3ZDWGtvVEt0V0IyaGNwRnYyRGNJdXlBaGs0MEdsUjhPZ1FwNFV2NlVfZ21Ldk9DLTk3Wk1lWF9FenVEZHdselN5X2ktUHItdUpMZVM4eldXMnNiM2pqWExNMUotWGdjYw?oc=5",
-      "source": "Bloomberg.com",
-      "source_tier": 1,
-      "published": "2026-11-26T05:23:00+00:00",
-      "importance": 84.5,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal"
-      ],
-      "age_hours": 4.33,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "798aa7001be8b3fb",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "How Trump’s latest tariff moves hand India an edge over rival Asian exporters",
-      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTFBCNEVmNUhlTHZVREEzZ01xdzYwNmpBWE1fNEk2WTlKREhuUWtqN2xsVnRTLWtWUkVGQ2d3UmFURW1ORUY1ZV9FV3V1YVpLa19jczZrS21YVWtYLXhBb0dSY2taSzVvWlR0djdYQWlBcjF6UdIBd0FVX3lxTE8xSVBVQVFIMm5qRmN0dDNJeE5XZEk5eVF3ZjgzaWZhUlZTWVhnWC1FLWtwZ3Q2UE5YSEtpalkxb1lidFZMWk1CMU9qa25OcURkdjkzRk4xdEoxdDl0ZEZhTVNzQUxSZFR2aXdXbm5CZE92X0pqaERJ?oc=5",
-      "source": "CNBC",
-      "source_tier": 1,
-      "published": "2026-11-26T04:12:00+00:00",
-      "importance": 83.2,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal"
-      ],
-      "age_hours": 5.52,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "0ce46eb272670876",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "US announces new tariffs on host of countries including China",
-      "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5IQkloM185eWdfMGhXTkZBYmdEWHM2cy1CQjNpODYzQTRRV0V1VzU4akFoUkdsLTJucFZKTlF2MlZtMTgxMV9xZTRoZjdnTjdkRmMtTnd3Y3pZV28?oc=5",
-      "source": "BBC",
-      "source_tier": 1,
-      "published": "2026-11-26T04:10:58+00:00",
-      "importance": 83.2,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal",
-        "product_tech"
-      ],
-      "age_hours": 5.53,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "abf068e13859b3bd",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "Trump tariff threat ‘unacceptable’, says Brazil, as China denounces levies as baseless",
-      "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNYUJrQ3VzcUs4NmJmXzMtVmx0dUYzaUZ0ZGw0MUM2X29UdG83c2Z1d2ZRR1JIQVYzbC1BQlA5NzgwUnFJUERLTG81aHd1WmptOU43UjFaekpVWGFFeDJtQUtybnpoNUVsUTdYbDV3MF9MME1hN2hvWl9BQ1U4NUd4NmZwR1FlTXBhckdUQTE1c21JMFR5ZHlOQWtR?oc=5",
-      "source": "The Guardian",
-      "source_tier": 1,
-      "published": "2026-11-26T03:54:00+00:00",
-      "importance": 82.9,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal"
-      ],
-      "age_hours": 5.82,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "d63f5456b1b5c7cf",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Jensen Huang's Bank of Nvidia Dilemma Is Still Looming Large",
-      "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQa01SdVN6ZC1Lc2pSc3JpRXZPUjRLcUFqTWRfdjNCczB0T3Y1NktpVHljaVhHU1BINTlFTUJrMU9CaGlFZG5vY1ZsRFpiOWlZRzNxUEJYSlY2TlFCQmJxa1hLWmxONGl0ck85ZXdnZm1HUkdwUjNuWGtFS24ybVlseFFESDQzcjRKZWhrZjhjNFd2S0lEMWhrX3I5bGpxZnVKN3RIWV9teWVobTRTa3JIclZxSTc?oc=5",
-      "source": "Bloomberg.com",
-      "source_tier": 1,
-      "published": "2026-11-26T07:00:00+00:00",
-      "importance": 63.0,
-      "categories": [
-        "general"
-      ],
-      "age_hours": 2.72,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "3e48d248bbf008bc",
-      "symbol": "DEFENSE / AEROSPACE",
-      "name": "DEFENSE / AEROSPACE",
-      "title": "Hegseth, Pentagon officials floated using wartime law to reappoint Nvidia CEO",
-      "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxQcDJ0UmNqUTc2UWNoaVh0STB6ZHRZTnV6WGVPX2Q0VDhmRWU4Wk5hV2lZMTZOZUV4ZEwzOVBnVmVtbnB0eXlpekIyMVF5cG91WmVxLTNIeWx1MzhLN3czOHFLbFRuVTdYRUIwdk4zMTlfcEtLb2J3Y1lQM0l1OTREU2p5UzBxaXI5aExoOGlyUVctZlJZcllacVRzTU9zVXlNaVVMNThZRE85NWdlaEo2WUJKd3FtTVBRZ00xU0l0V2tMLTRiLUE?oc=5",
-      "source": "The Washington Post",
-      "source_tier": 1,
-      "published": "2026-11-26T06:32:48+00:00",
-      "importance": 55.6,
-      "categories": [
-        "management"
-      ],
-      "age_hours": 3.17,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "NOTABLE"
-    },
-    {
-      "key": "0e173db3989991a1",
-      "symbol": "TRADE / TARIFFS",
-      "name": "TRADE / TARIFFS",
-      "title": "Analysis-Trump's new tariffs aim to prise global trade from China's grip",
-      "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOV3BPRm9DWDJJamdwM1AzWjd6Y3poUGl2cERRcUpUVC1qX2dmMVkyZldoMHVTVko1UUttT0JMRGtnRFhMRlU1Nnl4X0E1T1M3U1NyQjV0ek1uMlR3UEp5RXM0UzVsZXBXRmQ3WnJ1OGt2RGZfb19aYzBESTZhS3pIUTVHYUwzUQ?oc=5",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T07:03:00+00:00",
-      "importance": 100.0,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal"
-      ],
-      "age_hours": 2.67,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "e12bf690e1be9546",
-      "symbol": "CEG",
-      "name": "Constellation Energy",
-      "title": "How Investors May Respond To Constellation Energy Stock After Earnings Estimate Upgrades",
-      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPUjFBVmhXbk5uR3RQUThPQVpuT0tSemx0U29uNTdrTjR2bDhsd2ZvT3ZHZzlPMEFrdzUza1VEMUttWE5DcGMzcC1pVlhxYWU5UjhRdEMtdW9tVTVTYWhnNVhZREJWMVV1WHAwWVM3MkEyUm1oNE1GR0xYNlBidkZHU3RVRWZVeHFVVkVNTVN1ZnBoM01tbUFLRnVoT0JQUHVCalYtdURCNUhDVm8?oc=5",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T06:15:00+00:00",
-      "importance": 97.5,
-      "categories": [
-        "earnings_guidance",
-        "analyst"
-      ],
-      "age_hours": 3.47,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "d61ed69482007556",
-      "symbol": "AI / DATA CENTERS",
-      "name": "AI / DATA CENTERS",
-      "title": "EVE Energy Unveils Full-Scenario Energy Storage Solutions for AI Data Centers at RE+ 2026",
-      "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOR1RZZnFacURRZG1lRXc0RVowNE5zYlRqR004aEFhQmVaR3p5ang0bGdLbEpLMGRTVU5GQWpLWVlyZ3pZQXA4N2F2OFRSeTFDenQ3UWJkczBFVkZIcXV0THhJSGZLY0RPREh4Vjdnc3czYlFxTXNVamJkUEpnZktWYlJUWlNYbDFNejYxR1MxUHUwYWc?oc=5",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T05:03:00+00:00",
-      "importance": 89.2,
-      "categories": [
-        "data_centers_ai",
-        "capex_expansion",
-        "product_tech"
-      ],
-      "age_hours": 4.67,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "22bdcd69bf0d98a7",
-      "symbol": "AI / DATA CENTERS",
-      "name": "AI / DATA CENTERS",
-      "title": "3 US AI Infrastructure Stocks Built For Data Center Demand",
-      "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOS3F4Z2dhY1kxa3RfY3c1WThpaHhUTUIxdDBIUWRmSFNydWx5R2FEME1mWmtfcS1VVzVCSUdsX3N6dG9Fc2RzaERkNXo1NllJOFpXNDNsa1pBdzNnMnl2c0lJeVB1VHBtSjJVODhNdmd5MXlxaG4yNEVFYzllU1ZXczN6UUtvYVBGS3B5NDAyOUNEV2pQUHM3VQ?oc=5",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T04:38:00+00:00",
-      "importance": 88.7,
-      "categories": [
-        "data_centers_ai",
-        "capex_expansion"
-      ],
-      "age_hours": 5.08,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "2a7aadbecd5438f9",
-      "symbol": "MU",
-      "name": "Micron Technology",
-      "title": "Micron Technology (MU) Products Are Exempt From New US Tariffs",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNT0lyUFVtNWVHZ3g3a2NlRk8yX0FWUnVtVGxGWndjUmNaak1OY1E3N1A2ejNLVXlHMkVEU3VZbzc3Z3dCWDJoaERSRnZXTlA5Yy1RZWw0dERzak5hX1VHbHNBUnZrd2hldTRLcDJyckJvbXh3OEpCRFl4ZS1uVHAzbFRSRWUtemR3T0l3RnZIRlpZeTVPQjFuRVd6a1JuQmxVZ0Nz?oc=5",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T07:12:00+00:00",
-      "importance": 85.4,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal"
-      ],
-      "age_hours": 2.52,
-      "detected_at": "2026-11-26T09:42:59+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "67072e49878393aa",
-      "symbol": "MACRO",
-      "name": "MACRO",
-      "title": "Global stocks rally as investors shrug off U.S. tariffs and AI jitters",
-      "url": "https://www.cnbc.com/2026/11/26/stock-markets-today-.html",
-      "source": "CNBC Tech",
-      "source_tier": 1,
-      "published": "2026-11-26T08:42:26+00:00",
-      "importance": 74.0,
-      "significance": "HIGH",
-      "categories": [
-        "earnings_guidance"
-      ],
-      "age_hours": 0.3,
-      "detected_at": "2026-11-26T09:00:26+00:00"
-    },
-    {
-      "key": "3f20b82153154aa3",
-      "symbol": "POLICY",
-      "name": "POLICY",
-      "title": "U.S. tariff-hike threats pile pressure on partners to sign trade deals",
-      "url": "https://www.cnbc.com/2026/11/26/us-tariffs-hike-trade-agreement.html",
-      "source": "CNBC Economy",
-      "source_tier": 1,
-      "published": "2026-11-26T08:09:39+00:00",
-      "importance": 74.0,
-      "significance": "HIGH",
-      "categories": [
-        "policy_geopolitics"
-      ],
-      "age_hours": 0.85,
-      "detected_at": "2026-11-26T09:00:26+00:00"
-    },
-    {
-      "key": "e60a23570e8ffc1c",
-      "symbol": "TSLA",
-      "name": "Tesla",
-      "title": "Key facts: Tesla-SpaceX merger talks; €3B Grünheide plan; EU review delayed",
-      "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxPZmw1Q2ljZkI2ZFFydHUtZjBvZkVMeHBoOHNaOGQ4ZXJRSVVCaEdvX25iS3VsTWFXX0syLUNwZWtlQm5icDBzX2V4bFhJaUZvMXBaUzQ0YUZidjA2Tmh5al9WcHVJZTZNRHhjTmtpRDBINDJKUE52bVlhVkktM2w5RkFwYU5Rb1NDZHpTU1N6Ukw2NVRMZElsSzd1SUpiX2tNYVI3SmlRTzhEVlF0N2d2OF9hOGlIQ05nYUtkMzVHVDVPdTNFaExoT2tWYlBJQQ?oc=5",
-      "source": "TradingView",
-      "source_tier": 1,
-      "published": "2026-11-26T08:00:00+00:00",
-      "importance": 74.0,
-      "significance": "HIGH",
-      "categories": [
-        "m_and_a"
-      ],
-      "age_hours": 1.01,
-      "detected_at": "2026-11-26T09:00:26+00:00"
-    },
-    {
-      "key": "6c46dc4a7f12d225",
-      "symbol": "AAPL",
-      "name": "Apple",
-      "title": "Key facts: Apple stock gains; spending, tariffs and AI partnerships",
-      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNWmpFb0FmLWVSVGxiNFZSdlZzU3ptTEhGSVNzSU8wazcxeWhLV3JmUjFiYVFwQnZWMmJsR2kwVVFMVVF2dHZBWEhDZkFMNnY4SDFCb280SUtzc2hrbXdHQjNpY005WC14U285Wkk5dC1kaThRUXlPek1CMFVZXzVfN0VFR2lYUjE2TzkzTlJuaHNsV2Z3ZGdsNEgtMjVHZy1FQVVMOG9SZkNNRVpLRjNCQjVTUnNxb2pZd0VQV1YzYzVFNFJU?oc=5",
-      "source": "TradingView",
-      "source_tier": 1,
-      "published": "2026-11-26T08:00:00+00:00",
-      "importance": 74.0,
-      "significance": "HIGH",
-      "categories": [
-        "earnings_guidance"
-      ],
-      "age_hours": 1.01,
-      "detected_at": "2026-11-26T09:00:26+00:00"
-    },
-    {
-      "key": "9bf13eda51782e7e",
-      "symbol": "LMT",
-      "name": "Lockheed Martin",
-      "title": "Lockheed Martin: From Buyback Machine To Munitions Compounder",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNZk56cVJjdEVmbkRGaG04cExScG9KOXNNbDZWNnRLaUpKcDQtTnNhSG95R0RQcEMyYXI0Z2VEN0kzc3RrN3FveTNzaHZWRHIzUUFNazdlRWt5YW1uQTBhSjlRYnNxVTlNOHhjNWh4MGd0ZjZRYzFmdlhMM0s5TFYzRGQwLVZUNDdSUExSMjYwdVR3VGpRWTRfSDF0Y2d1LXh6R0NZ?oc=5",
-      "source": "Seeking Alpha",
-      "source_tier": 2,
-      "published": "2026-11-26T07:57:06+00:00",
-      "importance": 63.0,
-      "significance": "HIGH",
-      "categories": [
-        "contract_partnership"
-      ],
-      "age_hours": 1.06,
-      "detected_at": "2026-11-26T09:00:26+00:00"
-    },
-    {
-      "key": "39d91a7380911cff",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "S&P Plans to Downgrade Nvidia Credit Rating as Risk of Stock Testing $100 Mark Rises",
-      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPdGN2cjBham1UYWhlWDVvbEpwSDEzVXZUVmhYZ2pPY2pVek8tNzhqTm5zU3JKVUg5S3RGZVUtWE5uV2NfVllRSjIxZV9Pa09pMW9JakpJRFdVUDdEWVRCQk4zRk9iamhWNENFWXhlanNGeFB3QUxoNnFNaUFOZUx6Zy02b0ZuelNDakJ0OFhDWlNqYzBnMXBEek9DaEd3YWRtTGdMaHlmbWFhSzhGeUh5cFF6ZF9aNS03Smc?oc=5",
-      "source": "TradingKey",
-      "source_tier": 2,
-      "published": "2026-11-26T07:53:33+00:00",
-      "importance": 63.0,
-      "significance": "HIGH",
-      "categories": [
-        "analyst"
-      ],
-      "age_hours": 1.11,
-      "detected_at": "2026-11-26T09:00:26+00:00"
-    },
-    {
-      "key": "203b7fcb4481f643",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Nvidia Reportedly Halts AI Server Shipments To Southeast Asia Ahead Of Jensen Huang's Congress Testimony",
-      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxNQU5pMWdnMm5wTkRka3ViZzBVX0xIT245TFNzcGJBazNqRml5aVpuNkl0Mk1DcFFidjgtdnZuaGZGcEpFUURJa3MtN0V5MkZxXzU4NUVnM005anhxTmRrNWJ5VktRZXU3UlJ0RXEzX2RzaGhFVy1jN0VfTmJISWtLSktpd1F4M2pPU2NzWEsxNXdKQ0hGeW03ZnZJNUpMdw?oc=5",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T08:11:47+00:00",
-      "importance": 53.0,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 0.81,
-      "detected_at": "2026-11-26T09:00:26+00:00"
-    },
-    {
-      "key": "shock_APLD_2026-11-27_after-hours_surge_t1",
-      "symbol": "APLD",
-      "name": "Applied Digital",
-      "title": "Applied Digital (APLD) gains +3.95% to $12.78 (After-Hours)",
-      "url": "https://finance.yahoo.com/quote/APLD",
-      "source": "Live Market Tape (After-Hours)",
-      "source_tier": 1,
-      "published": "2026-11-27T02:03:56+00:00",
-      "importance": 64.0,
-      "significance": "HIGH",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "shock_ARM_2026-11-27_after-hours_surge_t1",
-      "symbol": "ARM",
-      "name": "Arm Holdings",
-      "title": "Arm Holdings (ARM) gains +2.66% to $165.81 (After-Hours)",
-      "url": "https://finance.yahoo.com/quote/ARM",
-      "source": "Live Market Tape (After-Hours)",
-      "source_tier": 1,
-      "published": "2026-11-27T02:03:56+00:00",
-      "importance": 64.0,
-      "significance": "HIGH",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "shock_AXTI_2026-11-27_after-hours_surge_t1",
-      "symbol": "AXTI",
-      "name": "AXT Inc",
-      "title": "AXT Inc (AXTI) gains +3.44% to $33.08 (After-Hours)",
-      "url": "https://finance.yahoo.com/quote/AXTI",
-      "source": "Live Market Tape (After-Hours)",
-      "source_tier": 1,
-      "published": "2026-11-27T02:03:56+00:00",
-      "importance": 64.0,
-      "significance": "HIGH",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "shock_COIN_2026-11-27_after-hours_surge_t1",
-      "symbol": "COIN",
-      "name": "Coinbase Global",
-      "title": "Coinbase Global (COIN) gains +2.80% to $106.62 (After-Hours)",
-      "url": "https://finance.yahoo.com/quote/COIN",
-      "source": "Live Market Tape (After-Hours)",
-      "source_tier": 1,
-      "published": "2026-11-27T02:03:56+00:00",
-      "importance": 64.0,
-      "significance": "HIGH",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "shock_CORZ_2026-11-27_after-hours_surge_t1",
-      "symbol": "CORZ",
-      "name": "Core Scientific",
-      "title": "Core Scientific (CORZ) gains +4.25% to $11.28 (After-Hours)",
-      "url": "https://finance.yahoo.com/quote/CORZ",
-      "source": "Live Market Tape (After-Hours)",
-      "source_tier": 1,
-      "published": "2026-11-27T02:03:56+00:00",
-      "importance": 64.0,
-      "significance": "HIGH",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "shock_IREN_2026-11-27_after-hours_surge_t1",
-      "symbol": "IREN",
-      "name": "IREN Limited",
-      "title": "IREN Limited (IREN) gains +3.74% to $13.33 (After-Hours)",
-      "url": "https://finance.yahoo.com/quote/IREN",
-      "source": "Live Market Tape (After-Hours)",
-      "source_tier": 1,
-      "published": "2026-11-27T02:03:56+00:00",
-      "importance": 64.0,
-      "significance": "HIGH",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "shock_NBIS_2026-11-27_after-hours_surge_t1",
-      "symbol": "NBIS",
-      "name": "Nebius Group",
-      "title": "Nebius Group (NBIS) gains +3.82% to $88.24 (After-Hours)",
-      "url": "https://finance.yahoo.com/quote/NBIS",
-      "source": "Live Market Tape (After-Hours)",
-      "source_tier": 1,
-      "published": "2026-11-27T02:03:56+00:00",
-      "importance": 64.0,
-      "significance": "HIGH",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "shock_PANW_2026-11-27_after-hours_drop_t1",
-      "symbol": "PANW",
-      "name": "Palo Alto Networks",
-      "title": "Palo Alto Networks (PANW) drops -3.73% to $342.87 (After-Hours)",
-      "url": "https://finance.yahoo.com/quote/PANW",
-      "source": "Live Market Tape (After-Hours)",
-      "source_tier": 1,
-      "published": "2026-11-27T02:03:56+00:00",
-      "importance": 64.0,
-      "significance": "HIGH",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T02:03:56+00:00"
-    },
-    {
-      "key": "c740073c039c7216",
-      "symbol": "GS",
-      "name": "Goldman Sachs",
-      "title": "Goldman Sachs Stocks Edge Lower After Touching a 52-Week Low of $772.74",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/goldman-sachs-stocks-edge-lower-184158246.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T18:41:58+00:00",
-      "importance": 84.3,
-      "categories": [
-        "analyst",
-        "market_move",
-        "product_tech"
-      ],
-      "age_hours": 1.04,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "6e3f0d4a615fb8fe",
-      "symbol": "TSM",
-      "name": "Taiwan Semiconductor",
-      "title": "Taiwan Semiconductor Stocks Slip 1.96% as Taiwan's Market Sinks 4.8% in Chip Rout",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/taiwan-semiconductor-stocks-slip-1-190319001.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T19:03:19+00:00",
-      "importance": 82.6,
-      "categories": [
-        "supply_chain_producers",
-        "market_move"
-      ],
-      "age_hours": 0.68,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "6da54ffcfa707c21",
-      "symbol": "PANW",
-      "name": "Palo Alto Networks",
-      "title": "Palo Alto Networks Stock Falls After Former Executive Sues, Alleging Accounting Fraud Pressure",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/palo-alto-networks-stock-falls-180810188.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T18:08:10+00:00",
-      "importance": 81.3,
-      "categories": [
-        "regulatory_legal",
-        "market_move"
-      ],
-      "age_hours": 1.6,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
     }
   ]
 }
