@@ -1,8 +1,27 @@
 {
-  "updated_at": "2026-11-27T12:52:35+00:00",
-  "min_importance": 35.0,
+  "updated_at": "2026-11-27T13:20:55+00:00",
+  "min_importance": 99.0,
   "max_age_hours": 6.0,
   "items": [
+    {
+      "key": "443f8c07d89264f2",
+      "symbol": "AI / DATA CENTERS",
+      "name": "AI / DATA CENTERS",
+      "title": "[Longwell FY2026 Q3 Earnings Call] AI Power Cords Deliver: Taiwan's Longwell Posts Record Q3 Revenue of NT$2.935 Billion and EPS of NT$3.97, Data Center Share Jumps to 43%",
+      "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE5fQmVObmQ2QmxfdXlneHF6dzBXWnRTWU5fcFpfaVlqY3BzUE5YanZJcVgwX1B4b0t2WXpxdkhhaS1sdmdobGtlT2xwR1dxLUVjbUxndDdjeDhuY1N3a2xVeW13?oc=5",
+      "source": "finance.biggo.com",
+      "source_tier": 3,
+      "published": "2026-11-27T10:04:00+00:00",
+      "importance": 100.0,
+      "categories": [
+        "earnings_guidance",
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 3.28,
+      "detected_at": "2026-11-27T13:20:55+00:00",
+      "significance": "CRITICAL"
+    },
     {
       "key": "87cc0efd7f105615",
       "symbol": "GS",
@@ -1021,23 +1040,6 @@
       "age_hours": 0.95,
       "detected_at": "2026-11-27T12:52:35+00:00",
       "significance": "CRITICAL"
-    },
-    {
-      "key": "6c0e9502c68da65c",
-      "symbol": "MACRO",
-      "name": "MACRO",
-      "title": "SpaceX shares jump 4% amid tech rally and after Musk says he will expand on Trump Account share donations",
-      "url": "https://www.cnbc.com/2026/11/27/spacex-shares-musk-donations.html",
-      "source": "CNBC Tech",
-      "source_tier": 1,
-      "published": "2026-11-27T10:20:39+00:00",
-      "importance": 60.4,
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 2.53,
-      "detected_at": "2026-11-27T12:52:35+00:00",
-      "significance": "HIGH"
     }
   ]
 }
