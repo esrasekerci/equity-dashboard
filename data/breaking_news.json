@@ -1,8 +1,402 @@
 {
-  "updated_at": "2026-11-27T10:46:52+00:00",
-  "min_importance": 42,
-  "max_age_hours": 4,
+  "updated_at": "2026-11-27T12:52:35+00:00",
+  "min_importance": 35.0,
+  "max_age_hours": 6.0,
   "items": [
+    {
+      "key": "87cc0efd7f105615",
+      "symbol": "GS",
+      "name": "Goldman Sachs",
+      "title": "Goldman Sachs initiates Andritz at ’buy’, sees 25% upside on hydro growth",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/goldman-sachs-initiates-andritz-buy-083907786.html",
+      "source": "Investing.com",
+      "source_tier": 2,
+      "published": "2026-11-27T08:39:07+00:00",
+      "importance": 96.3,
+      "categories": [
+        "earnings_guidance",
+        "analyst"
+      ],
+      "age_hours": 4.22,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "238d21576bdf6a60",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia Blackwell chips found in Shanghai data center tied to Alice Huang",
+      "url": "https://finance.yahoo.com/technology/ai/articles/nvidia-blackwell-chips-found-shanghai-124008621.html",
+      "source": "Investing.com",
+      "source_tier": 2,
+      "published": "2026-11-27T12:40:08+00:00",
+      "importance": 85.5,
+      "categories": [
+        "supply_chain_producers",
+        "data_centers_ai",
+        "capex_expansion"
+      ],
+      "age_hours": 0.21,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "45917c9dddc7e403",
+      "symbol": "MRVL",
+      "name": "Marvell Technology",
+      "title": "Marvell Faces Critical Earnings Test Amid AI Chip Market Turmoil",
+      "url": "https://finance.yahoo.com/technology/ai/articles/marvell-faces-critical-earnings-test-112308097.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:23:08+00:00",
+      "importance": 83.6,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 1.49,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "01953ae31aadab61",
+      "symbol": "OXY",
+      "name": "Occidental Petroleum",
+      "title": "Zacks Industry Outlook Highlights ConocoPhillips Occidental and Calumet",
+      "url": "https://finance.yahoo.com/energy/articles/zacks-industry-outlook-highlights-conocophillips-074400946.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T07:44:00+00:00",
+      "importance": 78.7,
+      "categories": [
+        "earnings_guidance"
+      ],
+      "age_hours": 5.14,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "CRITICAL"
+    },
+    {
+      "key": "21991305f1ae38d9",
+      "symbol": "JPM",
+      "name": "JPMorgan Chase",
+      "title": "JPMorgan, BofA, Citigroup issue same red alert over US bank accounts — official policy changes shift liability to you",
+      "url": "https://finance.yahoo.com/markets/currencies/articles/jpmorgan-bofa-citigroup-issue-same-123000336.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T12:30:00+00:00",
+      "importance": 72.1,
+      "categories": [
+        "analyst"
+      ],
+      "age_hours": 0.38,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "3987634c9075eda2",
+      "symbol": "UBER",
+      "name": "Uber Technologies",
+      "title": "Uber Secures 87.13% of Delivery Hero Shares in Takeover Bid",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/uber-secures-87-13-delivery-113009640.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:30:09+00:00",
+      "importance": 70.9,
+      "categories": [
+        "m_and_a"
+      ],
+      "age_hours": 1.37,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "8383a75d9536b4c9",
+      "symbol": "SNPS",
+      "name": "Synopsys",
+      "title": "What JPMorgan U.S. Tech Leaders ETF (JTEK) Bought: Synopsys Leads on Nov. 25",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/jpmorgan-u-tech-leaders-etf-110516067.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:05:16+00:00",
+      "importance": 70.4,
+      "categories": [
+        "analyst"
+      ],
+      "age_hours": 1.79,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "d25ae720b14c3b37",
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "title": "What JPMorgan Active Growth ETF (JGRO) Bought: Amazon Leads on Nov. 25",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/jpmorgan-active-growth-etf-jgro-110415983.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:04:15+00:00",
+      "importance": 70.4,
+      "categories": [
+        "analyst"
+      ],
+      "age_hours": 1.81,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "2d364d86b988b017",
+      "symbol": "PANW",
+      "name": "Palo Alto Networks",
+      "title": "Palo Alto Networks Falls After Former Executive Claims Accounting Fraud",
+      "url": "https://finance.yahoo.com/m/890a6b6c-2da5-31c6-8202-c8dd9d33c292/palo-alto-networks-falls.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T12:10:36+00:00",
+      "importance": 69.6,
+      "categories": [
+        "regulatory_legal"
+      ],
+      "age_hours": 0.7,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "8f2885543aaacf0e",
+      "symbol": "PLTR",
+      "name": "Palantir Technologies",
+      "title": "Palantir Nears AI Defense Deal With Poland's Defense Ministry",
+      "url": "https://finance.yahoo.com/technology/ai/articles/palantir-nears-ai-defense-deal-113217461.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:32:17+00:00",
+      "importance": 66.6,
+      "categories": [
+        "contract_partnership"
+      ],
+      "age_hours": 1.34,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "51faf19269c49376",
+      "symbol": "GOOGL",
+      "name": "Alphabet",
+      "title": "Market Chatter: Hackers Breach US Air Force Cloud Platform Powered by Microsoft, Amazon, Oracle, Alphabet",
+      "url": "https://finance.yahoo.com/technology/articles/market-chatter-hackers-breach-us-122132707.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T12:21:32+00:00",
+      "importance": 63.2,
+      "categories": [
+        "incident"
+      ],
+      "age_hours": 0.52,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "2b587627f7ad5e5f",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia stock is still paying the price for the Jensen Huang CEO drama",
+      "url": "https://finance.yahoo.com/markets/stocks/article/nvidia-stock-is-still-paying-the-price-for-the-jensen-huang-ceo-drama-124902053.html",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T12:49:02+00:00",
+      "importance": 57.1,
+      "categories": [
+        "management"
+      ],
+      "age_hours": 0.06,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "2aa55d7e86864fab",
+      "symbol": "COIN",
+      "name": "Coinbase Global",
+      "title": "Brian Armstrong Says Coinbase Uses AI to Scan Every Line of Code Amid Rising Cyber Threats: ‘Trust Matters More Now Than Ever’",
+      "url": "https://finance.yahoo.com/markets/crypto/articles/brian-armstrong-says-coinbase-uses-114505264.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:45:05+00:00",
+      "importance": 56.1,
+      "categories": [
+        "management"
+      ],
+      "age_hours": 1.13,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "HIGH"
+    },
+    {
+      "key": "5eb86364182bb46a",
+      "symbol": "GOOGL",
+      "name": "Alphabet",
+      "title": "Alphabet Faces School Backlash as Los Angeles Blocks Google AI Search",
+      "url": "https://finance.yahoo.com/technology/ai/articles/alphabet-faces-school-backlash-los-113110933.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:31:10+00:00",
+      "importance": 53.7,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.36,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "086d7d6595e5b4ab",
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "title": "Micron Technology Has a New Threat -- Huawei Is Coming for the AI Memory Market",
+      "url": "https://finance.yahoo.com/technology/ai/articles/micron-technology-threat-huawei-coming-111412741.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:14:12+00:00",
+      "importance": 53.5,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.64,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "5459d91619366c28",
+      "symbol": "CVX",
+      "name": "Chevron",
+      "title": "Chevron Stock Leads The Oil Price Shock Theme For Integrated Energy Investors",
+      "url": "https://finance.yahoo.com/energy/articles/chevron-stock-leads-oil-price-110947231.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:09:47+00:00",
+      "importance": 53.4,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.71,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "4f21190fab5591a1",
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "title": "iShares S&P 500 Growth (IVW) Adds Microsoft and Nvidia on Wednesday",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/ishares-p-500-growth-ivw-110506557.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:05:06+00:00",
+      "importance": 53.3,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.79,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "f379e4f758b864ef",
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "title": "iShares Russell 3000 ETF (IWV) Adds Apple and Microsoft on Nov. 25",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/ishares-russell-3000-etf-iwv-110513086.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:05:13+00:00",
+      "importance": 53.3,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.79,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "844e336939ddafe3",
+      "symbol": "AAPL",
+      "name": "Apple",
+      "title": "iShares Paris-Aligned Climate (PABU) Buys $9.4 Million More Apple on Wednesday",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/ishares-paris-aligned-climate-pabu-110455750.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:04:55+00:00",
+      "importance": 53.3,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.79,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "70262aa17f0c52e0",
+      "symbol": "WMT",
+      "name": "Walmart",
+      "title": "Direxion NASDAQ-100 Equal Weighted (QQQE) Adds IDEXX and Walmart on Nov. 25",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/direxion-nasdaq-100-equal-weighted-110509309.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:05:09+00:00",
+      "importance": 53.3,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.79,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "d510056545be9e39",
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "title": "What ARK Autonomous Technology & Robotics ETF (ARKQ) Sold: Tesla Leads on Nov. 25",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/ark-autonomous-technology-robotics-etf-110448164.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:04:48+00:00",
+      "importance": 53.3,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.8,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "6963a4cb64ad64d5",
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices",
+      "title": "iShares A.I. Innovation and Tech Active ETF (BAI) Sells Broadcom and AMD on Wednesday",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/ishares-innovation-tech-active-etf-110424675.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:04:24+00:00",
+      "importance": 53.3,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.8,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "NOTABLE"
+    },
+    {
+      "key": "7f150d7e91195697",
+      "symbol": "AAPL",
+      "name": "Apple",
+      "title": "What Invesco NASDAQ 100 ETF (QQQM) Bought: Apple Leads on Wednesday",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/invesco-nasdaq-100-etf-qqqm-110420784.html?.tsrc=rss",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T11:04:20+00:00",
+      "importance": 53.3,
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.8,
+      "detected_at": "2026-11-27T12:52:35+00:00",
+      "significance": "NOTABLE"
+    },
     {
       "key": "24d00ff18de45d33",
       "symbol": "WHITE HOUSE",
@@ -35,40 +429,6 @@
       "age_hours": 2.34,
       "detected_at": "2026-11-27T03:00:06+00:00",
       "significance": "HIGH"
-    },
-    {
-      "key": "352637f81bf1bc24",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "The Savvy Showmanship That Helps Jensen Huang Always Come Out on Top",
-      "url": "https://www.wsj.com/business/jensen-huang-nvidia-ping-pong-rise-and-fall-bfd13000?siteid=yhoof2&yptr=yahoo",
-      "source": "The Wall Street Journal",
-      "source_tier": 1,
-      "published": "2026-11-27T02:00:00+00:00",
-      "importance": 41.1,
-      "categories": [
-        "management"
-      ],
-      "age_hours": 1.0,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "NOTABLE"
-    },
-    {
-      "key": "81d4c1dfe0e3d4a8",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Trump says Wednesday's market had him briefly 'concerned' before stocks recovered",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/trump-says-wednesdays-market-had-002533115.html",
-      "source": "Reuters",
-      "source_tier": 1,
-      "published": "2026-11-27T00:25:33+00:00",
-      "importance": 40.0,
-      "categories": [
-        "management"
-      ],
-      "age_hours": 2.58,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "NOTABLE"
     },
     {
       "key": "0b4562c90fa9615e",
@@ -645,523 +1005,39 @@
       "significance": "CRITICAL"
     },
     {
-      "key": "e2e8084bfa87cd22",
-      "symbol": "MRVL",
-      "name": "Marvell Technology",
-      "title": "Marvell Options Price In 16% Earnings-Day Stock Swing",
-      "url": "https://finance.yahoo.com/markets/options/articles/marvell-options-price-16-earnings-174309753.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T17:43:09+00:00",
-      "importance": 99.9,
-      "categories": [
-        "earnings_guidance",
-        "analyst",
-        "capex_expansion"
-      ],
-      "age_hours": 2.02,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "1edf686461a09219",
-      "symbol": "BA",
-      "name": "Boeing",
-      "title": "Why BAE Systems (LSE:BA.) Is Back In The Spotlight",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/why-bae-systems-lse-ba-181219995.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T18:12:19+00:00",
-      "importance": 98.6,
-      "categories": [
-        "earnings_guidance",
-        "contract_partnership"
-      ],
-      "age_hours": 1.53,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "5b84914062683748",
-      "symbol": "SMCI",
-      "name": "Super Micro Computer",
-      "title": "Super Micro Computer (SMCI) Faces Southeast Asia AI Server Disruption After Export Halt",
-      "url": "https://finance.yahoo.com/technology/ai/articles/super-micro-computer-smci-faces-181532913.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T18:15:32+00:00",
-      "importance": 86.9,
-      "categories": [
-        "policy_geopolitics",
-        "regulatory_legal",
-        "contract_partnership"
-      ],
-      "age_hours": 1.48,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "4ec1cb041003fe15",
-      "symbol": "MS",
-      "name": "Morgan Stanley",
-      "title": "Investors’ Concerns Weighed on Morgan Stanley (MS) Despite Strong Results",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/investors-concerns-weighed-morgan-stanley-154123106.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T15:41:23+00:00",
-      "importance": 84.2,
-      "categories": [
-        "policy_geopolitics",
-        "analyst"
-      ],
-      "age_hours": 4.04,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "06b14c0cc8cc5fde",
-      "symbol": "PANW",
-      "name": "Palo Alto Networks",
-      "title": "Palo Alto Stock Faces Fresh Threat After Strong Earnings",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/palo-alto-stock-faces-fresh-180335399.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T18:03:35+00:00",
-      "importance": 83.4,
-      "categories": [
-        "earnings_guidance"
-      ],
-      "age_hours": 1.67,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "deeacc8f426c9f22",
-      "symbol": "MSFT",
-      "name": "Microsoft",
-      "title": "Microsoft Stocks Slip 1.25% While Nadella Backs Cheaper In-House AI Models",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/microsoft-stocks-slip-1-25-184200035.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T18:42:00+00:00",
-      "importance": 78.9,
+      "key": "11ef84f4d181d2cc",
+      "symbol": "MACRO",
+      "name": "MACRO",
+      "title": "Tech rally lifts stock futures to wrap up a volatile week of trading",
+      "url": "https://www.cnbc.com/2026/11/27/tech-rally-lifts-stock-futures-to-wrap-up-a-volatile-week-of-trading.html",
+      "source": "CNBC Tech",
+      "source_tier": 1,
+      "published": "2026-11-27T11:55:41+00:00",
+      "importance": 81.1,
       "categories": [
         "regulatory_legal",
-        "management"
+        "market_move"
       ],
-      "age_hours": 1.03,
-      "detected_at": "2026-11-26T19:44:04+00:00",
+      "age_hours": 0.95,
+      "detected_at": "2026-11-27T12:52:35+00:00",
       "significance": "CRITICAL"
     },
     {
-      "key": "0682a32bb6d625cf",
-      "symbol": "ANET",
-      "name": "Arista Networks",
-      "title": "Arista Networks Stocks Fall 2.71% as AI Networking Gets Caught in Chip Rout",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/arista-networks-stocks-fall-2-183806415.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T18:38:06+00:00",
-      "importance": 77.7,
+      "key": "6c0e9502c68da65c",
+      "symbol": "MACRO",
+      "name": "MACRO",
+      "title": "SpaceX shares jump 4% amid tech rally and after Musk says he will expand on Trump Account share donations",
+      "url": "https://www.cnbc.com/2026/11/27/spacex-shares-musk-donations.html",
+      "source": "CNBC Tech",
+      "source_tier": 1,
+      "published": "2026-11-27T10:20:39+00:00",
+      "importance": 60.4,
       "categories": [
-        "data_centers_ai",
-        "capex_expansion"
+        "market_move"
       ],
-      "age_hours": 1.1,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "06498e9ff751372d",
-      "symbol": "AMAT",
-      "name": "Applied Materials",
-      "title": "Applied Materials Stocks Fall 3.89% as UBS Trims Target and China Curbs Loom",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/applied-materials-stocks-fall-3-183452125.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T18:34:52+00:00",
-      "importance": 71.2,
-      "categories": [
-        "analyst"
-      ],
-      "age_hours": 1.15,
-      "detected_at": "2026-11-26T19:44:04+00:00",
+      "age_hours": 2.53,
+      "detected_at": "2026-11-27T12:52:35+00:00",
       "significance": "HIGH"
-    },
-    {
-      "key": "abbf88461240f096",
-      "symbol": "MU",
-      "name": "Micron Technology",
-      "title": "Micron Stock Faces Surprising New Threat From Huawei",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/micron-stock-faces-surprising-threat-180348513.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T18:03:48+00:00",
-      "importance": 70.5,
-      "categories": [
-        "analyst"
-      ],
-      "age_hours": 1.67,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "cc3fa576521e6825",
-      "symbol": "AMZN",
-      "name": "Amazon",
-      "title": "Amazon , Walmart Battle for $124 Billion Holiday Shopping Market",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/amazon-walmart-battle-124-billion-175223253.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T17:52:23+00:00",
-      "importance": 70.3,
-      "categories": [
-        "analyst"
-      ],
-      "age_hours": 1.86,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "6f7de26daae38ac0",
-      "symbol": "AMD",
-      "name": "Advanced Micro Devices",
-      "title": "AMD Stocks Slip 1.75% After Filing Registers 337 Million Shares for Resale",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/amd-stocks-slip-1-75-182928246.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T18:29:28+00:00",
-      "importance": 70.0,
-      "categories": [
-        "ownership",
-        "product_tech"
-      ],
-      "age_hours": 1.24,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "9b8ef39f307dd463",
-      "symbol": "CRWV",
-      "name": "CoreWeave",
-      "title": "Wells Fargo Doubles Down on CoreWeave Stock Amid Selloff",
-      "url": "https://finance.yahoo.com/technology/ai/articles/wells-fargo-doubles-down-coreweave-173806688.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T17:38:06+00:00",
-      "importance": 70.0,
-      "categories": [
-        "analyst"
-      ],
-      "age_hours": 2.1,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "dac66194a50ff8db",
-      "symbol": "AMZN",
-      "name": "Amazon",
-      "title": "Amazon Stocks Fall 3.12% as Bernstein Flags a 16% Drop in Cloud Web Traffic",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/amazon-stocks-fall-3-12-171531523.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T17:15:31+00:00",
-      "importance": 69.6,
-      "categories": [
-        "analyst"
-      ],
-      "age_hours": 2.48,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "9f11ef3d0134aeb1",
-      "symbol": "META",
-      "name": "Meta Platforms",
-      "title": "Meta Faces India Lawsuit Over 5.4 Million Content Restrictions",
-      "url": "https://finance.yahoo.com/technology/articles/meta-faces-india-lawsuit-over-180217910.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T18:02:17+00:00",
-      "importance": 68.4,
-      "categories": [
-        "regulatory_legal"
-      ],
-      "age_hours": 1.7,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "a54a9ef6e54ab5ac",
-      "symbol": "GOOGL",
-      "name": "Alphabet",
-      "title": "A 26-year-old Google worker earns $323K but spends under $20K a year — his plan for financial freedom",
-      "url": "https://finance.yahoo.com/markets/articles/26-old-google-worker-earns-160000076.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T16:00:00+00:00",
-      "importance": 68.1,
-      "categories": [
-        "analyst"
-      ],
-      "age_hours": 3.73,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "917bf30925c222c9",
-      "symbol": "JPM",
-      "name": "JPMorgan Chase",
-      "title": "JPMorgan Sees $450 Billion AI Debt Wave as Credit Risks Mount",
-      "url": "https://finance.yahoo.com/technology/ai/articles/jpmorgan-sees-450-billion-ai-154741192.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-26T15:47:41+00:00",
-      "importance": 67.9,
-      "categories": [
-        "analyst"
-      ],
-      "age_hours": 3.94,
-      "detected_at": "2026-11-26T19:44:04+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "71c2ea391fc4e818",
-      "symbol": "TSLA",
-      "name": "Tesla",
-      "title": "Tesla: A SpaceX Merger Could Turn $5,000 Into $10,000",
-      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOU2JzUElDUGJyN0MzOC0yV21iYzdfdFhQWmRIaGtWZjM0QkdRY3lzT1BlX1pjUGtZSGE0WFI4Nm9pSHZjM2J2Z2NiVFFsd2VuTEFnMDV1MVFwWVllcUcwYmRkTHVtVjI2Y3hzSEgxN1dJLTd2SUU1UXFlN2VYZWtLYnJLT0hUeWtJeWVQSlhRTUZicnZuQUtKSnBYNHNVRHVDdTZxalhYWS1TQ3Mwa0N3?oc=5",
-      "source": "TradingView",
-      "source_tier": 1,
-      "published": "2026-11-26T17:46:06+00:00",
-      "importance": 74.0,
-      "significance": "HIGH",
-      "categories": [
-        "m_and_a"
-      ],
-      "age_hours": 1.18,
-      "detected_at": "2026-11-26T18:57:04+00:00"
-    },
-    {
-      "key": "a1c60d3ae9a3f25d",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Nvidia Halts AI Server Deliveries to Four Southeast Asian Countries: Three Earnings Risks Behind Thousands of B300 Chips Seeking New Buyers",
-      "url": "https://news.google.com/rss/articles/CBMipgJBVV95cUxOOUJ5dFo1TG1PVFdvZ2hFaUlEQW9PdjM3SjR5OTBvVG5qNko5T05hdC1sREI3QjQ1OUU5NlROSDR6TktqNGxtSWFwU1NLRzRUTVVUUzA2d2d4aEl1MjVRUnlmS1NQTDZRZUZDaUxMRXliQWNfZFpQT0JrMmhTcUZSVl93NmNPdC1tOWotMjFoM200aWM2NS0tX2ZzQXNILThsTHUxY2lFYVhCVXIwSjVTNzhoaUhOMS1RQjY1RVV5djdCal8zZ3NxQjlFenNoQkhiTXk4TWJ2R1VieUJYXzdFdGtKR1hjeklna2NjTlp5OEZYZjFkTkx3NnpWcUtvVy1nYjk5QWxSMnVPeUluR2RvMHlUUzBWVzBRa2x4VVJlYTI4NFZ6MHc?oc=5",
-      "source": "NewsBreak: Local News & Alerts",
-      "source_tier": 1,
-      "published": "2026-11-26T17:05:31+00:00",
-      "importance": 74.0,
-      "significance": "HIGH",
-      "categories": [
-        "earnings_guidance"
-      ],
-      "age_hours": 1.86,
-      "detected_at": "2026-11-26T18:57:04+00:00"
-    },
-    {
-      "key": "shock_AG_2026-11-27_pre-market_surge_t3",
-      "symbol": "AG",
-      "name": "First Majestic Silver",
-      "title": "First Majestic Silver (AG) gains +8.10% to $12.14 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/AG",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 95.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
-    },
-    {
-      "key": "shock_APLD_2026-11-27_pre-market_surge_t3",
-      "symbol": "APLD",
-      "name": "Applied Digital",
-      "title": "Applied Digital (APLD) gains +8.06% to $13.28 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/APLD",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 95.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
-    },
-    {
-      "key": "shock_AXTI_2026-11-27_pre-market_surge_t3",
-      "symbol": "AXTI",
-      "name": "AXT Inc",
-      "title": "AXT Inc (AXTI) gains +11.01% to $35.50 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/AXTI",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 95.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
-    },
-    {
-      "key": "shock_CIFR_2026-11-27_pre-market_surge_t3",
-      "symbol": "CIFR",
-      "name": "Cipher Mining",
-      "title": "Cipher Mining (CIFR) gains +8.71% to $5.99 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/CIFR",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 95.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
-    },
-    {
-      "key": "shock_IREN_2026-11-27_pre-market_surge_t3",
-      "symbol": "IREN",
-      "name": "IREN Limited",
-      "title": "IREN Limited (IREN) gains +8.56% to $13.95 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/IREN",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 95.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
-    },
-    {
-      "key": "shock_MRVL_2026-11-27_pre-market_surge_t3",
-      "symbol": "MRVL",
-      "name": "Marvell Technology",
-      "title": "Marvell Technology (MRVL) gains +8.07% to $141.49 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/MRVL",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 95.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
-    },
-    {
-      "key": "shock_NBIS_2026-11-27_pre-market_surge_t3",
-      "symbol": "NBIS",
-      "name": "Nebius Group",
-      "title": "Nebius Group (NBIS) gains +8.21% to $91.97 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/NBIS",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 95.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
-    },
-    {
-      "key": "shock_GLD_2026-11-27_pre-market_surge_t2",
-      "symbol": "GLD",
-      "name": "SPDR Gold Shares",
-      "title": "SPDR Gold Shares (GLD) gains +2.88% to $336.88 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/GLD",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 88.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
-    },
-    {
-      "key": "shock_QQQ_2026-11-27_pre-market_surge_t2",
-      "symbol": "QQQ",
-      "name": "QQQ",
-      "title": "QQQ (QQQ) gains +2.63% to $650.61 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/QQQ",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 88.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
-    },
-    {
-      "key": "shock_SLV_2026-11-27_pre-market_surge_t2",
-      "symbol": "SLV",
-      "name": "iShares Silver Trust",
-      "title": "iShares Silver Trust (SLV) gains +7.76% to $39.98 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/SLV",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 88.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
-    },
-    {
-      "key": "shock_AEM_2026-11-27_pre-market_surge_t2",
-      "symbol": "AEM",
-      "name": "Agnico Eagle Mines",
-      "title": "Agnico Eagle Mines (AEM) gains +5.46% to $170.00 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/AEM",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 85.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
-    },
-    {
-      "key": "shock_AMAT_2026-11-27_pre-market_surge_t2",
-      "symbol": "AMAT",
-      "name": "Applied Materials",
-      "title": "Applied Materials (AMAT) gains +5.81% to $329.25 (Pre-Market)",
-      "url": "https://finance.yahoo.com/quote/AMAT",
-      "source": "Live Market Tape (Pre-Market)",
-      "source_tier": 1,
-      "published": "2026-11-27T10:46:52+00:00",
-      "importance": 85.0,
-      "significance": "CRITICAL",
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.02,
-      "detected_at": "2026-11-27T10:46:52+00:00"
     }
   ]
 }
