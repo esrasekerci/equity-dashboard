@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-11-27T03:00:06+00:00",
-  "min_importance": 35.0,
-  "max_age_hours": 6.0,
+  "updated_at": "2026-11-27T10:46:52+00:00",
+  "min_importance": 42,
+  "max_age_hours": 4,
   "items": [
     {
       "key": "24d00ff18de45d33",
@@ -33,23 +33,6 @@
         "general"
       ],
       "age_hours": 2.34,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "1a70674c1619c9f6",
-      "symbol": "MACRO",
-      "name": "MACRO",
-      "title": "China industrial profits growth surges to a 5-month high of 20.1% in October",
-      "url": "https://www.cnbc.com/2026/11/27/china-industrial-profits-october.html",
-      "source": "CNBC Economy",
-      "source_tier": 1,
-      "published": "2026-11-27T02:04:09+00:00",
-      "importance": 61.6,
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 0.93,
       "detected_at": "2026-11-27T03:00:06+00:00",
       "significance": "HIGH"
     },
@@ -120,23 +103,6 @@
         "capex_expansion"
       ],
       "age_hours": 3.5,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "HIGH"
-    },
-    {
-      "key": "7984796de06a2400",
-      "symbol": "GOOGL",
-      "name": "Alphabet",
-      "title": "‘How Can TSLA Compete With Waymo?’ Gary Black Questions Tesla’s Robotaxi Strategy, Predicts Waymo Will Lead in Miles and Trips",
-      "url": "https://finance.yahoo.com/technology/articles/tsla-compete-waymo-gary-black-013007370.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-27T01:30:07+00:00",
-      "importance": 62.2,
-      "categories": [
-        "market_move"
-      ],
-      "age_hours": 1.5,
       "detected_at": "2026-11-27T03:00:06+00:00",
       "significance": "HIGH"
     },
@@ -313,61 +279,6 @@
         "capex_expansion"
       ],
       "age_hours": 0.36,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "0a2cd8b8904fbab7",
-      "symbol": "CCJ",
-      "name": "Cameco",
-      "title": "Cameco Corp. stock rises Thursday, outperforms market",
-      "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQdlY5ak54OTk1LWFOX0pKTGdVeV9zby1PaDIyeU1EWGhENVVFYlh4Vi1QWTBtcDBycURnN1lKOHVzWXptUXhpbk5ZNzEtXzAyazF5SkZ6WUNSSmNuWXViZ0ZkYjJrMVZKdkpRb3dyU0hkU2UzWVVnLWdhU19Da3NOZE91UHp4R1JkNURMMlJ6YkR2RHJ2MEVEdEZZMWRfcWRfby1rbC1hdzBjZTZzbU5lcld3aGZUaURXV1ZKT0d6YmVDR3l1azBMNA?oc=5",
-      "source": "MarketWatch",
-      "source_tier": 2,
-      "published": "2026-11-26T21:31:00+00:00",
-      "importance": 81.3,
-      "categories": [
-        "analyst",
-        "supply_chain_producers",
-        "market_move"
-      ],
-      "age_hours": 5.49,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "11e674d2789fb482",
-      "symbol": "WPM",
-      "name": "Wheaton Precious Metals",
-      "title": "Wheaton Precious Metals Corp. stock rises Thursday, outperforms market",
-      "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQRm1XX0VVenhHa3BlSUt3SkVYamVLOXJIZGwyTm42V2xYUE9tenZuTG1RbUJfcHlsejBPVndadEdtTzNXRnZjOWtrbVBSS2FwRDFJZmJwVGdxODJ3bXZwQ2tXMnVjZ2F3b3VTT3h0VElUNm1PclV6b1dBTzlKRk1VQ21PZUgxcC0xVm5sSlpGajBWQWVPdk4tRXBMcUxvOWZid0pRYXRsdTNGYjlfLUY0WlRIQjlvMUJEWlZ1Ty1ZbjJBT1hBcXM5b3RCTGdEWHBEdnhMU3BNeVhXNjBMNEVZ?oc=5",
-      "source": "MarketWatch",
-      "source_tier": 2,
-      "published": "2026-11-26T21:36:00+00:00",
-      "importance": 78.4,
-      "categories": [
-        "analyst",
-        "market_move"
-      ],
-      "age_hours": 5.4,
-      "detected_at": "2026-11-27T03:00:06+00:00",
-      "significance": "CRITICAL"
-    },
-    {
-      "key": "7b34632d9b3a7bb1",
-      "symbol": "FNV",
-      "name": "Franco-Nevada",
-      "title": "Franco-Nevada Corp. stock rises Thursday, outperforms market",
-      "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQWEh4TjJiWEpmV1VVc1NSRkdYOE9sSEx5blkzS1htNmlwNlFuZGdfbGFBeEtINzZZRmlJb1BIU3Vrd3FZVnhJc0ZDYXd4Ykktcl82MlRfMF82YzEtS0w2VzFRZWY5OXVzaVI1WFdpS3pjQXJfSFNOUWRnbHl6R3RxQzY2TWFQY1Jzd1BZQ3h2YnVsaUU1N1FSeHloNFFBYkJ3WnVoRDRYSTM4WlZuUWdHSFV2ekNEQ3Fwc2hOZlgzMmhkd1ZJdEJxMGkzNGc5UVBFbFE?oc=5",
-      "source": "MarketWatch",
-      "source_tier": 2,
-      "published": "2026-11-26T21:32:00+00:00",
-      "importance": 78.3,
-      "categories": [
-        "analyst",
-        "market_move"
-      ],
-      "age_hours": 5.47,
       "detected_at": "2026-11-27T03:00:06+00:00",
       "significance": "CRITICAL"
     },
@@ -1047,6 +958,210 @@
       ],
       "age_hours": 1.86,
       "detected_at": "2026-11-26T18:57:04+00:00"
+    },
+    {
+      "key": "shock_AG_2026-11-27_pre-market_surge_t3",
+      "symbol": "AG",
+      "name": "First Majestic Silver",
+      "title": "First Majestic Silver (AG) gains +8.10% to $12.14 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/AG",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
+    },
+    {
+      "key": "shock_APLD_2026-11-27_pre-market_surge_t3",
+      "symbol": "APLD",
+      "name": "Applied Digital",
+      "title": "Applied Digital (APLD) gains +8.06% to $13.28 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/APLD",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
+    },
+    {
+      "key": "shock_AXTI_2026-11-27_pre-market_surge_t3",
+      "symbol": "AXTI",
+      "name": "AXT Inc",
+      "title": "AXT Inc (AXTI) gains +11.01% to $35.50 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/AXTI",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
+    },
+    {
+      "key": "shock_CIFR_2026-11-27_pre-market_surge_t3",
+      "symbol": "CIFR",
+      "name": "Cipher Mining",
+      "title": "Cipher Mining (CIFR) gains +8.71% to $5.99 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/CIFR",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
+    },
+    {
+      "key": "shock_IREN_2026-11-27_pre-market_surge_t3",
+      "symbol": "IREN",
+      "name": "IREN Limited",
+      "title": "IREN Limited (IREN) gains +8.56% to $13.95 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/IREN",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
+    },
+    {
+      "key": "shock_MRVL_2026-11-27_pre-market_surge_t3",
+      "symbol": "MRVL",
+      "name": "Marvell Technology",
+      "title": "Marvell Technology (MRVL) gains +8.07% to $141.49 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/MRVL",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
+    },
+    {
+      "key": "shock_NBIS_2026-11-27_pre-market_surge_t3",
+      "symbol": "NBIS",
+      "name": "Nebius Group",
+      "title": "Nebius Group (NBIS) gains +8.21% to $91.97 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/NBIS",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 95.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
+    },
+    {
+      "key": "shock_GLD_2026-11-27_pre-market_surge_t2",
+      "symbol": "GLD",
+      "name": "SPDR Gold Shares",
+      "title": "SPDR Gold Shares (GLD) gains +2.88% to $336.88 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/GLD",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 88.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
+    },
+    {
+      "key": "shock_QQQ_2026-11-27_pre-market_surge_t2",
+      "symbol": "QQQ",
+      "name": "QQQ",
+      "title": "QQQ (QQQ) gains +2.63% to $650.61 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/QQQ",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 88.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
+    },
+    {
+      "key": "shock_SLV_2026-11-27_pre-market_surge_t2",
+      "symbol": "SLV",
+      "name": "iShares Silver Trust",
+      "title": "iShares Silver Trust (SLV) gains +7.76% to $39.98 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/SLV",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 88.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
+    },
+    {
+      "key": "shock_AEM_2026-11-27_pre-market_surge_t2",
+      "symbol": "AEM",
+      "name": "Agnico Eagle Mines",
+      "title": "Agnico Eagle Mines (AEM) gains +5.46% to $170.00 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/AEM",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 85.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
+    },
+    {
+      "key": "shock_AMAT_2026-11-27_pre-market_surge_t2",
+      "symbol": "AMAT",
+      "name": "Applied Materials",
+      "title": "Applied Materials (AMAT) gains +5.81% to $329.25 (Pre-Market)",
+      "url": "https://finance.yahoo.com/quote/AMAT",
+      "source": "Live Market Tape (Pre-Market)",
+      "source_tier": 1,
+      "published": "2026-11-27T10:46:52+00:00",
+      "importance": 85.0,
+      "significance": "CRITICAL",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T10:46:52+00:00"
     }
   ]
 }
