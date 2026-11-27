@@ -303,23 +303,7 @@
       btn.classList.toggle("active", btn.dataset.view === view);
     });
     $("mobileMoreSheet")?.classList.add("hidden");
-    const VIEW_TITLES = {
-      overview: "Overview",
-      screener: "Screener",
-      network: "Supply Chain",
-      smartmoney: "Institutional Flow",
-      breaking: "Market News",
-      authorities: "Authorities",
-      macro: "Macro & Yields",
-      formulas: "Formulas",
-      stock: state.activeTicker || "Stock",
-    };
-    const mTitle = $("mobileViewTitle");
     const mBack = $("mobileStockBackBtn");
-    if (mTitle) {
-      mTitle.textContent = view === "stock" && state.activeTicker ? state.activeTicker : (VIEW_TITLES[view] || "Markets");
-      mTitle.classList.toggle("is-stock-sym", view === "stock");
-    }
     if (mBack) {
       mBack.classList.toggle("hidden", view !== "stock");
     }
@@ -2676,7 +2660,7 @@
     state.breakingCategory = "all";
     state.breakingTier = "all";
     state.breakingSearch = "";
-    state.highlightUntilMs = Date.now() + 3400;
+    state.highlightUntilMs = Date.now() + 3600;
     if ($("newsSearchInput")) $("newsSearchInput").value = "";
     document.querySelectorAll("#newsTierBar .news-tier-btn").forEach((b) => {
       b.classList.toggle("active", b.dataset.ntier === "all");
@@ -2693,13 +2677,15 @@
         window.scrollTo(0, 0);
         return null;
       }
-      const topbarH = document.querySelector(".topbar")?.offsetHeight || 64;
+      const topbarH = document.querySelector(".topbar")?.offsetHeight || 56;
       const rect = target.getBoundingClientRect();
       const vh = window.innerHeight || document.documentElement.clientHeight || 700;
-      const desiredTop = Math.max(topbarH + 16, Math.min(topbarH + 88, (vh - rect.height) * 0.34));
-      const destY = Math.max(0, Math.round(window.scrollY + rect.top - desiredTop));
-      window.scrollTo({ top: destY, left: 0, behavior: "instant" in ScrollToOptions.prototype ? "instant" : "auto" });
+      const curScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const desiredTop = Math.max(topbarH + 18, Math.min(topbarH + 88, (vh - rect.height) * 0.32));
+      const destY = Math.max(0, Math.round(curScroll + rect.top - desiredTop));
       window.scrollTo(0, destY);
+      document.documentElement.scrollTop = destY;
+      document.body.scrollTop = destY;
       return target;
     };
 
@@ -2707,6 +2693,7 @@
     requestAnimationFrame(() => {
       const target = locateAndJump();
       if (!target) return;
+      setTimeout(() => locateAndJump(), 45);
       document.querySelectorAll("#view-breaking .news-highlight-pulse").forEach((el) => el.classList.remove("news-highlight-pulse"));
       void target.offsetWidth;
       secEl?.classList.add("has-focus-pulse");
@@ -2715,7 +2702,7 @@
         secEl?.classList.remove("has-focus-pulse");
         target.classList.remove("news-highlight-pulse");
         state.highlightTimer = null;
-      }, 2500);
+      }, 2600);
     });
   }
 
@@ -2825,52 +2812,20 @@
     }
 
     if (!list.length) {
-      if (leadBox) leadBox.innerHTML = "";
       el.innerHTML = `<div class="panel muted">No news stories match the current filter.</div>`;
       return;
     }
 
-    // Featured Lead Story Spotlight when browsing All News without keyword filter
-    const showLead = state.breakingCategory === "all" && !q && state.breakingTier === "all" && list.length >= 3;
-    const leadItem = showLead ? list[0] : null;
-    const gridItems = showLead ? list.slice(1) : list;
-
-    if (leadBox) {
-      if (leadItem) {
-        leadBox.innerHTML = `
-          <article class="news-lead-card sig-${leadItem.sigTier.toLowerCase()}${highlightUid === leadItem.uid ? " news-highlight-pulse" : ""}" data-news-id="${esc(leadItem.uid)}">
-            <div class="news-card-meta">
-              <div class="news-meta-left">
-                <span class="news-lead-kicker">Top Story</span>
-                ${sigTierBadgeHtml(leadItem.importance)}
-                ${leadItem.desks.slice(0, 2).map((d) => `<span class="news-desk-tag">${esc(NEWS_DESK_LABELS[d] || d)}</span>`).join("")}
-              </div>
-              <span class="news-time-src">${esc(leadItem.source)} · ${esc(leadItem.relTime)}</span>
-            </div>
-            <a class="news-lead-title" href="${esc(leadItem.url)}" target="_blank" rel="noopener">${esc(leadItem.title)}</a>
-            ${leadItem.summary ? `<p class="news-lead-summary">${esc(leadItem.summary)}</p>` : ""}
-            <div class="news-card-foot">
-              ${renderNewsTickerChipHtml(leadItem, true)}
-              <a class="news-ext-link" href="${esc(leadItem.url)}" target="_blank" rel="noopener">Read source ↗</a>
-            </div>
-          </article>
-        `;
-      } else {
-        leadBox.innerHTML = "";
-      }
-    }
-
-    el.innerHTML = gridItems.map((item) => `
+    el.innerHTML = list.map((item) => `
       <article class="news-card sig-${item.sigTier.toLowerCase()}${highlightUid === item.uid ? " news-highlight-pulse" : ""}" data-news-id="${esc(item.uid)}">
         <div class="news-card-meta">
           <div class="news-meta-left">
             ${sigTierBadgeHtml(item.importance)}
-            ${item.desks.slice(0, 2).map((d) => `<span class="news-desk-tag">${esc(NEWS_DESK_LABELS[d] || d)}</span>`).join("")}
+            <span class="news-desk-tag">${esc(NEWS_DESK_LABELS[item.primaryDesk] || "Market")}</span>
           </div>
           <span class="news-time-src">${esc(item.source)} · ${esc(item.relTime)}</span>
         </div>
         <a class="news-headline-link" href="${esc(item.url)}" target="_blank" rel="noopener">${esc(item.title)}</a>
-        ${item.summary ? `<div class="news-card-summary">${esc(item.summary)}</div>` : ""}
         <div class="news-card-foot">
           ${renderNewsTickerChipHtml(item, true)}
           <a class="news-ext-link" href="${esc(item.url)}" target="_blank" rel="noopener">${esc(item.source)} ↗</a>
@@ -3766,12 +3721,11 @@
                 <div class="news-card-meta">
                   <div class="news-meta-left">
                     ${sigTierBadgeHtml(n.importance)}
-                    ${(n.desks || []).slice(0, 2).map((d) => `<span class="news-desk-tag">${esc(NEWS_DESK_LABELS[d] || d)}</span>`).join("")}
+                    <span class="news-desk-tag">${esc(NEWS_DESK_LABELS[(n.desks || [])[0]] || "Market")}</span>
                   </div>
                   <span class="news-time-src">${esc(n.source)} · ${esc(n.relTime)}</span>
                 </div>
                 <a class="news-headline-link" href="${esc(n.url || "#")}" target="_blank" rel="noopener">${esc(n.title)}</a>
-                ${n.summary ? `<div class="news-card-summary">${esc(n.summary)}</div>` : ""}
                 <div class="news-card-foot">
                   <span class="news-entity-tag">${esc(t.symbol)}</span>
                   <a class="news-ext-link" href="${esc(n.url || "#")}" target="_blank" rel="noopener">${esc(n.source)} ↗</a>
