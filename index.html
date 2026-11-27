@@ -16,7 +16,7 @@
   <meta property="og:title" content="Equity Intelligence" />
   <meta property="og:description" content="Live 100-stock quantitative intelligence, Gold &amp; Silver benchmarks, interactive charts, supply-chain value network, Institutional Flow, official legal authorities &amp; SEC filings." />
   <title>Equity Intelligence</title>
-  <link rel="stylesheet" href="assets/app.css?v=53" />
+  <link rel="stylesheet" href="assets/app.css?v=54" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -85,7 +85,9 @@
           <h2>Market News</h2>
         </div>
         <div class="ov-news-actions">
-          <button type="button" class="ov-news-shuffle-btn" id="shuffleOverviewNewsBtn" title="Show another set of news" aria-label="Show another set of news">↻</button>
+          <button type="button" class="ov-news-newest-btn hidden" id="ovNewestNewsBtn" title="Jump back to newest headlines">↑ Newest</button>
+          <span class="ov-news-range" id="ovNewsRangeBadge"></span>
+          <button type="button" class="ov-news-shuffle-btn" id="shuffleOverviewNewsBtn" title="Load older news" aria-label="Load older news">↻</button>
           <button type="button" class="link-btn" id="viewAllNewsOverviewBtn">All news →</button>
         </div>
       </div>
@@ -428,7 +430,7 @@
   <!-- Subtle Status Toast -->
   <div id="appToast" class="app-toast hidden" role="status" aria-live="polite"></div>
 
-  <script src="assets/app.js?v=53"></script>
-  <script type="module" src="assets/auth.js?v=53"></script>
+  <script src="assets/app.js?v=54"></script>
+  <script type="module" src="assets/auth.js?v=54"></script>
 </body>
 </html>

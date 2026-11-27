@@ -550,11 +550,16 @@ def main() -> None:
     if len(seen) > 1200:
         seen = dict(sorted(seen.items(), key=lambda kv: kv[1], reverse=True)[:1200])
 
-    # Keep up to 120 items in breaking_news.json while capping synthetic market_move shocks at 12 so editorial journalism leads
-    combined = deduped + existing
+    # Keep up to 120 items in breaking_news.json sorted strictly newest-to-oldest while capping synthetic market_move shocks at 12
+    def _pub_sort_key(item: dict) -> tuple[float, float]:
+        dt = parse_pub(item.get("published"))
+        ts = dt.timestamp() if dt is not None else 0.0
+        return (ts, float(item.get("importance") or 0.0))
+
+    combined = sorted(deduped + existing, key=_pub_sort_key, reverse=True)
     editorial_items = [x for x in combined if "market_move" not in (x.get("categories") or [])]
     tape_items = [x for x in combined if "market_move" in (x.get("categories") or [])][:12]
-    merged = (editorial_items[:108] + tape_items)[:120]
+    merged = sorted((editorial_items[:108] + tape_items)[:120], key=_pub_sort_key, reverse=True)
     breaking_path.write_text(
         json.dumps({"updated_at": now_iso, "min_importance": 42, "max_age_hours": 4, "items": merged}, indent=2, ensure_ascii=False),
         encoding="utf-8",

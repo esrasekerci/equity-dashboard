@@ -18,7 +18,10 @@
     breakingTier: "all",
     breakingSearch: "",
     ovNewsCurrentIds: [],
+    ovNewsOffset: 0,
     ovBootRotated: false,
+    olderNewsCursor: 0,
+    olderNewsLoading: false,
     highlightUntilMs: 0,
     highlightTimer: null,
     lastHiddenAt: 0,
@@ -283,10 +286,13 @@
     }
     state.view = view;
     if (view === "overview" && state.summary) {
-      // Advance news rotation every time Overview is opened (initial boot, switching tabs back to Overview, or tapping Overview again)
-      const shouldRotate = !state.ovBootRotated || !replace || wasView !== "overview";
-      if (shouldRotate) {
+      // Initial boot determines starting offset once (0 on fresh visit, +4 on reload); subsequent tab switches step chronologically into older news
+      if (!state.ovBootRotated) {
         state.ovBootRotated = true;
+        const navEntry = performance.getEntriesByType?.("navigation")?.[0];
+        const isReload = navEntry?.type === "reload";
+        renderOverviewNews({ initBoot: true, isReload });
+      } else if (!replace && wasView !== "overview") {
         renderOverviewNews({ advance: true });
       }
     } else if (view === "breaking" && !opts.preserveHighlight) {
@@ -397,7 +403,10 @@
       summary: x.summary,
       categories: x.categories || [],
     }));
-    const items = state.authorities.length ? state.authorities : fallback;
+    const rawItems = state.authorities.length ? state.authorities : fallback;
+    const items = [...rawItems].sort(
+      (a, b) => parseNewsTimestampMs(b.published) - parseNewsTimestampMs(a.published)
+    );
     $("authoritiesCount").textContent = String(items.length);
     if ($("moreAuthoritiesCount")) $("moreAuthoritiesCount").textContent = String(items.length);
 
@@ -2521,6 +2530,14 @@
     return `nw-${String(fallbackKey || Math.random()).replace(/[^a-z0-9_-]/gi, "").slice(0, 32)}`;
   }
 
+  function parseNewsTimestampMs(rawPub) {
+    if (!rawPub) return 0;
+    const ms = Date.parse(String(rawPub).trim());
+    if (!Number.isFinite(ms) || ms <= 0) return 0;
+    const now = Date.now();
+    return ms > now + 60000 ? now : ms;
+  }
+
   function fmtRelNewsTime(pubMs) {
     if (!Number.isFinite(pubMs) || pubMs <= 0) return "Recent";
     const diffMin = Math.max(1, Math.round((Date.now() - pubMs) / 60000));
@@ -2637,6 +2654,27 @@
         _origin: "authority",
       });
     }
+    // Include older historical news from any hydrated ticker bundles so users can keep navigating older stories seamlessly
+    for (const [symKey, bundle] of Object.entries(state.tickerCache || {})) {
+      if (!bundle || !Array.isArray(bundle.news)) continue;
+      const cleanSym = String(bundle.symbol || symKey.split(":").pop() || "").toUpperCase();
+      for (const tn of bundle.news) {
+        if (!tn?.title || !tn?.url) continue;
+        rawPool.push({
+          key: tn.id || tn.url,
+          symbol: cleanSym,
+          name: bundle.name || cleanSym,
+          title: tn.title,
+          url: tn.url,
+          source: tn.source || "Market Wire",
+          published: tn.published,
+          summary: tn.summary && tn.summary !== tn.title ? tn.summary : "",
+          importance: Number(tn.importance || 60),
+          categories: tn.categories || ["general"],
+          _origin: "ticker_archive",
+        });
+      }
+    }
 
     const byUid = new Map();
     for (const raw of rawPool) {
@@ -2658,15 +2696,9 @@
         }
       }
       const uid = makeNewsUid(title, raw.key);
-      const pubMs = raw.published ? Date.parse(raw.published) : Date.now();
-      const validMs = Number.isFinite(pubMs) ? pubMs : Date.now() - 3600000;
-      const ageH = Math.max(0, (Date.now() - validMs) / 3600000);
+      const validMs = parseNewsTimestampMs(raw.published);
       const { desks, isTape } = classifyNewsDesks({ ...raw, symbol: sym }, bySym);
       const imp = Number(raw.importance || 55);
-      const tier1Bonus = /\b(cnbc|reuters|bloomberg|wsj|sec|federal reserve|ftc|doj|axios|financial times|barron)\b/i.test(String(raw.source || "")) ? 6 : 0;
-      const rankScore = isTape
-        ? (imp - 18 - Math.min(42, ageH * 3.5))
-        : (imp + 26 + tier1Bonus - Math.min(34, ageH * 1.15));
 
       const tRow = bySym[sym] || null;
       const cleanSummary = (() => {
@@ -2694,16 +2726,20 @@
         desks,
         primaryDesk: desks[0] || "macro_policy",
         isTape,
-        rankScore,
       };
 
       const prev = byUid.get(uid);
-      if (!prev || enriched.rankScore > prev.rankScore) {
+      if (!prev) {
         byUid.set(uid, enriched);
+      } else {
+        const bestMs = Math.max(prev.pubMs || 0, enriched.pubMs || 0);
+        const pick = (enriched.pubMs > prev.pubMs || (enriched.pubMs === prev.pubMs && enriched.importance > prev.importance)) ? enriched : prev;
+        byUid.set(uid, { ...pick, pubMs: bestMs, relTime: fmtRelNewsTime(bestMs), importance: Math.max(prev.importance || 0, enriched.importance || 0) });
       }
     }
 
-    return [...byUid.values()].sort((a, b) => b.rankScore - a.rankScore || b.pubMs - a.pubMs);
+    // Strict newest-to-oldest ordering across the entire unified feed
+    return [...byUid.values()].sort((a, b) => b.pubMs - a.pubMs || b.importance - a.importance);
   }
 
   function syncNewsBadgeCounts() {
@@ -2731,68 +2767,95 @@
     return `<span class="news-entity-tag">${esc(item.symbol)}</span>`;
   }
 
-  // Dynamic Overview 4-Story Showcase — rotates to a fresh set every time Overview is opened!
-  function pickOverviewNewsBatch(editorialPool, advance = false) {
+  // Hydrate older historical news archives on demand from per-ticker bundles so users can keep navigating older news
+  async function hydrateOlderNewsBatch(batchSize = 14) {
+    if (state.olderNewsLoading || !state.date || !state.summary) return 0;
+    const allTickers = [...(state.summary.tickers || [])]
+      .sort((a, b) => (b.notable_score || 0) - (a.notable_score || 0))
+      .map((t) => t.symbol)
+      .filter((sym) => sym && !state.tickerCache[`${state.date}:${sym}`] && !state.tickerCache[sym]);
+    if (!allTickers.length) return 0;
+
+    state.olderNewsLoading = true;
+    const pick = allTickers.slice(0, batchSize);
+    let loaded = 0;
+    try {
+      await Promise.all(
+        pick.map(async (sym) => {
+          try {
+            const bundle = await fetchJson(`data/${state.date}/tickers/${sym}.json`);
+            if (bundle) {
+              state.tickerCache[`${state.date}:${sym}`] = bundle;
+              loaded++;
+            }
+          } catch {}
+        })
+      );
+    } finally {
+      state.olderNewsLoading = false;
+    }
+    syncNewsBadgeCounts();
+    return loaded;
+  }
+
+  function hasMoreUnhydratedNewsArchives() {
+    if (!state.summary || !state.date) return false;
+    return (state.summary.tickers || []).some(
+      (t) => t.symbol && !state.tickerCache[`${state.date}:${t.symbol}`] && !state.tickerCache[t.symbol]
+    );
+  }
+
+  // Chronological Overview 4-Story Showcase — always newest-to-oldest, stepping sequentially into older stories on reload!
+  function pickOverviewNewsBatch(editorialPool, opts = {}) {
     if (!editorialPool.length) return [];
     const SHOW_N = Math.min(4, editorialPool.length);
-    const topPool = editorialPool.slice(0, 28);
-    const byId = Object.fromEntries(editorialPool.map((x) => [x.uid, x]));
+    const total = editorialPool.length;
+    const SEQ_KEY = "eq_ov_news_seq_v2";
 
-    // Keep current batch stable during background 30s polling unless advancing or empty
-    if (!advance && state.ovNewsCurrentIds.length > 0) {
-      const cur = state.ovNewsCurrentIds.map((id) => byId[id]).filter(Boolean);
-      if (cur.length === SHOW_N) return cur;
-    }
+    let offset = Number.isFinite(state.ovNewsOffset) ? state.ovNewsOffset : 0;
 
-    let cursor = 0;
-    let lastIds = [];
-    try {
-      const saved = JSON.parse(localStorage.getItem("eq_ov_news_deck_v1") || "{}");
-      if (Number.isFinite(saved.cursor)) cursor = saved.cursor;
-      if (Array.isArray(saved.lastIds)) lastIds = saved.lastIds;
-    } catch {}
-
-    const prevSet = new Set(lastIds);
-    const n = topPool.length;
-    const startIdx = advance ? (cursor + 3) % n : cursor % n;
-    const picked = [];
-    const usedSyms = new Set();
-    const usedIds = new Set();
-
-    // Pass 1: strictly avoid stories shown on the previous Overview visit + enforce 1 story per ticker for rich variety
-    for (let step = 0; step < n && picked.length < SHOW_N; step++) {
-      const cand = topPool[(startIdx + step) % n];
-      if (prevSet.has(cand.uid)) continue;
-      if (cand.isWatchlist && usedSyms.has(cand.symbol)) continue;
-      picked.push(cand);
-      usedIds.add(cand.uid);
-      if (cand.isWatchlist) usedSyms.add(cand.symbol);
-    }
-    // Pass 2: relax ticker uniqueness if needed while still avoiding previous visit's stories
-    for (let step = 0; step < n && picked.length < SHOW_N; step++) {
-      const cand = topPool[(startIdx + step) % n];
-      if (usedIds.has(cand.uid) || prevSet.has(cand.uid)) continue;
-      picked.push(cand);
-      usedIds.add(cand.uid);
-    }
-    // Pass 3: fallback if total pool <= 4
-    for (let step = 0; step < n && picked.length < SHOW_N; step++) {
-      const cand = topPool[(startIdx + step) % n];
-      if (usedIds.has(cand.uid)) continue;
-      picked.push(cand);
-      usedIds.add(cand.uid);
-    }
-
-    const nextIds = picked.map((x) => x.uid);
-    state.ovNewsCurrentIds = nextIds;
-    if (advance || !lastIds.length) {
+    if (opts.resetNewest) {
+      offset = 0;
+    } else if (opts.initBoot) {
+      let savedOffset = 0;
+      let savedTs = 0;
       try {
-        localStorage.setItem("eq_ov_news_deck_v1", JSON.stringify({
-          cursor: (startIdx + SHOW_N) % Math.max(1, n),
-          lastIds: nextIds,
-        }));
+        const saved = JSON.parse(localStorage.getItem(SEQ_KEY) || "{}");
+        if (Number.isFinite(saved.offset)) savedOffset = saved.offset;
+        if (Number.isFinite(saved.ts)) savedTs = saved.ts;
+      } catch {}
+      const recentSession = savedTs > 0 && (Date.now() - savedTs) < 20 * 60 * 1000;
+      if (opts.isReload || recentSession) {
+        offset = savedOffset + SHOW_N;
+        if (offset >= total) offset = 0;
+      } else {
+        offset = 0;
+      }
+    } else if (opts.advance) {
+      offset = offset + SHOW_N;
+      if (offset >= total) offset = 0;
+    }
+
+    if (offset < 0 || offset >= total) offset = 0;
+    const effectiveStart = (offset + SHOW_N > total) ? Math.max(0, total - SHOW_N) : offset;
+    state.ovNewsOffset = effectiveStart;
+
+    if (opts.resetNewest || opts.initBoot || opts.advance) {
+      try {
+        localStorage.setItem(SEQ_KEY, JSON.stringify({ offset: effectiveStart, ts: Date.now() }));
       } catch {}
     }
+
+    // Proactively pre-hydrate older ticker archives when user steps near the end of currently loaded news
+    if (effectiveStart + SHOW_N * 2 >= total && hasMoreUnhydratedNewsArchives()) {
+      hydrateOlderNewsBatch(10).catch(() => {});
+    }
+
+    const picked = editorialPool
+      .slice(effectiveStart, effectiveStart + SHOW_N)
+      .sort((a, b) => b.pubMs - a.pubMs || b.importance - a.importance);
+
+    state.ovNewsCurrentIds = picked.map((x) => x.uid);
     return picked;
   }
 
@@ -2865,7 +2928,15 @@
       grid.innerHTML = `<div class="panel muted">Loading live market wires…</div>`;
       return;
     }
-    const batch = pickOverviewNewsBatch(pool, Boolean(opts.advance));
+    const batch = pickOverviewNewsBatch(pool, opts);
+    const startNum = state.ovNewsOffset + 1;
+    const endNum = Math.min(pool.length, state.ovNewsOffset + batch.length);
+    if ($("ovNewsRangeBadge")) {
+      $("ovNewsRangeBadge").textContent = `${startNum}–${endNum} of ${pool.length}`;
+    }
+    if ($("ovNewestNewsBtn")) {
+      $("ovNewestNewsBtn").classList.toggle("hidden", state.ovNewsOffset === 0);
+    }
     grid.innerHTML = batch.map((item) => `
       <article class="ov-news-card sig-${item.sigTier.toLowerCase()}" data-ov-news-id="${esc(item.uid)}" role="button" tabindex="0">
         <div class="ov-news-top">
@@ -2963,7 +3034,7 @@
 
     if (metaEl) {
       const critN = list.filter((x) => x.sigTier === "CRITICAL").length;
-      metaEl.textContent = `${list.length} live stories · ${critN} critical catalysts · Updated continuously`;
+      metaEl.textContent = `${list.length} stories · Newest to oldest · ${critN} critical catalysts`;
     }
 
     if (!list.length) {
@@ -2971,6 +3042,7 @@
       return;
     }
 
+    const canLoadOlder = hasMoreUnhydratedNewsArchives();
     el.innerHTML = list.map((item) => `
       <article class="news-card sig-${item.sigTier.toLowerCase()}${highlightUid === item.uid ? " news-highlight-pulse" : ""}" data-news-id="${esc(item.uid)}">
         <div class="news-card-meta">
@@ -2986,7 +3058,26 @@
           <a class="news-ext-link" href="${esc(item.url)}" target="_blank" rel="noopener">${esc(item.source)} ↗</a>
         </div>
       </article>
-    `).join("");
+    `).join("") + (canLoadOlder ? `
+      <div class="news-load-older-wrap" style="grid-column: 1 / -1">
+        <button type="button" class="news-load-older-btn" id="loadOlderNewsBtn" ${state.olderNewsLoading ? "disabled" : ""}>
+          <span>↻</span>
+          <span>${state.olderNewsLoading ? "Loading older news…" : "Load Older News"}</span>
+        </button>
+      </div>
+    ` : "");
+
+    $("loadOlderNewsBtn")?.addEventListener("click", async () => {
+      const btn = $("loadOlderNewsBtn");
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span>↻</span><span>Loading older news…</span>`;
+      }
+      const prevScrollY = window.scrollY;
+      await hydrateOlderNewsBatch(16);
+      renderBreaking();
+      window.scrollTo(0, prevScrollY);
+    });
 
     document.querySelectorAll("#view-breaking .news-live-ticker[data-sym]").forEach((btn) => {
       btn.onclick = (e) => {
@@ -3021,8 +3112,7 @@
       if (!title || !raw.url) continue;
       const uid = makeNewsUid(title, raw.id || raw.url);
       if (byUid.has(uid)) continue;
-      const pubMs = raw.published ? Date.parse(raw.published) : Date.now() - 3600000;
-      const validMs = Number.isFinite(pubMs) ? pubMs : Date.now() - 3600000;
+      const validMs = parseNewsTimestampMs(raw.published);
       const { desks } = classifyNewsDesks({ ...raw, symbol: sym }, bySym);
       const imp = Number.isFinite(Number(raw.importance)) && Number(raw.importance) > 0 ? Number(raw.importance) : 62;
       const rawSum = String(raw.summary || "").trim();
@@ -3086,8 +3176,11 @@
     }).join("");
 
     const renderFeed = (id, items) => {
-      $(id).innerHTML = (items || []).length
-        ? items.slice(0, 10).map((it) => `
+      const sorted = [...(items || [])].sort(
+        (a, b) => parseNewsTimestampMs(b.published) - parseNewsTimestampMs(a.published)
+      );
+      $(id).innerHTML = sorted.length
+        ? sorted.slice(0, 10).map((it) => `
           <div class="feed-item">
             <div class="feed-meta"><span>${esc(it.source || "")}</span><span>${esc((it.published || "").slice(0, 10))}</span></div>
             <a class="feed-title" href="${esc(it.url || "#")}" target="_blank" rel="noopener">${esc(it.title)}</a>
@@ -3906,25 +3999,34 @@
               </div>`).join("")}</div>`
           : `<div class="muted">Institutional holder breakdown unavailable.</div>`;
       } else if (state.stockTab === "filings") {
-        box.innerHTML = (t.filings || []).length
-          ? `<div class="feed-list">${t.filings.map((f) => `
+        const sortedFilings = [...(t.filings || [])].sort(
+          (a, b) => parseNewsTimestampMs(b.published) - parseNewsTimestampMs(a.published)
+        );
+        box.innerHTML = sortedFilings.length
+          ? `<div class="feed-list">${sortedFilings.map((f) => `
               <div class="feed-item">
                 <div class="feed-meta"><span class="tag">${esc(f.extra?.form || "")}</span><span>${esc((f.published || "").slice(0, 10))}</span></div>
                 <a class="feed-title" href="${esc(f.url || "#")}" target="_blank" rel="noopener">${esc(f.title)}</a>
               </div>`).join("")}</div>`
           : `<div class="muted">No recent SEC filings tracked.</div>`;
       } else if (state.stockTab === "insiders") {
+        const sortedIns = [...(t.insiders?.items || [])].sort(
+          (a, b) => parseNewsTimestampMs(b.published) - parseNewsTimestampMs(a.published)
+        );
         const hdr = `<div class="muted" style="margin-bottom:10px">90d Form 4: <strong>${ins.open_market_buys ?? 0}</strong> buys (${fmtCap(ins.buy_value_usd)}) · <strong>${ins.open_market_sells ?? 0}</strong> sells (${fmtCap(ins.sell_value_usd)})</div>`;
-        box.innerHTML = hdr + ((t.insiders?.items || []).length
-          ? `<div class="feed-list">${t.insiders.items.map((x) => `
+        box.innerHTML = hdr + (sortedIns.length
+          ? `<div class="feed-list">${sortedIns.map((x) => `
               <div class="feed-item">
                 <div class="feed-meta"><span class="tag ${x.extra?.code === "P" ? "bull" : "bear"}">${esc(x.extra?.code || "")}</span><span>${esc((x.published || "").slice(0, 10))}</span></div>
                 <a class="feed-title" href="${esc(secHtmlUrl(x.url))}" target="_blank" rel="noopener">${esc(x.title)}</a>
               </div>`).join("")}</div>`
           : `<div class="muted">No Form 4 insider transactions (foreign issuers do not file Form 4).</div>`);
       } else if (state.stockTab === "regulatory") {
-        box.innerHTML = (t.regulatory?.items || []).length
-          ? `<div class="feed-list">${t.regulatory.items.slice(0, 15).map((x) => `
+        const sortedReg = [...(t.regulatory?.items || [])].sort(
+          (a, b) => parseNewsTimestampMs(b.published) - parseNewsTimestampMs(a.published)
+        );
+        box.innerHTML = sortedReg.length
+          ? `<div class="feed-list">${sortedReg.slice(0, 15).map((x) => `
               <div class="feed-item">
                 <div class="feed-meta"><span>${esc(x.source || "")}</span><span>${esc((x.published || "").slice(0, 10))}</span></div>
                 <a class="feed-title" href="${esc(secHtmlUrl(x.url))}" target="_blank" rel="noopener">${esc(x.title)}</a>
@@ -5112,7 +5214,16 @@
     $("viewAllScreenerBtn").onclick = () => setView("screener");
     if ($("viewAllNewsOverviewBtn")) $("viewAllNewsOverviewBtn").onclick = () => setView("breaking");
     if ($("shuffleOverviewNewsBtn")) {
-      $("shuffleOverviewNewsBtn").onclick = () => renderOverviewNews({ advance: true });
+      $("shuffleOverviewNewsBtn").onclick = async () => {
+        const feed = getUnifiedNewsFeed().filter((x) => !x.isTape);
+        if (state.ovNewsOffset + 4 >= feed.length && hasMoreUnhydratedNewsArchives()) {
+          await hydrateOlderNewsBatch(12);
+        }
+        renderOverviewNews({ advance: true });
+      };
+    }
+    if ($("ovNewestNewsBtn")) {
+      $("ovNewestNewsBtn").onclick = () => renderOverviewNews({ resetNewest: true });
     }
     const newsInp = $("newsSearchInput");
     if (newsInp) {
@@ -7094,8 +7205,9 @@
       }));
 
       if (discovered.length) {
-        discovered.sort((a, b) => (b.importance || 0) - (a.importance || 0));
-        state.breaking = [...discovered, ...(state.breaking || [])].slice(0, 110);
+        state.breaking = [...discovered, ...(state.breaking || [])]
+          .sort((a, b) => parseNewsTimestampMs(b.published) - parseNewsTimestampMs(a.published))
+          .slice(0, 120);
         syncNewsBadgeCounts();
         renderOverviewNews({ advance: false });
         if (state.view === "breaking" && Date.now() >= (state.highlightUntilMs || 0)) renderBreaking();
