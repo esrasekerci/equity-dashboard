@@ -48,6 +48,19 @@
       } catch {}
       return def;
     })(),
+    userWatchlist: (() => {
+      try {
+        const raw = localStorage.getItem("eq_user_watchlist_v1");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            return parsed.map((x) => String(x || "").trim().toUpperCase()).filter(Boolean);
+          }
+        }
+      } catch {}
+      return [];
+    })(),
+    authUser: null,
     tvChart: null,
     tvCandles: null,
     tvVol: null,
@@ -307,6 +320,7 @@
     if (mBack) {
       mBack.classList.toggle("hidden", view !== "stock");
     }
+    document.body.classList.toggle("is-stock-view", view === "stock");
     const stockTab = $("stockNavTab");
     if (stockTab && state.activeTicker) {
       stockTab.classList.remove("hidden");
@@ -1006,6 +1020,129 @@
   }
 
   // ---- SCREENER (Desktop Table + Mobile Cards) ----
+  let _toastTimer = null;
+  function showAppToast(msg) {
+    const el = $("appToast");
+    if (!el || !msg) return;
+    el.textContent = msg;
+    el.classList.remove("hidden");
+    if (_toastTimer) clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => {
+      el.classList.add("hidden");
+    }, 2400);
+  }
+
+  function isUserStarred(sym) {
+    if (!sym) return false;
+    return state.userWatchlist.includes(String(sym).toUpperCase());
+  }
+
+  function syncWatchlistBadges() {
+    const cnt = state.userWatchlist.length;
+    const hdrBadge = $("savedWatchlistBadge");
+    const hdrBtn = $("openWatchlistBtn");
+    const chipCnt = $("savedChipCount");
+    if (hdrBadge) {
+      hdrBadge.textContent = String(cnt);
+      hdrBadge.classList.toggle("hidden", cnt === 0);
+    }
+    if (hdrBtn) {
+      hdrBtn.classList.toggle("has-saved", cnt > 0);
+    }
+    if (chipCnt) {
+      chipCnt.textContent = cnt > 0 ? `(${cnt})` : "";
+    }
+  }
+
+  function refreshWatchStarButtonsInDom(sym) {
+    const upper = String(sym || "").toUpperCase();
+    const on = isUserStarred(upper);
+    document.querySelectorAll(`[data-watch-sym="${upper}"]`).forEach((btn) => {
+      btn.classList.toggle("is-on", on);
+      if (btn.classList.contains("watch-hero-btn")) {
+        btn.innerHTML = `${on ? "★" : "☆"} <span>${on ? "Saved" : "Watch"}</span>`;
+      } else {
+        btn.textContent = on ? "★" : "☆";
+      }
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  function toggleUserWatchlist(sym) {
+    const upper = String(sym || "").trim().toUpperCase();
+    if (!upper) return;
+    const idx = state.userWatchlist.indexOf(upper);
+    let added = false;
+    if (idx >= 0) {
+      state.userWatchlist.splice(idx, 1);
+    } else {
+      state.userWatchlist.unshift(upper);
+      added = true;
+    }
+    try {
+      localStorage.setItem("eq_user_watchlist_v1", JSON.stringify(state.userWatchlist));
+    } catch {}
+    syncWatchlistBadges();
+    refreshWatchStarButtonsInDom(upper);
+    if (state.view === "screener" && state.filter === "saved") {
+      renderScreener();
+    } else if (state.view === "breaking" && state.breakingTier === "watchlist") {
+      renderBreaking();
+    }
+    window.EQAuth?.syncWatchlist?.(state.userWatchlist);
+    showAppToast(
+      added
+        ? (state.authUser ? `Added ${upper} to Cloud Watchlist ★` : `Saved ${upper} ★ · Sign in to sync across devices`)
+        : `Removed ${upper} from Watchlist`
+    );
+  }
+
+  function wireWatchStarButtons(root) {
+    if (!root) return;
+    root.querySelectorAll("[data-watch-sym]").forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        toggleUserWatchlist(btn.dataset.watchSym);
+      };
+    });
+  }
+
+  window.EQAppBridge = {
+    getWatchlist: () => [...state.userWatchlist],
+    getChartOverlays: () => ({ ...state.chartOverlays }),
+    applyCloudState: ({ user, watchlist, chartOverlays } = {}) => {
+      if (user !== undefined) state.authUser = user;
+      if (Array.isArray(watchlist)) {
+        state.userWatchlist = watchlist.map((x) => String(x || "").toUpperCase()).filter(Boolean);
+        try { localStorage.setItem("eq_user_watchlist_v1", JSON.stringify(state.userWatchlist)); } catch {}
+        syncWatchlistBadges();
+        if (state.view === "screener") renderScreener();
+        if (state.view === "breaking" && state.breakingTier === "watchlist") renderBreaking();
+        if (state.view === "stock" && state.activeTicker) refreshWatchStarButtonsInDom(state.activeTicker);
+      }
+      if (chartOverlays && typeof chartOverlays === "object") {
+        state.chartOverlays = { ...state.chartOverlays, ...chartOverlays };
+        try { localStorage.setItem("eq_chart_overlays_v1", JSON.stringify(state.chartOverlays)); } catch {}
+        if (state.view === "stock" && state.activeTicker && state.tvRenderBody) {
+          state.tvRenderBody();
+        }
+      }
+    },
+    openSavedWatchlist: () => {
+      state.filter = "saved";
+      state.activeSector = null;
+      document.querySelectorAll("#filterBar .chip[data-filter]").forEach((c) => {
+        c.classList.toggle("active", c.dataset.filter === "saved");
+      });
+      setView("screener");
+      renderScreener();
+    },
+    openStock: (sym) => openStock(sym),
+    toggleWatchlist: (sym) => toggleUserWatchlist(sym),
+    showToast: (msg) => showAppToast(msg),
+  };
+
   function getFilteredRows() {
     const s = state.summary;
     if (!s) return [];
@@ -1019,7 +1156,8 @@
       $("clearSectorChip")?.classList.add("hidden");
     }
 
-    if (state.filter === "core") rows = rows.filter((r) => r.is_core);
+    if (state.filter === "saved") rows = rows.filter((r) => isUserStarred(r.symbol));
+    else if (state.filter === "core") rows = rows.filter((r) => r.is_core);
     else if (state.filter === "signals") rows = rows.filter((r) => (r.patterns || []).length > 0);
     else if (state.filter === "earnings") rows = rows.filter((r) => r.earnings_days != null && Math.abs(r.earnings_days) <= 10);
     else if (state.filter === "oversold") rows = rows.filter((r) => r.rsi14 != null && r.rsi14 < 30);
@@ -1089,8 +1227,13 @@
       return `
         <tr data-sym="${esc(r.symbol)}">
           <td>
-            <strong>${esc(r.symbol)}</strong>
-            <div class="muted">${esc(r.name)}</div>
+            <div class="scr-sym-cell">
+              <button type="button" class="watch-star-btn ${isUserStarred(r.symbol) ? "is-on" : ""}" data-watch-sym="${esc(r.symbol)}" aria-label="Save ${esc(r.symbol)}" title="Save to Watchlist">${isUserStarred(r.symbol) ? "★" : "☆"}</button>
+              <div>
+                <strong>${esc(r.symbol)}</strong>
+                <div class="muted">${esc(r.name)}</div>
+              </div>
+            </div>
           </td>
           <td><span class="tag sector-link" data-sector="${esc(r.sector)}">${esc(fmtSector(r.sector))}</span></td>
           <td class="num"><strong>$${fmtNum(r.close)}</strong>${renderExtMini(r)}</td>
@@ -1112,9 +1255,13 @@
         </tr>
       `;
     }).join("");
-    $("screenerBody").querySelectorAll("tr").forEach((tr) => {
+    if (!rows.length && state.filter === "saved") {
+      $("screenerBody").innerHTML = `<tr><td colspan="11" style="text-align:center;padding:24px" class="muted">No saved stocks yet. Tap ☆ beside any ticker to build your personal watchlist${state.authUser ? "." : " — or Sign In at the top bar to sync across devices."}</td></tr>`;
+    }
+    $("screenerBody").querySelectorAll("tr[data-sym]").forEach((tr) => {
       tr.onclick = () => openStock(tr.dataset.sym);
     });
+    wireWatchStarButtons($("screenerBody"));
     wireSectorLinks($("screenerBody"));
 
     // Mobile cards
@@ -1131,6 +1278,7 @@
           <div class="scr-top">
             <div style="min-width:0">
               <div class="scr-sym-line">
+                <button type="button" class="watch-star-btn ${isUserStarred(r.symbol) ? "is-on" : ""}" data-watch-sym="${esc(r.symbol)}" aria-label="Save ${esc(r.symbol)}">${isUserStarred(r.symbol) ? "★" : "☆"}</button>
                 <span class="scr-sym">${esc(r.symbol)}</span>
                 <span class="scr-name">${esc(r.name)}</span>
               </div>
@@ -1160,11 +1308,12 @@
           </div>
         </div>
       `;
-    }).join("") : `<div class="panel muted">No stocks match the active filter.</div>`;
+    }).join("") : `<div class="panel muted">${state.filter === "saved" ? `No saved stocks yet. Tap ☆ beside any stock to build your personal watchlist${state.authUser ? "." : " — or Sign In at the top bar to sync across devices."}` : "No stocks match the active filter."}</div>`;
 
     $("screenerCards").querySelectorAll(".stock-card").forEach((card) => {
       card.onclick = () => openStock(card.dataset.sym);
     });
+    wireWatchStarButtons($("screenerCards"));
     wireSectorLinks($("screenerCards"));
   }
 
@@ -2771,7 +2920,13 @@
     const q = (state.breakingSearch || "").trim().toLowerCase();
     const baseFiltered = allItems.filter((it) => {
       if (state.breakingTier === "critical" && it.sigTier !== "CRITICAL") return false;
-      if (state.breakingTier === "watchlist" && !it.isWatchlist) return false;
+      if (state.breakingTier === "watchlist") {
+        if (state.userWatchlist.length > 0) {
+          if (!state.userWatchlist.includes(it.symbol)) return false;
+        } else if (!it.isWatchlist) {
+          return false;
+        }
+      }
       if (q) {
         const hay = `${it.symbol} ${it.companyName} ${it.title} ${it.source} ${it.desks.map((d) => NEWS_DESK_LABELS[d] || d).join(" ")}`.toLowerCase();
         if (!hay.includes(q)) return false;
@@ -3494,6 +3649,7 @@
             <div class="pro-title-row">
               <h1 class="stock-title">${esc(t.symbol)}</h1>
               <span class="pro-company-name">${esc(t.name)}</span>
+              <button type="button" class="watch-star-btn watch-hero-btn ${isUserStarred(t.symbol) ? "is-on" : ""}" data-watch-sym="${esc(t.symbol)}" aria-label="Save ${esc(t.symbol)} to watchlist">${isUserStarred(t.symbol) ? "★" : "☆"} <span>${isUserStarred(t.symbol) ? "Saved" : "Watch"}</span></button>
             </div>
           </div>
           <div class="stock-price-box" id="stockPriceBox">
@@ -3614,6 +3770,7 @@
       </div>
     `;
 
+    wireWatchStarButtons($("stockContent"));
     $("stockJumpBar")?.querySelectorAll(".jump-pill[data-jump]").forEach((btn) => {
       btn.onclick = () => {
         const el = $(btn.dataset.jump);
@@ -3683,6 +3840,7 @@
           const prevRange = state.tvChart?.timeScale?.()?.getVisibleLogicalRange?.() || null;
           state.chartOverlays[k] = !state.chartOverlays[k];
           try { localStorage.setItem("eq_chart_overlays_v1", JSON.stringify(state.chartOverlays)); } catch {}
+          window.EQAuth?.syncChartOverlays?.({ ...state.chartOverlays });
           b.classList.toggle("active", Boolean(state.chartOverlays[k]));
           if (k === "sr") b.classList.toggle("sr-on", Boolean(state.chartOverlays[k]));
           if (k === "sma20") b.classList.toggle("ma20-on", Boolean(state.chartOverlays[k]));
@@ -5078,6 +5236,11 @@
       e.stopPropagation();
       openSearchOverlay();
     });
+    $("openWatchlistBtn")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      window.EQAppBridge.openSavedWatchlist();
+    });
+    syncWatchlistBadges();
     searchBackdrop?.addEventListener("click", closeSearchOverlay);
 
     inp.addEventListener("input", () => renderSearchHits(inp.value.trim().toLowerCase()));
@@ -7019,7 +7182,7 @@
     document.addEventListener("touchend", (e) => {
       if (isInsideGraph(e.target)) return;
       const now = Date.now();
-      if (now - lastTouchEndMs <= 280 && e.cancelable && !e.target.closest("button, a, input, select, textarea, [role='button'], [data-sym], [data-ov-news-id]")) {
+      if (now - lastTouchEndMs <= 280 && e.cancelable && !e.target.closest("button, a, input, select, textarea, [role='button'], [data-sym], [data-ov-news-id], [data-watch-sym]")) {
         e.preventDefault();
       }
       lastTouchEndMs = now;
