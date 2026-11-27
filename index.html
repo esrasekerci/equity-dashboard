@@ -16,7 +16,7 @@
   <meta property="og:title" content="Equity Intelligence" />
   <meta property="og:description" content="Live 100-stock quantitative intelligence, Gold &amp; Silver benchmarks, interactive charts, supply-chain value network, Institutional Flow, official legal authorities &amp; SEC filings." />
   <title>Equity Intelligence</title>
-  <link rel="stylesheet" href="assets/app.css?v=55" />
+  <link rel="stylesheet" href="assets/app.css?v=56" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -28,12 +28,9 @@
             <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             <span>Back</span>
           </button>
-          <button type="button" id="userAccountBtn" class="user-account-pill" aria-label="Account and Sign In">
-            <span class="ua-avatar" id="userAvatarBox">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            </span>
+          <button type="button" id="userAccountBtn" class="user-account-pill" aria-label="Account">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <span class="ua-label" id="userAccountLabel">Sign In</span>
-            <span class="ua-sync-dot hidden" id="userSyncDot" title="Cloud Sync Active"></span>
           </button>
           <div class="brand hidden" id="brandHome" aria-hidden="true">
             <div class="brand-title hidden" aria-hidden="true"></div>
@@ -43,10 +40,6 @@
 
         <div class="header-actions">
           <select id="dateSelect" class="select-control hidden" aria-label="Report date"></select>
-          <button type="button" id="openWatchlistBtn" class="icon-btn watchlist-trigger-btn" aria-label="Saved Watchlist" title="Saved Watchlist">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <span class="hdr-watch-cnt hidden" id="savedWatchlistBadge">0</span>
-          </button>
           <button type="button" id="openSearchBtn" class="icon-btn search-trigger-btn" aria-label="Search" title="Search (/)">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </button>
@@ -80,13 +73,20 @@
       <div id="todayEarningsBanner" class="today-earnings-banner hidden"></div>
       <div id="kpiStrip" class="kpi-grid"></div>
 
+      <div class="section-header wl-sec-hdr" id="sec-watchlist">
+        <div class="wl-hdr-left">
+          <h2>Watchlist</h2>
+          <span class="wl-cohort-sub" id="wlCohortSub"></span>
+        </div>
+        <button type="button" class="link-btn" id="wlManageBtn">+ Add</button>
+      </div>
+      <div id="overviewWatchlistGrid" class="wl-grid"></div>
+
       <div class="section-header ov-news-hdr" id="sec-ov-news">
         <div>
           <h2>Market News</h2>
         </div>
         <div class="ov-news-actions">
-          <button type="button" class="ov-news-newest-btn hidden" id="ovNewestNewsBtn" title="Jump back to newest headlines">↑ Newest</button>
-          <span class="ov-news-range" id="ovNewsRangeBadge"></span>
           <button type="button" class="ov-news-shuffle-btn" id="shuffleOverviewNewsBtn" title="Load older news" aria-label="Load older news">↻</button>
           <button type="button" class="link-btn" id="viewAllNewsOverviewBtn">All news →</button>
         </div>
@@ -152,7 +152,7 @@
       <div class="filter-bar-scroll">
         <div class="filter-bar scr-filter-bar" id="filterBar">
           <button class="chip active" data-filter="all">All</button>
-          <button class="chip" data-filter="saved" id="savedFilterChip">★ Saved <span id="savedChipCount"></span></button>
+          <button class="chip" data-filter="saved" id="savedFilterChip">Watchlist <span id="savedChipCount"></span></button>
           <button class="chip" data-filter="core">Core</button>
           <button class="chip" data-filter="signals">Patterns</button>
           <button class="chip" data-filter="earnings">Earnings</button>
@@ -377,13 +377,6 @@
     <div class="more-sheet-panel" id="mobileMorePanel">
       <div class="more-sheet-handle"></div>
       <div class="more-sheet-list">
-        <button type="button" class="more-sheet-item" id="moreAccountItem">
-          <span style="display:flex;flex-direction:column;align-items:flex-start;gap:1px">
-            <span>Account &amp; Cloud Sync</span>
-            <span class="muted" id="moreAccountSub" style="font-size:11px;font-weight:500">Sign in or create account</span>
-          </span>
-          <span class="more-arrow">→</span>
-        </button>
         <button type="button" class="more-sheet-item" data-view="breaking">
           <span>Breaking News</span>
           <span class="badge-pill" id="moreBreakingCount">0</span>
@@ -410,7 +403,7 @@
     <div class="search-palette">
       <div class="search-palette-input-row">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted);flex-shrink:0"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input id="quickSearch" type="search" placeholder="" aria-label="Search ticker or company" autocomplete="off" />
+        <input id="quickSearch" type="search" placeholder="Search ticker or company…" aria-label="Search ticker or company" autocomplete="off" />
       </div>
       <div id="searchDropdown" class="search-palette-results"></div>
     </div>
@@ -430,7 +423,7 @@
   <!-- Subtle Status Toast -->
   <div id="appToast" class="app-toast hidden" role="status" aria-live="polite"></div>
 
-  <script src="assets/app.js?v=55"></script>
-  <script type="module" src="assets/auth.js?v=55"></script>
+  <script src="assets/app.js?v=56"></script>
+  <script type="module" src="assets/auth.js?v=56"></script>
 </body>
 </html>

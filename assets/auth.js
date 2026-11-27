@@ -150,30 +150,17 @@ function userInitials(user) {
 
 function updateTopbarAccountPill() {
   const btn = $("userAccountBtn");
-  const avatarBox = $("userAvatarBox");
   const labelEl = $("userAccountLabel");
-  const syncDot = $("userSyncDot");
-  const moreLabel = $("moreAccountSub");
   const user = authState.user;
 
-  if (!btn || !avatarBox || !labelEl) return;
+  if (!btn || !labelEl) return;
 
   if (user) {
     btn.classList.add("is-authenticated");
     labelEl.textContent = userDisplayLabel(user);
-    if (user.photoURL) {
-      avatarBox.innerHTML = `<img src="${esc(user.photoURL)}" alt="" class="ua-photo" referrerpolicy="no-referrer" />`;
-    } else {
-      avatarBox.innerHTML = `<span class="ua-initials">${esc(userInitials(user))}</span>`;
-    }
-    syncDot?.classList.remove("hidden");
-    if (moreLabel) moreLabel.textContent = user.email || userDisplayLabel(user);
   } else {
     btn.classList.remove("is-authenticated");
     labelEl.textContent = "Sign In";
-    avatarBox.innerHTML = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
-    syncDot?.classList.add("hidden");
-    if (moreLabel) moreLabel.textContent = "Sign in or create account";
   }
 }
 
@@ -229,14 +216,6 @@ function renderAuthModalContent() {
   const mode = authState.mode;
 
   if (mode === "account" && user) {
-    const wl = window.EQAppBridge?.getWatchlist?.() || [];
-    const ov = window.EQAppBridge?.getChartOverlays?.() || {};
-    const activeOv = [
-      ov.sr ? "S/R" : null,
-      ov.sma20 ? "MA 20" : null,
-      ov.sma50 ? "MA 50" : null,
-      ov.sma200 ? "MA 200" : null,
-    ].filter(Boolean);
     const providerId = user.providerData?.[0]?.providerId || "password";
     const isPasswordUser = user.providerData?.some((p) => p.providerId === "password") || providerId === "password";
     const verified = Boolean(user.emailVerified) || providerId === "google.com";
@@ -245,8 +224,7 @@ function renderAuthModalContent() {
       <div class="auth-sheet-handle" aria-hidden="true"></div>
       <div class="auth-hdr">
         <div>
-          <div class="auth-kicker">Equity Intelligence Account</div>
-          <h3 class="auth-title">Profile &amp; Cloud Sync</h3>
+          <h3 class="auth-title">Account</h3>
         </div>
         <button type="button" class="auth-close-btn" id="authModalCloseBtn" aria-label="Close">✕</button>
       </div>
@@ -254,84 +232,57 @@ function renderAuthModalContent() {
       <div id="authStatusBanner" class="auth-banner hidden"></div>
 
       <div class="auth-profile-card">
-        <div class="auth-profile-avatar">
-          ${user.photoURL ? `<img src="${esc(user.photoURL)}" alt="" referrerpolicy="no-referrer" />` : `<span>${esc(userInitials(user))}</span>`}
-        </div>
         <div class="auth-profile-meta">
           <div class="auth-profile-name-row">
             <strong>${esc(user.displayName || userDisplayLabel(user))}</strong>
-            <span class="auth-sync-pill"><span class="live-dot"></span>Synced</span>
           </div>
           <div class="auth-profile-email">${esc(user.email || "Signed in")}</div>
-          <div class="auth-profile-badges">
-            <span class="auth-mini-tag ${verified ? "ok" : "warn"}">${verified ? "Verified Email" : "Unverified Email"}</span>
-            <span class="auth-mini-tag">${providerId === "google.com" ? "Google Account" : "Email & Password"}</span>
-            ${!verified ? `<button type="button" class="auth-inline-link" id="authResendVerifyBtn">Verify email</button>` : ""}
-          </div>
+          ${!verified ? `
+            <div class="auth-profile-badges">
+              <span class="auth-mini-tag warn">Unverified email</span>
+              <button type="button" class="auth-inline-link" id="authResendVerifyBtn">Send verification</button>
+            </div>
+          ` : ""}
         </div>
       </div>
 
       <form id="authProfileForm" class="auth-section-box" autocomplete="off">
-        <label class="auth-label" for="authDisplayNameInp">Display Name</label>
+        <label class="auth-label" for="authDisplayNameInp">Name</label>
         <div class="auth-inline-edit">
           <input id="authDisplayNameInp" class="auth-input" type="text" maxlength="80" value="${esc(user.displayName || "")}" placeholder="Your name" />
           <button type="submit" class="auth-btn-secondary" id="authSaveNameBtn">Save</button>
         </div>
       </form>
 
-      <div class="auth-section-box">
-        <div class="auth-sec-row">
-          <div>
-            <div class="auth-sec-title">Cloud Watchlist (${wl.length})</div>
-            <div class="auth-sec-sub">${wl.length ? "Synced live across iOS, Android & Web" : "Tap ☆ on any stock to save it to your cloud watchlist"}</div>
-          </div>
-          <button type="button" class="auth-btn-secondary" id="authOpenWatchlistBtn">Open ★</button>
-        </div>
-        ${wl.length ? `
-          <div class="auth-wl-chips">
-            ${wl.slice(0, 18).map((sym) => `
-              <span class="auth-wl-chip">
-                <button type="button" class="auth-wl-open" data-auth-sym="${esc(sym)}">${esc(sym)}</button>
-                <button type="button" class="auth-wl-rm" data-auth-rm="${esc(sym)}" aria-label="Remove ${esc(sym)}">×</button>
-              </span>
-            `).join("")}
-            ${wl.length > 18 ? `<span class="auth-mini-tag">+${wl.length - 18} more</span>` : ""}
-          </div>
-        ` : ""}
-        <div class="auth-sec-foot">
-          Chart overlays synced: <strong>${activeOv.length ? esc(activeOv.join(" · ")) : "Clean candles (default)"}</strong>
-        </div>
-      </div>
-
       <div class="auth-actions-stack">
         ${user.email ? `
           <button type="button" class="auth-action-row" id="authSendPwResetLoggedBtn">
-            <span>${isPasswordUser ? "Reset / Change Password" : "Set Password via Email Link"}</span>
-            <span class="muted">Send reset email →</span>
+            <span>${isPasswordUser ? "Reset Password" : "Set Password"}</span>
+            <span class="muted">Email link →</span>
           </button>
         ` : ""}
         <button type="button" class="auth-action-row" id="authSignOutBtn">
           <span>Sign Out</span>
-          <span class="muted">Log out on this device</span>
+          <span class="muted">→</span>
         </button>
         <button type="button" class="auth-action-row danger" id="authToggleDeleteBtn">
           <span>Delete Account</span>
-          <span class="muted">Permanent removal</span>
+          <span class="muted">Permanent</span>
         </button>
       </div>
 
       <div id="authDeleteConfirmBox" class="auth-delete-box ${authState.deleteConfirmOpen ? "" : "hidden"}">
         <div class="auth-delete-warn">
-          <strong>Delete your account permanently?</strong>
-          <p>This immediately deletes your cloud profile, synced watchlist, and login credentials. This action cannot be undone.</p>
+          <strong>Delete account permanently?</strong>
+          <p>This deletes your account and saved preferences permanently.</p>
         </div>
         ${isPasswordUser ? `
-          <label class="auth-label" for="authDeletePwInp">Confirm current password</label>
-          <input id="authDeletePwInp" class="auth-input" type="password" autocomplete="current-password" placeholder="Enter password to confirm" />
+          <label class="auth-label" for="authDeletePwInp">Confirm password</label>
+          <input id="authDeletePwInp" class="auth-input" type="password" autocomplete="current-password" placeholder="Enter password" />
         ` : ""}
         <div class="auth-delete-btns">
           <button type="button" class="auth-btn-secondary" id="authCancelDeleteBtn">Cancel</button>
-          <button type="button" class="auth-btn-danger" id="authConfirmDeleteBtn">Delete Permanently</button>
+          <button type="button" class="auth-btn-danger" id="authConfirmDeleteBtn">Delete</button>
         </div>
       </div>
     `;
@@ -976,11 +927,6 @@ function initAuthUI() {
   });
 
   $("authModalBackdrop")?.addEventListener("click", closeAuthModal);
-
-  $("moreAccountItem")?.addEventListener("click", () => {
-    $("mobileMoreSheet")?.classList.add("hidden");
-    openAuthModal(authState.user ? "account" : "login");
-  });
 
   window.addEventListener("keydown", (ev) => {
     if (ev.key === "Escape" && $("authModal") && !$("authModal").classList.contains("hidden")) {

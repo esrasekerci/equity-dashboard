@@ -775,6 +775,7 @@
       }
     }
 
+    renderOverviewWatchlist();
     renderOverviewNews({ advance: false });
     syncNewsBadgeCounts();
 
@@ -963,6 +964,7 @@
     });
 
     // Notable Movers (dynamically ranked & generated from live synchronized ticker state)
+    renderOverviewWatchlist();
     renderNotableMoversGrid();
   }
 
@@ -1048,19 +1050,166 @@
 
   function syncWatchlistBadges() {
     const cnt = state.userWatchlist.length;
-    const hdrBadge = $("savedWatchlistBadge");
-    const hdrBtn = $("openWatchlistBtn");
     const chipCnt = $("savedChipCount");
-    if (hdrBadge) {
-      hdrBadge.textContent = String(cnt);
-      hdrBadge.classList.toggle("hidden", cnt === 0);
-    }
-    if (hdrBtn) {
-      hdrBtn.classList.toggle("has-saved", cnt > 0);
-    }
     if (chipCnt) {
       chipCnt.textContent = cnt > 0 ? `(${cnt})` : "";
     }
+    const manageBtn = $("wlManageBtn");
+    if (manageBtn) {
+      manageBtn.textContent = cnt > 0 ? "Edit" : "+ Add";
+    }
+  }
+
+  let _wlHydrateBusy = false;
+  async function hydrateWatchlistSparklines() {
+    if (_wlHydrateBusy || !state.date || !state.userWatchlist.length) return;
+    const missing = state.userWatchlist.filter((sym) => !state.tickerCache[`${state.date}:${sym}`]);
+    if (!missing.length) return;
+    _wlHydrateBusy = true;
+    let added = 0;
+    try {
+      await Promise.all(
+        missing.slice(0, 16).map(async (sym) => {
+          try {
+            const b = await fetchJson(`data/${state.date}/tickers/${sym}.json`);
+            if (b) {
+              state.tickerCache[`${state.date}:${sym}`] = b;
+              added++;
+            }
+          } catch {}
+        })
+      );
+    } finally {
+      _wlHydrateBusy = false;
+    }
+    if (added > 0 && state.view === "overview") {
+      renderOverviewWatchlist();
+    }
+  }
+
+  function buildWatchlistSparklineSvg(sym, row) {
+    const isUp = Number(row?.change_1d_pct ?? 0) >= 0;
+    const stroke = isUp ? "#22c55e" : "#f43f5e";
+    const gradId = `wlg-${sym.replace(/[^A-Z0-9]/gi, "")}`;
+    const cached = state.date ? state.tickerCache[`${state.date}:${sym}`] : null;
+    const rawSeries = cached?.technical?.series;
+    let pts = [];
+    if (Array.isArray(rawSeries) && rawSeries.length >= 4) {
+      pts = rawSeries.slice(-20).map((b) => Number(b.c ?? b.close)).filter((v) => Number.isFinite(v) && v > 0);
+      if (row?.close > 0) pts[pts.length - 1] = Number(row.close);
+    } else if (row?.close > 0) {
+      const c = Number(row.close);
+      const p = Number(row.change_1d_pct || 0);
+      const prev = Math.abs(100 + p) > 1e-6 ? c / (1 + p / 100) : c;
+      pts = [prev, (prev + c) * 0.5, c];
+    }
+    if (pts.length < 2) return "";
+    const minV = Math.min(...pts);
+    const maxV = Math.max(...pts);
+    const span = Math.max(1e-6, maxV - minV);
+    const W = 76;
+    const H = 26;
+    const coords = pts.map((v, i) => {
+      const x = (i / (pts.length - 1)) * W;
+      const y = H - 3 - ((v - minV) / span) * (H - 6);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    });
+    const linePts = coords.join(" ");
+    const areaPts = `0,${H} ${linePts} ${W},${H}`;
+    return `
+      <svg class="wl-spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${stroke}" stop-opacity="0.24"/>
+            <stop offset="100%" stop-color="${stroke}" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <polygon points="${areaPts}" fill="url(#${gradId})"/>
+        <polyline points="${linePts}" fill="none" stroke="${stroke}" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `;
+  }
+
+  function renderOverviewWatchlist() {
+    const grid = $("overviewWatchlistGrid");
+    const subEl = $("wlCohortSub");
+    const s = state.summary;
+    if (!grid || !s) return;
+
+    syncWatchlistBadges();
+    const bySym = Object.fromEntries((s.tickers || []).map((t) => [t.symbol, t]));
+    const items = state.userWatchlist.map((sym) => bySym[sym]).filter(Boolean);
+
+    if (!items.length) {
+      if (subEl) subEl.textContent = "";
+      const starters = ["NVDA", "AAPL", "MSFT", "TSLA", "AMZN", "GOOGL"].filter((sym) => bySym[sym]);
+      grid.innerHTML = `
+        <div class="wl-empty-card">
+          <span class="wl-empty-txt">Add favorite stocks to track live prices &amp; 20D trend.</span>
+          <div class="wl-quick-picks">
+            ${starters.map((sym) => `<button type="button" class="wl-pick-pill" data-wl-add="${esc(sym)}">+ ${esc(sym)}</button>`).join("")}
+          </div>
+        </div>
+      `;
+      grid.querySelectorAll("[data-wl-add]").forEach((btn) => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          toggleUserWatchlist(btn.dataset.wlAdd);
+        };
+      });
+      return;
+    }
+
+    hydrateWatchlistSparklines();
+
+    if (subEl) {
+      const upN = items.filter((r) => (r.change_1d_pct ?? 0) > 0).length;
+      const dnN = items.filter((r) => (r.change_1d_pct ?? 0) < 0).length;
+      const rets = items.map((r) => Number(r.change_1d_pct)).filter((v) => Number.isFinite(v));
+      const avg = rets.length ? rets.reduce((a, b) => a + b, 0) / rets.length : null;
+      subEl.innerHTML = `${items.length} · <span class="pos">${upN}↑</span> <span class="neg">${dnN}↓</span>${avg != null ? ` · Avg <strong class="${clsPct(avg)}">${fmtPct(avg, 2)}</strong>` : ""}`;
+    }
+
+    grid.innerHTML = items.map((r) => {
+      let microTag = "";
+      if (r.earnings_days != null && r.earnings_days >= 0 && r.earnings_days <= 7) {
+        microTag = `<span class="wl-micro-tag warn">Earn ${r.earnings_days === 0 ? "today" : `${r.earnings_days}d`}</span>`;
+      } else if (r.rsi14 != null && (r.rsi14 < 30 || r.rsi14 > 70)) {
+        microTag = `<span class="wl-micro-tag">RSI ${fmtNum(r.rsi14, 0)}</span>`;
+      }
+      const hasExt = r.ext_price != null && r.ext_label;
+      const extTag = r.ext_label === "Pre-Market" ? "PM" : "AH";
+      const subHtml = hasExt
+        ? `<span>${extTag} $${fmtNum(r.ext_price)}</span> <span class="${clsPct(r.ext_change_pct)}">${fmtPct(r.ext_change_pct, 2)}</span>`
+        : esc(r.name || "");
+
+      return `
+        <div class="wl-card" data-wl-sym="${esc(r.symbol)}" role="button" tabindex="0">
+          <div class="wl-left">
+            <div class="wl-sym-row">
+              <span class="wl-sym">${esc(r.symbol)}</span>
+              ${microTag}
+            </div>
+            <div class="wl-sub">${subHtml}</div>
+          </div>
+          <div class="wl-mid">${buildWatchlistSparklineSvg(r.symbol, r)}</div>
+          <div class="wl-right">
+            <div class="wl-price">$${fmtNum(r.close)}</div>
+            <span class="wl-pct-pill ${clsPct(r.change_1d_pct)}">${fmtPct(r.change_1d_pct, 2)}</span>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    grid.querySelectorAll(".wl-card[data-wl-sym]").forEach((card) => {
+      card.onclick = () => openStock(card.dataset.wlSym);
+      card.onkeydown = (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openStock(card.dataset.wlSym);
+        }
+      };
+    });
   }
 
   function refreshWatchStarButtonsInDom(sym) {
@@ -1069,7 +1218,7 @@
     document.querySelectorAll(`[data-watch-sym="${upper}"]`).forEach((btn) => {
       btn.classList.toggle("is-on", on);
       if (btn.classList.contains("watch-hero-btn")) {
-        btn.innerHTML = `${on ? "★" : "☆"} <span>${on ? "Saved" : "Watch"}</span>`;
+        btn.innerHTML = `${on ? "★" : "☆"} <span>Watchlist</span>`;
       } else {
         btn.textContent = on ? "★" : "☆";
       }
@@ -1093,17 +1242,14 @@
     } catch {}
     syncWatchlistBadges();
     refreshWatchStarButtonsInDom(upper);
+    renderOverviewWatchlist();
     if (state.view === "screener" && state.filter === "saved") {
       renderScreener();
     } else if (state.view === "breaking" && state.breakingTier === "watchlist") {
       renderBreaking();
     }
     window.EQAuth?.syncWatchlist?.(state.userWatchlist);
-    showAppToast(
-      added
-        ? (state.authUser ? `Added ${upper} to Cloud Watchlist ★` : `Saved ${upper} ★ · Sign in to sync across devices`)
-        : `Removed ${upper} from Watchlist`
-    );
+    showAppToast(added ? `Added ${upper} to Watchlist` : `Removed ${upper} from Watchlist`);
   }
 
   function wireWatchStarButtons(root) {
@@ -1126,6 +1272,7 @@
         state.userWatchlist = watchlist.map((x) => String(x || "").toUpperCase()).filter(Boolean);
         try { localStorage.setItem("eq_user_watchlist_v1", JSON.stringify(state.userWatchlist)); } catch {}
         syncWatchlistBadges();
+        renderOverviewWatchlist();
         if (state.view === "screener") renderScreener();
         if (state.view === "breaking" && state.breakingTier === "watchlist") renderBreaking();
         if (state.view === "stock" && state.activeTicker) refreshWatchStarButtonsInDom(state.activeTicker);
@@ -1236,13 +1383,8 @@
       return `
         <tr data-sym="${esc(r.symbol)}">
           <td>
-            <div class="scr-sym-cell">
-              <button type="button" class="watch-star-btn ${isUserStarred(r.symbol) ? "is-on" : ""}" data-watch-sym="${esc(r.symbol)}" aria-label="Save ${esc(r.symbol)}" title="Save to Watchlist">${isUserStarred(r.symbol) ? "★" : "☆"}</button>
-              <div>
-                <strong>${esc(r.symbol)}</strong>
-                <div class="muted">${esc(r.name)}</div>
-              </div>
-            </div>
+            <strong>${esc(r.symbol)}</strong>
+            <div class="muted">${esc(r.name)}</div>
           </td>
           <td><span class="tag sector-link" data-sector="${esc(r.sector)}">${esc(fmtSector(r.sector))}</span></td>
           <td class="num"><strong>$${fmtNum(r.close)}</strong>${renderExtMini(r)}</td>
@@ -1265,12 +1407,11 @@
       `;
     }).join("");
     if (!rows.length && state.filter === "saved") {
-      $("screenerBody").innerHTML = `<tr><td colspan="11" style="text-align:center;padding:24px" class="muted">No saved stocks yet. Tap ☆ beside any ticker to build your personal watchlist${state.authUser ? "." : " — or Sign In at the top bar to sync across devices."}</td></tr>`;
+      $("screenerBody").innerHTML = `<tr><td colspan="11" style="text-align:center;padding:24px" class="muted">Your Watchlist is empty. Use Search or open any stock to add favorites.</td></tr>`;
     }
     $("screenerBody").querySelectorAll("tr[data-sym]").forEach((tr) => {
       tr.onclick = () => openStock(tr.dataset.sym);
     });
-    wireWatchStarButtons($("screenerBody"));
     wireSectorLinks($("screenerBody"));
 
     // Mobile cards
@@ -1287,7 +1428,6 @@
           <div class="scr-top">
             <div style="min-width:0">
               <div class="scr-sym-line">
-                <button type="button" class="watch-star-btn ${isUserStarred(r.symbol) ? "is-on" : ""}" data-watch-sym="${esc(r.symbol)}" aria-label="Save ${esc(r.symbol)}">${isUserStarred(r.symbol) ? "★" : "☆"}</button>
                 <span class="scr-sym">${esc(r.symbol)}</span>
                 <span class="scr-name">${esc(r.name)}</span>
               </div>
@@ -1317,12 +1457,11 @@
           </div>
         </div>
       `;
-    }).join("") : `<div class="panel muted">${state.filter === "saved" ? `No saved stocks yet. Tap ☆ beside any stock to build your personal watchlist${state.authUser ? "." : " — or Sign In at the top bar to sync across devices."}` : "No stocks match the active filter."}</div>`;
+    }).join("") : `<div class="panel muted">${state.filter === "saved" ? "Your Watchlist is empty. Use Search or open any stock to add favorites." : "No stocks match the active filter."}</div>`;
 
     $("screenerCards").querySelectorAll(".stock-card").forEach((card) => {
       card.onclick = () => openStock(card.dataset.sym);
     });
-    wireWatchStarButtons($("screenerCards"));
     wireSectorLinks($("screenerCards"));
   }
 
@@ -3742,7 +3881,7 @@
             <div class="pro-title-row">
               <h1 class="stock-title">${esc(t.symbol)}</h1>
               <span class="pro-company-name">${esc(t.name)}</span>
-              <button type="button" class="watch-star-btn watch-hero-btn ${isUserStarred(t.symbol) ? "is-on" : ""}" data-watch-sym="${esc(t.symbol)}" aria-label="Save ${esc(t.symbol)} to watchlist">${isUserStarred(t.symbol) ? "★" : "☆"} <span>${isUserStarred(t.symbol) ? "Saved" : "Watch"}</span></button>
+              <button type="button" class="watch-star-btn watch-hero-btn ${isUserStarred(t.symbol) ? "is-on" : ""}" data-watch-sym="${esc(t.symbol)}" aria-label="Toggle ${esc(t.symbol)} in Watchlist">${isUserStarred(t.symbol) ? "★" : "☆"} <span>Watchlist</span></button>
             </div>
           </div>
           <div class="stock-price-box" id="stockPriceBox">
@@ -5304,30 +5443,55 @@
       inp.blur();
     };
 
+    const renderSearchRow = (h) => {
+      const starred = isUserStarred(h.symbol);
+      return `
+        <div class="search-item" data-sym="${esc(h.symbol)}">
+          <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${esc(h.symbol)}</strong> <span class="muted">${esc(h.name)}</span></span>
+          <span class="search-item-right">
+            <span class="price-pill ${clsPct(h.change_1d_pct)}" style="font-size:12px">$${fmtNum(h.close)} · ${fmtPct(h.change_1d_pct, 1)}</span>
+            <button type="button" class="watch-star-btn ${starred ? "is-on" : ""}" data-search-star="${esc(h.symbol)}" aria-label="${starred ? "Remove from" : "Add to"} Watchlist">${starred ? "★" : "☆"}</button>
+          </span>
+        </div>
+      `;
+    };
+
     const renderSearchHits = (q) => {
       if (!state.summary) { dd.innerHTML = ""; return; }
       const tickers = state.summary.tickers || [];
-      let hits;
-      let header = "";
-      if (!q) {
-        hits = [...tickers].sort((a, b) => (b.notable_score || 0) - (a.notable_score || 0)).slice(0, 7);
-        header = `<div class="search-dd-hdr">Top Active Movers</div>`;
-      } else {
-        hits = tickers.filter((t) =>
-          t.symbol.toLowerCase().includes(q) || (t.name || "").toLowerCase().includes(q)
-        ).slice(0, 10);
-      }
-      if (!hits.length) {
-        dd.innerHTML = `<div class="muted" style="padding:14px">No matching tickers.</div>`;
-        return;
-      }
+      const bySym = Object.fromEntries(tickers.map((t) => [t.symbol, t]));
       searchActiveIdx = -1;
-      dd.innerHTML = header + hits.map((h) => `
-        <div class="search-item" data-sym="${esc(h.symbol)}">
-          <span><strong>${esc(h.symbol)}</strong> <span class="muted">${esc(h.name)}</span></span>
-          <span class="price-pill ${clsPct(h.change_1d_pct)}" style="font-size:12px">$${fmtNum(h.close)} · ${fmtPct(h.change_1d_pct, 1)}</span>
-        </div>
-      `).join("");
+
+      if (!q) {
+        const savedRows = state.userWatchlist.map((s) => bySym[s]).filter(Boolean);
+        const topMovers = [...tickers]
+          .filter((t) => !isUserStarred(t.symbol))
+          .sort((a, b) => (b.notable_score || 0) - (a.notable_score || 0))
+          .slice(0, savedRows.length ? 6 : 8);
+
+        dd.innerHTML =
+          (savedRows.length ? `<div class="search-dd-hdr">Watchlist</div>` + savedRows.map(renderSearchRow).join("") : "") +
+          `<div class="search-dd-hdr">${savedRows.length ? "Top Movers" : "Popular & Active"}</div>` +
+          topMovers.map(renderSearchRow).join("");
+      } else {
+        const hits = tickers.filter((t) =>
+          t.symbol.toLowerCase().includes(q) || (t.name || "").toLowerCase().includes(q)
+        ).slice(0, 12);
+        if (!hits.length) {
+          dd.innerHTML = `<div class="muted" style="padding:14px">No matching tickers.</div>`;
+          return;
+        }
+        dd.innerHTML = hits.map(renderSearchRow).join("");
+      }
+
+      dd.querySelectorAll("[data-search-star]").forEach((btn) => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          toggleUserWatchlist(btn.dataset.searchStar);
+          renderSearchHits(inp.value.trim().toLowerCase());
+        };
+      });
       dd.querySelectorAll(".search-item").forEach((el) => {
         el.onclick = () => { closeSearchOverlay(); openStock(el.dataset.sym); };
       });
@@ -5338,7 +5502,6 @@
       searchOverlay.classList.remove("hidden");
       inp.value = "";
       renderSearchHits("");
-      // Focus synchronously inside user gesture so iOS Safari opens the keyboard immediately
       inp.focus();
       try { history.pushState({ ...currentHistoryState(), overlay: "search" }, "", location.href); } catch {}
     };
@@ -5347,9 +5510,9 @@
       e.stopPropagation();
       openSearchOverlay();
     });
-    $("openWatchlistBtn")?.addEventListener("click", (e) => {
+    $("wlManageBtn")?.addEventListener("click", (e) => {
       e.stopPropagation();
-      window.EQAppBridge.openSavedWatchlist();
+      openSearchOverlay();
     });
     syncWatchlistBadges();
     searchBackdrop?.addEventListener("click", closeSearchOverlay);
@@ -6466,6 +6629,7 @@
         if (mv) mv.textContent = fmtNum(r.notable_score, 0);
       }
     });
+    renderOverviewWatchlist();
     renderNotableMoversGrid();
 
     // Patch open Sector Explorer pop-out modal & open Search Spotlight if visible
