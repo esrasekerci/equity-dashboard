@@ -1,8 +1,195 @@
 {
-  "updated_at": "2026-11-26T19:44:04+00:00",
-  "min_importance": 35.0,
-  "max_age_hours": 6.0,
+  "updated_at": "2026-11-27T02:03:56+00:00",
+  "min_importance": 42,
+  "max_age_hours": 4,
   "items": [
+    {
+      "key": "bc0521210f3f3c34",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "We are living in perilous times if Nvidia CEO Jensen Huang dictates your 401(k) balance",
+      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNTkZ4TzUwSHNOaFYtVC1xcnRINWZVdHZnWGZCNHpqbUJ4dFF1QmJnNkFOS1Z5cUxRNlVaU0c0Y1JvSFRZMWFxRjU2VWgxWXhOX1hHZHZJc3k5Q3pWb1MwbDdfSU1WQTRjWjZFUWlsUEZlY3NoZUI2NF9mNk1teWRSS0VCdUZ4d1VvUW5mNS1KWWtqRENUX1NKNHpCdElhSnVjZXRIcE44TDRsMkN2VUI2cnZnd08xVVE4OThudzAwT2M0cWNB?oc=5",
+      "source": "MarketWatch",
+      "source_tier": 1,
+      "published": "2026-11-27T00:31:00+00:00",
+      "importance": 68.0,
+      "significance": "HIGH",
+      "categories": [
+        "contract_partnership"
+      ],
+      "age_hours": 1.55,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "a92864b9300cebdf",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Binance Will Support the Cash Dividend Distribution of The Wendy's Company (WEN), NVIDIA Corporation (NVDA), Qualcomm Incorporated (QCOM), PayPal Holdings, Inc. (PYPL), and Western Digital Corporation (WDC) via bStocks",
+      "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPeHREOG5PdlIwM3h1TkVha2RFTzQ0N0Q4YW9vV0N0b0dJc2dxOXlZejRxSHdkUllzRWpQNFBibjdaMU1veHl2R2VYYkk1cGZZeXhnVkJTZDJFR3ptT0dnUG9ocWJZcVI1RVJiQW93UmxUTzR1QzkzT1MzZ2NNNUpoUWdFZUlhMzg?oc=5",
+      "source": "Binance",
+      "source_tier": 2,
+      "published": "2026-11-27T01:06:53+00:00",
+      "importance": 63.0,
+      "significance": "HIGH",
+      "categories": [
+        "contract_partnership"
+      ],
+      "age_hours": 0.95,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "6c78ab1b2d7a6503",
+      "symbol": "ORCL",
+      "name": "Oracle",
+      "title": "Wondering Why Oracle Fell? Here's What The Bears Saw",
+      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQSTRfb3dXLUxhU1RWUVNUU3V2d29fMlBZa3VyVmZ4RjlveDlIa19uS1ZfWkpuNXIyZ1RvRWxKQVEycmNDWUFKTm1wZ2g1Ukt6bDdtRHpLbHZicGpoNnBxYm9NR0pLdGJkcEhjRU5JY2hvR0dqLU5RNU9PZDduQnprOFV5SFVXZ3dLWVRaU2psYnJHN1ZxWVBWOS1xRlo?oc=5",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-27T01:26:00+00:00",
+      "importance": 53.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 0.63,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "3d668c603d3c4c0f",
+      "symbol": "UNH",
+      "name": "UnitedHealth Group",
+      "title": "Form 4 Unitedhealth Group For: 26 November By Investing.com",
+      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPeTFQbEtyQndRZ1Q4aWNaQlc0OU1lOXoyNjJPOGxwSHh4V0xSMHV0RFRCaVR6SURuRUtQeXRvMmwyZ0c2aUlQeEJXR0dKRHBRQkVMbnl0RmNXck9vYUtJNzBxelNBSUtPb09qajRkQlZIbFRyaENvX1BNQWFIU2xTdHdHN0owaTBJME1jakt2dGlQd0JpOVQ3ZHFER1NJNGJLejhLRg?oc=5",
+      "source": "Investing.com India",
+      "source_tier": 2,
+      "published": "2026-11-27T00:49:18+00:00",
+      "importance": 53.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.24,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "ce5ce06399995cca",
+      "symbol": "GOOGL",
+      "name": "Alphabet",
+      "title": "Google Paid $23 a Share for Mandiant; Alphabet Is Up 146.3%",
+      "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQVmtMUTh3NWNOSER1aE50V0VfamJvVGJHaklyNWlwOW9id3dCMUNfZXRoVzdnRkVtdXNrcXNfdHd4dVJaUmtrLTV4TFk1OGdqbFVId0JxX2k3bzZUQmFsUC1RV2JJNDRUNEdXLWViN1d4OFZ1MUZVMUt5WXdIX2ZDUkZxWXUzZlE4RDlYNw?oc=5",
+      "source": "FourWeekMBA",
+      "source_tier": 2,
+      "published": "2026-11-27T01:56:27+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 0.12,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "4e3349b977436ec4",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "The fake news of Nvidia's China spy scandal, by Shayne Heffernan",
+      "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5YelVfZTdmQk9fVEZHcU11ajJhZWVJR2RwRWJtc1hBU2NubDhNdGpKR21DaTA1TWZDMGlqQmNYcU1lejNSdmljSDdxM2ZaV3czbnNOSFNhTXViNk1CTXEzcWdneFpTQzhSRGpMWmJnX2Jma3JxTXpqMHlNVkVXaW8?oc=5",
+      "source": "Live Trading News",
+      "source_tier": 2,
+      "published": "2026-11-27T01:39:53+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 0.4,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "16c4ee0dd8b56094",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "A new catalyst lies behind the stock price pullback; physics AI may become NVIDIA's next major growth story.",
+      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPdl9oWnBTRzhpcWROQVZELUlBWkR1MVhUdmdUM2J5YmVwRXFJd08tMF9XcmZIYksxSVhXS3l4N2lvRjkwdTNEamdla3FNdTBpSy1KNEtvY2dEZHJwMUYtLTM0bmRmUF9NSUtSeE1UY3NyZTVxeFp5dFlPS09BSVE1OGdTSklrWjJzNlFHVW1mZnE3SVZoVTdZWk9pRWlBNTF3Wm45Tw?oc=5",
+      "source": "富途牛牛",
+      "source_tier": 2,
+      "published": "2026-11-27T01:00:00+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.07,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "2d64db08b3e01334",
+      "symbol": "UNH",
+      "name": "UnitedHealth Group",
+      "title": "UnitedHealth: 2 New Headaches, 1 Buying Opportunity",
+      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNM1FxQ1k1TW5WYnBwVWVZOUpJV2RhYWRnVjNOM2RNWVlXRDN1blVHODNBakJJSE95QkxhMHVKakUtclNodVFhRkVyWm82Q2F5aEVWdjJGTERqbnRycGlSNm5MUDljRENzUHIyWkxrR1BiUlJEOVYwLWhDbVYxZFFxV3JESE5SYjFaY0lVRFI1Q2RuWkhqT1NoVUwwdkZmeGM1aWc?oc=5",
+      "source": "Seeking Alpha",
+      "source_tier": 2,
+      "published": "2026-11-27T00:54:14+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.16,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "ba92553ed8a6d9f3",
+      "symbol": "TSM",
+      "name": "Taiwan Semiconductor",
+      "title": "Taiwan Semiconductor: The Winner of the AI Chip Revolution",
+      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNeVI0OFdmQmJqb2YyWERZWXNtbElXdjdnVmJfWWE0c0dKSElHTGx3ci1NVTlkeEJoUEJPc0NjZTVnUk9wdWd2dGhidzZpSVBTb1BiNUdHSlBZQUhBemtNcEtFOUZHOTdlSHVsQUIyUGJEeFRVMEZNeUZ3Mm5pbzhsdUVTajhnOEl2aWVMbWJJcWZMSVhWWHc?oc=5",
+      "source": "Intellectia AI",
+      "source_tier": 2,
+      "published": "2026-11-27T00:29:01+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.58,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "4e742dc2f10d4922",
+      "symbol": "SHOP",
+      "name": "Shopify",
+      "title": "Shopify Inc. tokenized stock (xStock): Funding, Investors, Team and Key Events",
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1oNlBjTzJRUWFLN2VxT0NUYnhiTEhUOWZlVUNCZkRGQnotdXRaWm1IOWE3SXcwNE53WlAzX1BpOElGTmx0M0lPOTQzNXlONldjNm9KVVRCbExSdG9SczczT25CdzFCM3NJNnFRenRHWQ?oc=5",
+      "source": "CryptoRank",
+      "source_tier": 2,
+      "published": "2026-11-27T00:21:59+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.7,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "e5f610c6031cc36b",
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "title": "EU Pushes Tesla Driving-System Vote Back to 15 December",
+      "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQbnVJMTM1bk15RGxMNWktazlJYXZaMjVBcmI0YnhLRjI2VjZJbUhuMWIwbURpZ3NzQzh4QlRRdTJENE05bzh6UTFaLUdwQV9sMHE1ZWNDeEFjeFVPWThLbGJqa0hURVN0a2x0VzF6T2gzV21yRkYyejNQUldxbHQ5SVF5STdFZm1ONWUyU2FMZFFpZFE?oc=5",
+      "source": "Financial-News.co.uk",
+      "source_tier": 2,
+      "published": "2026-11-27T00:10:47+00:00",
+      "importance": 48.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.89,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
     {
       "key": "802ccd6123b348cd",
       "symbol": "NVDA",
@@ -1005,6 +1192,142 @@
       ],
       "age_hours": 0.81,
       "detected_at": "2026-11-26T09:00:26+00:00"
+    },
+    {
+      "key": "shock_APLD_2026-11-27_after-hours_surge_t1",
+      "symbol": "APLD",
+      "name": "Applied Digital",
+      "title": "Applied Digital (APLD) gains +3.95% to $12.78 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/APLD",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-27T02:03:56+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "shock_ARM_2026-11-27_after-hours_surge_t1",
+      "symbol": "ARM",
+      "name": "Arm Holdings",
+      "title": "Arm Holdings (ARM) gains +2.66% to $165.81 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/ARM",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-27T02:03:56+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "shock_AXTI_2026-11-27_after-hours_surge_t1",
+      "symbol": "AXTI",
+      "name": "AXT Inc",
+      "title": "AXT Inc (AXTI) gains +3.44% to $33.08 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/AXTI",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-27T02:03:56+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "shock_COIN_2026-11-27_after-hours_surge_t1",
+      "symbol": "COIN",
+      "name": "Coinbase Global",
+      "title": "Coinbase Global (COIN) gains +2.80% to $106.62 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/COIN",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-27T02:03:56+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "shock_CORZ_2026-11-27_after-hours_surge_t1",
+      "symbol": "CORZ",
+      "name": "Core Scientific",
+      "title": "Core Scientific (CORZ) gains +4.25% to $11.28 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/CORZ",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-27T02:03:56+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "shock_IREN_2026-11-27_after-hours_surge_t1",
+      "symbol": "IREN",
+      "name": "IREN Limited",
+      "title": "IREN Limited (IREN) gains +3.74% to $13.33 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/IREN",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-27T02:03:56+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "shock_NBIS_2026-11-27_after-hours_surge_t1",
+      "symbol": "NBIS",
+      "name": "Nebius Group",
+      "title": "Nebius Group (NBIS) gains +3.82% to $88.24 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/NBIS",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-27T02:03:56+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T02:03:56+00:00"
+    },
+    {
+      "key": "shock_PANW_2026-11-27_after-hours_drop_t1",
+      "symbol": "PANW",
+      "name": "Palo Alto Networks",
+      "title": "Palo Alto Networks (PANW) drops -3.73% to $342.87 (After-Hours)",
+      "url": "https://finance.yahoo.com/quote/PANW",
+      "source": "Live Market Tape (After-Hours)",
+      "source_tier": 1,
+      "published": "2026-11-27T02:03:56+00:00",
+      "importance": 64.0,
+      "significance": "HIGH",
+      "categories": [
+        "market_move"
+      ],
+      "age_hours": 0.02,
+      "detected_at": "2026-11-27T02:03:56+00:00"
     },
     {
       "key": "c740073c039c7216",
