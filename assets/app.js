@@ -2872,7 +2872,7 @@
     state.breakingCategory = "all";
     state.breakingTier = "all";
     state.breakingSearch = "";
-    state.highlightUntilMs = Date.now() + 3600;
+    state.highlightUntilMs = Date.now() + 1800;
     if ($("newsSearchInput")) $("newsSearchInput").value = "";
     document.querySelectorAll("#newsTierBar .news-tier-btn").forEach((b) => {
       b.classList.toggle("active", b.dataset.ntier === "all");
@@ -2914,7 +2914,7 @@
         secEl?.classList.remove("has-focus-pulse");
         target.classList.remove("news-highlight-pulse");
         state.highlightTimer = null;
-      }, 2600);
+      }, 1550);
     });
   }
 
