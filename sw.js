@@ -1,6 +1,6 @@
 // Network-first service worker with zero stale-cache leaks on iOS/Android PWAs.
-const CACHE = "eq-app-v60";
-const SHELL = ["./", "./index.html", "./assets/app.css?v=60", "./assets/app.js?v=60", "./assets/auth.js?v=60", "./manifest.webmanifest"];
+const CACHE = "eq-app-v61";
+const SHELL = ["./", "./index.html", "./assets/app.css?v=61", "./assets/app.js?v=61", "./assets/auth.js?v=61", "./manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(

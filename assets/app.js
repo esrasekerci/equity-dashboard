@@ -319,6 +319,7 @@
       destroyInteractiveChart();
     }
     state.view = view;
+    $("appTopbar")?.classList.remove("is-hidden");
     if (view === "overview" && state.summary) {
       applyOverviewLayout();
       renderOverviewNews();
@@ -1551,14 +1552,14 @@
     }
 
     const rows = getFilteredRows();
-    $("screenerCount").textContent = `${rows.length}`;
+    if ($("screenerCount")) $("screenerCount").textContent = `${rows.length} stocks`;
     if ($("screenerCohortMeta")) {
       const upCnt = rows.filter((r) => (r.change_1d_pct ?? 0) > 0).length;
       const dnCnt = rows.filter((r) => (r.change_1d_pct ?? 0) < 0).length;
       const rets = rows.map((r) => r.change_1d_pct).filter((v) => v != null && Number.isFinite(Number(v)));
       const avgRet = rets.length ? rets.reduce((a, b) => a + b, 0) / rets.length : null;
       $("screenerCohortMeta").innerHTML = rows.length
-        ? `<span class="pos">${upCnt} adv</span> · <span class="neg">${dnCnt} dec</span>${avgRet != null ? ` · Avg <strong class="${clsPct(avgRet)}">${fmtPct(avgRet, 2)}</strong>` : ""}`
+        ? `<span class="pos">${upCnt}↑</span> <span class="neg">${dnCnt}↓</span>${avgRet != null ? ` · Avg <strong class="${clsPct(avgRet)}">${fmtPct(avgRet, 2)}</strong>` : ""}`
         : "No matches";
     }
 
@@ -5900,19 +5901,46 @@
       });
     });
 
-    // Floating Back-to-Top Button
+    // Smart Scroll-Aware Top Bar (hides smoothly on scroll-down, reveals on scroll-up or near top) + Back-to-Top Button
     const scrollTopBtn = $("scrollTopBtn");
-    if (scrollTopBtn) {
+    const topbarEl = $("appTopbar") || document.querySelector(".topbar");
+    {
       let ticking = false;
+      let lastY = Math.max(0, window.scrollY || 0);
       window.addEventListener("scroll", () => {
         if (ticking) return;
         ticking = true;
         requestAnimationFrame(() => {
-          scrollTopBtn.classList.toggle("hidden", window.scrollY < 360);
+          const y = Math.max(0, window.scrollY || 0);
+          const dy = y - lastY;
+          if (scrollTopBtn) {
+            scrollTopBtn.classList.toggle("hidden", y < 360);
+          }
+          if (topbarEl) {
+            const overlayOpen =
+              Boolean(document.querySelector(".cselect-wrap.open")) ||
+              (searchOverlay && !searchOverlay.classList.contains("hidden")) ||
+              ($("authModal") && !$("authModal").classList.contains("hidden")) ||
+              (moreSheet && !moreSheet.classList.contains("hidden")) ||
+              state.chartFullscreen;
+            if (y <= 36 || overlayOpen) {
+              topbarEl.classList.remove("is-hidden");
+            } else if (dy > 9 && y > 56) {
+              topbarEl.classList.add("is-hidden");
+            } else if (dy < -11) {
+              topbarEl.classList.remove("is-hidden");
+            }
+          }
+          lastY = y;
           ticking = false;
         });
       }, { passive: true });
-      scrollTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+      if (scrollTopBtn) {
+        scrollTopBtn.addEventListener("click", () => {
+          topbarEl?.classList.remove("is-hidden");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      }
     }
 
     // Slide-down-to-close on Stock Detail View (pull down from top of page or drag handle)
@@ -6745,12 +6773,13 @@
     // 2. Patch Screener table, mobile cards & cohort meta in place
     if ($("screenerCohortMeta")) {
       const fRows = getFilteredRows();
+      if ($("screenerCount")) $("screenerCount").textContent = `${fRows.length} stocks`;
       const upCnt = fRows.filter((r) => (r.change_1d_pct ?? 0) > 0).length;
       const dnCnt = fRows.filter((r) => (r.change_1d_pct ?? 0) < 0).length;
       const fRets = fRows.map((r) => r.change_1d_pct).filter((v) => v != null && Number.isFinite(Number(v)));
       const avgRet = fRets.length ? fRets.reduce((a, b) => a + b, 0) / fRets.length : null;
       $("screenerCohortMeta").innerHTML = fRows.length
-        ? `<span class="pos">${upCnt} adv</span> · <span class="neg">${dnCnt} dec</span>${avgRet != null ? ` · Avg <strong class="${clsPct(avgRet)}">${fmtPct(avgRet, 2)}</strong>` : ""}`
+        ? `<span class="pos">${upCnt}↑</span> <span class="neg">${dnCnt}↓</span>${avgRet != null ? ` · Avg <strong class="${clsPct(avgRet)}">${fmtPct(avgRet, 2)}</strong>` : ""}`
         : "No matches";
     }
     document.querySelectorAll("#screenerBody tr[data-sym]").forEach((tr) => {
