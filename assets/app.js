@@ -90,6 +90,15 @@
     }
     return url;
   };
+  const secFilingIndexUrl = (url) => {
+    if (!url) return "#";
+    const m = String(url).match(/^(https:\/\/www\.sec\.gov\/Archives\/edgar\/data\/\d+\/)(\d{18})\/[^/]+$/i);
+    if (m) {
+      const acc = m[2];
+      return `${m[1]}${acc}/${acc.slice(0, 10)}-${acc.slice(10, 12)}-${acc.slice(12)}-index.htm`;
+    }
+    return secHtmlUrl(url);
+  };
   const fmtCap = (v) => {
     if (v == null || Number.isNaN(Number(v))) return "—";
     const n = Number(v);
@@ -690,6 +699,7 @@
         return y && m && d ? Date.UTC(y, m - 1, d) : NaN;
       };
       const todayEtMs = etMidnightMs(nowEtIso);
+      const recomputedSoon = [];
       for (const row of (state.summary.tickers || [])) {
         if (row.notable_score != null) {
           row.notable_score = Math.min(100, Math.max(0, Number(row.notable_score)));
@@ -697,16 +707,85 @@
         if (row.notable_bd && row.notable_bd.total != null) {
           row.notable_bd.total = Math.min(100, Math.max(0, Number(row.notable_bd.total)));
         }
-        if (row.earnings_date && Number.isFinite(todayEtMs)) {
-          const em = etMidnightMs(row.earnings_date);
-          if (Number.isFinite(em)) row.earnings_days = Math.round((em - todayEtMs) / 86400000);
+        const cik10 = row.cik ? String(row.cik).padStart(10, "0") : null;
+        const secHub = cik10
+          ? `https://www.sec.gov/edgar/browse/?CIK=${cik10}`
+          : `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(row.symbol)}`;
+
+        if (Number.isFinite(todayEtMs)) {
+          // If an upcoming date has passed in real US Eastern time before next daily build, roll it into last_earnings_date
+          if (row.next_earnings_date && row.next_earnings_date < nowEtIso) {
+            if (!row.last_earnings_date || row.next_earnings_date > row.last_earnings_date) {
+              row.last_earnings_date = row.next_earnings_date;
+              row.last_earnings_url = secHub;
+              row.last_earnings_source = "SEC Filings";
+            }
+            row.next_earnings_date = null;
+            row.next_earnings_days = null;
+          }
+          if (row.next_earnings_date) {
+            const nm = etMidnightMs(row.next_earnings_date);
+            row.next_earnings_days = Number.isFinite(nm) ? Math.round((nm - todayEtMs) / 86400000) : null;
+            if (!row.next_earnings_url) row.next_earnings_url = secHub;
+            if (!row.next_earnings_source) row.next_earnings_source = "SEC Filings";
+          }
+          if (row.last_earnings_date) {
+            const lm = etMidnightMs(row.last_earnings_date);
+            row.last_earnings_days = Number.isFinite(lm) ? Math.round((lm - todayEtMs) / 86400000) : null;
+            if (!row.last_earnings_url) row.last_earnings_url = secHub;
+            if (!row.last_earnings_source) row.last_earnings_source = "SEC Filings";
+          }
+          // Primary Screener / Watchlist display slot
+          if (row.last_earnings_days != null && row.last_earnings_days >= -5 && row.last_earnings_days <= 0 && (row.next_earnings_days == null || row.next_earnings_days > 5)) {
+            row.earnings_date = row.last_earnings_date;
+            row.earnings_days = row.last_earnings_days;
+            row.earnings_url = row.last_earnings_url;
+            row.earnings_source = row.last_earnings_source;
+          } else if (row.next_earnings_date && row.next_earnings_days != null) {
+            row.earnings_date = row.next_earnings_date;
+            row.earnings_days = row.next_earnings_days;
+            row.earnings_url = row.next_earnings_url;
+            row.earnings_source = row.next_earnings_source;
+          } else if (row.last_earnings_date && row.last_earnings_days != null) {
+            row.earnings_date = row.last_earnings_date;
+            row.earnings_days = row.last_earnings_days;
+            row.earnings_url = row.last_earnings_url;
+            row.earnings_source = row.last_earnings_source;
+          } else if (row.earnings_date) {
+            const em = etMidnightMs(row.earnings_date);
+            if (Number.isFinite(em)) row.earnings_days = Math.round((em - todayEtMs) / 86400000);
+          }
+
+          if (row.next_earnings_days != null && row.next_earnings_days >= 0 && row.next_earnings_days <= 10) {
+            recomputedSoon.push({
+              symbol: row.symbol,
+              name: row.name,
+              date: row.next_earnings_date,
+              days: row.next_earnings_days,
+              url: row.next_earnings_url || secHub,
+              source: row.next_earnings_source || "SEC Filings",
+            });
+          } else if (row.last_earnings_days != null && row.last_earnings_days >= -10 && row.last_earnings_days < 0) {
+            recomputedSoon.push({
+              symbol: row.symbol,
+              name: row.name,
+              date: row.last_earnings_date,
+              days: row.last_earnings_days,
+              url: row.last_earnings_url || secHub,
+              source: row.last_earnings_source || "SEC Filings",
+            });
+          }
         }
       }
-      for (const e of (state.summary.alerts?.earnings_soon || [])) {
-        if (e.date && Number.isFinite(todayEtMs)) {
-          const em = etMidnightMs(e.date);
-          if (Number.isFinite(em)) e.days = Math.round((em - todayEtMs) / 86400000);
-        }
+      if (recomputedSoon.length > 0 || (state.summary.tickers || []).some((t) => t.next_earnings_date || t.last_earnings_date)) {
+        recomputedSoon.sort((a, b) => {
+          const aUp = a.days >= 0 ? 0 : 1;
+          const bUp = b.days >= 0 ? 0 : 1;
+          if (aUp !== bUp) return aUp - bUp;
+          return a.days >= 0 ? (a.days - b.days) : (b.days - a.days);
+        });
+        state.summary.alerts = state.summary.alerts || {};
+        state.summary.alerts.earnings_soon = recomputedSoon;
       }
       const fomcObj = state.summary.macro?.fomc;
       const fomcPulse = state.summary.alerts?.macro_pulse?.fomc;
@@ -750,12 +829,11 @@
     const br = s.breadth || {};
     const mp = (s.alerts && s.alerts.macro_pulse) || {};
 
-    // Pinned Top Banner when any stock reports Earnings TODAY
+    // Pinned Top Banner when any stock reports Earnings TODAY (US Eastern calendar date)
     const todayEarnEl = $("todayEarningsBanner");
     if (todayEarnEl) {
-      const nowIsoDate = new Date().toISOString().slice(0, 10);
       const earnToday = (s.tickers || []).filter(
-        (t) => t.earnings_date && (t.earnings_days === 0 || t.earnings_date === nowIsoDate)
+        (t) => t.next_earnings_days === 0 || t.last_earnings_days === 0 || (!t.next_earnings_date && !t.last_earnings_date && t.earnings_days === 0)
       );
       if (earnToday.length > 0) {
         todayEarnEl.innerHTML = `
@@ -764,8 +842,9 @@
           </div>
           <div class="te-pills">
             ${earnToday.map((t) => {
-              const officialUrl = secHtmlUrl(t.earnings_url || `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(t.symbol)}`);
-              return `<a class="ticker-pill te-pill" href="${esc(officialUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><strong>${esc(t.symbol)}</strong><span class="muted">${esc(t.name)}</span><span class="warn">${esc(t.earnings_source || "Official")} ↗</span></a>`;
+              const eUrl = (t.last_earnings_days === 0 ? t.last_earnings_url : t.next_earnings_url) || t.earnings_url || `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(t.symbol)}`;
+              const eSrc = (t.last_earnings_days === 0 ? t.last_earnings_source : t.next_earnings_source) || t.earnings_source || "SEC Filings";
+              return `<a class="ticker-pill te-pill" href="${esc(secHtmlUrl(eUrl))}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><strong>${esc(t.symbol)}</strong><span class="muted">${esc(t.name)}</span><span class="warn">${esc(eSrc)} ↗</span></a>`;
             }).join("")}
           </div>
         `;
@@ -830,8 +909,10 @@
         count: (al.earnings_soon || []).length,
         items: (al.earnings_soon || []).map((e, idx) => {
           const row = (s.tickers || []).find((t) => t.symbol === e.symbol) || {};
-          const eUrl = secHtmlUrl(row.earnings_url || `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(e.symbol)}`);
-          return `<a class="ticker-pill${idx >= INITIAL_SHOW ? " alert-extra-pill hidden" : ""}" href="${esc(eUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><strong>${esc(e.symbol)}</strong><span class="warn">${e.days >= 0 ? `in ${e.days}d` : `${Math.abs(e.days)}d ago`} ↗</span></a>`;
+          const rawUrl = e.url || (e.days <= 0 ? row.last_earnings_url : row.next_earnings_url) || row.earnings_url || `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(e.symbol)}`;
+          const eUrl = secHtmlUrl(rawUrl);
+          const dayLbl = e.days === 0 ? "TODAY" : e.days === 1 ? "Tomorrow" : e.days > 1 ? `in ${e.days}d` : `${Math.abs(e.days)}d ago`;
+          return `<a class="ticker-pill${idx >= INITIAL_SHOW ? " alert-extra-pill hidden" : ""}" href="${esc(eUrl)}" target="_blank" rel="noopener" title="${esc(e.date || "")} · ${esc(e.source || "SEC")}" style="text-decoration:none;color:inherit"><strong>${esc(e.symbol)}</strong><span class="warn">${esc(dayLbl)} ↗</span></a>`;
         }),
         empty: "No watchlist earnings within ±10d",
       },
@@ -882,35 +963,52 @@
       }
     };
 
-    // Earnings Calendar (Upcoming & Recently Reported across all 100 equities)
+    // Earnings Calendar (Separate verified Upcoming & Recently Reported tracks across all 100 equities)
     const ecGrid = $("earningsCalendarGrid");
     if (ecGrid) {
       const allT = s.tickers || [];
       const upcoming = allT
-        .filter((t) => t.earnings_date && t.earnings_days != null && t.earnings_days >= 0)
-        .sort((a, b) => a.earnings_days - b.earnings_days);
+        .map((t) => ({
+          symbol: t.symbol,
+          name: t.name,
+          date: t.next_earnings_date ?? (t.earnings_days != null && t.earnings_days >= 0 ? t.earnings_date : null),
+          days: t.next_earnings_days ?? (t.earnings_days != null && t.earnings_days >= 0 ? t.earnings_days : null),
+          url: t.next_earnings_url || t.earnings_url,
+          source: t.next_earnings_source || "SEC Filings",
+        }))
+        .filter((x) => x.date && x.days != null && x.days >= 0)
+        .sort((a, b) => a.days - b.days || a.symbol.localeCompare(b.symbol));
+
       const recent = allT
-        .filter((t) => t.earnings_date && t.earnings_days != null && t.earnings_days < 0 && t.earnings_days >= -14)
-        .sort((a, b) => b.earnings_days - a.earnings_days);
+        .map((t) => ({
+          symbol: t.symbol,
+          name: t.name,
+          date: t.last_earnings_date ?? (t.earnings_days != null && t.earnings_days < 0 ? t.earnings_date : null),
+          days: t.last_earnings_days ?? (t.earnings_days != null && t.earnings_days < 0 ? t.earnings_days : null),
+          url: t.last_earnings_url || t.earnings_url,
+          source: t.last_earnings_source || t.earnings_source || "SEC Filing",
+        }))
+        .filter((x) => x.date && x.days != null && x.days <= 0 && x.days >= -14)
+        .sort((a, b) => b.days - a.days || a.symbol.localeCompare(b.symbol));
 
       const EARN_SHOW = 6;
-      const renderEarnRow = (t, idx) => {
-        const d = t.earnings_days;
+      const renderEarnRow = (item, idx) => {
+        const d = item.days;
         const badgeTxt = d === 0 ? "TODAY" : d === 1 ? "Tomorrow" : d > 1 ? `in ${d}d` : `${Math.abs(d)}d ago`;
         const badgeCls = d >= 0 && d <= 7 ? "amber" : "";
-        const officialUrl = secHtmlUrl(t.earnings_url || `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(t.symbol)}`);
-        const srcLabel = t.earnings_source || "Official";
+        const officialUrl = secHtmlUrl(item.url || `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(item.symbol)}`);
+        const srcLabel = item.source || "SEC Filings";
         const extraCls = idx >= EARN_SHOW ? " earn-extra-row hidden" : "";
         return `
           <a class="level-row${extraCls}" href="${esc(officialUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
             <div>
-              <strong>${esc(t.symbol)}</strong>
-              <span class="muted" style="margin-left:6px">${esc(t.name)}</span>
+              <strong>${esc(item.symbol)}</strong>
+              <span class="muted" style="margin-left:6px">${esc(item.name)}</span>
               <span class="muted" style="margin-left:6px;font-size:11px;color:var(--accent-2)">${esc(srcLabel)} ↗</span>
             </div>
             <div style="text-align:right">
               <span class="tag ${badgeCls}">${esc(badgeTxt)}</span>
-              <span class="muted" style="margin-left:6px;font-variant-numeric:tabular-nums">${esc(t.earnings_date)}</span>
+              <span class="muted" style="margin-left:6px;font-variant-numeric:tabular-nums">${esc(item.date)}</span>
             </div>
           </a>`;
       };
@@ -1315,7 +1413,14 @@
     if (state.filter === "saved") rows = rows.filter((r) => isUserStarred(r.symbol));
     else if (state.filter === "core") rows = rows.filter((r) => r.is_core);
     else if (state.filter === "signals") rows = rows.filter((r) => (r.patterns || []).length > 0);
-    else if (state.filter === "earnings") rows = rows.filter((r) => r.earnings_days != null && Math.abs(r.earnings_days) <= 10);
+    else if (state.filter === "earnings") {
+      rows = rows.filter(
+        (r) =>
+          (r.next_earnings_days != null && r.next_earnings_days >= 0 && r.next_earnings_days <= 10) ||
+          (r.last_earnings_days != null && r.last_earnings_days >= -10 && r.last_earnings_days <= 0) ||
+          (r.earnings_days != null && Math.abs(r.earnings_days) <= 10)
+      );
+    }
     else if (state.filter === "oversold") rows = rows.filter((r) => r.rsi14 != null && r.rsi14 < 30);
     else if (state.filter === "overbought") rows = rows.filter((r) => r.rsi14 != null && r.rsi14 > 70);
     else if (state.filter === "bullish") rows = rows.filter((r) => (r.scenarios?.bullish || 0) >= (r.scenarios?.bearish || 0) + 10);
@@ -3847,27 +3952,46 @@
     const dollarVol = (facts.last_close || 0) * (facts.last_volume || 0);
     const activeSignals = [...patterns.map((p) => ({ text: p.label, cls: p.direction === "bullish" ? "bull" : "bear" }))];
 
-    // Single direct link to latest official financial statement (10-Q / 10-K / 20-F bilanço)
+    // Single direct link to latest official financial statement (10-Q / 10-K / 20-F / 40-F or Item 2.02 Earnings 8-K)
+    const liveSummaryRow = (state.summary?.tickers || []).find((x) => x.symbol === t.symbol) || {};
     const filingsArr = Array.isArray(t.filings) ? t.filings : [];
     const insArr = Array.isArray(t.insiders?.items) ? t.insiders.items : [];
     const cikMatch = [...filingsArr, ...insArr]
       .map((x) => String(x?.url || "").match(/\/edgar\/data\/(\d+)\//i))
       .find(Boolean);
-    const cik = cikMatch ? cikMatch[1] : null;
+    const cik = liveSummaryRow.cik || (cikMatch ? cikMatch[1] : null);
     const secBrowseUrl = cik
-      ? `https://www.sec.gov/edgar/browse/?CIK=${cik.padStart(10, "0")}`
+      ? `https://www.sec.gov/edgar/browse/?CIK=${String(cik).padStart(10, "0")}`
       : `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(t.symbol)}`;
-    const findFiling = (re) => filingsArr.find((f) => re.test(`${f.form || ""} ${f.extra?.form || ""} ${f.title || ""}`));
-    const latestReport = findFiling(/\b(10-Q|10-K|20-F|40-F)\b/i) || findFiling(/\b(8-K|6-K)\b/i);
-    const reportForm = latestReport
-      ? ((`${latestReport.form || ""} ${latestReport.extra?.form || ""} ${latestReport.title || ""}`).match(/\b(10-Q|10-K|20-F|40-F|8-K|6-K)\b/i)?.[1]?.toUpperCase() || "Filing")
-      : null;
-    const reportDate = latestReport?.published ? String(latestReport.published).slice(0, 10) : "";
-    const balanceUrl = latestReport?.url ? secHtmlUrl(latestReport.url) : secBrowseUrl;
+    const periodicFiling = filingsArr.find((f) => /\b(10-Q|10-K|20-F|40-F)\b/i.test(`${f.form || ""} ${f.extra?.form || ""}`));
+    const item202Filing = filingsArr.find((f) => {
+      const form = String(f.extra?.form || f.form || "").toUpperCase();
+      const items = String(f.extra?.items || "").split(",").map((s) => s.trim());
+      return form === "8-K" && items.includes("2.02");
+    });
+    const latestReport = periodicFiling || item202Filing || null;
+    const reportDate = latestReport?.published
+      ? String(latestReport.published).slice(0, 10)
+      : (liveSummaryRow.last_earnings_date || "");
+    const balanceUrl = periodicFiling?.url
+      ? secHtmlUrl(periodicFiling.url)
+      : (item202Filing?.url
+          ? secFilingIndexUrl(item202Filing.url)
+          : (liveSummaryRow.last_earnings_url || secBrowseUrl));
     const balanceLabel = reportDate
-      ? `Latest Announcement · ${reportDate}`
-      : "Latest Announcement";
+      ? `Latest Financial Filing · ${reportDate}`
+      : "SEC Financial Filings";
     const legalBarHtml = `<div class="pro-legal-bar"><a class="pro-legal-chip" href="${esc(balanceUrl)}" target="_blank" rel="noopener">${esc(balanceLabel)} ↗</a></div>`;
+
+    // Resolve accurate upcoming & last earnings dates for Stock Hero and Key Metrics
+    const ehArr = Array.isArray(t.fundamentals?.earnings_history) ? t.fundamentals.earnings_history : [];
+    const todayIsoFallback = new Date().toISOString().slice(0, 10);
+    const futureFromBundle = [
+      ...(cal.earnings_dates || []).filter((d) => d && d >= todayIsoFallback),
+      ...ehArr.filter((e) => e?.date && e.date >= todayIsoFallback && e.eps_actual == null).map((e) => e.date),
+    ].sort();
+    const resolvedNextEarn = liveSummaryRow.next_earnings_date || futureFromBundle[0] || null;
+    const resolvedLastEarn = liveSummaryRow.last_earnings_date || ehArr.find((e) => e?.date && e.date <= todayIsoFallback && e.eps_actual != null)?.date || null;
 
     $("stockContent").innerHTML = `
       <div class="stock-hero pro-hero">
@@ -3876,7 +4000,7 @@
             <div class="pro-hero-kicker">
               <span class="pro-sector-link sector-link" data-sector="${esc(t.sector)}">${esc(fmtSector(t.sector))}</span>
               ${t.sector_etf ? `<span class="muted">· ${esc(t.sector_etf)}</span>` : ""}
-              ${cal.earnings_dates?.[0] ? `<span class="muted">· Earnings ${esc(cal.earnings_dates[0])}</span>` : ""}
+              ${resolvedNextEarn ? `<span class="muted">· Next Earnings ${esc(resolvedNextEarn)}</span>` : ""}
             </div>
             <div class="pro-title-row">
               <h1 class="stock-title">${esc(t.symbol)}</h1>
@@ -3980,7 +4104,7 @@
             ${risk.capm_beta_60d != null ? `<div class="pro-kv-row" ${tipAttr("capm_beta")}><span class="pro-kv-k">CAPM Beta / Alpha (60d) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtNum(risk.capm_beta_60d, 2)}x <span class="${clsPct(risk.jensen_alpha_60d_pct)}">(${fmtPct(risk.jensen_alpha_60d_pct, 1)})</span></span></div>` : ""}
             ${risk.sharpe_1y != null ? `<div class="pro-kv-row" ${tipAttr("sharpe_sortino")}><span class="pro-kv-k">Sharpe / Sortino (1Y) <span class="tip-badge">?</span></span><span class="pro-kv-v">${fmtNum(risk.sharpe_1y, 2)} / ${fmtNum(risk.sortino_1y, 2)}</span></div>` : ""}
             ${risk.max_drawdown_1y_pct != null ? `<div class="pro-kv-row" ${tipAttr("var_cvar")}><span class="pro-kv-k">Max DD (1Y) / 1D CVaR 95% <span class="tip-badge">?</span></span><span class="pro-kv-v neg">${fmtNum(risk.max_drawdown_1y_pct, 1)}% / ${fmtNum(risk.cvar_95_1d_pct, 2)}%</span></div>` : ""}
-            <div class="pro-kv-row"><span class="pro-kv-k">Next Earnings</span><span class="pro-kv-v">${esc((cal.earnings_dates || [])[0] || "—")}</span></div>
+            <div class="pro-kv-row"><span class="pro-kv-k">Next Earnings</span><span class="pro-kv-v">${esc(resolvedNextEarn || "—")}${resolvedLastEarn ? ` <span class="muted">(Last: ${esc(resolvedLastEarn)})</span>` : ""}</span></div>
           </div>
         </div>
       </div>
