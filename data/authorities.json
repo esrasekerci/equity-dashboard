@@ -1,6 +1,227 @@
 {
-  "updated_at": "2026-11-28T12:35:13+00:00",
+  "updated_at": "2026-11-28T13:22:38+00:00",
   "items": [
+    {
+      "agency": "SEC",
+      "title": "SEC: Eight Entities Used Fake Crypto Asset Trading Platforms to Steal More Than $37 Million From U.S. Investors",
+      "url": "https://www.sec.gov/newsroom/press-releases/2026-115-sec-eight-entities-used-fake-crypto-asset-trading-platforms-steal-more-37-million-us-investors",
+      "published": "2026-11-19T14:39:02+00:00",
+      "source": "SEC Official",
+      "summary": "The Securities and Exchange Commission today charged eight Colorado-based entities, likely operated by individuals located overseas, for defrauding U.S. investors out of more than $37 million. The defendants allegedly lured investors to believe they were…",
+      "categories": [
+        "SEC Declaration",
+        "markets_enforcement"
+      ],
+      "sector": "markets_enforcement"
+    },
+    {
+      "agency": "SEC",
+      "title": "SEC Charges Indianapolis-Based Backward Hat Capital and Its Co-Founders With $560 Million Dollar Offering Fraud and Obtains Emergency Relief",
+      "url": "https://www.sec.gov/newsroom/press-releases/2026-116-sec-charges-indianapolis-based-backward-hat-capital-its-co-founders-560-million-dollar-offering",
+      "published": "2026-11-20T14:28:28+00:00",
+      "source": "SEC Official",
+      "summary": "The Securities and Exchange Commission today announced that it has obtained a temporary restraining order, asset freeze, expedited discovery, and other relief against Indianapolis-based Backward Hat Capital, its co-founders Phillip Williams and Devin…",
+      "categories": [
+        "SEC Declaration",
+        "markets_enforcement"
+      ],
+      "sector": "markets_enforcement"
+    },
+    {
+      "agency": "SEC",
+      "title": "SEC Issues Proposal to Restructure the Consolidated Audit Trail",
+      "url": "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail",
+      "published": "2026-11-20T18:03:24+00:00",
+      "source": "SEC Official",
+      "summary": "The Securities and Exchange Commission today issued a proposal to address the inefficiencies in the current governance and funding model of the Consolidated Audit Trail (CAT). The Commission is proposing to rescind Rule 613 of Regulation NMS, which…",
+      "categories": [
+        "SEC Declaration",
+        "markets_enforcement"
+      ],
+      "sector": "markets_enforcement"
+    },
+    {
+      "agency": "Treasury / OFAC",
+      "title": "Notice of OFAC Sanctions Action",
+      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23785/notice-of-ofac-sanctions-action",
+      "published": "2026-11-23T00:00:00+00:00",
+      "source": "Treasury / OFAC",
+      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the name of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject t",
+      "categories": [
+        "OFAC Sanctions",
+        "energy"
+      ],
+      "sector": "energy"
+    },
+    {
+      "agency": "Treasury / OFAC",
+      "title": "Notice of OFAC Sanctions Action",
+      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23908/notice-of-ofac-sanctions-action",
+      "published": "2026-11-24T00:00:00+00:00",
+      "source": "Treasury / OFAC",
+      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the names of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject ",
+      "categories": [
+        "OFAC Sanctions",
+        "energy"
+      ],
+      "sector": "energy"
+    },
+    {
+      "agency": "White House",
+      "title": "Protecting the Executive's Privileges and Enhancing Efficiencies in Federal Contracting",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24114/protecting-the-executives-privileges-and-enhancing-efficiencies-in-federal-contracting",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "White House",
+      "summary": "",
+      "categories": [
+        "White House Orders",
+        "macro_policy"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "Commerce / BIS",
+      "title": "Additions to the Entity List",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23999/additions-to-the-entity-list",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "Commerce / BIS",
+      "summary": "In this rule, the Bureau of Industry and Security (BIS) amends the Export Administration Regulations (EAR) by adding 7 entities to the Entity List, under the destinations of Malaysia, Singapore, and Thailand. These entities have been determined by the U.S. Government to be acting contrary to the national security or foreign policy interests of the United Sta",
+      "categories": [
+        "BIS Export Controls",
+        "semiconductors"
+      ],
+      "sector": "semiconductors"
+    },
+    {
+      "agency": "Treasury / OFAC",
+      "title": "Notice of OFAC Sanctions Action",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23961/notice-of-ofac-sanctions-action",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "Treasury / OFAC",
+      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the names of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject ",
+      "categories": [
+        "OFAC Sanctions",
+        "energy"
+      ],
+      "sector": "energy"
+    },
+    {
+      "agency": "White House",
+      "title": "Expeditious Enforcement of Capital Sentences and the Pursuit of Justice for Victims of Heinous Crimes",
+      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24236/expeditious-enforcement-of-capital-sentences-and-the-pursuit-of-justice-for-victims-of-heinous",
+      "published": "2026-11-27T00:00:00+00:00",
+      "source": "White House",
+      "summary": "",
+      "categories": [
+        "White House Orders",
+        "macro_policy"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "FTC",
+      "title": "FTC Finalizes Order Resolving Antitrust Concerns Stemming from Beretta, Ruger Stock Purchase Deal",
+      "url": "https://www.ftc.gov/news-events/news/press-releases/2026/11/ftc-finalizes-order-resolving-antitrust-concerns-stemming-beretta-ruger-stock-purchase-deal",
+      "published": "2026-11-25T12:00:00+00:00",
+      "source": "FTC Official",
+      "summary": "The Federal Trade Commission has finalized an order resolving antitrust concerns related to a stock purchase agreement between two of the largest firearm manufacturers, Beretta Holding S.A. and Sturm, Ruger & Co. Inc., by prohibiting anticompetitive entanglements between the two companies. View Press Release",
+      "categories": [
+        "FTC Declaration",
+        "antitrust_tech"
+      ],
+      "sector": "antitrust_tech"
+    },
+    {
+      "agency": "NHTSA",
+      "title": "NHTSA Recall 25V359000 (Tesla Model Y): VISIBILITY:WINDSHIELD WIPER/WASHER:LINKAGES",
+      "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V359000",
+      "published": "2026-11-28T00:00:00+00:00",
+      "source": "NHTSA Official",
+      "summary": "30/05/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model Y vehicles. The hose connector may block the windshield washer nozzles, preventing washer fluid from reaching the windshield. As such, these vehicles fail to comply with the requirements of Federal Motor Vehicle Safety Standard (FMVSS) number 104, \"Windshield Wiping and Washing Systems.\"",
+      "categories": [
+        "EV Safety Recall",
+        "ev_energy"
+      ],
+      "sector": "ev_energy"
+    },
+    {
+      "agency": "NHTSA",
+      "title": "NHTSA Recall 25V410000 (Tesla Model Y): SEATS:CRITICAL FASTENERS",
+      "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V410000",
+      "published": "2026-11-28T00:00:00+00:00",
+      "source": "NHTSA Official",
+      "summary": "18/06/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model 3 and Model Y vehicles. The fasteners attaching the seat back to the seat bottom may have been improperly tightened.",
+      "categories": [
+        "EV Safety Recall",
+        "ev_energy"
+      ],
+      "sector": "ev_energy"
+    },
+    {
+      "agency": "NHTSA",
+      "title": "NHTSA Recall 25V490000 (Tesla Model Y): ELECTRICAL SYSTEM:HORN",
+      "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V490000",
+      "published": "2026-11-28T00:00:00+00:00",
+      "source": "NHTSA Official",
+      "summary": "28/07/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model Y vehicles. The ring terminal of the horn ground wire may be improperly secured, allowing the circuit to open and preventing the horn from sounding.",
+      "categories": [
+        "EV Safety Recall",
+        "ev_energy"
+      ],
+      "sector": "ev_energy"
+    },
+    {
+      "agency": "FERC",
+      "title": "Denial of Rehearing Requests by Operation of Law Under the Commission's Rules of Practice and Procedure",
+      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23884/denial-of-rehearing-requests-by-operation-of-law-under-the-commissions-rules-of-practice-and",
+      "published": "2026-11-24T00:00:00+00:00",
+      "source": "FERC",
+      "summary": "The Federal Energy Regulatory Commission (Commission) is revising its regulations addressing the circumstances under which a request for rehearing is denied absent Commission action within a particular time frame. Currently, the Commission's regulations provide that unless the Commission acts upon a request for rehearing within 30 days after the request is f",
+      "categories": [
+        "FERC Power Grid",
+        "power_utilities"
+      ],
+      "sector": "power_utilities"
+    },
+    {
+      "agency": "Commerce / BIS",
+      "title": "Addressing Remote Access to Advanced Semiconductors",
+      "url": "https://www.federalregister.gov/documents/2026/11/19/2026-23529/addressing-remote-access-to-advanced-semiconductors",
+      "published": "2026-11-19T00:00:00+00:00",
+      "source": "Federal Register (Commerce Department, Industry and Security Bureau)",
+      "summary": "In this interim final rule (IFR), the Department of Commerce is establishing new rules to prevent certain foreign actors from leveraging advanced computing power based on U.S. technology to threaten U.S. national security and foreign policy interests. First, this rule establishes new restrictions which will apply for exports, reexports, or transfers (in-country) to overseas data centers that remot",
+      "categories": [
+        "Export controls",
+        "Rule"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "Federal Communications Commission",
+      "title": "Auction of Flexible-Use Licenses in the Upper C-Band for Next-Generation Wireless Services; Notice and Filing Requirements, Minimum Opening Bids, Upfront Payments, and Other Procedures for Auction 115; Bidding Scheduled To Begin April 27, 2027",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24013/auction-of-flexible-use-licenses-in-the-upper-c-band-for-next-generation-wireless-services-notice",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "Federal Register (Federal Communications Commission)",
+      "summary": "This document summarizes the procedures, deadlines, upfront payment, and minimum opening bid amounts adopted in the Auction 115 Procedures Public Notice for the Federal Communications Commission's (Commission) upcoming auction of 3,248 new flexible-use licenses in the 3.98-4.14 GHz portion of the Upper C-band. The Auction 115 Procedures Public Notice summarized here provides details regarding the ",
+      "categories": [
+        "Antitrust",
+        "Rule"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "National Credit Union Administration",
+      "title": "Thresholds Increase for the Major Assets Prohibition of the Depository Institution Management Interlocks Act Rule",
+      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23994/thresholds-increase-for-the-major-assets-prohibition-of-the-depository-institution-management",
+      "published": "2026-11-25T00:00:00+00:00",
+      "source": "Federal Register (National Credit Union Administration)",
+      "summary": "The NCUA Board (Board) is issuing a final rule increasing two thresholds in its regulation implementing management official interlocks for purposes of the Depository Institution Management Interlocks Act (DIMIA). DIMIA authorizes NCUA to adjust the major assets prohibition thresholds through regulation to respond to inflation or market changes. This final rule increases both major assets prohibiti",
+      "categories": [
+        "Antitrust",
+        "Rule"
+      ],
+      "sector": "macro_policy"
+    },
     {
       "agency": "US ITC",
       "title": "Shopping Carts and Parts Thereof From China; Revised Schedule for the Subject Investigations",
@@ -88,214 +309,6 @@
       "summary": "The Commodity Futures Trading Commission (\"Commission\" or \"CFTC\") is finalizing revisions to the Commission's regulations that set forth an alternate framework for reporting of data for certain fully collateralized event contracts (the \"Final Rule\"). These revisions require certain reporting markets, futures commission merchants, clearing members, and foreign brokers to report certain event contra",
       "categories": [
         "Antitrust",
-        "Rule"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "NHTSA",
-      "title": "NHTSA Recall 25V359000 (Tesla Model Y): VISIBILITY:WINDSHIELD WIPER/WASHER:LINKAGES",
-      "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V359000",
-      "published": "2026-11-28T00:00:00+00:00",
-      "source": "NHTSA Official",
-      "summary": "30/05/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model Y vehicles. The hose connector may block the windshield washer nozzles, preventing washer fluid from reaching the windshield. As such, these vehicles fail to comply with the requirements of Federal Motor Vehicle Safety Standard (FMVSS) number 104, \"Windshield Wiping and Washing Systems.\"",
-      "categories": [
-        "EV Safety Recall",
-        "ev_energy"
-      ],
-      "sector": "ev_energy"
-    },
-    {
-      "agency": "NHTSA",
-      "title": "NHTSA Recall 25V410000 (Tesla Model Y): SEATS:CRITICAL FASTENERS",
-      "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V410000",
-      "published": "2026-11-28T00:00:00+00:00",
-      "source": "NHTSA Official",
-      "summary": "18/06/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model 3 and Model Y vehicles. The fasteners attaching the seat back to the seat bottom may have been improperly tightened.",
-      "categories": [
-        "EV Safety Recall",
-        "ev_energy"
-      ],
-      "sector": "ev_energy"
-    },
-    {
-      "agency": "NHTSA",
-      "title": "NHTSA Recall 25V490000 (Tesla Model Y): ELECTRICAL SYSTEM:HORN",
-      "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V490000",
-      "published": "2026-11-28T00:00:00+00:00",
-      "source": "NHTSA Official",
-      "summary": "28/07/2025: Tesla, Inc. (Tesla) is recalling certain 2026 Model Y vehicles. The ring terminal of the horn ground wire may be improperly secured, allowing the circuit to open and preventing the horn from sounding.",
-      "categories": [
-        "EV Safety Recall",
-        "ev_energy"
-      ],
-      "sector": "ev_energy"
-    },
-    {
-      "agency": "White House",
-      "title": "Expeditious Enforcement of Capital Sentences and the Pursuit of Justice for Victims of Heinous Crimes",
-      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24236/expeditious-enforcement-of-capital-sentences-and-the-pursuit-of-justice-for-victims-of-heinous",
-      "published": "2026-11-27T00:00:00+00:00",
-      "source": "White House",
-      "summary": "",
-      "categories": [
-        "White House Orders",
-        "macro_policy"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "White House",
-      "title": "Protecting the Executive's Privileges and Enhancing Efficiencies in Federal Contracting",
-      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24114/protecting-the-executives-privileges-and-enhancing-efficiencies-in-federal-contracting",
-      "published": "2026-11-25T00:00:00+00:00",
-      "source": "White House",
-      "summary": "",
-      "categories": [
-        "White House Orders",
-        "macro_policy"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "Commerce / BIS",
-      "title": "Additions to the Entity List",
-      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23999/additions-to-the-entity-list",
-      "published": "2026-11-25T00:00:00+00:00",
-      "source": "Commerce / BIS",
-      "summary": "In this rule, the Bureau of Industry and Security (BIS) amends the Export Administration Regulations (EAR) by adding 7 entities to the Entity List, under the destinations of Malaysia, Singapore, and Thailand. These entities have been determined by the U.S. Government to be acting contrary to the national security or foreign policy interests of the United Sta",
-      "categories": [
-        "BIS Export Controls",
-        "semiconductors"
-      ],
-      "sector": "semiconductors"
-    },
-    {
-      "agency": "Treasury / OFAC",
-      "title": "Notice of OFAC Sanctions Action",
-      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23961/notice-of-ofac-sanctions-action",
-      "published": "2026-11-25T00:00:00+00:00",
-      "source": "Treasury / OFAC",
-      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the names of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject ",
-      "categories": [
-        "OFAC Sanctions",
-        "energy"
-      ],
-      "sector": "energy"
-    },
-    {
-      "agency": "Federal Communications Commission",
-      "title": "Auction of Flexible-Use Licenses in the Upper C-Band for Next-Generation Wireless Services; Notice and Filing Requirements, Minimum Opening Bids, Upfront Payments, and Other Procedures for Auction 115; Bidding Scheduled To Begin April 27, 2027",
-      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24013/auction-of-flexible-use-licenses-in-the-upper-c-band-for-next-generation-wireless-services-notice",
-      "published": "2026-11-25T00:00:00+00:00",
-      "source": "Federal Register (Federal Communications Commission)",
-      "summary": "This document summarizes the procedures, deadlines, upfront payment, and minimum opening bid amounts adopted in the Auction 115 Procedures Public Notice for the Federal Communications Commission's (Commission) upcoming auction of 3,248 new flexible-use licenses in the 3.98-4.14 GHz portion of the Upper C-band. The Auction 115 Procedures Public Notice summarized here provides details regarding the ",
-      "categories": [
-        "Antitrust",
-        "Rule"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "National Credit Union Administration",
-      "title": "Thresholds Increase for the Major Assets Prohibition of the Depository Institution Management Interlocks Act Rule",
-      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23994/thresholds-increase-for-the-major-assets-prohibition-of-the-depository-institution-management",
-      "published": "2026-11-25T00:00:00+00:00",
-      "source": "Federal Register (National Credit Union Administration)",
-      "summary": "The NCUA Board (Board) is issuing a final rule increasing two thresholds in its regulation implementing management official interlocks for purposes of the Depository Institution Management Interlocks Act (DIMIA). DIMIA authorizes NCUA to adjust the major assets prohibition thresholds through regulation to respond to inflation or market changes. This final rule increases both major assets prohibiti",
-      "categories": [
-        "Antitrust",
-        "Rule"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "Treasury / OFAC",
-      "title": "Notice of OFAC Sanctions Action",
-      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23908/notice-of-ofac-sanctions-action",
-      "published": "2026-11-24T00:00:00+00:00",
-      "source": "Treasury / OFAC",
-      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the names of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject ",
-      "categories": [
-        "OFAC Sanctions",
-        "energy"
-      ],
-      "sector": "energy"
-    },
-    {
-      "agency": "FERC",
-      "title": "Denial of Rehearing Requests by Operation of Law Under the Commission's Rules of Practice and Procedure",
-      "url": "https://www.federalregister.gov/documents/2026/11/24/2026-23884/denial-of-rehearing-requests-by-operation-of-law-under-the-commissions-rules-of-practice-and",
-      "published": "2026-11-24T00:00:00+00:00",
-      "source": "FERC",
-      "summary": "The Federal Energy Regulatory Commission (Commission) is revising its regulations addressing the circumstances under which a request for rehearing is denied absent Commission action within a particular time frame. Currently, the Commission's regulations provide that unless the Commission acts upon a request for rehearing within 30 days after the request is f",
-      "categories": [
-        "FERC Power Grid",
-        "power_utilities"
-      ],
-      "sector": "power_utilities"
-    },
-    {
-      "agency": "Treasury / OFAC",
-      "title": "Notice of OFAC Sanctions Action",
-      "url": "https://www.federalregister.gov/documents/2026/11/23/2026-23785/notice-of-ofac-sanctions-action",
-      "published": "2026-11-23T00:00:00+00:00",
-      "source": "Treasury / OFAC",
-      "summary": "The U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC) is publishing the name of one or more persons that have been placed on OFAC's Specially Designated Nationals and Blocked Persons List (SDN List) based on OFAC's determination that one or more applicable legal criteria were satisfied. All property and interests in property subject t",
-      "categories": [
-        "OFAC Sanctions",
-        "energy"
-      ],
-      "sector": "energy"
-    },
-    {
-      "agency": "SEC",
-      "title": "SEC Issues Proposal to Restructure the Consolidated Audit Trail",
-      "url": "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail",
-      "published": "2026-11-20T18:03:24+00:00",
-      "source": "SEC Official",
-      "summary": "The Securities and Exchange Commission today issued a proposal to address the inefficiencies in the current governance and funding model of the Consolidated Audit Trail (CAT). The Commission is proposing to rescind Rule 613 of Regulation NMS, which…",
-      "categories": [
-        "SEC Declaration",
-        "markets_enforcement"
-      ],
-      "sector": "markets_enforcement"
-    },
-    {
-      "agency": "SEC",
-      "title": "SEC Charges Indianapolis-Based Backward Hat Capital and Its Co-Founders With $560 Million Dollar Offering Fraud and Obtains Emergency Relief",
-      "url": "https://www.sec.gov/newsroom/press-releases/2026-116-sec-charges-indianapolis-based-backward-hat-capital-its-co-founders-560-million-dollar-offering",
-      "published": "2026-11-20T14:28:28+00:00",
-      "source": "SEC Official",
-      "summary": "The Securities and Exchange Commission today announced that it has obtained a temporary restraining order, asset freeze, expedited discovery, and other relief against Indianapolis-based Backward Hat Capital, its co-founders Phillip Williams and Devin…",
-      "categories": [
-        "SEC Declaration",
-        "markets_enforcement"
-      ],
-      "sector": "markets_enforcement"
-    },
-    {
-      "agency": "SEC",
-      "title": "SEC: Eight Entities Used Fake Crypto Asset Trading Platforms to Steal More Than $37 Million From U.S. Investors",
-      "url": "https://www.sec.gov/newsroom/press-releases/2026-115-sec-eight-entities-used-fake-crypto-asset-trading-platforms-steal-more-37-million-us-investors",
-      "published": "2026-11-19T14:39:02+00:00",
-      "source": "SEC Official",
-      "summary": "The Securities and Exchange Commission today charged eight Colorado-based entities, likely operated by individuals located overseas, for defrauding U.S. investors out of more than $37 million. The defendants allegedly lured investors to believe they were…",
-      "categories": [
-        "SEC Declaration",
-        "markets_enforcement"
-      ],
-      "sector": "markets_enforcement"
-    },
-    {
-      "agency": "Commerce / BIS",
-      "title": "Addressing Remote Access to Advanced Semiconductors",
-      "url": "https://www.federalregister.gov/documents/2026/11/19/2026-23529/addressing-remote-access-to-advanced-semiconductors",
-      "published": "2026-11-19T00:00:00+00:00",
-      "source": "Federal Register (Commerce Department, Industry and Security Bureau)",
-      "summary": "In this interim final rule (IFR), the Department of Commerce is establishing new rules to prevent certain foreign actors from leveraging advanced computing power based on U.S. technology to threaten U.S. national security and foreign policy interests. First, this rule establishes new restrictions which will apply for exports, reexports, or transfers (in-country) to overseas data centers that remot",
-      "categories": [
-        "Export controls",
         "Rule"
       ],
       "sector": "macro_policy"
