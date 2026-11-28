@@ -17,14 +17,39 @@
     breakingCategory: "all",
     breakingTier: "all",
     breakingSearch: "",
-    ovNewsCurrentIds: [],
-    ovNewsOffset: 0,
-    ovBootRotated: false,
     olderNewsCursor: 0,
     olderNewsLoading: false,
     highlightUntilMs: 0,
     highlightTimer: null,
     lastHiddenAt: 0,
+    overviewPrefs: (() => {
+      const defOrder = ["kpis", "watchlist", "news", "signals", "sectors", "movers", "earnings"];
+      try {
+        const raw = localStorage.getItem("eq_overview_prefs_v1");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") {
+            const valid = new Set(defOrder);
+            const ord = [];
+            for (const id of Array.isArray(parsed.order) ? parsed.order : []) {
+              const s = String(id || "");
+              if (valid.has(s) && !ord.includes(s)) ord.push(s);
+            }
+            for (const d of defOrder) {
+              if (!ord.includes(d)) ord.push(d);
+            }
+            const hid = [];
+            for (const id of Array.isArray(parsed.hidden) ? parsed.hidden : []) {
+              const s = String(id || "");
+              if (valid.has(s) && !hid.includes(s)) hid.push(s);
+            }
+            if (hid.length >= defOrder.length) hid.pop();
+            return { order: ord, hidden: hid };
+          }
+        }
+      } catch {}
+      return { order: [...defOrder], hidden: [] };
+    })(),
     authorityAgency: "all",
     networkCenter: "NVDA",
     networkFilter: "all",
@@ -295,8 +320,8 @@
     }
     state.view = view;
     if (view === "overview" && state.summary) {
-      // Always anchor Overview to the 4 latest stories ordered strictly newest-to-oldest (only tapping ↻ steps into older batches)
-      renderOverviewNews({ resetNewest: true });
+      applyOverviewLayout();
+      renderOverviewNews();
     } else if (view === "breaking" && !opts.preserveHighlight) {
       renderBreaking();
     }
@@ -366,9 +391,76 @@
     if (meta) meta.setAttribute("content", "#050608");
   }
 
-  // ---- LOAD DATA & UNIFIED NEWS ROTATION ----
+  // ---- LOAD DATA & OVERVIEW LAYOUT PERSONALIZATION ----
+  const OVERVIEW_SECTION_SPECS = [
+    { id: "kpis", title: "Market Pulse", sub: "SPY, Breadth, 10Y Yield, VIX & FOMC" },
+    { id: "watchlist", title: "Watchlist", sub: "Favorite stocks & 20D trend" },
+    { id: "news", title: "Market News", sub: "Latest 4 headlines" },
+    { id: "signals", title: "Market Signals", sub: "Breakouts, RSI extremes & Form 4 buys" },
+    { id: "sectors", title: "Sector Heatmap", sub: "14 sectors & benchmark ETFs" },
+    { id: "movers", title: "Top Notable Movers", sub: "Highest-activity stocks today" },
+    { id: "earnings", title: "Earnings Calendar", sub: "Upcoming & recently reported" },
+  ];
+  const DEFAULT_OVERVIEW_ORDER = OVERVIEW_SECTION_SPECS.map((s) => s.id);
+
+  function sanitizeOverviewPrefs(raw) {
+    const valid = new Set(DEFAULT_OVERVIEW_ORDER);
+    const order = [];
+    for (const id of Array.isArray(raw?.order) ? raw.order : []) {
+      const k = String(id || "").trim();
+      if (valid.has(k) && !order.includes(k)) order.push(k);
+    }
+    for (const d of DEFAULT_OVERVIEW_ORDER) {
+      if (!order.includes(d)) order.push(d);
+    }
+    const hidden = [];
+    for (const id of Array.isArray(raw?.hidden) ? raw.hidden : []) {
+      const k = String(id || "").trim();
+      if (valid.has(k) && !hidden.includes(k)) hidden.push(k);
+    }
+    if (hidden.length >= DEFAULT_OVERVIEW_ORDER.length) {
+      hidden.pop();
+    }
+    return { order, hidden };
+  }
+
+  function applyOverviewLayout() {
+    const root = $("view-overview");
+    if (!root) return;
+    const prefs = sanitizeOverviewPrefs(state.overviewPrefs);
+    state.overviewPrefs = prefs;
+    const hiddenSet = new Set(prefs.hidden);
+    const byId = new Map();
+    root.querySelectorAll(".ov-module[data-ov-section]").forEach((el) => {
+      byId.set(el.dataset.ovSection, el);
+    });
+    let firstVisibleMarked = false;
+    for (const id of prefs.order) {
+      const el = byId.get(id);
+      if (!el) continue;
+      root.appendChild(el);
+      const isHidden = hiddenSet.has(id);
+      el.classList.toggle("hidden", isHidden);
+      el.classList.toggle("is-first-ov-module", !isHidden && !firstVisibleMarked);
+      if (!isHidden) firstVisibleMarked = true;
+    }
+  }
+
+  function setOverviewPrefs(nextPrefs, opts = {}) {
+    const clean = sanitizeOverviewPrefs(nextPrefs);
+    state.overviewPrefs = clean;
+    try {
+      localStorage.setItem("eq_overview_prefs_v1", JSON.stringify(clean));
+    } catch {}
+    applyOverviewLayout();
+    if (!opts.fromCloud) {
+      window.EQAuth?.syncOverviewPrefs?.(clean);
+    }
+    return clean;
+  }
+
   function syncOverviewBreakingBanner() {
-    renderOverviewNews({ advance: false });
+    renderOverviewNews();
   }
 
   async function loadBreaking() {
@@ -379,7 +471,7 @@
       state.breaking = [];
     }
     syncNewsBadgeCounts();
-    renderOverviewNews({ advance: false });
+    renderOverviewNews();
     if (state.view === "breaking" && Date.now() >= (state.highlightUntilMs || 0)) renderBreaking();
     if (state.view === "stock" && state.refreshActiveStockNews) state.refreshActiveStockNews();
   }
@@ -847,8 +939,9 @@
       }
     }
 
+    applyOverviewLayout();
     renderOverviewWatchlist();
-    renderOverviewNews({ advance: false });
+    renderOverviewNews();
     syncNewsBadgeCounts();
 
     // KPI Strip
@@ -1357,7 +1450,13 @@
   window.EQAppBridge = {
     getWatchlist: () => [...state.userWatchlist],
     getChartOverlays: () => ({ ...state.chartOverlays }),
-    applyCloudState: ({ user, watchlist, chartOverlays } = {}) => {
+    getOverviewSpec: () => OVERVIEW_SECTION_SPECS.map((s) => ({ ...s })),
+    getOverviewPrefs: () => ({
+      order: [...state.overviewPrefs.order],
+      hidden: [...state.overviewPrefs.hidden],
+    }),
+    setOverviewPrefs: (prefs, opts = {}) => setOverviewPrefs(prefs, opts),
+    applyCloudState: ({ user, watchlist, chartOverlays, overviewPrefs } = {}) => {
       if (user !== undefined) state.authUser = user;
       if (Array.isArray(watchlist)) {
         state.userWatchlist = watchlist.map((x) => String(x || "").toUpperCase()).filter(Boolean);
@@ -1374,6 +1473,9 @@
         if (state.view === "stock" && state.activeTicker && state.tvRenderBody) {
           state.tvRenderBody();
         }
+      }
+      if (overviewPrefs && typeof overviewPrefs === "object") {
+        setOverviewPrefs(overviewPrefs, { fromCloud: true });
       }
     },
     openSavedWatchlist: () => {
@@ -3060,39 +3162,6 @@
     );
   }
 
-  // Chronological Overview 4-Story Showcase — always anchored to the 4 latest stories (0..3) unless user taps ↻ to browse older sets
-  function pickOverviewNewsBatch(editorialPool, opts = {}) {
-    if (!editorialPool.length) return [];
-    const SHOW_N = Math.min(4, editorialPool.length);
-    const total = editorialPool.length;
-    try { localStorage.removeItem("eq_ov_news_seq_v2"); } catch {}
-
-    let offset = Number.isFinite(state.ovNewsOffset) ? state.ovNewsOffset : 0;
-
-    if (opts.resetNewest) {
-      offset = 0;
-    } else if (opts.advance) {
-      offset = offset + SHOW_N;
-      if (offset >= total) offset = 0;
-    }
-
-    if (offset < 0 || offset >= total) offset = 0;
-    const effectiveStart = (offset + SHOW_N > total) ? Math.max(0, total - SHOW_N) : offset;
-    state.ovNewsOffset = effectiveStart;
-
-    // Proactively pre-hydrate older ticker archives when user steps near the end of currently loaded news
-    if (effectiveStart > 0 && effectiveStart + SHOW_N * 2 >= total && hasMoreUnhydratedNewsArchives()) {
-      hydrateOlderNewsBatch(10).catch(() => {});
-    }
-
-    const picked = editorialPool
-      .slice(effectiveStart, effectiveStart + SHOW_N)
-      .sort((a, b) => b.pubMs - a.pubMs || b.importance - a.importance);
-
-    state.ovNewsCurrentIds = picked.map((x) => x.uid);
-    return picked;
-  }
-
   function openNewsItemInBreaking(uid) {
     if (!uid) {
       setView("breaking");
@@ -3152,51 +3221,44 @@
     });
   }
 
-  function renderOverviewNews(opts = {}) {
+  function renderOverviewNews() {
     const grid = $("overviewNewsGrid");
     if (!grid) return;
     const feed = getUnifiedNewsFeed();
     const editorial = feed.filter((x) => !x.isTape);
     const pool = editorial.length >= 4 ? editorial : feed;
     if (!pool.length) {
-      grid.innerHTML = `<div class="panel muted">Loading live market wires…</div>`;
+      grid.innerHTML = `<div class="ov-news-empty muted">Loading market headlines…</div>`;
       return;
     }
-    const batch = pickOverviewNewsBatch(pool, opts);
-    const startNum = state.ovNewsOffset + 1;
-    const endNum = Math.min(pool.length, state.ovNewsOffset + batch.length);
-    if ($("ovNewsSub")) {
-      $("ovNewsSub").textContent = state.ovNewsOffset === 0 ? "Latest" : `Older · #${startNum}–${endNum}`;
-    }
-    grid.innerHTML = batch.map((item) => `
-      <article class="ov-news-card sig-${item.sigTier.toLowerCase()}" data-ov-news-id="${esc(item.uid)}" role="button" tabindex="0">
-        <div class="ov-news-top">
-          <div class="ov-news-badges">
-            ${sigTierBadgeHtml(item.importance)}
-            <span class="news-desk-tag">${esc(NEWS_DESK_LABELS[item.primaryDesk] || "Market")}</span>
-            <span class="news-src-lbl">${esc(item.source)}</span>
+    // Strictly show ONLY the latest 4 headlines ordered newest to oldest (zero labels, zero order numbers)
+    const latest4 = pool.slice(0, 4);
+    grid.innerHTML = latest4.map((item) => {
+      const symTag = item.isWatchlist && item.symbol
+        ? `<span class="ov-news-sym">${esc(item.symbol)}</span><span class="ov-news-sep">·</span>`
+        : "";
+      return `
+        <article class="ov-news-row" data-ov-news-id="${esc(item.uid)}" role="button" tabindex="0">
+          <div class="ov-news-meta">
+            <div class="ov-news-meta-l">${symTag}<span>${esc(item.source)}</span></div>
+            <time class="ov-news-age">${esc(item.relTime)}</time>
           </div>
-          <time class="news-age-badge${isFreshNewsTimestamp(item.pubMs) ? " is-fresh" : ""}">${esc(item.relTime)}</time>
-        </div>
-        <div class="ov-news-title">${esc(item.title)}</div>
-        <div class="ov-news-foot">
-          ${renderNewsTickerChipHtml(item, false)}
-          <span class="ov-news-go">Open ›</span>
-        </div>
-      </article>
-    `).join("");
+          <div class="ov-news-headline">${esc(item.title)}</div>
+        </article>
+      `;
+    }).join("");
 
     grid.onclick = (e) => {
-      const card = e.target.closest(".ov-news-card[data-ov-news-id]");
-      if (!card) return;
+      const row = e.target.closest(".ov-news-row[data-ov-news-id]");
+      if (!row) return;
       e.preventDefault();
-      openNewsItemInBreaking(card.dataset.ovNewsId);
+      openNewsItemInBreaking(row.dataset.ovNewsId);
     };
-    grid.querySelectorAll(".ov-news-card[data-ov-news-id]").forEach((card) => {
-      card.onkeydown = (e) => {
+    grid.querySelectorAll(".ov-news-row[data-ov-news-id]").forEach((row) => {
+      row.onkeydown = (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          openNewsItemInBreaking(card.dataset.ovNewsId);
+          openNewsItemInBreaking(row.dataset.ovNewsId);
         }
       };
     });
@@ -5467,18 +5529,6 @@
     if ($("backToOverview")) $("backToOverview").onclick = () => closeStockTab();
     $("viewAllScreenerBtn").onclick = () => setView("screener");
     if ($("viewAllNewsOverviewBtn")) $("viewAllNewsOverviewBtn").onclick = () => setView("breaking");
-    if ($("shuffleOverviewNewsBtn")) {
-      $("shuffleOverviewNewsBtn").onclick = async () => {
-        const feed = getUnifiedNewsFeed().filter((x) => !x.isTape);
-        if (state.ovNewsOffset + 4 >= feed.length && hasMoreUnhydratedNewsArchives()) {
-          await hydrateOlderNewsBatch(12);
-        }
-        renderOverviewNews({ advance: true });
-      };
-    }
-    if ($("ovNewestNewsBtn")) {
-      $("ovNewestNewsBtn").onclick = () => renderOverviewNews({ resetNewest: true });
-    }
     const newsInp = $("newsSearchInput");
     if (newsInp) {
       newsInp.addEventListener("input", () => {
@@ -7489,7 +7539,7 @@
           .sort((a, b) => parseNewsTimestampMs(b.published) - parseNewsTimestampMs(a.published))
           .slice(0, 120);
         syncNewsBadgeCounts();
-        renderOverviewNews({ advance: false });
+        renderOverviewNews();
         if (state.view === "breaking" && Date.now() >= (state.highlightUntilMs || 0)) renderBreaking();
         if (state.view === "stock" && state.refreshActiveStockNews) state.refreshActiveStockNews();
       }
@@ -7525,7 +7575,7 @@
         await checkForNewerReport(true);
         pollBackgroundFeeds();
         if (state.view === "overview") {
-          renderOverviewNews({ resetNewest: true });
+          renderOverviewNews();
         }
       }
     });

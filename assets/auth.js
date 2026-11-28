@@ -46,6 +46,7 @@ const FIREBASE_CONFIG = {
 };
 
 const ALLOWED_OVERLAY_KEYS = ["sma20", "sma50", "sma200", "sr", "weekends"];
+const ALLOWED_OVERVIEW_SECTIONS = ["kpis", "watchlist", "news", "signals", "sectors", "movers", "earnings"];
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) =>
@@ -60,7 +61,8 @@ googleProvider.setCustomParameters({ prompt: "select_account" });
 const authState = {
   user: null,
   ready: false,
-  mode: "login", // "login" | "signup" | "forgot" | "account"
+  mode: "login", // "login" | "signup" | "forgot" | "account" | "personalize"
+  prevMode: "login",
   busy: false,
   unsubDoc: null,
   docHydrated: false,
@@ -93,6 +95,27 @@ function sanitizeOverlays(ov) {
     if (k in ov) clean[k] = Boolean(ov[k]);
   }
   return clean;
+}
+
+function sanitizeOverviewPrefs(prefs) {
+  const valid = new Set(ALLOWED_OVERVIEW_SECTIONS);
+  const order = [];
+  for (const raw of Array.isArray(prefs?.order) ? prefs.order : []) {
+    const id = String(raw || "").trim();
+    if (valid.has(id) && !order.includes(id)) order.push(id);
+  }
+  for (const d of ALLOWED_OVERVIEW_SECTIONS) {
+    if (!order.includes(d)) order.push(d);
+  }
+  const hidden = [];
+  for (const raw of Array.isArray(prefs?.hidden) ? prefs.hidden : []) {
+    const id = String(raw || "").trim();
+    if (valid.has(id) && !hidden.includes(id)) hidden.push(id);
+  }
+  if (hidden.length >= ALLOWED_OVERVIEW_SECTIONS.length) {
+    hidden.pop();
+  }
+  return { order, hidden };
 }
 
 function friendlyAuthError(err) {
@@ -211,13 +234,71 @@ function renderAuthModalContent() {
   }
 
   const user = authState.user;
-  if (user && authState.mode !== "account") {
-    authState.mode = "account";
-  } else if (!user && authState.mode === "account") {
-    authState.mode = "login";
+  if (authState.mode !== "personalize") {
+    if (user && authState.mode !== "account") {
+      authState.mode = "account";
+    } else if (!user && authState.mode === "account") {
+      authState.mode = "login";
+    }
   }
 
   const mode = authState.mode;
+
+  if (mode === "personalize") {
+    const specs = window.EQAppBridge?.getOverviewSpec?.() || ALLOWED_OVERVIEW_SECTIONS.map((id) => ({ id, title: id, sub: "" }));
+    const specMap = Object.fromEntries(specs.map((s) => [s.id, s]));
+    const prefs = sanitizeOverviewPrefs(window.EQAppBridge?.getOverviewPrefs?.() || {});
+    const hiddenSet = new Set(prefs.hidden);
+    const isDefault =
+      prefs.hidden.length === 0 &&
+      prefs.order.every((id, idx) => id === ALLOWED_OVERVIEW_SECTIONS[idx]);
+
+    body.innerHTML = `
+      <div class="auth-sheet-handle" aria-hidden="true"></div>
+      <div class="auth-hdr">
+        <div>
+          <button type="button" class="auth-back-link" id="authPersonalizeBackBtn">← Back</button>
+          <h3 class="auth-title" style="margin-top:4px">Personalize Overview</h3>
+        </div>
+        <button type="button" class="auth-close-btn" id="authModalCloseBtn" aria-label="Close">✕</button>
+      </div>
+
+      <p class="auth-sub" style="margin-bottom:11px">Choose what to include on Overview and drag or tap ↑ ↓ to reorder sections.</p>
+
+      <div class="ov-pref-list" id="ovPersonalizeList">
+        ${prefs.order.map((id, idx) => {
+          const sp = specMap[id] || { id, title: id, sub: "" };
+          const on = !hiddenSet.has(id);
+          return `
+            <div class="ov-pref-row ${on ? "" : "is-off"}" data-pref-id="${esc(id)}">
+              <span class="ov-pref-grip" data-pref-grip="1" title="Drag to reorder" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="16" x2="20" y2="16"/></svg>
+              </span>
+              <div class="ov-pref-text">
+                <div class="ov-pref-title">${esc(sp.title)}</div>
+                <div class="ov-pref-sub">${esc(sp.sub)}</div>
+              </div>
+              <div class="ov-pref-controls">
+                <button type="button" class="ov-pref-move" data-pref-move="-1" data-pref-id="${esc(id)}" ${idx === 0 ? "disabled" : ""} aria-label="Move ${esc(sp.title)} up">↑</button>
+                <button type="button" class="ov-pref-move" data-pref-move="1" data-pref-id="${esc(id)}" ${idx === prefs.order.length - 1 ? "disabled" : ""} aria-label="Move ${esc(sp.title)} down">↓</button>
+                <button type="button" class="ov-pref-switch ${on ? "is-on" : ""}" role="switch" aria-checked="${on}" data-pref-toggle="${esc(id)}" aria-label="Show ${esc(sp.title)}">
+                  <span class="ov-pref-knob"></span>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+      <div class="ov-pref-foot">
+        <span class="muted">${user ? "Synced to your account" : "Saved on this device"}</span>
+        ${!isDefault ? `<button type="button" class="auth-inline-link" id="ovPrefResetBtn">Reset default</button>` : ""}
+      </div>
+    `;
+
+    wirePersonalizeHandlers();
+    return;
+  }
 
   if (mode === "account" && user) {
     const providerId = user.providerData?.[0]?.providerId || "password";
@@ -259,6 +340,10 @@ function renderAuthModalContent() {
       </form>
 
       <div class="auth-actions-stack">
+        <button type="button" class="auth-action-row" id="authOpenPersonalizeBtn">
+          <span>Personalize Overview</span>
+          <span class="muted">Sections &amp; order →</span>
+        </button>
         ${user.email ? `
           <button type="button" class="auth-action-row" id="authSendPwResetLoggedBtn">
             <span>${isPasswordUser ? "Reset Password" : "Set Password"}</span>
@@ -388,8 +473,15 @@ function renderAuthModalContent() {
       </button>
     </form>
 
+    <div class="auth-actions-stack" style="margin-top:14px">
+      <button type="button" class="auth-action-row" id="authGuestPersonalizeBtn">
+        <span>Personalize Overview</span>
+        <span class="muted">Sections &amp; order →</span>
+      </button>
+    </div>
+
     <div class="auth-foot-note">
-      Syncs your personal ★ Watchlist &amp; chart indicators across iOS, Android, and Web.
+      Syncs your Watchlist, Overview layout &amp; chart indicators across iOS, Android, and Web.
     </div>
   `;
 
@@ -398,6 +490,12 @@ function renderAuthModalContent() {
 
 function wireLoginSignupHandlers(isSignup) {
   $("authModalCloseBtn")?.addEventListener("click", closeAuthModal);
+
+  $("authGuestPersonalizeBtn")?.addEventListener("click", () => {
+    authState.prevMode = authState.mode;
+    authState.mode = "personalize";
+    renderAuthModalContent();
+  });
 
   document.querySelectorAll("#authModalBody [data-auth-mode]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -615,8 +713,117 @@ function wireForgotHandlers() {
   });
 }
 
+function wirePersonalizeHandlers() {
+  $("authModalCloseBtn")?.addEventListener("click", closeAuthModal);
+  $("authPersonalizeBackBtn")?.addEventListener("click", () => {
+    authState.mode = authState.user ? "account" : (authState.prevMode || "login");
+    renderAuthModalContent();
+  });
+
+  $("ovPrefResetBtn")?.addEventListener("click", () => {
+    window.EQAppBridge?.setOverviewPrefs?.({ order: [...ALLOWED_OVERVIEW_SECTIONS], hidden: [] });
+    renderAuthModalContent();
+    window.EQAppBridge?.showToast?.("Overview restored to default");
+  });
+
+  const listEl = $("ovPersonalizeList");
+  if (!listEl) return;
+
+  listEl.querySelectorAll("[data-pref-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.prefToggle;
+      const cur = sanitizeOverviewPrefs(window.EQAppBridge?.getOverviewPrefs?.() || {});
+      const hidden = new Set(cur.hidden);
+      if (hidden.has(id)) {
+        hidden.delete(id);
+      } else {
+        if (hidden.size + 1 >= ALLOWED_OVERVIEW_SECTIONS.length) {
+          window.EQAppBridge?.showToast?.("Keep at least one section visible on Overview");
+          return;
+        }
+        hidden.add(id);
+      }
+      window.EQAppBridge?.setOverviewPrefs?.({ order: cur.order, hidden: [...hidden] });
+      renderAuthModalContent();
+    });
+  });
+
+  listEl.querySelectorAll("[data-pref-move]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.prefId;
+      const delta = Number(btn.dataset.prefMove || 0);
+      const cur = sanitizeOverviewPrefs(window.EQAppBridge?.getOverviewPrefs?.() || {});
+      const idx = cur.order.indexOf(id);
+      const target = idx + delta;
+      if (idx < 0 || target < 0 || target >= cur.order.length) return;
+      const nextOrder = [...cur.order];
+      const [moved] = nextOrder.splice(idx, 1);
+      nextOrder.splice(target, 0, moved);
+      window.EQAppBridge?.setOverviewPrefs?.({ order: nextOrder, hidden: cur.hidden });
+      renderAuthModalContent();
+    });
+  });
+
+  // Smooth touch & pointer drag-to-reorder via grip handle (≡) on iOS, Android & Desktop
+  let dragRow = null;
+  let dragPointerId = null;
+
+  listEl.querySelectorAll("[data-pref-grip]").forEach((grip) => {
+    grip.addEventListener("pointerdown", (e) => {
+      const row = grip.closest(".ov-pref-row");
+      if (!row) return;
+      e.preventDefault();
+      dragRow = row;
+      dragPointerId = e.pointerId;
+      row.classList.add("is-dragging");
+      try { grip.setPointerCapture(e.pointerId); } catch {}
+    });
+
+    grip.addEventListener("pointermove", (e) => {
+      if (!dragRow || e.pointerId !== dragPointerId) return;
+      e.preventDefault();
+      const siblings = [...listEl.querySelectorAll(".ov-pref-row")].filter((r) => r !== dragRow);
+      let nextSibling = null;
+      for (const sib of siblings) {
+        const box = sib.getBoundingClientRect();
+        if (e.clientY < box.top + box.height / 2) {
+          nextSibling = sib;
+          break;
+        }
+      }
+      if (nextSibling) {
+        listEl.insertBefore(dragRow, nextSibling);
+      } else {
+        listEl.appendChild(dragRow);
+      }
+    });
+
+    const endDrag = (e) => {
+      if (!dragRow || (e && dragPointerId != null && e.pointerId !== dragPointerId)) return;
+      dragRow.classList.remove("is-dragging");
+      dragRow = null;
+      dragPointerId = null;
+      const domOrder = [...listEl.querySelectorAll(".ov-pref-row[data-pref-id]")]
+        .map((r) => r.dataset.prefId)
+        .filter(Boolean);
+      const cur = sanitizeOverviewPrefs(window.EQAppBridge?.getOverviewPrefs?.() || {});
+      window.EQAppBridge?.setOverviewPrefs?.({ order: domOrder, hidden: cur.hidden });
+      renderAuthModalContent();
+    };
+
+    grip.addEventListener("pointerup", endDrag);
+    grip.addEventListener("pointercancel", endDrag);
+  });
+}
+
 function wireAccountHandlers() {
   $("authModalCloseBtn")?.addEventListener("click", closeAuthModal);
+
+  $("authOpenPersonalizeBtn")?.addEventListener("click", () => {
+    authState.prevMode = "account";
+    authState.mode = "personalize";
+    renderAuthModalContent();
+  });
 
   $("authProfileForm")?.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -784,6 +991,7 @@ async function hydrateAndSubscribeUserDoc(user, overrideName = "") {
   const userRef = doc(db, "users", user.uid);
   const localWl = sanitizeWatchlist(window.EQAppBridge?.getWatchlist?.() || []);
   const localOv = sanitizeOverlays(window.EQAppBridge?.getChartOverlays?.() || {});
+  const localPref = sanitizeOverviewPrefs(window.EQAppBridge?.getOverviewPrefs?.() || {});
   const providerId = String(user.providerData?.[0]?.providerId || "password").slice(0, 40);
 
   try {
@@ -797,6 +1005,7 @@ async function hydrateAndSubscribeUserDoc(user, overrideName = "") {
         provider: providerId,
         watchlist: localWl,
         chartOverlays: localOv,
+        overviewPrefs: localPref,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -807,14 +1016,16 @@ async function hydrateAndSubscribeUserDoc(user, overrideName = "") {
       // Merge any pre-login local watchlist stars with cloud watchlist so user never loses selections
       const mergedWl = sanitizeWatchlist([...cloudWl, ...localWl]);
       const cloudOv = data.chartOverlays && typeof data.chartOverlays === "object" ? sanitizeOverlays(data.chartOverlays) : localOv;
+      const cloudPref = data.overviewPrefs && typeof data.overviewPrefs === "object" ? sanitizeOverviewPrefs(data.overviewPrefs) : localPref;
       authState.docHydrated = true;
       window.EQAppBridge?.applyCloudState?.({
         user: serializeUser(user),
         watchlist: mergedWl,
         chartOverlays: cloudOv,
+        overviewPrefs: cloudPref,
       });
-      if (mergedWl.length !== cloudWl.length) {
-        await setDoc(userRef, { uid: user.uid, watchlist: mergedWl, updatedAt: serverTimestamp() }, { merge: true });
+      if (mergedWl.length !== cloudWl.length || !data.overviewPrefs) {
+        await setDoc(userRef, { uid: user.uid, watchlist: mergedWl, overviewPrefs: cloudPref, updatedAt: serverTimestamp() }, { merge: true });
       }
     }
   } catch (err) {
@@ -831,9 +1042,9 @@ async function hydrateAndSubscribeUserDoc(user, overrideName = "") {
         user: serializeUser(user),
         watchlist: Array.isArray(d.watchlist) ? sanitizeWatchlist(d.watchlist) : undefined,
         chartOverlays: d.chartOverlays && typeof d.chartOverlays === "object" ? sanitizeOverlays(d.chartOverlays) : undefined,
+        overviewPrefs: d.overviewPrefs && typeof d.overviewPrefs === "object" ? sanitizeOverviewPrefs(d.overviewPrefs) : undefined,
       });
-      if (!$("authModal")?.classList.contains("hidden") && authState.mode === "account") {
-        // Keep watchlist count fresh if profile sheet is open without disrupting active input typing
+      if (!$("authModal")?.classList.contains("hidden") && (authState.mode === "account" || authState.mode === "personalize")) {
         if (document.activeElement?.id !== "authDisplayNameInp" && document.activeElement?.id !== "authDeletePwInp") {
           renderAuthModalContent();
         }
@@ -848,6 +1059,7 @@ async function hydrateAndSubscribeUserDoc(user, overrideName = "") {
     authState.pendingSync = false;
     syncWatchlist(window.EQAppBridge?.getWatchlist?.() || []);
     syncChartOverlays(window.EQAppBridge?.getChartOverlays?.() || {});
+    syncOverviewPrefs(window.EQAppBridge?.getOverviewPrefs?.() || {});
   }
 }
 
@@ -898,11 +1110,32 @@ async function syncChartOverlays(overlays) {
   }
 }
 
+async function syncOverviewPrefs(prefs) {
+  const user = authState.user;
+  if (!user) return;
+  if (!authState.docHydrated) {
+    authState.pendingSync = true;
+    return;
+  }
+  try {
+    await setDoc(
+      doc(db, "users", user.uid),
+      { uid: user.uid, overviewPrefs: sanitizeOverviewPrefs(prefs), updatedAt: serverTimestamp() },
+      { merge: true }
+    );
+  } catch (err) {
+    console.warn("[EQAuth] Overview prefs sync failed:", err?.message || err);
+  }
+}
+
 function openAuthModal(preferredMode) {
   const modal = $("authModal");
   if (!modal) return;
   authState.deleteConfirmOpen = false;
-  if (authState.user) {
+  if (preferredMode === "personalize") {
+    authState.prevMode = authState.user ? "account" : "login";
+    authState.mode = "personalize";
+  } else if (authState.user) {
     authState.mode = "account";
   } else {
     authState.mode = preferredMode && ["login", "signup", "forgot"].includes(preferredMode) ? preferredMode : "login";
@@ -980,6 +1213,7 @@ window.EQAuth = {
   getUser: () => serializeUser(authState.user),
   syncWatchlist,
   syncChartOverlays,
+  syncOverviewPrefs,
 };
 
 if (document.readyState === "loading") {

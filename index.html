@@ -17,7 +17,7 @@
   <meta property="og:title" content="Equity Intelligence" />
   <meta property="og:description" content="Live 100-stock quantitative intelligence, Gold &amp; Silver benchmarks, interactive charts, supply-chain value network, Institutional Flow, official legal authorities &amp; SEC filings." />
   <title>Equity Intelligence</title>
-  <link rel="stylesheet" href="assets/app.css?v=59" />
+  <link rel="stylesheet" href="assets/app.css?v=60" />
   <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
 </head>
 <body>
@@ -72,58 +72,67 @@
     <!-- OVERVIEW VIEW -->
     <section id="view-overview" class="view hidden">
       <div id="todayEarningsBanner" class="today-earnings-banner hidden"></div>
-      <div id="kpiStrip" class="kpi-grid"></div>
 
-      <div class="section-header wl-sec-hdr" id="sec-watchlist">
-        <div class="wl-hdr-left">
-          <h2>Watchlist</h2>
-          <span class="wl-cohort-sub" id="wlCohortSub"></span>
-        </div>
-        <button type="button" class="link-btn" id="wlManageBtn">+ Add</button>
+      <div class="ov-module" data-ov-section="kpis">
+        <div id="kpiStrip" class="kpi-grid"></div>
       </div>
-      <div id="overviewWatchlistGrid" class="wl-grid"></div>
 
-      <div class="section-header ov-news-hdr" id="sec-ov-news">
-        <div class="wl-hdr-left">
-          <h2>Market News</h2>
-          <span class="wl-cohort-sub" id="ovNewsSub">Latest</span>
+      <div class="ov-module" data-ov-section="watchlist">
+        <div class="section-header wl-sec-hdr" id="sec-watchlist">
+          <div class="wl-hdr-left">
+            <h2>Watchlist</h2>
+            <span class="wl-cohort-sub" id="wlCohortSub"></span>
+          </div>
+          <button type="button" class="link-btn" id="wlManageBtn">+ Add</button>
         </div>
-        <div class="ov-news-actions">
-          <button type="button" class="ov-news-shuffle-btn" id="shuffleOverviewNewsBtn" title="Browse older news" aria-label="Browse older news">↻</button>
+        <div id="overviewWatchlistGrid" class="wl-grid"></div>
+      </div>
+
+      <div class="ov-module" data-ov-section="news">
+        <div class="section-header ov-news-hdr" id="sec-ov-news">
+          <h2>Market News</h2>
           <button type="button" class="link-btn" id="viewAllNewsOverviewBtn">All news →</button>
         </div>
+        <div id="overviewNewsGrid" class="ov-news-list"></div>
       </div>
-      <div id="overviewNewsGrid" class="ov-news-grid"></div>
 
-      <div class="section-header" id="sec-signals">
-        <div>
-          <h2>Market Signals</h2>
-          <p class="section-sub ov-signals-sub">Breakouts, ±10d earnings window, extreme RSI &amp; Form 4 buys</p>
+      <div class="ov-module" data-ov-section="signals">
+        <div class="section-header" id="sec-signals">
+          <div>
+            <h2>Market Signals</h2>
+            <p class="section-sub ov-signals-sub">Breakouts, ±10d earnings window, extreme RSI &amp; Form 4 buys</p>
+          </div>
         </div>
+        <div id="alertsSection" class="alerts-grid"></div>
       </div>
-      <div id="alertsSection" class="alerts-grid"></div>
 
-      <div class="section-header" id="sec-sectors">
-        <div>
-          <h2>Sector Heatmap</h2>
+      <div class="ov-module" data-ov-section="sectors">
+        <div class="section-header" id="sec-sectors">
+          <div>
+            <h2>Sector Heatmap</h2>
+          </div>
         </div>
+        <div id="sectorHeatmap" class="heatmap-grid"></div>
       </div>
-      <div id="sectorHeatmap" class="heatmap-grid"></div>
 
-      <div class="section-header" id="sec-movers">
-        <div>
-          <h2>Top Notable Movers</h2>
+      <div class="ov-module" data-ov-section="movers">
+        <div class="section-header" id="sec-movers">
+          <div>
+            <h2>Top Notable Movers</h2>
+          </div>
+          <button class="link-btn" id="viewAllScreenerBtn">View all →</button>
         </div>
-        <button class="link-btn" id="viewAllScreenerBtn">View all →</button>
+        <div id="notableGrid" class="notable-grid"></div>
       </div>
-      <div id="notableGrid" class="notable-grid"></div>
 
-      <div class="section-header" id="sec-earnings" style="margin-top:18px">
-        <div>
-          <h2>Earnings Calendar</h2>
+      <div class="ov-module" data-ov-section="earnings">
+        <div class="section-header" id="sec-earnings">
+          <div>
+            <h2>Earnings Calendar</h2>
+          </div>
         </div>
+        <div id="earningsCalendarGrid" class="two-col"></div>
       </div>
-      <div id="earningsCalendarGrid" class="two-col"></div>
     </section>
 
     <!-- SCREENER VIEW -->
@@ -425,7 +434,7 @@
   <!-- Subtle Status Toast -->
   <div id="appToast" class="app-toast hidden" role="status" aria-live="polite"></div>
 
-  <script src="assets/app.js?v=59"></script>
-  <script type="module" src="assets/auth.js?v=59"></script>
+  <script src="assets/app.js?v=60"></script>
+  <script type="module" src="assets/auth.js?v=60"></script>
 </body>
 </html>
