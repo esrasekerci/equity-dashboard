@@ -76,6 +76,12 @@ ALIASES = {
 }
 
 
+def atomic_write_text(path: Path, content: str) -> None:
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(content, encoding="utf-8")
+    os.replace(tmp, path)
+
+
 def story_key(title: str) -> str:
     clean = re.sub(r"[^a-z0-9]+", " ", (title or "").lower()).strip()
     core = " ".join(clean.split()[:9])
@@ -326,7 +332,7 @@ def main() -> None:
                 st["etf_ret_1d"] = quotes[ek]["change_1d_pct"]
             if sk in sec_rets and sec_rets[sk]:
                 st["avg_ret_1d"] = round(sum(sec_rets[sk]) / len(sec_rets[sk]), 2)
-        sum_path.write_text(json.dumps(summary, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+        atomic_write_text(sum_path, json.dumps(summary, separators=(",", ":"), ensure_ascii=False))
 
         # Multi-tier price & benchmark shock checks
         for sym, q in quotes.items():
@@ -552,7 +558,7 @@ def main() -> None:
 
     # Keep up to 120 items in breaking_news.json sorted strictly newest-to-oldest while capping synthetic market_move shocks at 12
     def _pub_sort_key(item: dict) -> tuple[float, float]:
-        dt = parse_pub(item.get("published"))
+        dt = parse_dt(item.get("published"))
         ts = dt.timestamp() if dt is not None else 0.0
         return (ts, float(item.get("importance") or 0.0))
 
@@ -560,11 +566,11 @@ def main() -> None:
     editorial_items = [x for x in combined if "market_move" not in (x.get("categories") or [])]
     tape_items = [x for x in combined if "market_move" in (x.get("categories") or [])][:12]
     merged = sorted((editorial_items[:108] + tape_items)[:120], key=_pub_sort_key, reverse=True)
-    breaking_path.write_text(
+    atomic_write_text(
+        breaking_path,
         json.dumps({"updated_at": now_iso, "min_importance": 42, "max_age_hours": 4, "items": merged}, indent=2, ensure_ascii=False),
-        encoding="utf-8",
     )
-    seen_path.write_text(json.dumps(seen, indent=2, ensure_ascii=False), encoding="utf-8")
+    atomic_write_text(seen_path, json.dumps(seen, indent=2, ensure_ascii=False))
 
     # Patch fresh editorial ticker news & live quotes directly into data/<latest_date>/tickers/<SYM>.json
     tickers_dir = DATA_DIR / latest_date / "tickers"
@@ -614,7 +620,7 @@ def main() -> None:
                     ]
                     if add_n:
                         td["news"] = (add_n + cur_news)[:35]
-                tp.write_text(json.dumps(td, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+                atomic_write_text(tp, json.dumps(td, separators=(",", ":"), ensure_ascii=False))
             except Exception:
                 continue
 

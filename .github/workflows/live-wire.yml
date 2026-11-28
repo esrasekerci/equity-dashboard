@@ -1,7 +1,7 @@
 name: live-wire-realtime
 on:
   schedule:
-    # Public repo = 100% free unlimited GitHub Actions minutes forever; runs every 5 minutes 24/7
+    # Public repo = 100% free unlimited GitHub Actions minutes; runs every 5 minutes 24/7
     - cron: "*/5 * * * *"
   workflow_dispatch: {}
 concurrency:
@@ -9,6 +9,8 @@ concurrency:
   cancel-in-progress: false
 permissions:
   contents: write
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 jobs:
   pulse:
     runs-on: ubuntu-latest
@@ -25,13 +27,29 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
-      - name: Commit updated live feed & quotes
+      - name: Commit updated live feed & quotes with bounded rebase retry
         run: |
           git config user.name "equity-research-bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/
           if ! git diff --cached --quiet; then
             git commit -m "Live wire pulse $(date -u +%Y-%m-%dT%H:%MZ)"
-            git pull --rebase -X ours origin main || true
-            git push origin main
+            for attempt in 1 2 3; do
+              if git pull --rebase -X theirs origin main; then
+                if git push origin main; then
+                  exit 0
+                fi
+              else
+                git rebase --abort 2>/dev/null || true
+                git fetch origin main
+                git reset --soft origin/main
+                git checkout --ours data/
+                git add data/
+                git diff --cached --quiet && exit 0
+                git commit -m "Live wire pulse $(date -u +%Y-%m-%dT%H:%MZ)"
+                git push origin main && exit 0
+              fi
+              sleep $((attempt * 2))
+            done
+            exit 1
           fi

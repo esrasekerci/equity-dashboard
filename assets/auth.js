@@ -32,11 +32,15 @@ import {
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
+// Firebase Web Client Configuration:
+// - Restricted in Google Cloud API Keys v2 to allowed HTTP referrers (esrasekerci.github.io, firebaseapp.com, localhost)
+// - Restricted to least-privilege client APIs only (identitytoolkit, securetoken, firestore, firebaseinstallations)
+// - Protected by owner-only Cloud Firestore Security Rules (firestore.rules)
 const FIREBASE_CONFIG = {
   projectId: "equity-intel-app-2026",
   appId: "1:454383756252:web:e0144ed8f9f64f5caae519",
   storageBucket: "equity-intel-app-2026.firebasestorage.app",
-  apiKey: "AIzaSyAdfcKWHAshaaWbNSq-Dr2CeB0znHy0CgM",
+  apiKey: "AIzaSyD3I9f6mXioDtiisXQfTdo0692x6-PvRBo",
   authDomain: "equity-intel-app-2026.firebaseapp.com",
   messagingSenderId: "454383756252",
 };
