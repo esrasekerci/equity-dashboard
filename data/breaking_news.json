@@ -1216,23 +1216,6 @@
       "age_hours": 1.36,
       "detected_at": "2026-11-27T12:52:35+00:00",
       "significance": "NOTABLE"
-    },
-    {
-      "key": "3987634c9075eda2",
-      "symbol": "UBER",
-      "name": "Uber Technologies",
-      "title": "Uber Secures 87.13% of Delivery Hero Shares in Takeover Bid",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/uber-secures-87-13-delivery-113009640.html?.tsrc=rss",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-27T11:30:09+00:00",
-      "importance": 70.9,
-      "categories": [
-        "m_and_a"
-      ],
-      "age_hours": 1.37,
-      "detected_at": "2026-11-27T12:52:35+00:00",
-      "significance": "HIGH"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-28T04:02:36+00:00",
+  "updated_at": "2026-11-28T12:35:13+00:00",
   "items": [
     {
       "agency": "SEC",
@@ -119,19 +119,6 @@
       "sector": "macro_policy"
     },
     {
-      "agency": "FTC",
-      "title": "FTC Finalizes Order Resolving Antitrust Concerns Stemming from Beretta, Ruger Stock Purchase Deal",
-      "url": "https://www.ftc.gov/news-events/news/press-releases/2026/11/ftc-finalizes-order-resolving-antitrust-concerns-stemming-beretta-ruger-stock-purchase-deal",
-      "published": "2026-11-25T12:00:00+00:00",
-      "source": "FTC Official",
-      "summary": "The Federal Trade Commission has finalized an order resolving antitrust concerns related to a stock purchase agreement between two of the largest firearm manufacturers, Beretta Holding S.A. and Sturm, Ruger & Co. Inc., by prohibiting anticompetitive entanglements between the two companies. View Press Release",
-      "categories": [
-        "FTC Declaration",
-        "antitrust_tech"
-      ],
-      "sector": "antitrust_tech"
-    },
-    {
       "agency": "NHTSA",
       "title": "NHTSA Recall 25V359000 (Tesla Model Y): VISIBILITY:WINDSHIELD WIPER/WASHER:LINKAGES",
       "url": "https://www.nhtsa.gov/recalls?nhtsaId=25V359000",
@@ -204,47 +191,8 @@
       "source": "Federal Register (Federal Communications Commission)",
       "summary": "This document summarizes the procedures, deadlines, upfront payment, and minimum opening bid amounts adopted in the Auction 115 Procedures Public Notice for the Federal Communications Commission's (Commission) upcoming auction of 3,248 new flexible-use licenses in the 3.98-4.14 GHz portion of the Upper C-band. The Auction 115 Procedures Public Notice summarized here provides details regarding the ",
       "categories": [
-        "Sanctions",
+        "Antitrust",
         "Rule"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "Commerce / ITA",
-      "title": "Certain New Pneumatic Off-the-Road Tires From India: Final Results of Antidumping Duty Administrative Review; 2024-2025",
-      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-24011/certain-new-pneumatic-off-the-road-tires-from-india-final-results-of-antidumping-duty-administrative",
-      "published": "2026-11-25T00:00:00+00:00",
-      "source": "Federal Register (Commerce Department, International Trade Administration)",
-      "summary": "The U.S. Department of Commerce (Commerce) determines that certain producers/exporters subject to this review made sales of subject merchandise at less than normal value (NV) during the period of review (POR), March 1, 2024, through February 28, 2025.",
-      "categories": [
-        "Sanctions",
-        "Notice"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "Commerce / ITA",
-      "title": "Prestressed Concrete Steel Wire Strand From the People's Republic of China: Continuation of Antidumping Duty and Countervailing Duty Orders",
-      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23992/prestressed-concrete-steel-wire-strand-from-the-peoples-republic-of-china-continuation-of",
-      "published": "2026-11-25T00:00:00+00:00",
-      "source": "Federal Register (Commerce Department, International Trade Administration)",
-      "summary": "As a result of the determinations by the U.S. Department of Commerce (Commerce) and the U.S. International Trade Commission (ITC) that revocation of the antidumping duty (AD) and countervailing duty (CVD) orders on prestressed concrete steel wire strand (PC strand) from the People's Republic of China (China) would likely lead to the continuation or recurrence of dumping, countervailable subsidies,",
-      "categories": [
-        "Sanctions",
-        "Notice"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "US ITC",
-      "title": "Request for Comments Regarding International Trade Commission's Economic Analysis",
-      "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23981/request-for-comments-regarding-international-trade-commissions-economic-analysis",
-      "published": "2026-11-25T00:00:00+00:00",
-      "source": "Federal Register (International Trade Commission)",
-      "summary": "Pursuant to Section 332 of the Tariff Act of 1930, the United States International Trade Commission (Commission) is seeking information from the public on its economic analysis, including its methodology and areas of focus.",
-      "categories": [
-        "Sanctions",
-        "Notice"
       ],
       "sector": "macro_policy"
     },
@@ -262,11 +210,11 @@
       "sector": "macro_policy"
     },
     {
-      "agency": "FERC",
-      "title": "Combined Notice of Filings #1",
-      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24083/combined-notice-of-filings-1",
-      "published": "2026-11-27T00:00:00+00:00",
-      "source": "Federal Register (Energy Department, Federal Energy Regulatory Commission)",
+      "agency": "US ITC",
+      "title": "Shopping Carts and Parts Thereof From China; Revised Schedule for the Subject Investigations",
+      "url": "https://www.federalregister.gov/documents/2026/11/30/2026-24278/shopping-carts-and-parts-thereof-from-china-revised-schedule-for-the-subject-investigations",
+      "published": "2026-11-30T00:00:00+00:00",
+      "source": "Federal Register (International Trade Commission)",
       "summary": "",
       "categories": [
         "Tariffs & trade",
@@ -276,23 +224,10 @@
     },
     {
       "agency": "Commerce / ITA",
-      "title": "Extending Deadlines for Submissions by Importers of Automobiles Qualifying for Preferential Tariff Treatment Under the USMCA To Determine U.S. Content",
-      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24076/extending-deadlines-for-submissions-by-importers-of-automobiles-qualifying-for-preferential-tariff",
-      "published": "2026-11-27T00:00:00+00:00",
+      "title": "Antidumping or Countervailing Duty Order, Finding, or Suspended Investigation; Opportunity To Request Administrative Review and Join Annual Inquiry Service List; Note Regarding Format of Review Requests",
+      "url": "https://www.federalregister.gov/documents/2026/11/30/2026-24233/antidumping-or-countervailing-duty-order-finding-or-suspended-investigation-opportunity-to-request",
+      "published": "2026-11-30T00:00:00+00:00",
       "source": "Federal Register (Commerce Department, International Trade Administration)",
-      "summary": "In Proclamation 10908 of March 26, 2025, \"Adjusting Imports of Automobiles and Automobile Parts Into the United States,\" the President imposed additional tariffs on imports of specified automobiles and automobile parts to eliminate the threat to national security posed by such imports. That Proclamation also provided that importers of automobiles that qualify for preferential tariff treatment unde",
-      "categories": [
-        "Tariffs & trade",
-        "Notice"
-      ],
-      "sector": "macro_policy"
-    },
-    {
-      "agency": "US ITC",
-      "title": "Chromium Trioxide From India and Turkey; Determinations",
-      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24053/chromium-trioxide-from-india-and-turkey-determinations",
-      "published": "2026-11-27T00:00:00+00:00",
-      "source": "Federal Register (International Trade Commission)",
       "summary": "",
       "categories": [
         "Tariffs & trade",
@@ -301,15 +236,67 @@
       "sector": "macro_policy"
     },
     {
-      "agency": "US ITC",
-      "title": "Welded Line Pipe From South Korea and Turkey; Determinations",
-      "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24047/welded-line-pipe-from-south-korea-and-turkey-determinations",
-      "published": "2026-11-27T00:00:00+00:00",
-      "source": "Federal Register (International Trade Commission)",
-      "summary": "",
+      "agency": "Trade Representative, Office of United States",
+      "title": "Request for Comments Concerning Proposed Modification of Section 301 Action on Brazil's Acts, Policies, and Practices Related to Digital Trade and Electronic Payment Services; Unfair, Preferential Tariffs; Anti-Corruption Enforcement; Intellectual Property Protection; Ethanol Market Access; and Illegal Deforestation",
+      "url": "https://www.federalregister.gov/documents/2026/11/30/2026-24231/request-for-comments-concerning-proposed-modification-of-section-301-action-on-brazils-acts-policies",
+      "published": "2026-11-30T00:00:00+00:00",
+      "source": "Federal Register (Trade Representative, Office of United States)",
+      "summary": "The United States Trade Representative (Trade Representative) proposes a modification of the tariff action taken in connection with the Section 301 investigation of Brazil's acts, policies, and practices related to digital trade and electronic payment services; unfair, preferential tariffs; anti-corruption enforcement; intellectual property protection; ethanol market access; and illegal deforestat",
       "categories": [
         "Tariffs & trade",
         "Notice"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "Commerce / ITA",
+      "title": "Disposable Aluminum Containers, Pans, Trays, and Lids From the People's Republic of China: Final Affirmative Determination of Circumvention of the Antidumping Duty and Countervailing Duty Orders",
+      "url": "https://www.federalregister.gov/documents/2026/11/30/2026-24184/disposable-aluminum-containers-pans-trays-and-lids-from-the-peoples-republic-of-china-final",
+      "published": "2026-11-30T00:00:00+00:00",
+      "source": "Federal Register (Commerce Department, International Trade Administration)",
+      "summary": "The U.S. Department of Commerce (Commerce) determines that imports of disposable aluminum containers, pans, trays, and lids (aluminum containers) completed in the Socialist Republic of Vietnam (Vietnam) using aluminum foil produced in the People's Republic of China (China) are circumventing the antidumping duty (AD) and countervailing duty (CVD) orders on aluminum containers from China.",
+      "categories": [
+        "Sanctions",
+        "Notice"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "Commerce / ITA",
+      "title": "Certain Carbon and Alloy Steel Cut-to-Length Plate From the Federal Republic of Germany: Final Results of Antidumping Duty Administrative Review; 2024-2025",
+      "url": "https://www.federalregister.gov/documents/2026/11/30/2026-24179/certain-carbon-and-alloy-steel-cut-to-length-plate-from-the-federal-republic-of-germany-final",
+      "published": "2026-11-30T00:00:00+00:00",
+      "source": "Federal Register (Commerce Department, International Trade Administration)",
+      "summary": "The U.S. Department of Commerce (Commerce) determines that certain carbon and alloy steel cut-to-length plate (CTL plate) from the Federal Republic of Germany (Germany) was not sold in the United States at less than normal value during the period of review (POR) May 1, 2024, through April 30, 2025.",
+      "categories": [
+        "Sanctions",
+        "Notice"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "Commerce / ITA",
+      "title": "Disposable Aluminum Containers, Pans, Trays, and Lids From the People's Republic of China: Final Affirmative Determination of Circumvention of the Antidumping Duty and Countervailing Duty Orders",
+      "url": "https://www.federalregister.gov/documents/2026/11/30/2026-24176/disposable-aluminum-containers-pans-trays-and-lids-from-the-peoples-republic-of-china-final",
+      "published": "2026-11-30T00:00:00+00:00",
+      "source": "Federal Register (Commerce Department, International Trade Administration)",
+      "summary": "The U.S. Department of Commerce (Commerce) determines that imports of disposable aluminum containers, pans, trays, and lids (aluminum containers) completed in Thailand using aluminum foil produced in the People's Republic of China (China) are circumventing the antidumping duty (AD) and countervailing duty (CVD) orders on aluminum containers from China.",
+      "categories": [
+        "Sanctions",
+        "Notice"
+      ],
+      "sector": "macro_policy"
+    },
+    {
+      "agency": "Commodity Futures Trading Commission",
+      "title": "Data Reporting Requirements for Certain Event Contracts",
+      "url": "https://www.federalregister.gov/documents/2026/11/30/2026-24209/data-reporting-requirements-for-certain-event-contracts",
+      "published": "2026-11-30T00:00:00+00:00",
+      "source": "Federal Register (Commodity Futures Trading Commission)",
+      "summary": "The Commodity Futures Trading Commission (\"Commission\" or \"CFTC\") is finalizing revisions to the Commission's regulations that set forth an alternate framework for reporting of data for certain fully collateralized event contracts (the \"Final Rule\"). These revisions require certain reporting markets, futures commission merchants, clearing members, and foreign brokers to report certain event contra",
+      "categories": [
+        "Antitrust",
+        "Rule"
       ],
       "sector": "macro_policy"
     }
