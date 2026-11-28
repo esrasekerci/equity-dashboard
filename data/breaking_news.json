@@ -1,8 +1,93 @@
 {
-  "updated_at": "2026-11-28T13:22:38+00:00",
-  "min_importance": 35.0,
-  "max_age_hours": 6.0,
+  "updated_at": "2026-11-28T18:23:53+00:00",
+  "min_importance": 42,
+  "max_age_hours": 4,
   "items": [
+    {
+      "key": "58b317a09cfb25c5",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Nvidia CEO Testifies Before Senate on Export Controls",
+      "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQMjZ5M0haOUI2ZHpGSTlrTFNBVkxxemU4X3BXdlpYRjluZDRzWkc0cng5Yk5PTWVUczBhRXFOcXl5X1ZMZTZta1QyUGUzNzFJQzlBcVloNTk3NjFSM3BHQnpXdFVwWTFYLV9nQk9WSE5SU2JVMlhlTXRpWE1QYUw5NVNCLVIyY0lnWUhiRklid0Q?oc=5",
+      "source": "Intellectia AI",
+      "source_tier": 2,
+      "published": "2026-11-28T17:39:52+00:00",
+      "importance": 63.0,
+      "significance": "HIGH",
+      "categories": [
+        "contract_partnership"
+      ],
+      "age_hours": 0.73,
+      "detected_at": "2026-11-28T18:23:53+00:00"
+    },
+    {
+      "key": "783cfd14e38f44d4",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "Jensen Is Back: These 10 AI Stocks Are Riding Nvidia’s Rebound",
+      "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxNbDZBZGpzZjRlUjBiejNzazFTdEFqUmRxV0QtMW11MEdYampNcUs3QVYzOGN1RlZrNF9VbURDRUZuM05jdW4xXzVIS1IyS29QMU1ZTHZVcHJjLW9IMjZmYzhXRW1YeGhvam5nRkJkVlFZdmIzNXBuZWxrbWthOXVpQk5QT1RSMkNKUTlvREQtcHJRUQ?oc=5",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-28T17:29:43+00:00",
+      "importance": 53.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 0.9,
+      "detected_at": "2026-11-28T18:23:53+00:00"
+    },
+    {
+      "key": "6ccfb20e2bfa590a",
+      "symbol": "COIN",
+      "name": "Coinbase Global",
+      "title": "Coinbase Global (COIN) Is Scanning All Production Code With AI",
+      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNQ3hJcVFJSXV0X2NQa2FXaVFoTDRDbDRhNk0tTUZOeDdWLUtLWF9OaW9VQ04xZ2Rva01BUTRMYThFT01ia0xwSTREc0lUektmaVBkclpoS212SldlTER3dWZhbjh6UTJ0TE9mMUljdDZCdFRfTGlVMmdqR1hDVXdrVno4VG41Rjg3UGxuOE1Xa3ZvYzJJMVBBV1RRelpOZXJVSW5xdjRkRC0?oc=5",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-28T17:08:25+00:00",
+      "importance": 53.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.26,
+      "detected_at": "2026-11-28T18:23:53+00:00"
+    },
+    {
+      "key": "d097944b2f9dc618",
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "title": "What Nvidia Investors Should Watch During Jensen Huang's Senate Hearing",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQZ3A3MVl0RnBiRUxWWTlBQWI2eUN6bEkySDNuUHBmenQzalB2T2dNSW5IUHdOajd6STdyXzBTOHgySXlqandFbVJtSC02OC1kOUhvUFFsZ0JaMUJ5WEFRUHlTdEF4WlJULWxsUG1jblpBNTZVdUpmamF0YVEzQkMzNzBLTlZRVS1Menh5ZzBYRFBwc2tZV1pyN3M1VGhwSmhXYnc4?oc=5",
+      "source": "Yahoo Finance",
+      "source_tier": 2,
+      "published": "2026-11-28T16:55:06+00:00",
+      "importance": 53.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.48,
+      "detected_at": "2026-11-28T18:23:53+00:00"
+    },
+    {
+      "key": "aaef248385ac7c4e",
+      "symbol": "AVGO",
+      "name": "Broadcom",
+      "title": "Form 4 Broadcom Inc For: 28 November By Investing.com",
+      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQcjdoSHR0X1NoMTE2OWo1c2JjS0NRRGFUNUlDeGJORUw5NVE5c0w0bUJDa2QwMUp1S1JjNU1lZm5hdzhoSGdmczkwc2xTWXQtWmlDdE9CUlVzMmVjVEFyNjZLcVV6a1VwcTNFdGVZYVowR2tJLUhvaGlmaGNLRFFYMkdlMVI3V2RJTUFxWFE0alFjdVQzaGRJUjhqQTk?oc=5",
+      "source": "Investing.com Australia",
+      "source_tier": 2,
+      "published": "2026-11-28T16:40:08+00:00",
+      "importance": 53.0,
+      "significance": "NOTABLE",
+      "categories": [
+        "general"
+      ],
+      "age_hours": 1.73,
+      "detected_at": "2026-11-28T18:23:53+00:00"
+    },
     {
       "key": "a04306c73ff83fa9",
       "symbol": "TSLA",
