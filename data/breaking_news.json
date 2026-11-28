@@ -4,23 +4,6 @@
   "max_age_hours": 4,
   "items": [
     {
-      "key": "1eced68d7be0274f",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Nvidia Stock Forecast as Polymarket Tool Predicts a Decline in its Rental GPU Prices",
-      "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQdDNkLXFaRlJUUFFVVXFHUGFpeWZ3M1V4QzFvczdLelBlZzVJZjJla2s5d3VKN2toTmQtYXpVZXpyVTBPQVh3S3pseElPSUdhTlBaMjVwelNvaHUzTzhfajlyMFdvbGlITTZiTTQ0c2hob1JsOVVqZUhYN1NzSW5pUy1nWEpvb204T2JTaTdrc3pFYlpkUzZLOTVVaTVZdXFIZzVrcEs0MDdBazBMSVU5cGM2VnBfS0R6blItbWxUX01vZw?oc=5",
-      "source": "The Market Periodical",
-      "source_tier": 2,
-      "published": "2026-11-28T12:23:53+00:00",
-      "importance": 48.0,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 0.15,
-      "detected_at": "2026-11-28T12:33:02+00:00"
-    },
-    {
       "key": "69a41449b142e0df",
       "symbol": "AAPL",
       "name": "Apple",
@@ -35,57 +18,6 @@
         "general"
       ],
       "age_hours": 0.24,
-      "detected_at": "2026-11-28T12:33:02+00:00"
-    },
-    {
-      "key": "6b5565a82c996167",
-      "symbol": "MRVL",
-      "name": "Marvell Technology",
-      "title": "Marvell Is Now Worth About as Much as Its $115 Billion Lumentum Deal, With $117.93 the Floor Before Earnings",
-      "url": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxNbG9aa1pJR3BjQUd3T2NYdldKREhLdm9tcHY0LTdTRzR3UFFWZlExdUdpS1ZvSEVUMkVLMzFxRmt0WmllaGJGSG5sbUNlSlNDTnV0R2duOHh6MXhoRlhWVzB3MkNMcTNlbmJqOEd2OEsxWVNtcWFmVTN5OVlxMmoyV251a0c3eEpsRVJwUl9UcHRyUkQzRnNVQTAyUV9RYTBZenpSZE9zeWFIVi1aRF9PUzhCMWdhTkFwX3psaS1kam84aVJuQjdpRXZqT3R2akZXS3VHeG01MzIwY25UQjM3QlNQbGJPMUZKUmlIUmtnd3JQT0ZVcG1hcnRaU3dEcnc?oc=5",
-      "source": "TradingKey",
-      "source_tier": 1,
-      "published": "2026-11-28T12:04:14+00:00",
-      "importance": 74.0,
-      "significance": "HIGH",
-      "categories": [
-        "earnings_guidance"
-      ],
-      "age_hours": 0.48,
-      "detected_at": "2026-11-28T12:33:02+00:00"
-    },
-    {
-      "key": "273ddec3c6bb5076",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "On-chain stock futures: NVIDIA trades at 1.93% discount to cash close",
-      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1UNXFyQXdjUl92ZG5fZlRGYVZ2Y0V3Z18yVWVHV1psZUtadXZhQlBlYWZhRTR5cGFKN3M2NUFHTGl4UGtZRlNsSkx1Y1FCcURKQldwdWdLQW5QZw?oc=5",
-      "source": "www.tokenpost.com",
-      "source_tier": 2,
-      "published": "2026-11-28T12:00:22+00:00",
-      "importance": 48.0,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 0.54,
-      "detected_at": "2026-11-28T12:33:02+00:00"
-    },
-    {
-      "key": "ec342d47a7693cbc",
-      "symbol": "TSLA",
-      "name": "Tesla",
-      "title": "Norway's wealth fund will vote against Musk's pay at Tesla's Dec. 3 meeting",
-      "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPZEhPb3JNQnFrd1FSdzdSZHZHYk5FOG45aXhjUFJBcHl6MGhySzRQX1h1ZFE5bWZZbWE4eXNSVU9KSy1lR1BXaVJFZDRNSFplcmluQjNoTmUxQ1NDLWc1NFJZQk9Yb3VGWHhLbTFWSTVqankwWWsxbEFLM3ZjWV9QNXBrQXZfby1kTFRxakNEWHpLT3BGSjc0?oc=5",
-      "source": "MLQ.ai",
-      "source_tier": 2,
-      "published": "2026-11-28T11:31:05+00:00",
-      "importance": 48.0,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 1.03,
       "detected_at": "2026-11-28T12:33:02+00:00"
     },
     {
@@ -121,74 +53,6 @@
       ],
       "age_hours": 1.28,
       "detected_at": "2026-11-28T12:33:02+00:00"
-    },
-    {
-      "key": "767b2113f6cf8b6a",
-      "symbol": "TSM",
-      "name": "Taiwan Semiconductor",
-      "title": "TSM Stock Quote Price and Forecast",
-      "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTFBRUno5cWdRaTZJNFVEUWZFNEFWSnIyZXoxMXo0aEwwMHZsbUl0MERWcTVVZXl3QkR0Q2U1TFkwY0NfQ2NLRVRWNGluT3NmZUk?oc=5",
-      "source": "CNN",
-      "source_tier": 2,
-      "published": "2026-11-28T10:56:44+00:00",
-      "importance": 48.0,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 1.61,
-      "detected_at": "2026-11-28T12:33:02+00:00"
-    },
-    {
-      "key": "025c3d0d86948bc9",
-      "symbol": "TSLA",
-      "name": "Tesla",
-      "title": "TSLA 261106 350.00C (TSLA261106C350000) Stock Options Chain | Quotes & News",
-      "url": "https://news.google.com/rss/articles/CBMi7wJBVV95cUxQbHh3VWZkaGk1a1BBcHB2U2l6VzZ2OWxaRGxoY2d2OVdhcFJYQWhndUNSRVh3aXlOOWZDWnNlSmlRUGtlYklxWHZXT1Q1NW9mQ3g1U0NLLXA1S21vcmJlTWdNTWVsSjJWeUJ3YmFhWUR1RnlsWW9Oc0Z0d0dmUTBMV0s0SmJpRFRMWlRlWWVFWTRuUVhzTWtBWUVCUmF4ZzUzYnc0dnZhc0V4UVgyYVJFU0hieFNyWEk0R3BOOWtXV1kzS09vNEVtY2RoN2pHakZJUm5WWHRrNk1FYkFTcHVqeHpCN0ZULV9jZGlwTG5hdDJlVURUT0E3bmEwMXc0YnJJNGVLcmEtZ2tWY3ZOSkNrekxLOVpHWk5ncF9NSzktNlpTakJuMFBHbFJrbDFpaHhlaEN0OHItMUhWUmtFREhUWVNXNkRjSTcyUmJLaUFzTzA0WDFmRjZXRVhUUU55dkUyMkRkYVpvOTZmajUtVUk4?oc=5",
-      "source": "Moomoo",
-      "source_tier": 2,
-      "published": "2026-11-28T10:51:37+00:00",
-      "importance": 48.0,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 1.69,
-      "detected_at": "2026-11-28T12:33:02+00:00"
-    },
-    {
-      "key": "17f37d2d48895459",
-      "symbol": "UBER",
-      "name": "Uber Technologies",
-      "title": "Uber stock secures 87.13% of Delivery Hero shares",
-      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNdF9BcDVFN2lOZWpJdnNTTkppazRja09rWDVjVndFY2loY2V2V3c2ZnR2WHNtUDVlWGo1SjdKTDNHN0pITTlLcV9Pb2JiYUV3emZQeHl1dDZJQzJVRk9oWGd2MFQxYVN6TEpQTHJySVJheEN0aFBDRktUQzJxYVNjc1ZHRWI4WFlPbmJmZWFlVTUxRm1OUU43N0RkRHNYdWxmZlFpMHVQNVM1Tk9iLUFCSg?oc=5",
-      "source": "ad-hoc-news.de",
-      "source_tier": 2,
-      "published": "2026-11-28T10:49:40+00:00",
-      "importance": 48.0,
-      "significance": "NOTABLE",
-      "categories": [
-        "general"
-      ],
-      "age_hours": 1.72,
-      "detected_at": "2026-11-28T12:33:02+00:00"
-    },
-    {
-      "key": "a3a051df14eeef1f",
-      "symbol": "NVDA",
-      "name": "NVIDIA",
-      "title": "Nvidia Stock Has Swung 5% or More in a Single Day 5 Times in November. Here's How Big a Position I Think Makes Sense.",
-      "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNWlc1UEpNSWl5YUNZenJEYjNMX3gyLUdJZkU3aEVrMGxSWFdsTndFTUpPYXQtdzkyb3Y0SkI1LVNVT1FNTll4TnR0VHlVeUVqb1ZmSi1YOENhak4xdTF3eV9WN3ZTQ0hXcVlGb0NHNWx1YXVTT2NYRHBXMjBxaTMwODNmSVdOQkhGb01yVHNBUlFyNmts?oc=5",
-      "source": "Yahoo Finance",
-      "source_tier": 2,
-      "published": "2026-11-28T03:13:00+00:00",
-      "importance": 54.2,
-      "categories": [
-        "general"
-      ],
-      "age_hours": 0.83,
-      "detected_at": "2026-11-28T04:02:36+00:00",
-      "significance": "NOTABLE"
     },
     {
       "key": "21cc8d8da62284ce",
@@ -570,23 +434,6 @@
       "age_hours": 4.98,
       "detected_at": "2026-11-28T04:02:36+00:00",
       "significance": "HIGH"
-    },
-    {
-      "key": "ca2386dead62a498",
-      "symbol": "BLK",
-      "name": "BlackRock",
-      "title": "BlackRock (BLK) Surpasses Market Returns: Some Facts Worth Knowing",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/blackrock-blk-surpasses-market-returns-221502725.html",
-      "source": "Zacks",
-      "source_tier": 3,
-      "published": "2026-11-27T22:15:02+00:00",
-      "importance": 39.9,
-      "categories": [
-        "general"
-      ],
-      "age_hours": 5.79,
-      "detected_at": "2026-11-28T04:02:36+00:00",
-      "significance": "NOTABLE"
     },
     {
       "key": "613f2bd1b745cbed",

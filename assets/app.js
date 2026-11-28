@@ -295,15 +295,8 @@
     }
     state.view = view;
     if (view === "overview" && state.summary) {
-      // Initial boot determines starting offset once (0 on fresh visit, +4 on reload); subsequent tab switches step chronologically into older news
-      if (!state.ovBootRotated) {
-        state.ovBootRotated = true;
-        const navEntry = performance.getEntriesByType?.("navigation")?.[0];
-        const isReload = navEntry?.type === "reload";
-        renderOverviewNews({ initBoot: true, isReload });
-      } else if (!replace && wasView !== "overview") {
-        renderOverviewNews({ advance: true });
-      }
+      // Always anchor Overview to the 4 latest stories ordered strictly newest-to-oldest (only tapping ↻ steps into older batches)
+      renderOverviewNews({ resetNewest: true });
     } else if (view === "breaking" && !opts.preserveHighlight) {
       renderBreaking();
     }
@@ -319,7 +312,7 @@
         try { navBar.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" }); } catch {}
       }
     });
-    const moreViews = new Set(["breaking", "authorities", "macro", "formulas"]);
+    const moreViews = new Set(["smartmoney", "authorities", "macro", "formulas"]);
     document.querySelectorAll("#mobileBottomNav .mnav-btn").forEach((btn) => {
       if (btn.dataset.moreTrigger) {
         btn.classList.toggle("active", moreViews.has(view));
@@ -1000,15 +993,15 @@
         const srcLabel = item.source || "SEC Filings";
         const extraCls = idx >= EARN_SHOW ? " earn-extra-row hidden" : "";
         return `
-          <a class="level-row${extraCls}" href="${esc(officialUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
-            <div>
+          <a class="level-row earn-row${extraCls}" href="${esc(officialUrl)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+            <div class="earn-row-left">
               <strong>${esc(item.symbol)}</strong>
-              <span class="muted" style="margin-left:6px">${esc(item.name)}</span>
-              <span class="muted" style="margin-left:6px;font-size:11px;color:var(--accent-2)">${esc(srcLabel)} ↗</span>
+              <span class="muted earn-row-name">${esc(item.name)}</span>
+              <span class="earn-row-src">${esc(srcLabel)} ↗</span>
             </div>
-            <div style="text-align:right">
+            <div class="earn-row-right">
               <span class="tag ${badgeCls}">${esc(badgeTxt)}</span>
-              <span class="muted" style="margin-left:6px;font-variant-numeric:tabular-nums">${esc(item.date)}</span>
+              <span class="earn-row-date">${esc(item.date)}</span>
             </div>
           </a>`;
       };
@@ -2793,6 +2786,20 @@
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   }
 
+  const LOW_QUAL_NEWS_SRC_RE = /\b(tikr|24\/7 wall|247wallst|motley fool|fool\.com|simply wall|simplywall|marketbeat|pluang|gurufocus|stocktwits|insider monkey|investorplace|zacks|moomoo|the market periodical|themarketperiodical|tokenpost|tradingkey|mlq\.ai|ad-hoc-news|defense world|american banking|head topics|finbold|kalkine)\b/i;
+  const LOW_QUAL_NEWS_TITLE_RE = /\b(stock options chain|options chain\s*\||stock quote price|quote price and forecast|on-chain stock futures|polymarket tool predicts|should you buy|should you sell|better buy|stocks? to buy|price prediction|no-brainer|screaming buy|here['’]s why|here['’]s how big a position|i think makes sense|millionaire)\b/i;
+
+  function isLowQualityNewsItem(title, source) {
+    const t = String(title || "").trim();
+    const s = String(source || "").trim();
+    if (!t || t.endsWith("?")) return true;
+    return LOW_QUAL_NEWS_SRC_RE.test(s) || LOW_QUAL_NEWS_TITLE_RE.test(t);
+  }
+
+  function isFreshNewsTimestamp(pubMs) {
+    return Number.isFinite(pubMs) && pubMs > 0 && (Date.now() - pubMs) < 60 * 60000;
+  }
+
   function classifyNewsDesks(item, bySym) {
     const rawCats = (item.categories || []).map((c) => String(c).toLowerCase());
     const src = String(item.source || "");
@@ -2883,7 +2890,10 @@
         _origin: "fed",
       });
     }
-    for (const a of (state.authorities || []).slice(0, 14)) {
+    const sortedAuthorities = [...(state.authorities || [])].sort(
+      (a, b) => parseNewsTimestampMs(b.published) - parseNewsTimestampMs(a.published)
+    );
+    for (const a of sortedAuthorities.slice(0, 14)) {
       rawPool.push({
         key: a.url || a.title,
         symbol: String(a.agency || "POLICY").split(/\s+/)[0].toUpperCase().slice(0, 8),
@@ -2923,7 +2933,8 @@
     const byUid = new Map();
     for (const raw of rawPool) {
       const title = String(raw.title || "").trim();
-      if (!title || !raw.url) continue;
+      const rawSource = String(raw.source || "Market Wire");
+      if (!title || !raw.url || (raw._origin !== "authority" && raw._origin !== "fed" && isLowQualityNewsItem(title, rawSource))) continue;
       // Match ticker if tagged MACRO/POLICY/etc.
       let sym = String(raw.symbol || "MACRO").toUpperCase();
       if (!bySym[sym]) {
@@ -3049,32 +3060,17 @@
     );
   }
 
-  // Chronological Overview 4-Story Showcase — always newest-to-oldest, stepping sequentially into older stories on reload!
+  // Chronological Overview 4-Story Showcase — always anchored to the 4 latest stories (0..3) unless user taps ↻ to browse older sets
   function pickOverviewNewsBatch(editorialPool, opts = {}) {
     if (!editorialPool.length) return [];
     const SHOW_N = Math.min(4, editorialPool.length);
     const total = editorialPool.length;
-    const SEQ_KEY = "eq_ov_news_seq_v2";
+    try { localStorage.removeItem("eq_ov_news_seq_v2"); } catch {}
 
     let offset = Number.isFinite(state.ovNewsOffset) ? state.ovNewsOffset : 0;
 
     if (opts.resetNewest) {
       offset = 0;
-    } else if (opts.initBoot) {
-      let savedOffset = 0;
-      let savedTs = 0;
-      try {
-        const saved = JSON.parse(localStorage.getItem(SEQ_KEY) || "{}");
-        if (Number.isFinite(saved.offset)) savedOffset = saved.offset;
-        if (Number.isFinite(saved.ts)) savedTs = saved.ts;
-      } catch {}
-      const recentSession = savedTs > 0 && (Date.now() - savedTs) < 20 * 60 * 1000;
-      if (opts.isReload || recentSession) {
-        offset = savedOffset + SHOW_N;
-        if (offset >= total) offset = 0;
-      } else {
-        offset = 0;
-      }
     } else if (opts.advance) {
       offset = offset + SHOW_N;
       if (offset >= total) offset = 0;
@@ -3084,14 +3080,8 @@
     const effectiveStart = (offset + SHOW_N > total) ? Math.max(0, total - SHOW_N) : offset;
     state.ovNewsOffset = effectiveStart;
 
-    if (opts.resetNewest || opts.initBoot || opts.advance) {
-      try {
-        localStorage.setItem(SEQ_KEY, JSON.stringify({ offset: effectiveStart, ts: Date.now() }));
-      } catch {}
-    }
-
     // Proactively pre-hydrate older ticker archives when user steps near the end of currently loaded news
-    if (effectiveStart + SHOW_N * 2 >= total && hasMoreUnhydratedNewsArchives()) {
+    if (effectiveStart > 0 && effectiveStart + SHOW_N * 2 >= total && hasMoreUnhydratedNewsArchives()) {
       hydrateOlderNewsBatch(10).catch(() => {});
     }
 
@@ -3175,11 +3165,8 @@
     const batch = pickOverviewNewsBatch(pool, opts);
     const startNum = state.ovNewsOffset + 1;
     const endNum = Math.min(pool.length, state.ovNewsOffset + batch.length);
-    if ($("ovNewsRangeBadge")) {
-      $("ovNewsRangeBadge").textContent = `${startNum}–${endNum} of ${pool.length}`;
-    }
-    if ($("ovNewestNewsBtn")) {
-      $("ovNewestNewsBtn").classList.toggle("hidden", state.ovNewsOffset === 0);
+    if ($("ovNewsSub")) {
+      $("ovNewsSub").textContent = state.ovNewsOffset === 0 ? "Latest" : `Older · #${startNum}–${endNum}`;
     }
     grid.innerHTML = batch.map((item) => `
       <article class="ov-news-card sig-${item.sigTier.toLowerCase()}" data-ov-news-id="${esc(item.uid)}" role="button" tabindex="0">
@@ -3187,13 +3174,14 @@
           <div class="ov-news-badges">
             ${sigTierBadgeHtml(item.importance)}
             <span class="news-desk-tag">${esc(NEWS_DESK_LABELS[item.primaryDesk] || "Market")}</span>
+            <span class="news-src-lbl">${esc(item.source)}</span>
           </div>
-          <span class="ov-news-time">${esc(item.source)} · ${esc(item.relTime)}</span>
+          <time class="news-age-badge${isFreshNewsTimestamp(item.pubMs) ? " is-fresh" : ""}">${esc(item.relTime)}</time>
         </div>
         <div class="ov-news-title">${esc(item.title)}</div>
         <div class="ov-news-foot">
           ${renderNewsTickerChipHtml(item, false)}
-          <span class="ov-news-go">View in News →</span>
+          <span class="ov-news-go">Open ›</span>
         </div>
       </article>
     `).join("");
@@ -3278,7 +3266,7 @@
 
     if (metaEl) {
       const critN = list.filter((x) => x.sigTier === "CRITICAL").length;
-      metaEl.textContent = `${list.length} stories · Newest to oldest · ${critN} critical catalysts`;
+      metaEl.textContent = `${list.length} stories · Latest to oldest${critN ? ` · ${critN} critical` : ""}`;
     }
 
     if (!list.length) {
@@ -3293,13 +3281,14 @@
           <div class="news-meta-left">
             ${sigTierBadgeHtml(item.importance)}
             <span class="news-desk-tag">${esc(NEWS_DESK_LABELS[item.primaryDesk] || "Market")}</span>
+            <span class="news-src-lbl">${esc(item.source)}</span>
           </div>
-          <span class="news-time-src">${esc(item.source)} · ${esc(item.relTime)}</span>
+          <time class="news-age-badge${isFreshNewsTimestamp(item.pubMs) ? " is-fresh" : ""}">${esc(item.relTime)}</time>
         </div>
         <a class="news-headline-link" href="${esc(item.url)}" target="_blank" rel="noopener">${esc(item.title)}</a>
         <div class="news-card-foot">
           ${renderNewsTickerChipHtml(item, true)}
-          <a class="news-ext-link" href="${esc(item.url)}" target="_blank" rel="noopener">${esc(item.source)} ↗</a>
+          <a class="news-ext-link" href="${esc(item.url)}" target="_blank" rel="noopener">Read ↗</a>
         </div>
       </article>
     `).join("") + (canLoadOlder ? `
@@ -3353,7 +3342,8 @@
     }
     for (const raw of (t.news || [])) {
       const title = String(raw.title || "").trim();
-      if (!title || !raw.url) continue;
+      const rawSrc = String(raw.source || "Market Wire");
+      if (!title || !raw.url || isLowQualityNewsItem(title, rawSrc)) continue;
       const uid = makeNewsUid(title, raw.id || raw.url);
       if (byUid.has(uid)) continue;
       const validMs = parseNewsTimestampMs(raw.published);
@@ -4236,13 +4226,14 @@
                   <div class="news-meta-left">
                     ${sigTierBadgeHtml(n.importance)}
                     <span class="news-desk-tag">${esc(NEWS_DESK_LABELS[(n.desks || [])[0]] || "Market")}</span>
+                    <span class="news-src-lbl">${esc(n.source)}</span>
                   </div>
-                  <span class="news-time-src">${esc(n.source)} · ${esc(n.relTime)}</span>
+                  <time class="news-age-badge${isFreshNewsTimestamp(n.pubMs) ? " is-fresh" : ""}">${esc(n.relTime)}</time>
                 </div>
                 <a class="news-headline-link" href="${esc(n.url || "#")}" target="_blank" rel="noopener">${esc(n.title)}</a>
                 <div class="news-card-foot">
                   <span class="news-entity-tag">${esc(t.symbol)}</span>
-                  <a class="news-ext-link" href="${esc(n.url || "#")}" target="_blank" rel="noopener">${esc(n.source)} ↗</a>
+                  <a class="news-ext-link" href="${esc(n.url || "#")}" target="_blank" rel="noopener">Read ↗</a>
                 </div>
               </article>`).join("")}</div>`
           : `<div class="muted">No recent news items.</div>`;
@@ -7367,7 +7358,6 @@
       if (!cached) return;
       const curNews = cached.news || [];
       const seenUids = new Set(curNews.map((n) => makeNewsUid(n.title || "", n.url)));
-      const lowQual = /fool\.com|motley fool|24\/7 wall|247wallst|investorplace|zacks|simply wall|marketbeat|insider monkey|stocktwits/i;
       const fresh = [];
       for (const it of items) {
         const rawTitle = (it.querySelector("title")?.textContent || "").trim();
@@ -7375,7 +7365,7 @@
         const pub = (it.querySelector("pubDate")?.textContent || "").trim();
         const src = (it.querySelector("source")?.textContent || "Market Wire").trim();
         const cleanTitle = rawTitle.replace(/\s+-\s+[^-]+$/, "").trim() || rawTitle;
-        if (!cleanTitle || !link || cleanTitle.endsWith("?") || lowQual.test(src)) continue;
+        if (!cleanTitle || !link || isLowQualityNewsItem(cleanTitle, src)) continue;
         const uid = makeNewsUid(cleanTitle, link);
         if (seenUids.has(uid)) continue;
         seenUids.add(uid);
@@ -7396,7 +7386,9 @@
         });
       }
       if (fresh.length) {
-        cached.news = [...fresh, ...curNews];
+        cached.news = [...fresh, ...curNews].sort(
+          (a, b) => parseNewsTimestampMs(b.published) - parseNewsTimestampMs(a.published)
+        );
         if (state.view === "stock" && state.activeTicker === sym && state.refreshActiveStockNews) {
           state.refreshActiveStockNews();
         }
@@ -7433,7 +7425,7 @@
             const title = (it.querySelector("title")?.textContent || "").trim();
             const link = (it.querySelector("link")?.textContent || "").trim();
             const pub = (it.querySelector("pubDate")?.textContent || "").trim();
-            if (!title || !link || title.endsWith("?")) continue;
+            if (!title || !link || isLowQualityNewsItem(title, feed.src)) continue;
             const norm = title.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().slice(0, 48);
             if (!norm || seenKeys.has(norm)) continue;
             const pubMs = pub ? Date.parse(pub) : Date.now();
@@ -7529,12 +7521,11 @@
       if (document.hidden) {
         state.lastHiddenAt = Date.now();
       } else {
-        const awayMs = state.lastHiddenAt ? (Date.now() - state.lastHiddenAt) : 0;
         pollTradingViewDirect();
         await checkForNewerReport(true);
         pollBackgroundFeeds();
-        if (state.view === "overview" && awayMs > 15000) {
-          renderOverviewNews({ advance: true });
+        if (state.view === "overview") {
+          renderOverviewNews({ resetNewest: true });
         }
       }
     });

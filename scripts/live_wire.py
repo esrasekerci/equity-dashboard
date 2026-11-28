@@ -23,12 +23,16 @@ DATA_DIR = ROOT / "data"
 DASHBOARD_URL = "https://esrasekerci.github.io/equity-dashboard/"
 
 LOW_QUALITY = (
-    "tikr", "24/7 wall st", "247wallst", "motley fool", "fool.com", "simply wall st",
+    "tikr", "24/7 wall st", "247wallst", "motley fool", "fool.com", "simply wall st", "simplywall",
     "marketbeat", "pluang", "gurufocus", "stocktwits", "insider monkey", "investorplace", "zacks",
+    "moomoo", "the market periodical", "themarketperiodical", "tokenpost", "tradingkey", "mlq.ai",
+    "ad-hoc-news", "head topics", "finbold", "kalkine", "defense world", "american banking",
 )
 OPINION_RE = re.compile(
     r"(should you buy|should you sell|better buy|stocks to buy|stock to buy|price prediction|"
-    r"millionaire|no-brainer|screaming buy|buy now|top stocks|best stocks|is it time to|here's why)",
+    r"millionaire|no-brainer|screaming buy|buy now|top stocks|best stocks|is it time to|here['’]s why|"
+    r"stock options chain|options chain\s*\||stock quote price|quote price and forecast|"
+    r"on-chain stock futures|polymarket tool predicts|here['’]s how big a position|i think makes sense)",
     re.IGNORECASE,
 )
 CRITICAL_RE = re.compile(
